@@ -54,6 +54,13 @@ or
 make run
 ```
 
+## Folder Structure
+
+- main.py --> all of the API endpoints that are publicly exposed
+- ./src/machinery --> all the logic for executing the public functions to deliver info to the apis
+- ./src/handlers --> all the private classes and functions to get, clean and perform actions to data
+- ./src/lib --> all the supporting functions needed in many handlers
+
 ## License
 
 [GPL 3.0](https://choosealicense.com/licenses/gpl-3.0/)
