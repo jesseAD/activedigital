@@ -2,7 +2,7 @@ from typing import Union
 from fastapi import FastAPI
 
 # import main from src
-from src.handlers import Positions, Accounts
+from src.machinery import Machinery
 
 
 app = FastAPI()
@@ -15,17 +15,30 @@ def read_root():
 
 @app.get("/positions/update")
 def update_positions():
-    Positions.update()
+    Machinery.update()
     return {"message": "Positions updated"}
 
 
 @app.get("/positions/entry")
 def entry_positions(account: str = None, status: bool = True):
-    Positions.entry(account, status)
-    return {"message": "Positions entry updated"}
-
+    res = Machinery.entry_controller(account, status)
+    
+    if res:
+        return {"message": f"Positions entry updated for account {account} to {status}"}
+    else:
+        return {"message": "Positions entry failed to update"}
 
 @app.get("/positions/exit")
 def exit_positions(account: str = None, status: bool = False):
-    Positions.exit(account, status)
-    return {"message": "Positions exit updated"}
+    res = Machinery.exit_controller(account, status)
+    
+    if res:
+        return {"message": f"Positions exit updated for account {account} to {status}"}
+    else:
+        return {"message": "Positions exit failed to update"}
+
+# just a function to test stuff
+@app.get("/test")
+def test():
+    Machinery.test()
+    return {"message": "test complete"}

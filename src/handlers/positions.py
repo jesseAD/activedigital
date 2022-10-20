@@ -1,24 +1,14 @@
-from xmlrpc.client import boolean
 import os
-import warnings
-from datetime import datetime, timezone
+from xmlrpc.client import boolean
 from dotenv import load_dotenv
+from datetime import datetime, timezone
 from src.lib.db import MongoDB
-from src.lib.exchange import Exchange
 from src.lib.log import Log
-
-
-warnings.filterwarnings("ignore")
+from src.handlers.accounts import Accounts
 
 load_dotenv()
-
-
-# db setup
-MONGO_URI = os.getenv("MONGO_URI")
-FTX_API_KEY = os.getenv("FTX_API_KEY")
-FTX_API_SECRET = os.getenv("FTX_API_SECRET")
-
 log = Log()
+MONGO_URI = os.getenv("MONGO_URI")
 positions_db = MongoDB("hg", "positions", MONGO_URI)
 
 
@@ -95,73 +85,40 @@ class Positions:
 
         return
 
-    def update():
-        # two main activities
-        ## 1. check if entered is True, is so get the entry spread information and update the position object with the right information
-        ## 2. check if exit is True, is so get the exit spread information and update the position object with the right information
-        log.debug("Updating positions")
-        pass
-
     def entry(account: str = None, status: boolean = True):
         # get all positions with account
         positions = Positions.get(active=True, account=account)
 
         for position in positions:
-            positions_db.update(
-                {"_id": position["_id"]},
-                {"entry": status},
-            )
-            log.debug(f"position in account entry {account} has been set to {status}")
+            try:
+                positions_db.update(
+                    {"_id": position["_id"]},
+                    {"entry": status},
+                )
+                log.debug(
+                    f"position in account entry {account} has been set to {status}"
+                )
+            except Exception as e:
+                log.error(e)
+                return False
+
+        return True
 
     def exit(account: str = None, status: boolean = False):
         # get all positions with account
         positions = Positions.get(active=True, account=account)
 
         for position in positions:
-            positions_db.update(
-                {"_id": position["_id"]},
-                {"exit": status},
-            )
-            log.debug(f"Position in account exit {account} has been set to {status}")
+            try:
+                positions_db.update(
+                    {"_id": position["_id"]},
+                    {"exit": status},
+                )
+                log.debug(
+                    f"Position in account exit {account} has been set to {status}"
+                )
+            except Exception as e:
+                log.error(e)
+                return False
 
-
-class Accounts:
-    def get(account: str = None, value: boolean = None):
-        data = {}
-
-        ftx = Exchange(account, FTX_API_KEY, FTX_API_SECRET).ftx()
-
-        try:
-            account = ftx.privateGetAccount()
-
-            data = account["result"]
-
-            if value:
-                data = float(account["result"]["totalAccountValue"])
-
-        except Exception as e:
-            log.error(e)
-
-        return data
-
-
-if __name__ == "__main__":
-    log.info("started")
-
-    # Step 1: create position via some web ui which will fire off this function
-    # Positions.create(
-    #     positionType="basis",
-    #     sub_account="FT4",
-    #     spot="ETHW",
-    #     perp="ETHW-PERP",
-    # )
-
-    # Step 2: manually enter the position
-
-    # Step 3: set entry status because we finished entering via the web ui whcih will fire off this function
-    Positions.entry(account="FT4", status=True)
-
-    # Loop: always check to update positions with spread, pnls ect
-    Positions.update()
-
-    print("done")
+        return True
