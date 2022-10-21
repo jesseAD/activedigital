@@ -61,6 +61,7 @@ class Positions:
         position = {
             "positionType": positionType,
             "account": "Main Account",
+            "initialAccountValue": accountValue,
             "accountValue": accountValue,
             "active": True,
             "entry": False,
@@ -109,6 +110,11 @@ class Positions:
         positions = Positions.get(active=True, account=account)
 
         for position in positions:
+            if position["entry"] is False:
+                log.debug(
+                    f"position in account {account} has not been entered, skipping"
+                )
+                continue
             try:
                 positions_db.update(
                     {"_id": position["_id"]},
@@ -117,6 +123,24 @@ class Positions:
                 log.debug(
                     f"Position in account exit {account} has been set to {status}"
                 )
+            except Exception as e:
+                log.error(e)
+                return False
+
+        return True
+
+    def update(account: str = None, **kwargs: dict):
+        # get all positions with account
+        positions = Positions.get(account=account)
+
+        for position in positions:
+            print(position)
+            try:
+                positions_db.update(
+                    {"_id": position["_id"]},
+                    kwargs,
+                )
+                log.debug(f"Position in account {account} has been updated")
             except Exception as e:
                 log.error(e)
                 return False

@@ -1,8 +1,13 @@
+import os
 import pandas as pd
 import numpy as np
+from dotenv import load_dotenv
 from src.lib.log import Log
+from src.lib.db import MongoDB
 
-
+load_dotenv()
+MONGO_URI = os.getenv("MONGO_URI")
+positions_db = MongoDB("hg", "positions", MONGO_URI)
 log = Log()
 
 
@@ -30,6 +35,8 @@ class General:
             end = pd.to_datetime(trades["time"].max())
             delta = end - start
 
+            delta = round(delta.total_seconds() / 60, 0)
+
             spot_avg_entry = np.average(spot["price"], weights=spot["size"])
             perp_avg_entry = np.average(perp["price"], weights=perp["size"])
             entry_spread = round((perp_avg_entry - spot_avg_entry) * 100, 6)
@@ -47,6 +54,40 @@ class General:
                 "start": start,
                 "end": end,
                 "entry_total_time": delta,
+            }
+
+        except Exception as e:
+            log.error(e)
+
+        return data
+
+    def funding_pnl(funding: pd.DataFrame):
+        data = {}
+
+        if funding is None:
+            log.debug("No funding data found to perform analytics")
+            return None
+
+        account = funding["account"].unique()[0]
+
+        try:
+            # get the accountsize for the account from the positions db
+            cursor = positions_db.find({"account": account})
+
+            funding["pnl"] = funding["payment"]
+            total_profit = round(funding["pnl"].sum(), 2)
+            average_profit = round(funding["pnl"].mean(), 2)
+            average_daily_profit = round(funding["pnl"].resample("D").sum().mean(), 2)
+            daily_profit_percent = round(
+                (average_daily_profit / cursor[0]["initialAccountValue"]) * 100, 2
+            )
+
+            data = {
+                "account": account,
+                "total_profit": total_profit,
+                "average_profit": average_profit,
+                "average_daily_profit": average_daily_profit,
+                "daily_profit_percent": daily_profit_percent,
             }
 
         except Exception as e:

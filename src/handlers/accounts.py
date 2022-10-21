@@ -71,6 +71,7 @@ class Accounts:
             return None
 
         funding["time"] = pd.to_datetime(funding["time"])
+        funding["account"] = account
         funding.set_index("time", inplace=True)
         funding.drop(["id", "rate"], axis=1, inplace=True)
         funding["payment"] = (

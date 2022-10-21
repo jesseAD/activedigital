@@ -22,23 +22,25 @@ def update_positions():
 @app.get("/positions/entry")
 def entry_positions(account: str = None, status: bool = True):
     res = Machinery.entry_controller(account, status)
-    
+
     if res:
         return {"message": f"Positions entry updated for account {account} to {status}"}
     else:
         return {"message": "Positions entry failed to update"}
 
+
 @app.get("/positions/exit")
 def exit_positions(account: str = None, status: bool = False):
     res = Machinery.exit_controller(account, status)
-    
+
     if res:
         return {"message": f"Positions exit updated for account {account} to {status}"}
     else:
         return {"message": "Positions exit failed to update"}
 
+
 # just a function to test stuff
-@app.get("/test")
-def test():
-    data = Machinery.test()
+@app.get("/update")
+def update(account: str = None):
+    data = Machinery.update(account)
     return data
