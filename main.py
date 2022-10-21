@@ -40,5 +40,5 @@ def exit_positions(account: str = None, status: bool = False):
 # just a function to test stuff
 @app.get("/test")
 def test():
-    Machinery.test()
-    return {"message": "test complete"}
+    data = Machinery.test()
+    return data

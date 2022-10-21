@@ -2,6 +2,7 @@ import warnings
 from src.lib.log import Log
 from src.handlers.accounts import Accounts
 from src.handlers.positions import Positions
+from src.handlers.analytics import General
 
 warnings.filterwarnings("ignore")
 
@@ -31,8 +32,11 @@ class Machinery:
 
     ## NOTE: USE THIS FUNCTION TO TEST STUFF by CALLING http://localhost:8000/test
     def test():
-        a = Accounts.get_trades("qt-0003")
-        print(a)
+        trades = Accounts.get_trades("FT4")
+        data = General.position_entry(trades)
+        print(data)
+
+        return data
 
 
 if __name__ == "__main__":

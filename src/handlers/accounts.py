@@ -50,17 +50,10 @@ class Accounts:
             return None
 
         trades_cleaned = pd.json_normalize(trades["info"])
-        trades_cleaned = trades_cleaned.drop(["id", "side", "fee", "price"], axis=1)
         trades = pd.concat([trades.drop(["info"], axis=1), trades_cleaned], axis=1)
         trades["price"] = trades["price"].astype(float)
         trades["size"] = trades["size"].astype(float)
-
-        # create index based on Market and side
-        trades_cleaned.set_index(["market", "side"], inplace=True)
         trades_cleaned = trades_cleaned.drop(["id", "fee", "feeCurrency"], axis=1)
-
-        trades["symbol"] = trades["symbol"].str.replace("/USD:USD", "-PERP")
-        trades.drop(["fees"], axis=1, inplace=True)
 
         return trades_cleaned
 
@@ -70,7 +63,7 @@ class Accounts:
 
         try:
             data = ftx.private_get_funding_payments()
-            funding = pd.DataFrame(data)
+            funding = pd.DataFrame(data["result"])
         except Exception as e:
             log.error(e)
 
@@ -83,7 +76,5 @@ class Accounts:
         funding["payment"] = (
             funding["payment"].astype(float).apply(lambda x: -x if x > 0 else -x)
         )
-        # TODO: HAVE AHMAD EXPLAIN THIS NEXT LINE
-        # funding = funding[funding["future"] == PERP]
 
         return funding
