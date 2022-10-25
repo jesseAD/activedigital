@@ -49,7 +49,7 @@ class Positions:
         return results
 
     def create(
-        positionType: str = "basis",
+        positionType: str = None,
         sub_account: str = None,
         spot: str = None,
         future: str = None,
@@ -81,10 +81,12 @@ class Positions:
         try:
             positions_db.insert(position)
             log.debug(f"Position created: {position}")
+            return True
         except Exception as e:
             log.error(e)
+            return False 
 
-        return
+        return False
 
     def entry(account: str = None, status: boolean = True):
         # get all positions with account
@@ -134,7 +136,6 @@ class Positions:
         positions = Positions.get(account=account)
 
         for position in positions:
-            print(position)
             try:
                 positions_db.update(
                     {"_id": position["_id"]},

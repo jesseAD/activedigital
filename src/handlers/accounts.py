@@ -1,4 +1,5 @@
 import os
+from turtle import position
 from xmlrpc.client import boolean
 from dotenv import load_dotenv
 import pandas as pd
@@ -40,7 +41,7 @@ class Accounts:
         trades = None
 
         try:
-            data = ftx.fetch_my_trades(limit=None)
+            data = ftx.fetch_my_trades(limit=1000)
             trades = pd.DataFrame(data)
         except Exception as e:
             log.error(e)
@@ -54,6 +55,7 @@ class Accounts:
         trades["price"] = trades["price"].astype(float)
         trades["size"] = trades["size"].astype(float)
         trades_cleaned = trades_cleaned.drop(["id", "fee", "feeCurrency"], axis=1)
+        trades_cleaned['account'] = account
 
         return trades_cleaned
 

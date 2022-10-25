@@ -10,6 +10,22 @@ log = Log()
 
 
 class Machinery:
+    def create_position(
+        positionType: str = None,
+        sub_account: str = None,
+        spot: str = None,
+        future: str = None,
+        perp: str = None,
+    ):
+        res = Positions.create(
+            positionType=positionType,
+            sub_account=sub_account,
+            spot=spot,
+            future=future,
+            perp=perp,
+        )
+
+        return res
     def entry_controller(account: str = None, status: bool = True):
         res = Positions.entry(account, status)
         if res:
@@ -24,7 +40,7 @@ class Machinery:
         else:
             return False
 
-    def update():
+    def update(account):
 
         active_positions = Positions.get(active=True)
 

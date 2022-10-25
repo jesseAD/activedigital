@@ -4,6 +4,7 @@ import numpy as np
 from dotenv import load_dotenv
 from src.lib.log import Log
 from src.lib.db import MongoDB
+from src.handlers.positions import Positions
 
 load_dotenv()
 MONGO_URI = os.getenv("MONGO_URI")
@@ -15,6 +16,9 @@ class General:
     def position_entry(trades: pd.DataFrame):
         data = {}
         try:
+            account = trades["account"].unique()[0]
+            positionType = Positions.get(account)
+
             start = pd.to_datetime(trades["time"].min())
             end = pd.to_datetime(trades["time"].max())
             delta = end - start

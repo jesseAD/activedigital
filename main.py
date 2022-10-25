@@ -12,11 +12,18 @@ app = FastAPI()
 def read_root():
     return {"app": "FTX Account Handler"}
 
-
-@app.get("/positions/update")
-def update_positions():
-    Machinery.update()
-    return {"message": "Positions updated"}
+@app.get("/positions/create")
+def create_position(
+        positionType: str = None,
+        sub_account: str = None,
+        spot: str = None,
+        future: str = None,
+        perp: str = None,):
+    res = Machinery.create_position(positionType, sub_account, spot, future, perp)
+    if res:
+        return {"message": "Position created"}
+    else:
+        return {"message": "Position not created"}
 
 
 @app.get("/positions/entry")
