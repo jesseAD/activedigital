@@ -10,6 +10,23 @@ log = Log()
 
 
 class Machinery:
+    # -------------------
+    # Accounts Machinery
+    # -------------------
+    def get_subaccounts():
+        res = Accounts.get_subaccounts()
+        return res
+
+    # -------------------
+    # Positions Machinery
+    # -------------------
+    def positions(active, spot, future, perp, position_type, account):
+        positions = Positions.get(active, spot, future, perp, position_type, account)
+        data = {
+            "results": positions,
+        }
+        return data
+
     def create_position(
         positionType: str = None,
         sub_account: str = None,
@@ -26,6 +43,7 @@ class Machinery:
         )
 
         return res
+
     def entry_controller(account: str = None, status: bool = True):
         res = Positions.entry(account, status)
         if res:

@@ -1,6 +1,5 @@
 import os
 from turtle import position
-from xmlrpc.client import boolean
 from dotenv import load_dotenv
 import pandas as pd
 from src.lib.db import MongoDB
@@ -17,7 +16,13 @@ positions_db = MongoDB("hg", "positions", MONGO_URI)
 
 
 class Accounts:
-    def get(account: str = None, value: boolean = None):
+    def get_subaccounts():
+        ftx = Exchange(account=None, key=FTX_API_KEY, secret=FTX_API_SECRET).ftx()
+        subaccounts = ftx.private_get_subaccounts()
+        accounts = [account['nickname'] for account in subaccounts['result']]
+        return accounts
+
+    def get(account: str = None, value: bool = None):
         data = {}
 
         ftx = Exchange(account, FTX_API_KEY, FTX_API_SECRET).ftx()

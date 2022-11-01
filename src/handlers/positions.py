@@ -1,5 +1,4 @@
 import os
-from xmlrpc.client import boolean
 from dotenv import load_dotenv
 from datetime import datetime, timezone
 from src.lib.db import MongoDB
@@ -14,7 +13,7 @@ positions_db = MongoDB("hg", "positions", MONGO_URI)
 
 class Positions:
     def get(
-        active: boolean = None,
+        active: bool = None,
         spot: str = None,
         future: str = None,
         perp: str = None,
@@ -39,6 +38,9 @@ class Positions:
             pipeline.append({"$match": {"positionType": position_type}})
         if account:
             pipeline.append({"$match": {"account": account}})
+
+        # remove object id from results
+        pipeline.append({"$project": {"_id": 0}})
 
         try:
             results = positions_db.aggregate(pipeline)
@@ -84,11 +86,11 @@ class Positions:
             return True
         except Exception as e:
             log.error(e)
-            return False 
+            return False
 
         return False
 
-    def entry(account: str = None, status: boolean = True):
+    def entry(account: str = None, status: bool = True):
         # get all positions with account
         positions = Positions.get(active=True, account=account)
 
@@ -107,7 +109,7 @@ class Positions:
 
         return True
 
-    def exit(account: str = None, status: boolean = False):
+    def exit(account: str = None, status: bool = False):
         # get all positions with account
         positions = Positions.get(active=True, account=account)
 
