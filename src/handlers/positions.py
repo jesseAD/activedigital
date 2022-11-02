@@ -40,7 +40,8 @@ class Positions:
             pipeline.append({"$match": {"account": account}})
 
         # remove object id from results
-        pipeline.append({"$project": {"_id": 0}})
+        # fix this so in the get position API call it returns object ID as a string for the public API
+        # pipeline.append({"$project": {"_id": 0}})
 
         try:
             results = positions_db.aggregate(pipeline)
@@ -61,7 +62,7 @@ class Positions:
         accountValue = Accounts.get(account=sub_account, value=True)
 
         position = {
-            "positionType": positionType,
+            "positionType": positionType.lower(),
             "account": "Main Account",
             "initialAccountValue": accountValue,
             "accountValue": accountValue,
