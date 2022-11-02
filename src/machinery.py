@@ -17,15 +17,19 @@ class Machinery:
         res = Accounts.get_subaccounts()
         return res
 
+    def create_account(nickname, amount):
+        res = Accounts.create(nickname, amount)
+        if res == True:
+            return True
+        else:
+            return False
+
     # -------------------
     # Positions Machinery
     # -------------------
     def positions(active, spot, future, perp, position_type, account):
         positions = Positions.get(active, spot, future, perp, position_type, account)
-        data = {
-            "results": positions,
-        }
-        return data
+        return positions
 
     def create_position(
         positionType: str = None,

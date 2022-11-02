@@ -19,7 +19,7 @@ class Accounts:
     def get_subaccounts():
         ftx = Exchange(account=None, key=FTX_API_KEY, secret=FTX_API_SECRET).ftx()
         subaccounts = ftx.private_get_subaccounts()
-        accounts = [account['nickname'] for account in subaccounts['result']]
+        accounts = [account["nickname"] for account in subaccounts["result"]]
         return accounts
 
     def get(account: str = None, value: bool = None):
@@ -60,7 +60,7 @@ class Accounts:
         trades["price"] = trades["price"].astype(float)
         trades["size"] = trades["size"].astype(float)
         trades_cleaned = trades_cleaned.drop(["id", "fee", "feeCurrency"], axis=1)
-        trades_cleaned['account'] = account
+        trades_cleaned["account"] = account
 
         return trades_cleaned
 
@@ -86,3 +86,39 @@ class Accounts:
         )
 
         return funding
+
+    def create(nickname: str = None, amount: float = 0.0):
+        ftx = Exchange(account=None, key=FTX_API_KEY, secret=FTX_API_SECRET).ftx()
+        data = None
+
+        if amount > 10000:
+            log.error("Amount cannot be greater than 1000")
+            return False
+
+        try:
+
+            create_account_data = ftx.private_post_subaccounts(
+                params={"nickname": nickname}
+            )
+
+            account_name = create_account_data["result"]["nickname"]
+
+            transfer_funds_data = ftx.private_post_subaccounts_transfer(
+                params={
+                    "coin": "USD",
+                    "size": amount,
+                    "source": "main",
+                    "destination": account_name,
+                }
+            )
+
+            transfered_size = transfer_funds_data["result"]["size"]
+
+            log.info(f'Account "{account_name}" created with {transfered_size} USD')
+
+            return True
+
+        except Exception as e:
+            log.error(e)
+
+        return False

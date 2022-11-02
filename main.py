@@ -30,6 +30,12 @@ def get_accounts():
     return res
 
 
+@app.get("/accounts/create")
+def create_account(nickname: str, amount: float):
+    res = Machinery.create_account(nickname, amount)
+    return res
+
+
 @app.get("/positions")
 def get_positions(
     active: bool = None,
