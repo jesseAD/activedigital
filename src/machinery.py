@@ -29,6 +29,10 @@ class Machinery:
     # -------------------
     def positions(active, spot, future, perp, position_type, account):
         positions = Positions.get(active, spot, future, perp, position_type, account)
+        
+        for position in positions:
+            position["_id"] = str(position["_id"])
+
         return positions
 
     def create_position(
