@@ -89,3 +89,21 @@ def exit_positions(account: str = None, status: bool = False):
 def update(account: str = None):
     data = Machinery.update(account)
     return data
+
+
+@app.get("/markets/spots")
+def get_spots_markets():
+    data = Machinery.get_spots_markets()
+    return data
+
+
+@app.get("/markets/futures")
+def get_spots_markets():
+    data = Machinery.get_futures_markets()
+    return data
+
+
+@app.get("/markets/perps")
+def get_spots_markets():
+    data = Machinery.get_perps_markets()
+    return data

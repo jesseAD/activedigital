@@ -3,6 +3,8 @@ from src.lib.log import Log
 from src.handlers.accounts import Accounts
 from src.handlers.positions import Positions
 from src.handlers.analytics import General
+from src.handlers.helpers import tickers
+
 
 warnings.filterwarnings("ignore")
 
@@ -10,6 +12,21 @@ log = Log()
 
 
 class Machinery:
+    # -------------------
+    # Helper Machineru
+    # -------------------
+    def get_spots_markets():
+        res = tickers.spots()
+        return res
+
+    def get_futures_markets():
+        res = tickers.futures()
+        return res
+
+    def get_perps_markets():
+        res = tickers.swaps()
+        return res
+
     # -------------------
     # Accounts Machinery
     # -------------------
@@ -29,7 +46,7 @@ class Machinery:
     # -------------------
     def positions(active, spot, future, perp, position_type, account):
         positions = Positions.get(active, spot, future, perp, position_type, account)
-        
+
         for position in positions:
             position["_id"] = str(position["_id"])
 
