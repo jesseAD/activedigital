@@ -1,5 +1,4 @@
 import os
-from xmlrpc.client import boolean
 from dotenv import load_dotenv
 from datetime import datetime, timezone
 from src.lib.db import MongoDB
@@ -14,7 +13,7 @@ positions_db = MongoDB("hg", "positions", MONGO_URI)
 
 class Positions:
     def get(
-        active: boolean = None,
+        active: bool = None,
         spot: str = None,
         future: str = None,
         perp: str = None,
@@ -40,6 +39,10 @@ class Positions:
         if account:
             pipeline.append({"$match": {"account": account}})
 
+        # remove object id from results
+        # fix this so in the get position API call it returns object ID as a string for the public API
+        # pipeline.append({"$project": {"_id": 0}})
+
         try:
             results = positions_db.aggregate(pipeline)
 
@@ -49,7 +52,7 @@ class Positions:
         return results
 
     def create(
-        positionType: str = "basis",
+        positionType: str = None,
         sub_account: str = None,
         spot: str = None,
         future: str = None,
@@ -59,8 +62,9 @@ class Positions:
         accountValue = Accounts.get(account=sub_account, value=True)
 
         position = {
-            "positionType": positionType,
+            "positionType": positionType.lower(),
             "account": "Main Account",
+            "initialAccountValue": accountValue,
             "accountValue": accountValue,
             "active": True,
             "entry": False,
@@ -80,12 +84,14 @@ class Positions:
         try:
             positions_db.insert(position)
             log.debug(f"Position created: {position}")
+            return True
         except Exception as e:
             log.error(e)
+            return False
 
-        return
+        return False
 
-    def entry(account: str = None, status: boolean = True):
+    def entry(account: str = None, status: bool = True):
         # get all positions with account
         positions = Positions.get(active=True, account=account)
 
@@ -104,11 +110,16 @@ class Positions:
 
         return True
 
-    def exit(account: str = None, status: boolean = False):
+    def exit(account: str = None, status: bool = False):
         # get all positions with account
         positions = Positions.get(active=True, account=account)
 
         for position in positions:
+            if position["entry"] is False:
+                log.debug(
+                    f"position in account {account} has not been entered, skipping"
+                )
+                continue
             try:
                 positions_db.update(
                     {"_id": position["_id"]},
@@ -117,6 +128,23 @@ class Positions:
                 log.debug(
                     f"Position in account exit {account} has been set to {status}"
                 )
+            except Exception as e:
+                log.error(e)
+                return False
+
+        return True
+
+    def update(account: str = None, **kwargs: dict):
+        # get all positions with account
+        positions = Positions.get(account=account)
+
+        for position in positions:
+            try:
+                positions_db.update(
+                    {"_id": position["_id"]},
+                    kwargs,
+                )
+                log.debug(f"Position in account {account} has been updated")
             except Exception as e:
                 log.error(e)
                 return False

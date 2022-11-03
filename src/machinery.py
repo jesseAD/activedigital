@@ -3,6 +3,8 @@ from src.lib.log import Log
 from src.handlers.accounts import Accounts
 from src.handlers.positions import Positions
 from src.handlers.analytics import General
+from src.handlers.helpers import tickers
+
 
 warnings.filterwarnings("ignore")
 
@@ -10,11 +12,62 @@ log = Log()
 
 
 class Machinery:
-    def update():
-        # two main activities
-        ## 1. check if entered is True, is so get the entry spread information and update the position object with the right information
-        ## 2. check if exit is True, is so get the exit spread information and update the position object with the right information
-        log.debug("Updating positions")
+    # -------------------
+    # Helper Machineru
+    # -------------------
+    def get_spots_markets():
+        res = tickers.spots()
+        return res
+
+    def get_futures_markets():
+        res = tickers.futures()
+        return res
+
+    def get_perps_markets():
+        res = tickers.swaps()
+        return res
+
+    # -------------------
+    # Accounts Machinery
+    # -------------------
+    def get_subaccounts():
+        res = Accounts.get_subaccounts()
+        return res
+
+    def create_account(nickname, amount):
+        res = Accounts.create(nickname, amount)
+        if res == True:
+            return True
+        else:
+            return False
+
+    # -------------------
+    # Positions Machinery
+    # -------------------
+    def positions(active, spot, future, perp, position_type, account):
+        positions = Positions.get(active, spot, future, perp, position_type, account)
+
+        for position in positions:
+            position["_id"] = str(position["_id"])
+
+        return positions
+
+    def create_position(
+        positionType: str = None,
+        sub_account: str = None,
+        spot: str = None,
+        future: str = None,
+        perp: str = None,
+    ):
+        res = Positions.create(
+            positionType=positionType,
+            sub_account=sub_account,
+            spot=spot,
+            future=future,
+            perp=perp,
+        )
+
+        return res
 
     def entry_controller(account: str = None, status: bool = True):
         res = Positions.entry(account, status)
@@ -30,31 +83,46 @@ class Machinery:
         else:
             return False
 
-    ## NOTE: USE THIS FUNCTION TO TEST STUFF by CALLING http://localhost:8000/test
-    def test():
-        trades = Accounts.get_trades("FT4")
-        data = General.position_entry(trades)
-        print(data)
+    def update(account):
 
-        return data
+        active_positions = Positions.get(active=True)
 
+        for position in active_positions:
+            account = position["account"]
+            if position["entry"] is False and position["exit"] is False:
+                log.debug(
+                    f"position in account {account} has just been created with no activity"
+                )
+                continue
+            if position["entry"] is True:
+                trades = Accounts.get_trades(account)
+                # get the entry spread information
+                entry_spread = General.position_entry(trades)
+                # update the position object with the right information
+                Positions.update(
+                    account,
+                    entry_spread=entry_spread,
+                )
+            elif position["exit"] is True:
+                # get the exit spread information
+                # exit_spread = General.position_exit(trades)
+                # update the position object with the right information
+                # Positions.update(
+                #     account,
+                #     exit_spread=exit_spread,
+                # )
+                pass
+            elif position["exit"] is False and position["entry"] is True:
+                # get the spread profit & loss and write it to the position object as spread_entry_profit
+                # get the funding profit & loss and write it to the position object as funding_profit
+                pass
+            elif position["active"] is False:
+                # the position is closed via the UI
+                # get the spread profit & loss and write it to the position object as spread_entry_profit
+                # get the funding profit & loss and write it to the position object as funding_profit
+                # get the spread exit profit & loss and write it to the position object as spread_exit_profit
+                # get the total profit & loss and write it to the position object as total_profit
+                # write the start time and end time of the position to the position object (take entry_spread start and exit_sold end)
+                pass
 
-if __name__ == "__main__":
-    log.info("started testing machinery")
-    # Step 1: create position via some web ui which will fire off this function
-    # Positions.create(
-    #     positionType="basis",
-    #     sub_account="FT4",
-    #     spot="ETHW",
-    #     perp="ETHW-PERP",
-    # )
-
-    # Step 2: manually enter the position
-
-    # Step 3: set entry status because we finished entering via the web ui whcih will fire off this function
-    # Positions.entry(account="FT4", status=True)
-
-    # # Loop: always check to update positions with spread, pnls ect
-    # Positions.update()
-
-    print("done")
+        return
