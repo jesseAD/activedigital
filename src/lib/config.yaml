@@ -1,0 +1,52 @@
+mongo_host: 127.0.0.1
+mongo_db: 'production'
+mongo_port: 27017
+
+funding_payments: &funding_payments
+  function: funding_payments.py
+  scheduler: [continuous,external,5 4 * * *]
+
+bybit_subaccount1: &bybit_subaccount1
+  apikey: UQHHGNRTQHXGHWOADG
+  apisecret: EXAAHYHYLNAGNJCCIGOCQCWEMNDDJIEGEXFI
+binance_subaccount1: &binance_subaccount1
+  apikey: PfDc18WYFHoVKKZj6ORLRY79olhaTehhZXKYS5OxDmhN3DAWSwMtHR4ubBwN2OAt
+  apisecret: ydeBmTKEHZ4gLsG1o87rnRcK9894CRzKQPYTF5lvx4x4jB6uMPQzoCJA1RT8KM3X
+okx_subaccount1: &okx_subaccount1
+  apikey: a297c0dd-85e7-44f3-90fc-44a9a50a12d9
+  apisecret: B8D2F2B5D5E07FBD3AB367EB0BF4CCF0
+
+deepspace:
+  funding_payments.bybit:
+    <<: *funding_payments
+    helper: bybithelper.py
+    subaccount1: *bybit_subaccount1
+  funding_payments.binance:
+    <<: *funding_payments
+    helper: binancehelper.py
+    subaccount1: *binance_subaccount1
+  funding_payments.okx:
+    <<: *funding_payments
+    helper: okxhelper.py
+    subaccount1: *okx_subaccount1
+  funding_rates:
+    function: funding_rates.py
+    scheduler: [continuous,external,5 4 * * * ]
+    bybit:
+      helper: bybitfundinghelper.py
+      instruments: ['*', BTC.USDT.PERP]
+    binance:
+      helper: binancefundinghelper.py
+      instruments: ['*', BTC.USDT.PERP]
+  balances:
+    function: balance.py
+    scheduler: [continuous,external,5 4 * * * ]
+    bybit:
+      helper: bybitbalancehelper.py
+      subaccount1: *bybit_subaccount1
+    binance:
+      helper: binancebalancehelper.py
+      subaccount1: *binance_subaccount1
+    okx:
+      helper: okxbalancehelper.py
+      subaccount1: *okx_subaccount1
