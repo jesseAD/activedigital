@@ -1,6 +1,6 @@
 import yaml
 
-from data_collector import DataCollector
+from src.lib.data_collector import DataCollector
 from src.handlers.positions import Positions
 
 file_path = 'src/lib/config.yaml'

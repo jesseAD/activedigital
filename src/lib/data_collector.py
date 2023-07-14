@@ -1,8 +1,5 @@
 from datetime import datetime, timezone
 from pymongo import MongoClient
-from log import Log
-
-log = Log()
 
 class DataCollector:
     def __init__(self, mongo_host, mongo_db, mongo_port, client, exchange='', collection='', account='', helper='', apikey='', apisecret='', script=''):
