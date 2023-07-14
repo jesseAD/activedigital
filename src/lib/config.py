@@ -61,4 +61,5 @@ def run_script(data_collector):
 data_collectors = get_data_collectors(client_alias)
 
 run_script(data_collectors[1]) # binance_subaccount1
+run_script(data_collectors[2]) # binance_subaccount2
 run_script(data_collectors[3]) # okk_subaccount1

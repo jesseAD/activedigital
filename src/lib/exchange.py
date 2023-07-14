@@ -1,5 +1,7 @@
 import ccxt
-
+import os
+from dotenv import load_dotenv
+load_dotenv()
 
 # Create an echange class instance
 class Exchange:
@@ -26,7 +28,9 @@ class Exchange:
         elif self.exchange == 'bybit':
             exchange = ccxt.bybit(params)
         elif self.exchange == 'okx':
-            exchange = ccxt.okx(params)
+            passphrase = os.getenv('OKX_'+self.sub_account.upper()+'_PASSPHRASE')
+            params['password'] = passphrase
+            exchange = ccxt.okex5(params)
         
         return exchange
 

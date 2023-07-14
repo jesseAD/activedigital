@@ -5,6 +5,8 @@ import pandas as pd
 from src.lib.db import MongoDB
 from src.lib.log import Log
 from src.lib.exchange import Exchange
+from src.handlers.helpers import Helper
+from src.handlers.helpers import OKXHelper
 
 
 load_dotenv()
@@ -28,9 +30,12 @@ class Accounts:
         API_KEY = os.getenv(spec + "API_KEY")
         API_SECRET = os.getenv(spec + "API_SECRET")
         exch = Exchange(exchange, account, API_KEY, API_SECRET).exch()
-        print("exch: ", exch)
+
         try:
-            account = exch.privateGetAccount()
+            if exchange == 'okx':
+                account = OKXHelper().get_positions(exch = exch)
+            else:
+                account = Helper().get_positions(exch = exch)
             data = account
 
             # if value:

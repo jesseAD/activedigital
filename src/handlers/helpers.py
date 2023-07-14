@@ -1,5 +1,5 @@
 import os
-from turtle import position
+# from turtle import position
 from dotenv import load_dotenv
 from src.lib.log import Log
 from src.lib.exchange import Exchange
@@ -64,3 +64,13 @@ class tickers:
                 )
 
         return market_list
+
+class Helper():
+    # default method for Binance
+    def get_positions(self, exch):
+        return exch.privateGetAccount()
+
+class OKXHelper(Helper):
+    # override get_positions() method for OKX
+    def get_positions(self, exch):
+        return exch.private_get_account_positions()
