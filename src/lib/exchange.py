@@ -3,12 +3,13 @@ import ccxt
 
 # Create an echange class instance
 class Exchange:
-    def __init__(self, account, key, secret):
+    def __init__(self, exchange, account, key, secret):
+        self.exchange = exchange
         self.sub_account = account
         self.key = key
         self.secret = secret
 
-    def ftx(self):
+    def exch(self):
         
         params = {
             'apiKey': self.key,
@@ -18,11 +19,15 @@ class Exchange:
 
         if self.sub_account:
             params['headers'] = {
-                'FTX-SUBACCOUNT': self.sub_account,
+                self.exchange.upper()+'-SUBACCOUNT': self.sub_account,
             }
+        if self.exchange == 'binance':
+            exchange = ccxt.binance(params)
+        elif self.exchange == 'bybit':
+            exchange = ccxt.bybit(params)
+        elif self.exchange == 'okx':
+            exchange = ccxt.okx(params)
         
-        exchange = ccxt.ftx(params)
-
         return exchange
 
         

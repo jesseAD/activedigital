@@ -7,9 +7,8 @@ from src.handlers.accounts import Accounts
 
 load_dotenv()
 log = Log()
-MONGO_URI = os.getenv("MONGO_URI")
-positions_db = MongoDB("hg", "positions", MONGO_URI)
-
+# MONGO_URI = os.getenv("MONGO_URI")
+positions_db = MongoDB(os.getenv("mongo_db"), "positions")
 
 class Positions:
     def get(
@@ -52,6 +51,7 @@ class Positions:
         return results
 
     def create(
+        exchange: str = None,
         positionType: str = None,
         sub_account: str = None,
         spot: str = None,
@@ -59,9 +59,10 @@ class Positions:
         perp: str = None,
     ):
 
-        accountValue = Accounts.get(account=sub_account, value=True)
+        accountValue = Accounts.get(exchange=exchange, account=sub_account, value=True)
 
         position = {
+            "exchange": exchange,
             "positionType": positionType.lower(),
             "account": "Main Account",
             "initialAccountValue": accountValue,
@@ -83,7 +84,7 @@ class Positions:
 
         try:
             positions_db.insert(position)
-            log.debug(f"Position created: {position}")
+            # log.debug(f"Position created: {position}")
             return True
         except Exception as e:
             log.error(e)

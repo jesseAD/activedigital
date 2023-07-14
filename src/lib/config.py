@@ -1,9 +1,9 @@
 import yaml
-import subprocess
 
 from data_collector import DataCollector
+from src.handlers.positions import Positions
 
-file_path = 'config.yaml'
+file_path = 'src/lib/config.yaml'
 client_alias = 'deepspace'
 
 def read_config_file(config_file_path):
@@ -23,6 +23,7 @@ def instantiate(client, collection, exchange, account=None):
         client, 
         exchange, 
         collection,
+        account,
         target['helper'],
         target[account]['apikey'],
         target[account]['apisecret'],
@@ -51,6 +52,13 @@ def get_data_collectors(client):
     return data_collectors
 
 def run_script(data_collector):
-    subprocess.run(['python', data_collector.script])
+    Positions.create(
+        exchange=data_collector.exchange,
+        positionType='long',
+        sub_account=data_collector.account
+    )
 
-get_data_collectors(client_alias)
+data_collectors = get_data_collectors(client_alias)
+
+run_script(data_collectors[1]) # binance_subaccount1
+run_script(data_collectors[3]) # okk_subaccount1

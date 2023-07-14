@@ -1,5 +1,5 @@
 import os
-from turtle import position
+# from turtle import position
 from dotenv import load_dotenv
 import pandas as pd
 from src.lib.db import MongoDB
@@ -9,31 +9,32 @@ from src.lib.exchange import Exchange
 
 load_dotenv()
 log = Log()
-MONGO_URI = os.getenv("MONGO_URI")
-FTX_API_KEY = os.getenv("FTX_API_KEY")
-FTX_API_SECRET = os.getenv("FTX_API_SECRET")
-positions_db = MongoDB("hg", "positions", MONGO_URI)
+# MONGO_URI = os.getenv("MONGO_URI")
+API_KEY = os.getenv("BINANCE_SUBACCOUNT1_API_KEY")
+API_SECRET = os.getenv("BINANCE_SUBACCOUNT1_API_SECRET")
+positions_db = MongoDB("production", "positions")
 
 
 class Accounts:
     def get_subaccounts():
-        ftx = Exchange(account=None, key=FTX_API_KEY, secret=FTX_API_SECRET).ftx()
-        subaccounts = ftx.private_get_subaccounts()
+        exch = Exchange(account=None, key=API_KEY, secret=API_SECRET).exch()
+        subaccounts = exch.private_get_subaccounts()
         accounts = [account["nickname"] for account in subaccounts["result"]]
         return accounts
 
-    def get(account: str = None, value: bool = None):
+    def get(exchange: str = None, account: str = None, value: bool = None):
         data = {}
-
-        ftx = Exchange(account, FTX_API_KEY, FTX_API_SECRET).ftx()
-
+        spec = exchange.upper() + "_" + account.upper() + "_"
+        API_KEY = os.getenv(spec + "API_KEY")
+        API_SECRET = os.getenv(spec + "API_SECRET")
+        exch = Exchange(exchange, account, API_KEY, API_SECRET).exch()
+        print("exch: ", exch)
         try:
-            account = ftx.privateGetAccount()
+            account = exch.privateGetAccount()
+            data = account
 
-            data = account["result"]
-
-            if value:
-                data = float(account["result"]["totalAccountValue"])
+            # if value:
+            #     data = float(account["result"]["totalAccountValue"])
 
         except Exception as e:
             log.error(e)
@@ -41,12 +42,12 @@ class Accounts:
         return data
 
     def get_trades(account: str = None):
-        ftx = Exchange(account, FTX_API_KEY, FTX_API_SECRET).ftx()
+        exch = Exchange(account, API_KEY, API_SECRET).exch()
         start = "2022-10-03T00:00:00Z"
         trades = None
 
         try:
-            data = ftx.fetch_my_trades(limit=1000)
+            data = exch.fetch_my_trades(limit=1000)
             trades = pd.DataFrame(data)
         except Exception as e:
             log.error(e)
@@ -65,11 +66,11 @@ class Accounts:
         return trades_cleaned
 
     def get_funding(account: str = None):
-        ftx = Exchange(account, FTX_API_KEY, FTX_API_SECRET).ftx()
+        exch = Exchange(account, API_KEY, API_SECRET).exch()
         funding = None
 
         try:
-            data = ftx.private_get_funding_payments()
+            data = exch.private_get_funding_payments()
             funding = pd.DataFrame(data["result"])
         except Exception as e:
             log.error(e)
@@ -88,7 +89,7 @@ class Accounts:
         return funding
 
     def create(nickname: str = None, amount: float = 0.0):
-        ftx = Exchange(account=None, key=FTX_API_KEY, secret=FTX_API_SECRET).ftx()
+        exch = Exchange(account=None, key=API_KEY, secret=API_SECRET).exch()
         data = None
 
         if amount > 10000:
@@ -97,13 +98,13 @@ class Accounts:
 
         try:
 
-            create_account_data = ftx.private_post_subaccounts(
+            create_account_data = exch.private_post_subaccounts(
                 params={"nickname": nickname}
             )
 
             account_name = create_account_data["result"]["nickname"]
 
-            transfer_funds_data = ftx.private_post_subaccounts_transfer(
+            transfer_funds_data = exch.private_post_subaccounts_transfer(
                 params={
                     "coin": "USD",
                     "size": amount,
