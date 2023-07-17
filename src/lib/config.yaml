@@ -1,5 +1,6 @@
 mongo_host: 127.0.0.1
-mongo_db: 'production'
+mongo_db_production: 'production'
+mongo_db_test: 'test'
 mongo_port: 27017
 
 funding_payments: &funding_payments

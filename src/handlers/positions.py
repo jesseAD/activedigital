@@ -4,14 +4,18 @@ from datetime import datetime, timezone
 from src.lib.db import MongoDB
 from src.lib.log import Log
 from src.handlers.accounts import Accounts
+from src.lib.config import read_config_file
 
 load_dotenv()
 log = Log()
-# MONGO_URI = os.getenv("MONGO_URI")
-positions_db = MongoDB(os.getenv("mongo_db"), "positions")
+config = read_config_file()
 
 class Positions:
+    def __init__(self, db):
+        self.positions_db = MongoDB("positions", db)
+
     def get(
+        self,
         active: bool = None,
         spot: str = None,
         future: str = None,
@@ -41,68 +45,26 @@ class Positions:
         if account:
             pipeline.append({"$match": {"account": account}})
 
-        # remove object id from results
-        # fix this so in the get position API call it returns object ID as a string for the public API
-        # pipeline.append({"$project": {"_id": 0}})
-
         try:
-            results = positions_db.aggregate(pipeline)
+            results = self.positions_db.aggregate(pipeline)
+            return results
 
         except Exception as e:
             log.error(e)
-
-        return results
-
-    def get_test(
-        active: bool = None,
-        spot: str = None,
-        future: str = None,
-        perp: str = None,
-        position_type: str = None,
-        exchange: str = None,
-        account: str = None,
-    ):
-        test_db = MongoDB(os.getenv("mongo_db"), "test")
-        results = []
-
-        pipeline = [
-            {"$sort": {"_id": -1}},
-        ]
-
-        if active is not None:
-            pipeline.append({"$match": {"active": active}})
-        if spot:
-            pipeline.append({"$match": {"spotMarket": spot}})
-        if future:
-            pipeline.append({"$match": {"futureMarket": future}})
-        if perp:
-            pipeline.append({"$match": {"perpMarket": perp}})
-        if position_type:
-            pipeline.append({"$match": {"positionType": position_type}})
-        if exchange:
-            pipeline.append({"$match": {"exchange": exchange}})
-        if account:
-            pipeline.append({"$match": {"account": account}})
-
-        try:
-            results = test_db.aggregate(pipeline)
-
-        except Exception as e:
-            log.error(e)
-
-        return results
 
     def create(
+        self,
         exchange: str = None,
         positionType: str = None,
         sub_account: str = None,
         spot: str = None,
         future: str = None,
         perp: str = None,
+        accountValue: str = None
     ):
-
-        accountValue = Accounts.get(exchange=exchange, account=sub_account, value=True)
-
+        if accountValue is None:
+            accountValue = Accounts.get(exchange=exchange, account=sub_account, value=True)
+        
         position = {
             "exchange": exchange,
             "positionType": positionType.lower(),
@@ -125,61 +87,20 @@ class Positions:
             position["perpMarket"] = perp
 
         try:
-            positions_db.insert(position)
+            self.positions_db.insert(position)
             # log.debug(f"Position created: {position}")
-            return True
+            return position
         except Exception as e:
             log.error(e)
             return False
 
-        return False
-
-    def create_test(
-        exchange: str = None,
-        positionType: str = None,
-        sub_account: str = None,
-        spot: str = None,
-        future: str = None,
-        perp: str = None,
-    ):
-        test_db = MongoDB(os.getenv("mongo_db"), "test")
-
-        accountValue = Accounts.get(exchange=exchange, account=sub_account, value=True)
-
-        position = {
-            "exchange": exchange,
-            "positionType": positionType.lower(),
-            "account": "Main Account",
-            "initialAccountValue": accountValue,
-            "accountValue": accountValue,
-            "active": True,
-            "entry": False,
-            "exit": False,
-            "timestamp": datetime.now(timezone.utc),
-        }
-
-        if sub_account:
-            position["account"] = sub_account
-        if spot:
-            position["spotMarket"] = spot
-        if future:
-            position["futureMarket"] = future
-        if perp:
-            position["perpMarket"] = perp
-
-        try:
-            test_db.insert(position)
-            return position
-        except Exception as e:
-            log.error(e)
-
-    def entry(account: str = None, status: bool = True):
+    def entry(self, account: str = None, status: bool = True):
         # get all positions with account
         positions = Positions.get(active=True, account=account)
 
         for position in positions:
             try:
-                positions_db.update(
+                self.positions_db.update(
                     {"_id": position["_id"]},
                     {"entry": status},
                 )
@@ -192,7 +113,7 @@ class Positions:
 
         return True
 
-    def exit(account: str = None, status: bool = False):
+    def exit(self, account: str = None, status: bool = False):
         # get all positions with account
         positions = Positions.get(active=True, account=account)
 
@@ -203,7 +124,7 @@ class Positions:
                 )
                 continue
             try:
-                positions_db.update(
+                self.positions_db.update(
                     {"_id": position["_id"]},
                     {"exit": status},
                 )
@@ -216,13 +137,13 @@ class Positions:
 
         return True
 
-    def update(account: str = None, **kwargs: dict):
+    def update(self, account: str = None, **kwargs: dict):
         # get all positions with account
         positions = Positions.get(account=account)
 
         for position in positions:
             try:
-                positions_db.update(
+                self.positions_db.update(
                     {"_id": position["_id"]},
                     kwargs,
                 )
