@@ -4,12 +4,14 @@ from unittest import mock
 from pymongo import MongoClient
 
 from src.handlers.positions import Positions
+from src.lib.config import read_config_file
 
 class TestPositions(unittest.TestCase):
     def setUp(self):
-        mongo_client = MongoClient('localhost', 27017)
+        config = read_config_file('tests/config.yaml')
+        mongo_client = MongoClient(config['mongo_host'], config['mongo_port'])
         db = mongo_client['positions']
-        self.test_collection = db['test']
+        self.test_collection = db[config['mongo_db_collection']]
         self.test_collection.delete_many({})
 
         # read hard-coded values
@@ -21,17 +23,17 @@ class TestPositions(unittest.TestCase):
     @mock.patch('src.handlers.positions.Positions', autospec=True)
     def test_singleExchangeSingleSubAccountPositionsStoredToMongoDb(self, mock_positions):
         mock_create = mock_positions.return_value.create
-        mock_create.return_value = {'accountValue': self.sesa_data}
+        mock_create.return_value = {'positionValue': self.sesa_data}
 
         # Call mock create function using existing json data
         Positions("test").create(
             exchange='binance',
             positionType='long',
             sub_account='subaccount1',
-            accountValue=self.sesa_data
-        )['accountValue']
+            positionValue=self.sesa_data
+        )['positionValue']
 
-        result = Positions("test").get(exchange='binance', position_type='long', account='subaccount1')[0]['accountValue']
+        result = Positions("test").get(exchange='binance', position_type='long', account='subaccount1')[0]['positionValue']
         # Iterate over the result and compare the values
         for key, value in self.sesa_data.items():
             self.assertEqual(result[key], value)
@@ -39,25 +41,25 @@ class TestPositions(unittest.TestCase):
     @mock.patch('src.handlers.positions.Positions', autospec=True)
     def test_singleExchangeTwoSubAccountsPositionsStoredToMongoDb(self, mock_positions):
         mock_create = mock_positions.return_value.create
-        mock_create.return_value = {'accountValue': self.seta_data}
+        mock_create.return_value = {'positionValue': self.seta_data}
 
         # Call mock create function using existing json data
         Positions("test").create(
             exchange='binance',
             positionType='long',
             sub_account='subaccount1',
-            accountValue=self.seta_data
-        )['accountValue']
+            positionValue=self.seta_data
+        )['positionValue']
 
         Positions("test").create(
             exchange='binance',
             positionType='long',
             sub_account='subaccount2',
-            accountValue=self.seta_data
-        )['accountValue']
+            positionValue=self.seta_data
+        )['positionValue']
 
-        result1 = Positions("test").get(exchange='binance', position_type='long', account='subaccount1')[0]['accountValue']['subaccount1']
-        result2 = Positions("test").get(exchange='binance', position_type='long', account='subaccount2')[0]['accountValue']['subaccount2']
+        result1 = Positions("test").get(exchange='binance', position_type='long', account='subaccount1')[0]['positionValue']['subaccount1']
+        result2 = Positions("test").get(exchange='binance', position_type='long', account='subaccount2')[0]['positionValue']['subaccount2']
 
         # Iterate over the result and compare the values
         for key, value in self.seta_data["subaccount1"].items():

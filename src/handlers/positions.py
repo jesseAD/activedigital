@@ -1,9 +1,12 @@
 import os
 from dotenv import load_dotenv
 from datetime import datetime, timezone
+
 from src.lib.db import MongoDB
 from src.lib.log import Log
-from src.handlers.accounts import Accounts
+from src.lib.exchange import Exchange
+from src.handlers.helpers import Helper
+from src.handlers.helpers import OKXHelper
 from src.lib.config import read_config_file
 
 load_dotenv()
@@ -12,7 +15,7 @@ config = read_config_file()
 
 class Positions:
     def __init__(self, db):
-        self.positions_db = MongoDB("positions", db)
+        self.positions_db = MongoDB(config['mongo_db'], db)
 
     def get(
         self,
@@ -60,17 +63,23 @@ class Positions:
         spot: str = None,
         future: str = None,
         perp: str = None,
-        accountValue: str = None
+        positionValue: str = None
     ):
-        if accountValue is None:
-            accountValue = Accounts.get(exchange=exchange, account=sub_account, value=True)
+        if positionValue is None:
+            spec = exchange.upper() + "_" + sub_account.upper() + "_"
+            API_KEY = os.getenv(spec + "API_KEY")
+            API_SECRET = os.getenv(spec + "API_SECRET")
+            exch = Exchange(exchange, sub_account, API_KEY, API_SECRET).exch()
+            if exchange == 'okx':
+                positionValue = OKXHelper().get_positions(exch = exch)
+            else:
+                positionValue = Helper().get_positions(exch = exch)
         
         position = {
             "exchange": exchange,
             "positionType": positionType.lower(),
             "account": "Main Account",
-            "initialAccountValue": accountValue,
-            "accountValue": accountValue,
+            "positionValue": positionValue,
             "active": True,
             "entry": False,
             "exit": False,

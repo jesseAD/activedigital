@@ -11,66 +11,75 @@ MONGO_URI = os.getenv("MONGO_URI")
 FTX_API_KEY = os.getenv("FTX_API_KEY")
 FTX_API_SECRET = os.getenv("FTX_API_SECRET")
 
-load_dotenv()
 
-log = Log()
+# class tickers:
+#     def spots():
+#         ftx = Exchange(account=None, key=FTX_API_KEY, secret=FTX_API_SECRET).ftx()
+#         markets = ftx.fetch_markets()
 
+#         spot_list = []
 
-class tickers:
-    def spots():
-        ftx = Exchange(account=None, key=FTX_API_KEY, secret=FTX_API_SECRET).ftx()
-        markets = ftx.fetch_markets()
+#         for x in markets:
+#             # check if type is spot and margin is True and add to list
+#             if x["type"] == "spot":
+#                 name = x["base"]
+#                 id = x["id"]
+#                 spot_list.append({"name": name, "id": id})
 
-        spot_list = []
+#         return spot_list
 
-        for x in markets:
-            # check if type is spot and margin is True and add to list
-            if x["type"] == "spot":
-                name = x["base"]
-                id = x["id"]
-                spot_list.append({"name": name, "id": id})
+#     def swaps():
+#         ftx = Exchange(account=None, key=FTX_API_KEY, secret=FTX_API_SECRET).ftx()
+#         markets = ftx.fetch_markets()
 
-        return spot_list
+#         market_list = []
+#         # check if market id has -PERP in it
 
-    def swaps():
-        ftx = Exchange(account=None, key=FTX_API_KEY, secret=FTX_API_SECRET).ftx()
-        markets = ftx.fetch_markets()
+#         for market in markets:
+#             # check if market id has -PERP in it
+#             if "-PERP" in market["id"]:
+#                 name = market["id"]
+#                 market_list.append({"name": name, "id": name})
 
-        market_list = []
-        # check if market id has -PERP in it
+#         return market_list
 
-        for market in markets:
-            # check if market id has -PERP in it
-            if "-PERP" in market["id"]:
-                name = market["id"]
-                market_list.append({"name": name, "id": name})
+#     def futures():
+#         ftx = Exchange(account=None, key=FTX_API_KEY, secret=FTX_API_SECRET).ftx()
 
-        return market_list
+#         markets = ftx.fetch_markets()
+#         market_list = []
 
-    def futures():
-        ftx = Exchange(account=None, key=FTX_API_KEY, secret=FTX_API_SECRET).ftx()
+#         for market in markets:
+#             if market["type"] == "future":
+#                 name = market["id"]
+#                 market_list.append(
+#                     {
+#                         "id": name,
+#                         "name": name,
+#                     }
+#                 )
 
-        markets = ftx.fetch_markets()
-        market_list = []
+#         return market_list
 
-        for market in markets:
-            if market["type"] == "future":
-                name = market["id"]
-                market_list.append(
-                    {
-                        "id": name,
-                        "name": name,
-                    }
-                )
-
-        return market_list
-
+# default helper for Binance
 class Helper():
-    # default method for Binance
     def get_positions(self, exch):
-        return exch.privateGetAccount()
+        return exch.fetch_account_positions(params={'type':'future'})
+    
+    def get_balances(self, exch):
+        all_balances = exch.fetch_balance()['total']
+        result = dict()
+        for currency, balance in all_balances.items():
+            if float(balance) != 0:
+                result[currency] = balance
+
+        return result
+    
+    def get_instruments(self, exch):
+        return exch.fetch_markets()
+    
+    def get_tickers(self, exch):
+        return exch.fetch_ticker('BTC/USDT')
 
 class OKXHelper(Helper):
-    # override get_positions() method for OKX
-    def get_positions(self, exch):
-        return exch.private_get_account_positions()
+    pass
