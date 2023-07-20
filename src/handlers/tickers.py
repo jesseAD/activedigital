@@ -17,43 +17,43 @@ class Tickers:
     def __init__(self, db):
         self.tickers_db = MongoDB(config['mongo_db'], db)
 
-    # def get(
-    #     self,
-    #     active: bool = None,
-    #     spot: str = None,
-    #     future: str = None,
-    #     perp: str = None,
-    #     position_type: str = None,
-    #     exchange: str = None,
-    #     account: str = None,
-    # ):
-    #     results = []
+    def get(
+        self,
+        active: bool = None,
+        spot: str = None,
+        future: str = None,
+        perp: str = None,
+        position_type: str = None,
+        exchange: str = None,
+        account: str = None,
+    ):
+        results = []
 
-    #     pipeline = [
-    #         {"$sort": {"_id": -1}},
-    #     ]
+        pipeline = [
+            {"$sort": {"_id": -1}},
+        ]
 
-    #     if active is not None:
-    #         pipeline.append({"$match": {"active": active}})
-    #     if spot:
-    #         pipeline.append({"$match": {"spotMarket": spot}})
-    #     if future:
-    #         pipeline.append({"$match": {"futureMarket": future}})
-    #     if perp:
-    #         pipeline.append({"$match": {"perpMarket": perp}})
-    #     if position_type:
-    #         pipeline.append({"$match": {"positionType": position_type}})
-    #     if exchange:
-    #         pipeline.append({"$match": {"exchange": exchange}})
-    #     if account:
-    #         pipeline.append({"$match": {"account": account}})
+        if active is not None:
+            pipeline.append({"$match": {"active": active}})
+        if spot:
+            pipeline.append({"$match": {"spotMarket": spot}})
+        if future:
+            pipeline.append({"$match": {"futureMarket": future}})
+        if perp:
+            pipeline.append({"$match": {"perpMarket": perp}})
+        if position_type:
+            pipeline.append({"$match": {"positionType": position_type}})
+        if exchange:
+            pipeline.append({"$match": {"exchange": exchange}})
+        if account:
+            pipeline.append({"$match": {"account": account}})
 
-    #     try:
-    #         results = self.positions_db.aggregate(pipeline)
-    #         return results
+        try:
+            results = self.tickers_db.aggregate(pipeline)
+            return results
 
-    #     except Exception as e:
-    #         log.error(e)
+        except Exception as e:
+            log.error(e)
 
     def create(
         self,

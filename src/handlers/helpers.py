@@ -82,4 +82,5 @@ class Helper():
         return exch.fetch_ticker('BTC/USDT')
 
 class OKXHelper(Helper):
-    pass
+    def get_positions(self, exch):
+        return exch.fetch_positions(params={'type':'future'})
