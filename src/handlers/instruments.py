@@ -77,7 +77,7 @@ class Instruments:
         
         instrument = {
             "exchange": exchange,
-            "positionType": positionType.lower(),
+            # "positionType": positionType.lower(),
             "account": "Main Account",
             "instrumentValue": instrumentValue,
             "active": True,

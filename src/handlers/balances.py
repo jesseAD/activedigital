@@ -77,7 +77,7 @@ class Balances:
         
         balance = {
             "exchange": exchange,
-            "positionType": positionType.lower(),
+            # "positionType": positionType.lower(),
             "account": "Main Account",
             "balanceValue": balanceValue,
             "active": True,

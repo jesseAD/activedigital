@@ -26,6 +26,7 @@ class Tickers:
         position_type: str = None,
         exchange: str = None,
         account: str = None,
+        symbol: str = None
     ):
         results = []
 
@@ -47,6 +48,8 @@ class Tickers:
             pipeline.append({"$match": {"exchange": exchange}})
         if account:
             pipeline.append({"$match": {"account": account}})
+        if symbol:
+            pipeline.append({"$match": {"symbol": symbol}})
 
         try:
             results = self.tickers_db.aggregate(pipeline)
@@ -63,7 +66,8 @@ class Tickers:
         spot: str = None,
         future: str = None,
         perp: str = None,
-        tickerValue: str = None
+        tickerValue: str = None,
+        symbol: str = None
     ):
         if tickerValue is None:
             spec = exchange.upper() + "_" + sub_account.upper() + "_"
@@ -71,14 +75,15 @@ class Tickers:
             API_SECRET = os.getenv(spec + "API_SECRET")
             exch = Exchange(exchange, sub_account, API_KEY, API_SECRET).exch()
             if exchange == 'okx':
-                tickerValue = OKXHelper().get_tickers(exch = exch)
+                tickerValue = OKXHelper().get_tickers(symbol=symbol, exch = exch)
             else:
-                tickerValue = Helper().get_tickers(exch = exch)
+                tickerValue = Helper().get_tickers(symbol=symbol, exch = exch)
         
         ticker = {
             "exchange": exchange,
-            "positionType": positionType.lower(),
+            # "positionType": positionType.lower(),
             "account": "Main Account",
+            "symbol": symbol,
             "tickerValue": tickerValue,
             "active": True,
             "entry": False,

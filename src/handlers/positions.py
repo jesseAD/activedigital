@@ -77,7 +77,7 @@ class Positions:
         
         position = {
             "exchange": exchange,
-            "positionType": positionType.lower(),
+            # "positionType": positionType.lower(),
             "account": "Main Account",
             "positionValue": positionValue,
             "active": True,

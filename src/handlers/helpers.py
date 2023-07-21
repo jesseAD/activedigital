@@ -78,8 +78,8 @@ class Helper():
     def get_instruments(self, exch):
         return exch.fetch_markets()
     
-    def get_tickers(self, exch):
-        return exch.fetch_ticker('BTC/USDT')
+    def get_tickers(self, exch, symbol):
+        return exch.fetch_ticker(symbol)
 
 class OKXHelper(Helper):
     def get_positions(self, exch):
