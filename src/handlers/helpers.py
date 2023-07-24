@@ -83,4 +83,4 @@ class Helper():
 
 class OKXHelper(Helper):
     def get_positions(self, exch):
-        return exch.fetch_positions(params={'type':'future'})
+        return exch.fetch_positions(params={'type':'swap'})

@@ -1,3 +1,8 @@
+import os
+import sys
+
+sys.path.append(os.getcwd())
+
 from src.lib.data_collector import DataCollector
 from src.handlers.positions import Positions
 from src.handlers.balances import Balances
