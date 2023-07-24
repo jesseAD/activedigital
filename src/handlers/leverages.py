@@ -1,5 +1,6 @@
 import os
 from dotenv import load_dotenv
+from pymongo import MongoClient
 
 from src.lib.db import MongoDB
 from src.lib.log import Log
@@ -20,6 +21,11 @@ class Levarages:
         self.leverages_db = MongoDB(config['mongo_db'], db)
         self.positions_db = MongoDB(config['mongo_db'], 'positions')
         self.balances_db = MongoDB(config['mongo_db'], 'balances')
+        self.leverages_db = MongoDB(config['mongo_db'], 'leverages')
+        mongo_password = os.getenv("CLOUD_MONGO_PASSWORD")
+        connection_uri = 'mongodb+srv://activedigital:'+mongo_password+'@mongodbcluster.nzphth1.mongodb.net/?retryWrites=true&w=majority'
+        cloud_mongo = MongoClient(connection_uri)
+        self.leverages_cloud = cloud_mongo['active_digital']['leverages']
 
     def get(
         self,
@@ -40,8 +46,8 @@ class Levarages:
             position_value = helper.get_positions(exch)
             position_info = []
             for value in position_value:
-                if float(value['info']['initialMargin']) > 0:
-                    position_info.append(value['info'])
+                if float(value['initialMargin']) > 0:
+                    position_info.append(value)
 
             max_notional = abs(float(max(position_info, key=lambda x: abs(float(x['notional'])))['notional']))
             
@@ -56,9 +62,15 @@ class Levarages:
                     ticker_value = helper.get_tickers(exch=exch, symbol=currency+'/'+base_currency)['last']
                     balance_in_base_currency += ticker_value * balance
 
-            leverage = max_notional / balance_in_base_currency
-            print('leverage: ', leverage)
-            return leverage
+            leverage_value = {
+                "exchange": exchange,
+                "account": account,
+            }
+            leverage_value['leverage'] = max_notional / balance_in_base_currency
+            self.leverages_db.insert(leverage_value)
+            self.leverages_cloud.insert_one(leverage_value)
+            
+            return leverage_value
         
         except Exception as e:
             log.error(e)

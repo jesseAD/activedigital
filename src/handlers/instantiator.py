@@ -81,11 +81,11 @@ def collect_leverages(data_collector):
 data_collectors = get_data_collectors(client_alias)
 
 # # binance_subaccount1
-collect_positions(data_collectors[1])
-collect_balances(data_collectors[1])
-collect_instruments(data_collectors[1])
-collect_tickers(data_collectors[1])
-# collect_leverages(data_collectors[1])
+# collect_positions(data_collectors[1])
+# collect_balances(data_collectors[1])
+# collect_instruments(data_collectors[1])
+# collect_tickers(data_collectors[1])
+collect_leverages(data_collectors[1])
 
 # # binance_subaccount2
 # collect_positions(data_collectors[2]) 
@@ -98,4 +98,4 @@ collect_positions(data_collectors[3])
 collect_balances(data_collectors[3])
 collect_instruments(data_collectors[3]) 
 collect_tickers(data_collectors[3])
-# collect_leverages(data_collectors[3])
+collect_leverages(data_collectors[3])
