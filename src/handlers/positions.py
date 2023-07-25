@@ -16,11 +16,13 @@ config = read_config_file()
 
 class Positions:
     def __init__(self, db):
+        self.runs_db = MongoDB(config['mongo_db'], 'runs')
         self.positions_db = MongoDB(config['mongo_db'], db)
         self.positions_cloud = database_connector('positions')
 
     def get(
         self,
+        client,
         active: bool = None,
         spot: str = None,
         future: str = None,
@@ -45,8 +47,10 @@ class Positions:
             pipeline.append({"$match": {"perpMarket": perp}})
         if position_type:
             pipeline.append({"$match": {"positionType": position_type}})
+        if client:
+            pipeline.append({"$match": {"client": client}})
         if exchange:
-            pipeline.append({"$match": {"exchange": exchange}})
+            pipeline.append({"$match": {"venue": exchange}})
         if account:
             pipeline.append({"$match": {"account": account}})
 
@@ -59,6 +63,7 @@ class Positions:
 
     def create(
         self,
+        client,
         exchange: str = None,
         positionType: str = None,
         sub_account: str = None,
@@ -76,16 +81,18 @@ class Positions:
                 positionValue = OKXHelper().get_positions(exch = exch)
             else:
                 positionValue = Helper().get_positions(exch = exch)
-        
+
+        current_time = datetime.now(timezone.utc)
         position = {
-            "exchange": exchange,
+            "client": client,
+            "venue": exchange,
             # "positionType": positionType.lower(),
             "account": "Main Account",
             "positionValue": positionValue,
             "active": True,
             "entry": False,
             "exit": False,
-            "timestamp": datetime.now(timezone.utc),
+            "timestamp": current_time,
         }
 
         if sub_account:

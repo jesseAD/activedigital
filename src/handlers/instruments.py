@@ -59,6 +59,7 @@ class Instruments:
 
     def create(
         self,
+        client,
         exchange: str = None,
         positionType: str = None,
         sub_account: str = None,
@@ -78,7 +79,8 @@ class Instruments:
                 instrumentValue = Helper().get_instruments(exch = exch)
         
         instrument = {
-            "exchange": exchange,
+            "client": client,
+            "venue": exchange,
             # "positionType": positionType.lower(),
             "account": "Main Account",
             "instrumentValue": instrumentValue,

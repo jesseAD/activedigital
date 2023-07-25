@@ -62,6 +62,7 @@ class Tickers:
 
     def create(
         self,
+        client,
         exchange: str = None,
         positionType: str = None,
         sub_account: str = None,
@@ -82,7 +83,8 @@ class Tickers:
                 tickerValue = Helper().get_tickers(symbol=symbol, exch = exch)
         
         ticker = {
-            "exchange": exchange,
+            "client": client,
+            "venue": exchange,
             # "positionType": positionType.lower(),
             "account": "Main Account",
             "symbol": symbol,

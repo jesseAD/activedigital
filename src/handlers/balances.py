@@ -59,6 +59,7 @@ class Balances:
 
     def create(
         self,
+        client,
         exchange: str = None,
         positionType: str = None,
         sub_account: str = None,
@@ -78,7 +79,8 @@ class Balances:
                 balanceValue = Helper().get_balances(exch = exch)
         
         balance = {
-            "exchange": exchange,
+            "client": client,
+            "venue": exchange,
             # "positionType": positionType.lower(),
             "account": "Main Account",
             "balanceValue": balanceValue,

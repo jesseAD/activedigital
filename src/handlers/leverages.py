@@ -28,6 +28,7 @@ class Levarages:
 
     def get(
         self,
+        client,
         exchange: str = None,
         account: str = None,
     ):        
@@ -62,7 +63,8 @@ class Levarages:
                     balance_in_base_currency += ticker_value * balance
 
             leverage_value = {
-                "exchange": exchange,
+                "client": client,
+                "venue": exchange,
                 "account": account,
                 "timestamp": datetime.now(timezone.utc),
             }
