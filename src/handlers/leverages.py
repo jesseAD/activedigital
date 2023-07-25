@@ -1,16 +1,18 @@
 import os
 from dotenv import load_dotenv
 from pymongo import MongoClient
+from datetime import datetime, timezone
 
 from src.lib.db import MongoDB
 from src.lib.log import Log
+from src.lib.config import read_config_file
 from src.lib.exchange import Exchange
 from src.handlers.helpers import Helper
 from src.handlers.helpers import OKXHelper
 from src.handlers.positions import Positions
 from src.handlers.balances import Balances
 from src.handlers.tickers import Tickers
-from src.lib.config import read_config_file
+from src.handlers.database_connector import database_connector
 
 load_dotenv()
 log = Log()
@@ -22,10 +24,7 @@ class Levarages:
         self.positions_db = MongoDB(config['mongo_db'], 'positions')
         self.balances_db = MongoDB(config['mongo_db'], 'balances')
         self.leverages_db = MongoDB(config['mongo_db'], 'leverages')
-        mongo_password = os.getenv("CLOUD_MONGO_PASSWORD")
-        connection_uri = 'mongodb+srv://activedigital:'+mongo_password+'@mongodbcluster.nzphth1.mongodb.net/?retryWrites=true&w=majority'
-        cloud_mongo = MongoClient(connection_uri)
-        self.leverages_cloud = cloud_mongo['active_digital']['leverages']
+        self.leverages_cloud = database_connector('leverages')
 
     def get(
         self,
@@ -65,6 +64,7 @@ class Levarages:
             leverage_value = {
                 "exchange": exchange,
                 "account": account,
+                "timestamp": datetime.now(timezone.utc),
             }
             leverage_value['leverage'] = max_notional / balance_in_base_currency
             self.leverages_db.insert(leverage_value)

@@ -5,9 +5,10 @@ from datetime import datetime, timezone
 from src.lib.db import MongoDB
 from src.lib.log import Log
 from src.lib.exchange import Exchange
+from src.lib.config import read_config_file
 from src.handlers.helpers import Helper
 from src.handlers.helpers import OKXHelper
-from src.lib.config import read_config_file
+from src.handlers.database_connector import database_connector
 
 load_dotenv()
 log = Log()
@@ -16,6 +17,7 @@ config = read_config_file()
 class Instruments:
     def __init__(self, db):
         self.insturments_db = MongoDB(config['mongo_db'], db)
+        self.instruments_cloud = database_connector('instruments')
 
     def get(
         self,
@@ -97,6 +99,7 @@ class Instruments:
 
         try:
             self.insturments_db.insert(instrument)
+            self.instruments_cloud.insert_one(instrument)
             return instrument
         except Exception as e:
             log.error(e)

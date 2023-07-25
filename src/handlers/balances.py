@@ -5,9 +5,10 @@ from datetime import datetime, timezone
 from src.lib.db import MongoDB
 from src.lib.log import Log
 from src.lib.exchange import Exchange
+from src.lib.config import read_config_file
 from src.handlers.helpers import Helper
 from src.handlers.helpers import OKXHelper
-from src.lib.config import read_config_file
+from src.handlers.database_connector import database_connector
 
 load_dotenv()
 log = Log()
@@ -16,6 +17,7 @@ config = read_config_file()
 class Balances:
     def __init__(self, db):
         self.balances_db = MongoDB(config['mongo_db'], db)
+        self.balances_cloud = database_connector('balances')
 
     def get(
         self,
@@ -97,6 +99,7 @@ class Balances:
 
         try:
             self.balances_db.insert(balance)
+            self.balances_cloud.insert_one(balance)
             return balance
         except Exception as e:
             log.error(e)
