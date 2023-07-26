@@ -5,7 +5,7 @@ from datetime import datetime, timezone
 from src.lib.db import MongoDB
 from src.lib.log import Log
 from src.lib.exchange import Exchange
-from src.lib.config import read_config_file
+from src.config import read_config_file
 from src.handlers.helpers import Helper
 from src.handlers.helpers import OKXHelper
 from src.handlers.database_connector import database_connector
@@ -17,6 +17,7 @@ config = read_config_file()
 class Positions:
     def __init__(self, db):
         self.runs_db = MongoDB(config['mongo_db'], 'runs')
+        self.runs_cloud = database_connector('runs')
         self.positions_db = MongoDB(config['mongo_db'], db)
         self.positions_cloud = database_connector('positions')
 
@@ -70,17 +71,22 @@ class Positions:
         spot: str = None,
         future: str = None,
         perp: str = None,
-        positionValue: str = None
+        position_value: str = None
     ):
-        if positionValue is None:
+        if position_value is None:
             spec = exchange.upper() + "_" + sub_account.upper() + "_"
             API_KEY = os.getenv(spec + "API_KEY")
             API_SECRET = os.getenv(spec + "API_SECRET")
             exch = Exchange(exchange, sub_account, API_KEY, API_SECRET).exch()
             if exchange == 'okx':
-                positionValue = OKXHelper().get_positions(exch = exch)
+                position_value = OKXHelper().get_positions(exch = exch)
             else:
-                positionValue = Helper().get_positions(exch = exch)
+                position_value = Helper().get_positions(exch = exch)
+
+        position_info =[]
+        for value in position_value:
+                if float(value['initialMargin']) > 0:
+                    position_info.append(value)
 
         current_time = datetime.now(timezone.utc)
         position = {
@@ -88,7 +94,7 @@ class Positions:
             "venue": exchange,
             # "positionType": positionType.lower(),
             "account": "Main Account",
-            "positionValue": positionValue,
+            "position_value": position_info,
             "active": True,
             "entry": False,
             "exit": False,
@@ -104,8 +110,19 @@ class Positions:
         if perp:
             position["perpMarket"] = perp
 
+        run_ids = self.runs_db.find({}).sort('_id', -1).limit(1)
+        latest_run_id = 0
+        for item in run_ids:
+            try:
+                latest_run_id = item['runid'] + 1
+            except:
+                pass
+
         try:
+            self.runs_db.insert({"start_time": current_time, "runid": latest_run_id})
+            position["runid"] = latest_run_id
             self.positions_db.insert(position)
+            self.runs_cloud.insert_one({"start_time": current_time, "runid": latest_run_id})
             self.positions_cloud.insert_one(position)
             # log.debug(f"Position created: {position}")
             return position

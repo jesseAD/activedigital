@@ -1,17 +1,10 @@
 import os
 from dotenv import load_dotenv
-from pymongo import MongoClient
 from datetime import datetime, timezone
 
 from src.lib.db import MongoDB
 from src.lib.log import Log
-from src.lib.config import read_config_file
-from src.lib.exchange import Exchange
-from src.handlers.helpers import Helper
-from src.handlers.helpers import OKXHelper
-from src.handlers.positions import Positions
-from src.handlers.balances import Balances
-from src.handlers.tickers import Tickers
+from src.config import read_config_file
 from src.handlers.database_connector import database_connector
 
 load_dotenv()
@@ -23,6 +16,9 @@ class Levarages:
         self.leverages_db = MongoDB(config['mongo_db'], db)
         self.positions_db = MongoDB(config['mongo_db'], 'positions')
         self.balances_db = MongoDB(config['mongo_db'], 'balances')
+        self.tickers_db = MongoDB(config['mongo_db'], 'tickers')
+        self.runs_db = MongoDB(config['mongo_db'], 'runs')
+        self.runs_cloud = database_connector('runs')
         self.leverages_db = MongoDB(config['mongo_db'], 'leverages')
         self.leverages_cloud = database_connector('leverages')
 
@@ -31,36 +27,46 @@ class Levarages:
         client,
         exchange: str = None,
         account: str = None,
-    ):        
-        spec = exchange.upper() + "_" + account.upper() + "_"
-        API_KEY = os.getenv(spec + "API_KEY")
-        API_SECRET = os.getenv(spec + "API_SECRET")
-        exch = Exchange(exchange, account, API_KEY, API_SECRET).exch()
-        
-        if exchange == 'okx':
-            helper = OKXHelper()
-        else:
-            helper = Helper()
+    ):
+        run_ids = self.runs_db.find({}).sort('_id', -1).limit(1)
+        latest_run_id = 0
+        for item in run_ids:
+            try:
+                latest_run_id = item['runid']
+            except:
+                pass
 
         try:
-            position_value = helper.get_positions(exch)
-            position_info = []
-            for value in position_value:
-                if float(value['initialMargin']) > 0:
-                    position_info.append(value)
-
-            max_notional = abs(float(max(position_info, key=lambda x: abs(float(x['notional'])))['notional']))
+            query = {}
+            if client:
+                query["client"] = client
+            if exchange:
+                query["venue"] = exchange
+            if account:
+                query["account"] = account
+            query["runid"] = latest_run_id
             
-            balance_valule = helper.get_balances(exch)
+            # fetch latest position, balance, tickers
+            position_value = self.positions_db.find(query).sort('_id', -1).limit(1)
+            for item in position_value:
+                latest_position = item['position_value']
+            balance_valule = self.balances_db.find(query).sort('_id', -1).limit(1)
+            for item in balance_valule:
+                latest_balance = item['balance_value']
+            ticker_value = self.tickers_db.find(query).sort('_id', -1).limit(1)
+            for item in ticker_value:
+                latest_ticker = item['ticker_value']['last']
+
+            max_notional = abs(float(max(latest_position, key=lambda x: abs(float(x['notional'])))['notional']))
+            
             base_currency = config['balances']['base_ccy']
 
             balance_in_base_currency = 0
-            for currency, balance in balance_valule.items():
+            for currency, balance in latest_balance.items():
                 if currency == base_currency:
                     balance_in_base_currency += balance
                 else:
-                    ticker_value = helper.get_tickers(exch=exch, symbol=currency+'/'+base_currency)['last']
-                    balance_in_base_currency += ticker_value * balance
+                    balance_in_base_currency += latest_ticker * balance
 
             leverage_value = {
                 "client": client,
@@ -69,9 +75,12 @@ class Levarages:
                 "timestamp": datetime.now(timezone.utc),
             }
             leverage_value['leverage'] = max_notional / balance_in_base_currency
+            leverage_value["runid"] = latest_run_id
             self.leverages_db.insert(leverage_value)
             self.leverages_cloud.insert_one(leverage_value)
-            
+            self.runs_db.update({"runid": latest_run_id}, {"end_time": datetime.now(timezone.utc)})
+            self.runs_cloud.update_one({"runid": latest_run_id}, {"$set": {"end_time": datetime.now(timezone.utc)}})
+
             return leverage_value
         
         except Exception as e:

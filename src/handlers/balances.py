@@ -5,7 +5,7 @@ from datetime import datetime, timezone
 from src.lib.db import MongoDB
 from src.lib.log import Log
 from src.lib.exchange import Exchange
-from src.lib.config import read_config_file
+from src.config import read_config_file
 from src.handlers.helpers import Helper
 from src.handlers.helpers import OKXHelper
 from src.handlers.database_connector import database_connector
@@ -16,6 +16,7 @@ config = read_config_file()
 
 class Balances:
     def __init__(self, db):
+        self.runs_db = MongoDB(config['mongo_db'], 'runs')
         self.balances_db = MongoDB(config['mongo_db'], db)
         self.balances_cloud = database_connector('balances')
 
@@ -83,7 +84,7 @@ class Balances:
             "venue": exchange,
             # "positionType": positionType.lower(),
             "account": "Main Account",
-            "balanceValue": balanceValue,
+            "balance_value": balanceValue,
             "active": True,
             "entry": False,
             "exit": False,
@@ -98,8 +99,18 @@ class Balances:
             balance["futureMarket"] = future
         if perp:
             balance["perpMarket"] = perp
+        run_ids = self.runs_db.find({}).sort('_id', -1).limit(1)
+        latest_run_id = 0
+        for item in run_ids:
+            try:
+                latest_run_id = item['runid']
+            except:
+                pass
+        
+        balance["runid"] = latest_run_id
 
         try:
+            balance["runid"] = latest_run_id
             self.balances_db.insert(balance)
             self.balances_cloud.insert_one(balance)
             return balance

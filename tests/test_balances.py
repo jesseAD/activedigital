@@ -4,7 +4,7 @@ from unittest import mock
 from pymongo import MongoClient
 
 from src.handlers.balances import Balances
-from src.lib.config import read_config_file
+from src.config import read_config_file
 
 class TestBalances(unittest.TestCase):
     def setUp(self):

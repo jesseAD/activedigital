@@ -5,7 +5,7 @@ from datetime import datetime, timezone
 from src.lib.db import MongoDB
 from src.lib.log import Log
 from src.lib.exchange import Exchange
-from src.lib.config import read_config_file
+from src.config import read_config_file
 from src.handlers.helpers import Helper
 from src.handlers.helpers import OKXHelper
 from src.handlers.database_connector import database_connector
@@ -16,6 +16,7 @@ config = read_config_file()
 
 class Instruments:
     def __init__(self, db):
+        self.runs_db = MongoDB(config['mongo_db'], 'runs')
         self.insturments_db = MongoDB(config['mongo_db'], db)
         self.instruments_cloud = database_connector('instruments')
 
@@ -83,7 +84,7 @@ class Instruments:
             "venue": exchange,
             # "positionType": positionType.lower(),
             "account": "Main Account",
-            "instrumentValue": instrumentValue,
+            "instrument_value": instrumentValue,
             "active": True,
             "entry": False,
             "exit": False,
@@ -98,6 +99,28 @@ class Instruments:
             instrument["futureMarket"] = future
         if perp:
             instrument["perpMarket"] = perp
+        run_ids = self.runs_db.find({}).sort('_id', -1).limit(1)
+        latest_run_id = 0
+        for item in run_ids:
+            try:
+                latest_run_id = item['runid']
+            except:
+                pass
+        instrument["runid"] = latest_run_id
+        # get latest instruments data
+        query = {}
+        if client:
+            query["client"] = client
+        if exchange:
+            query["venue"] = exchange
+        if sub_account:
+            query["account"] = sub_account
+
+        instrument_values = self.insturments_db.find(query).sort('_id', -1).limit(1)
+        for item in instrument_values:
+            latest_instrument = item
+            if latest_instrument['instrument_value'] == instrumentValue:
+                return True
 
         try:
             self.insturments_db.insert(instrument)

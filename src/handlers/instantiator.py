@@ -1,17 +1,10 @@
-import os
-import sys
-
-sys.path.append(os.getcwd())
-
 from src.lib.data_collector import DataCollector
 from src.handlers.positions import Positions
 from src.handlers.balances import Balances
 from src.handlers.instruments import Instruments
 from src.handlers.tickers import Tickers
 from src.handlers.leverages import Levarages
-from src.lib.config import read_config_file
-
-client_alias = 'deepspace'
+from src.config import read_config_file
 
 def instantiate(client, collection, exchange, account=None):
     config = read_config_file()
@@ -86,26 +79,3 @@ def collect_leverages(client_alias, data_collector):
         exchange=data_collector.exchange,
         account=data_collector.account
     )
-
-# run in production mode
-data_collectors = get_data_collectors(client_alias)
-
-# # binance_subaccount1
-collect_positions(client_alias, data_collectors[1])
-collect_balances(client_alias, data_collectors[1])
-collect_instruments(client_alias, data_collectors[1])
-collect_tickers(client_alias, data_collectors[1])
-collect_leverages(client_alias, data_collectors[1])
-
-# # binance_subaccount2
-# collect_positions(client_alias, data_collectors[2]) 
-# collect_balances(client_alias, data_collectors[2]) 
-# collect_instruments(client_alias, data_collectors[2]) 
-# collect_tickers(client_alias, data_collectors[2])
-
-# okk_subaccount1
-collect_positions(client_alias, data_collectors[3]) 
-collect_balances(client_alias, data_collectors[3])
-collect_instruments(client_alias, data_collectors[3]) 
-collect_tickers(client_alias, data_collectors[3])
-collect_leverages(client_alias, data_collectors[3])

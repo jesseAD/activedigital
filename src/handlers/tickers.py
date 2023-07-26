@@ -5,7 +5,7 @@ from datetime import datetime, timezone
 from src.lib.db import MongoDB
 from src.lib.log import Log
 from src.lib.exchange import Exchange
-from src.lib.config import read_config_file
+from src.config import read_config_file
 from src.handlers.helpers import Helper
 from src.handlers.helpers import OKXHelper
 from src.handlers.database_connector import database_connector
@@ -16,6 +16,7 @@ config = read_config_file()
 
 class Tickers:
     def __init__(self, db):
+        self.runs_db = MongoDB(config['mongo_db'], 'runs')
         self.tickers_db = MongoDB(config['mongo_db'], db)
         self.tickers_cloud = database_connector('tickers')
 
@@ -78,9 +79,9 @@ class Tickers:
             API_SECRET = os.getenv(spec + "API_SECRET")
             exch = Exchange(exchange, sub_account, API_KEY, API_SECRET).exch()
             if exchange == 'okx':
-                tickerValue = OKXHelper().get_tickers(symbol=symbol, exch = exch)
+                ticker_value = OKXHelper().get_tickers(symbol=symbol, exch = exch)
             else:
-                tickerValue = Helper().get_tickers(symbol=symbol, exch = exch)
+                ticker_value = Helper().get_tickers(symbol=symbol, exch = exch)
         
         ticker = {
             "client": client,
@@ -88,7 +89,7 @@ class Tickers:
             # "positionType": positionType.lower(),
             "account": "Main Account",
             "symbol": symbol,
-            "tickerValue": tickerValue,
+            "ticker_value": ticker_value,
             "active": True,
             "entry": False,
             "exit": False,
@@ -103,8 +104,17 @@ class Tickers:
             ticker["futureMarket"] = future
         if perp:
             ticker["perpMarket"] = perp
+        run_ids = self.runs_db.find({}).sort('_id', -1).limit(1)
+        latest_run_id = 0
+        for item in run_ids:
+            try:
+                latest_run_id = item['runid']
+            except:
+                pass
+        ticker["runid"] = latest_run_id
 
         try:
+            ticker["runid"] = latest_run_id
             self.tickers_db.insert(ticker)
             self.tickers_cloud.insert_one(ticker)
             return ticker
