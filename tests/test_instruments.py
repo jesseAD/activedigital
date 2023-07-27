@@ -28,42 +28,42 @@ class TestInstruments(unittest.TestCase):
     def test_singleExchangeSingleSubAccountInstrumentsStoredToMongoDb(self, mock_instruments):
         self.test_collection.delete_many({})
         mock_create = mock_instruments.return_value.create
-        mock_create.return_value = {'instrumentValue': self.sesa_data}
+        mock_create.return_value = {'instrument_value': self.sesa_data}
 
         # Call mock create function using existing json data
         Instruments("test_instruments").create(
+            client='deepspace',
             exchange='binance',
-            positionType='long',
             sub_account='subaccount1',
             instrumentValue=self.sesa_data
-        )['instrumentValue']
+        )['instrument_value']
 
-        result = Instruments("test_instruments").get(exchange='binance', position_type='long', account='subaccount1')[0]['instrumentValue']
+        result = Instruments("test_instruments").get(exchange='binance', account='subaccount1')[0]['instrument_value']
         self.assertEqual(result, self.sesa_data)
 
     @mock.patch('src.handlers.instruments.Instruments', autospec=True)
     def test_singleExchangeTwoSubAccountsInstrumentsStoredToMongoDb(self, mock_instruments):
         self.test_collection.delete_many({})
         mock_create = mock_instruments.return_value.create
-        mock_create.return_value = {'instrumentValue': self.seta_data}
+        mock_create.return_value = {'instrument_value': self.seta_data}
 
         # Call mock create function using existing json data
         Instruments("test_instruments").create(
+            client='deepspace',
             exchange='binance',
-            positionType='long',
             sub_account='subaccount1',
             instrumentValue=self.seta_data
-        )['instrumentValue']
+        )['instrument_value']
 
         Instruments("test_instruments").create(
+            client='deepspace',
             exchange='binance',
-            positionType='long',
             sub_account='subaccount2',
             instrumentValue=self.seta_data
-        )['instrumentValue']
+        )['instrument_value']
 
-        result1 = Instruments("test_instruments").get(exchange='binance', position_type='long', account='subaccount1')[0]['instrumentValue']['subaccount1']
-        result2 = Instruments("test_instruments").get(exchange='binance', position_type='long', account='subaccount2')[0]['instrumentValue']['subaccount2']
+        result1 = Instruments("test_instruments").get(exchange='binance', account='subaccount1')[0]['instrument_value']['subaccount1']
+        result2 = Instruments("test_instruments").get(exchange='binance', account='subaccount2')[0]['instrument_value']['subaccount2']
 
         # Iterate over the result and compare the values
         self.assertEqual(result1, self.seta_data['subaccount1'])

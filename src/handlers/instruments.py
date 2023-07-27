@@ -47,7 +47,7 @@ class Instruments:
         if position_type:
             pipeline.append({"$match": {"positionType": position_type}})
         if exchange:
-            pipeline.append({"$match": {"exchange": exchange}})
+            pipeline.append({"$match": {"venue": exchange}})
         if account:
             pipeline.append({"$match": {"account": account}})
 

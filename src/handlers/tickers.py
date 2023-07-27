@@ -48,7 +48,7 @@ class Tickers:
         if position_type:
             pipeline.append({"$match": {"positionType": position_type}})
         if exchange:
-            pipeline.append({"$match": {"exchange": exchange}})
+            pipeline.append({"$match": {"venue": exchange}})
         if account:
             pipeline.append({"$match": {"account": account}})
         if symbol:
@@ -79,9 +79,9 @@ class Tickers:
             API_SECRET = os.getenv(spec + "API_SECRET")
             exch = Exchange(exchange, sub_account, API_KEY, API_SECRET).exch()
             if exchange == 'okx':
-                ticker_value = OKXHelper().get_tickers(symbol=symbol, exch = exch)
+                tickerValue = OKXHelper().get_tickers(symbol=symbol, exch = exch)
             else:
-                ticker_value = Helper().get_tickers(symbol=symbol, exch = exch)
+                tickerValue = Helper().get_tickers(symbol=symbol, exch = exch)
         
         ticker = {
             "client": client,
@@ -89,7 +89,7 @@ class Tickers:
             # "positionType": positionType.lower(),
             "account": "Main Account",
             "symbol": symbol,
-            "ticker_value": ticker_value,
+            "ticker_value": tickerValue,
             "active": True,
             "entry": False,
             "exit": False,

@@ -1,3 +1,12 @@
+import os
+import sys
+
+current_file = os.path.abspath(__file__)
+current_directory = os.path.dirname(current_file)
+target_dir = os.path.abspath(os.path.join(current_directory, os.pardir))
+
+sys.path.append(target_dir)
+
 import json
 import unittest
 from unittest import mock
@@ -28,42 +37,42 @@ class TestBalances(unittest.TestCase):
     def test_singleExchangeSingleSubAccountBalancesStoredToMongoDb(self, mock_balances):
         self.test_collection.delete_many({})
         mock_create = mock_balances.return_value.create
-        mock_create.return_value = {'balanceValue': self.sesa_data}
+        mock_create.return_value = {'balance_value': self.sesa_data}
 
         # Call mock create function using existing json data
         Balances("test_balances").create(
+            client='deepspace',
             exchange='binance',
-            positionType='long',
             sub_account='subaccount1',
             balanceValue=self.sesa_data
-        )['balanceValue']
+        )['balance_value']
 
-        result = Balances("test_balances").get(exchange='binance', position_type='long', account='subaccount1')[0]['balanceValue']
+        result = Balances("test_balances").get(exchange='binance', account='subaccount1')[0]['balance_value']
         self.assertEqual(result, self.sesa_data)
 
     @mock.patch('src.handlers.balances.Balances', autospec=True)
     def test_singleExchangeTwoSubAccountsBalancesStoredToMongoDb(self, mock_balances):
         self.test_collection.delete_many({})
         mock_create = mock_balances.return_value.create
-        mock_create.return_value = {'balanceValue': self.seta_data}
+        mock_create.return_value = {'balance_value': self.seta_data}
 
         # Call mock create function using existing json data
         Balances("test_balances").create(
+            client='deepspace',
             exchange='binance',
-            positionType='long',
             sub_account='subaccount1',
             balanceValue=self.seta_data
-        )['balanceValue']
+        )['balance_value']
 
         Balances("test_balances").create(
+            client='deepspace',
             exchange='binance',
-            positionType='long',
             sub_account='subaccount2',
             balanceValue=self.seta_data
-        )['balanceValue']
+        )['balance_value']
 
-        result1 = Balances("test_balances").get(exchange='binance', position_type='long', account='subaccount1')[0]['balanceValue']['subaccount1']
-        result2 = Balances("test_balances").get(exchange='binance', position_type='long', account='subaccount2')[0]['balanceValue']['subaccount2']
+        result1 = Balances("test_balances").get(exchange='binance', account='subaccount1')[0]['balance_value']['subaccount1']
+        result2 = Balances("test_balances").get(exchange='binance', account='subaccount2')[0]['balance_value']['subaccount2']
 
         # Iterate over the result and compare the values
         self.assertEqual(result1, self.seta_data['subaccount1'])
@@ -73,25 +82,25 @@ class TestBalances(unittest.TestCase):
     def test_twoExchangeSingleSubAccountsBalancesStoredToMongoDb(self, mock_balances):
         self.test_collection.delete_many({})
         mock_create = mock_balances.return_value.create
-        mock_create.return_value = {'balanceValue': self.tesa_data}
+        mock_create.return_value = {'balance_value': self.tesa_data}
 
         # Call mock create function using existing json data
         Balances("test_balances").create(
+            client='deepspace',
             exchange='binance',
-            positionType='long',
             sub_account='subaccount1',
             balanceValue=self.tesa_data
-        )['balanceValue']
+        )['balance_value']
 
         Balances("test_balances").create(
+            client='deepspace',
             exchange='okx',
-            positionType='long',
             sub_account='subaccount1',
             balanceValue=self.tesa_data
-        )['balanceValue']
+        )['balance_value']
 
-        result1 = Balances("test_balances").get(exchange='binance', position_type='long', account='subaccount1')[0]['balanceValue']['binance']
-        result2 = Balances("test_balances").get(exchange='okx', position_type='long', account='subaccount1')[0]['balanceValue']['okx']
+        result1 = Balances("test_balances").get(exchange='binance', account='subaccount1')[0]['balance_value']['binance']
+        result2 = Balances("test_balances").get(exchange='okx', account='subaccount1')[0]['balance_value']['okx']
 
         # Iterate over the result and compare the values
         self.assertEqual(result1, self.tesa_data['binance'])
@@ -101,33 +110,33 @@ class TestBalances(unittest.TestCase):
     def test_twoExchangeTwoSubAccountsBalancesStoredToMongoDb(self, mock_balances):
         self.test_collection.delete_many({})
         mock_create = mock_balances.return_value.create
-        mock_create.return_value = {'balanceValue': self.teta_data}
+        mock_create.return_value = {'balance_value': self.teta_data}
 
         # Call mock create function using existing json data
         Balances("test_balances").create(
+            client='deepspace',
             exchange='binance',
-            positionType='long',
             sub_account='subaccount1',
             balanceValue=self.teta_data
-        )['balanceValue']
+        )['balance_value']
 
         Balances("test_balances").create(
+            client='deepspace',
             exchange='binance',
-            positionType='long',
             sub_account='subaccount2',
             balanceValue=self.teta_data
-        )['balanceValue']
+        )['balance_value']
 
         Balances("test_balances").create(
+            client='deepspace',
             exchange='okx',
-            positionType='long',
             sub_account='subaccount1',
             balanceValue=self.teta_data
-        )['balanceValue']
+        )['balance_value']
 
-        result1 = Balances("test_balances").get(exchange='binance', position_type='long', account='subaccount1')[0]['balanceValue']['binance']['subaccount1']
-        result2 = Balances("test_balances").get(exchange='binance', position_type='long', account='subaccount2')[0]['balanceValue']['binance']['subaccount2']
-        result3 = Balances("test_balances").get(exchange='okx', position_type='long', account='subaccount1')[0]['balanceValue']['okx']
+        result1 = Balances("test_balances").get(exchange='binance', account='subaccount1')[0]['balance_value']['binance']['subaccount1']
+        result2 = Balances("test_balances").get(exchange='binance', account='subaccount2')[0]['balance_value']['binance']['subaccount2']
+        result3 = Balances("test_balances").get(exchange='okx', account='subaccount1')[0]['balance_value']['okx']
 
         # Iterate over the result and compare the values
         self.assertEqual(result1, self.teta_data['binance']['subaccount1'])

@@ -24,42 +24,42 @@ class TestPositions(unittest.TestCase):
     def test_singleExchangeSingleSubAccountPositionsStoredToMongoDb(self, mock_positions):
         self.test_collection.delete_many({})
         mock_create = mock_positions.return_value.create
-        mock_create.return_value = {'positionValue': self.sesa_data}
+        mock_create.return_value = {'position_value': self.sesa_data}
 
         # Call mock create function using existing json data
         Positions("test_positions").create(
+            client='deepspace',
             exchange='binance',
-            positionType='long',
             sub_account='subaccount1',
-            positionValue=self.sesa_data
-        )['positionValue']
+            position_value=self.sesa_data
+        )['position_value']
 
-        result = Positions("test_positions").get(exchange='binance', position_type='long', account='subaccount1')[0]['positionValue']
+        result = Positions("test_positions").get(client='deepspace', exchange='binance', account='subaccount1')[0]['position_value']
         self.assertEqual(result, self.sesa_data)
 
     @mock.patch('src.handlers.positions.Positions', autospec=True)
     def test_singleExchangeTwoSubAccountsPositionsStoredToMongoDb(self, mock_positions):
         self.test_collection.delete_many({})
         mock_create = mock_positions.return_value.create
-        mock_create.return_value = {'positionValue': self.seta_data}
+        mock_create.return_value = {'position_value': self.seta_data}
 
         # Call mock create function using existing json data
         Positions("test_positions").create(
+            client='deepspace',
             exchange='binance',
-            positionType='long',
             sub_account='subaccount1',
-            positionValue=self.seta_data
-        )['positionValue']
+            position_value=self.seta_data['subaccount1']
+        )['position_value']
 
         Positions("test_positions").create(
+            client='deepspace',
             exchange='binance',
-            positionType='long',
             sub_account='subaccount2',
-            positionValue=self.seta_data
-        )['positionValue']
-
-        result1 = Positions("test_positions").get(exchange='binance', position_type='long', account='subaccount1')[0]['positionValue']['subaccount1']
-        result2 = Positions("test_positions").get(exchange='binance', position_type='long', account='subaccount2')[0]['positionValue']['subaccount2']
+            position_value=self.seta_data['subaccount2']
+        )['position_value']
+        
+        result1 = Positions("test_positions").get(client='deepspace', exchange='binance', account='subaccount1')[0]['position_value']
+        result2 = Positions("test_positions").get(client='deepspace', exchange='binance', account='subaccount2')[0]['position_value']
 
         # Iterate over the result and compare the values
         self.assertEqual(result1, self.seta_data['subaccount1'])

@@ -11,7 +11,7 @@ load_dotenv()
 log = Log()
 config = read_config_file()
 
-class Levarages:
+class Leverages:
     def __init__(self, db):
         self.leverages_db = MongoDB(config['mongo_db'], db)
         self.positions_db = MongoDB(config['mongo_db'], 'positions')
@@ -50,6 +50,7 @@ class Levarages:
             position_value = self.positions_db.find(query).sort('_id', -1).limit(1)
             for item in position_value:
                 latest_position = item['position_value']
+            print('------', latest_position)
             balance_valule = self.balances_db.find(query).sort('_id', -1).limit(1)
             for item in balance_valule:
                 latest_balance = item['balance_value']

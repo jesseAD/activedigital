@@ -28,42 +28,42 @@ class TestTickers(unittest.TestCase):
     def test_singleExchangeSingleSubAccountTickersStoredToMongoDb(self, mock_tickers):
         self.test_collection.delete_many({})
         mock_create = mock_tickers.return_value.create
-        mock_create.return_value = {'tickerValue': self.sesa_data}
+        mock_create.return_value = {'ticker_value': self.sesa_data}
 
         # Call mock create function using existing json data
         Tickers("test_tickers").create(
+            client='deepspace',
             exchange='binance',
-            positionType='long',
             sub_account='subaccount1',
             tickerValue=self.sesa_data
-        )['tickerValue']
+        )['ticker_value']
 
-        result = Tickers("test_tickers").get(exchange='binance', position_type='long', account='subaccount1')[0]['tickerValue']
+        result = Tickers("test_tickers").get(exchange='binance', account='subaccount1')[0]['ticker_value']
         self.assertEqual(result, self.sesa_data)
 
     @mock.patch('src.handlers.tickers.Tickers', autospec=True)
     def test_singleExchangeTwoSubAccountsTickersStoredToMongoDb(self, mock_tickers):
         self.test_collection.delete_many({})
         mock_create = mock_tickers.return_value.create
-        mock_create.return_value = {'tickerValue': self.seta_data}
+        mock_create.return_value = {'ticker_value': self.seta_data}
 
         # Call mock create function using existing json data
         Tickers("test_tickers").create(
+            client='deepspace',
             exchange='binance',
-            positionType='long',
             sub_account='subaccount1',
             tickerValue=self.seta_data
-        )['tickerValue']
+        )['ticker_value']
 
         Tickers("test_tickers").create(
+            client='deepspace',
             exchange='binance',
-            positionType='long',
             sub_account='subaccount2',
             tickerValue=self.seta_data
-        )['tickerValue']
+        )['ticker_value']
 
-        result1 = Tickers("test_tickers").get(exchange='binance', position_type='long', account='subaccount1')[0]['tickerValue']['subaccount1']
-        result2 = Tickers("test_tickers").get(exchange='binance', position_type='long', account='subaccount2')[0]['tickerValue']['subaccount2']
+        result1 = Tickers("test_tickers").get(exchange='binance', account='subaccount1')[0]['ticker_value']['subaccount1']
+        result2 = Tickers("test_tickers").get(exchange='binance', account='subaccount2')[0]['ticker_value']['subaccount2']
 
         # Iterate over the result and compare the values
         self.assertEqual(result1, self.seta_data['subaccount1'])
@@ -73,25 +73,25 @@ class TestTickers(unittest.TestCase):
     def test_twoExchangeSingleSubAccountsTickersStoredToMongoDb(self, mock_tickers):
         self.test_collection.delete_many({})
         mock_create = mock_tickers.return_value.create
-        mock_create.return_value = {'tickerValue': self.tesa_data}
+        mock_create.return_value = {'ticker_value': self.tesa_data}
 
         # Call mock create function using existing json data
         Tickers("test_tickers").create(
+            client='deepspace',
             exchange='binance',
-            positionType='long',
             sub_account='subaccount1',
             tickerValue=self.tesa_data
-        )['tickerValue']
+        )['ticker_value']
 
         Tickers("test_tickers").create(
+            client='deepspace',
             exchange='okx',
-            positionType='long',
             sub_account='subaccount1',
             tickerValue=self.tesa_data
-        )['tickerValue']
+        )['ticker_value']
 
-        result1 = Tickers("test_tickers").get(exchange='binance', position_type='long', account='subaccount1')[0]['tickerValue']['binance']
-        result2 = Tickers("test_tickers").get(exchange='okx', position_type='long', account='subaccount1')[0]['tickerValue']['okx']
+        result1 = Tickers("test_tickers").get(exchange='binance', account='subaccount1')[0]['ticker_value']['binance']
+        result2 = Tickers("test_tickers").get(exchange='okx', account='subaccount1')[0]['ticker_value']['okx']
 
         # Iterate over the result and compare the values
         self.assertEqual(result1, self.tesa_data['binance'])
@@ -101,33 +101,33 @@ class TestTickers(unittest.TestCase):
     def test_twoExchangeTwoSubAccountsTickersStoredToMongoDb(self, mock_tickers):
         self.test_collection.delete_many({})
         mock_create = mock_tickers.return_value.create
-        mock_create.return_value = {'tickerValue': self.teta_data}
+        mock_create.return_value = {'ticker_value': self.teta_data}
 
         # Call mock create function using existing json data
         Tickers("test_tickers").create(
+            client='deepspace',
             exchange='binance',
-            positionType='long',
             sub_account='subaccount1',
             tickerValue=self.teta_data
-        )['tickerValue']
+        )['ticker_value']
 
         Tickers("test_tickers").create(
+            client='deepspace',
             exchange='binance',
-            positionType='long',
             sub_account='subaccount2',
             tickerValue=self.teta_data
-        )['tickerValue']
+        )['ticker_value']
 
         Tickers("test_tickers").create(
+            client='deepspace',
             exchange='okx',
-            positionType='long',
             sub_account='subaccount1',
             tickerValue=self.teta_data
-        )['tickerValue']
+        )['ticker_value']
 
-        result1 = Tickers("test_tickers").get(exchange='binance', position_type='long', account='subaccount1')[0]['tickerValue']['binance']['subaccount1']
-        result2 = Tickers("test_tickers").get(exchange='binance', position_type='long', account='subaccount2')[0]['tickerValue']['binance']['subaccount2']
-        result3 = Tickers("test_tickers").get(exchange='okx', position_type='long', account='subaccount1')[0]['tickerValue']['okx']
+        result1 = Tickers("test_tickers").get(exchange='binance', account='subaccount1')[0]['ticker_value']['binance']['subaccount1']
+        result2 = Tickers("test_tickers").get(exchange='binance', account='subaccount2')[0]['ticker_value']['binance']['subaccount2']
+        result3 = Tickers("test_tickers").get(exchange='okx', account='subaccount1')[0]['ticker_value']['okx']
 
         # Iterate over the result and compare the values
         self.assertEqual(result1, self.teta_data['binance']['subaccount1'])

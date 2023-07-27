@@ -3,7 +3,7 @@ from src.handlers.positions import Positions
 from src.handlers.balances import Balances
 from src.handlers.instruments import Instruments
 from src.handlers.tickers import Tickers
-from src.handlers.leverages import Levarages
+from src.handlers.leverages import Leverages
 from src.config import read_config_file
 
 def instantiate(client, collection, exchange, account=None):
@@ -74,7 +74,7 @@ def collect_tickers(client_alias, data_collector):
     )
 
 def collect_leverages(client_alias, data_collector):
-    Levarages('leverages').get(
+    Leverages('leverages').get(
         client=client_alias,
         exchange=data_collector.exchange,
         account=data_collector.account

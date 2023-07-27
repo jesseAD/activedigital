@@ -71,3 +71,36 @@ deepspace:
       <<: *balances
       helper: okxhelper.py
       subaccount1: *okx_subaccount1
+
+highsky:  
+  funding_payments:
+    bybit:
+      <<: *funding_payments
+      helper: bybithelper.py
+      subaccount1: *bybit_subaccount1
+    binance:
+      <<: *funding_payments
+      helper: binancehelper.py
+      subaccount1: *binance_subaccount1
+      subaccount2: *binance_subaccount2
+    okx:
+      <<: *funding_payments
+      helper: okxhelper.py
+      subaccount1: *okx_subaccount1
+
+  balances:    
+    function: balance.py
+    scheduler: [continuous,external,5 4 * * * ]
+    bybit:
+      <<: *balances
+      helper: bybithelper.py
+      subaccount1: *bybit_subaccount1
+    binance:
+      <<: *balances
+      helper: binancehelper.py
+      subaccount1: *binance_subaccount1
+      subaccount2: *binance_subaccount2
+    okx:
+      <<: *balances
+      helper: okxhelper.py
+      subaccount1: *okx_subaccount1
