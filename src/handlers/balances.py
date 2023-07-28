@@ -112,7 +112,7 @@ class Balances:
         try:
             balance["runid"] = latest_run_id
             self.balances_db.insert(balance)
-            self.balances_cloud.insert_one(balance)
+            #self.balances_cloud.insert_one(balance)
             return balance
         except Exception as e:
             log.error(e)
