@@ -14,7 +14,16 @@ class TestRuns(unittest.TestCase):
         self.db = self.mongo_client['active_digital']
         self.test_collection = self.db[self.config['mongo_db_collection']+'_positions']
         self.test_collection.delete_many({})
-
+        self.test_collection = self.db[self.config['mongo_db_collection']+'_balances']
+        self.test_collection.delete_many({})
+        self.test_collection = self.db[self.config['mongo_db_collection']+'_instruments']
+        self.test_collection.delete_many({})
+        self.test_collection = self.db[self.config['mongo_db_collection']+'_leverages']
+        self.test_collection.delete_many({})
+        self.test_collection = self.db[self.config['mongo_db_collection']+'_runs']
+        self.test_collection.delete_many({})
+        self.test_collection = self.db[self.config['mongo_db_collection']+'_test']
+        self.test_collection.delete_many({})
         # read hard-coded values
         with open('tests/sesa.json') as sesa:
            self.sesa_data = json.load(sesa)['positions']
