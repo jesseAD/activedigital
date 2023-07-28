@@ -1,6 +1,8 @@
 import os
 from dotenv import load_dotenv
 from datetime import datetime, timezone
+import gzip
+import pickle
 
 from src.lib.db import MongoDB
 from src.lib.log import Log
@@ -13,6 +15,11 @@ from src.handlers.database_connector import database_connector
 load_dotenv()
 log = Log()
 config = read_config_file()
+
+def compress_list(data):
+    serialized_data = pickle.dumps(data)
+    compressed_data = gzip.compress(serialized_data)
+    return compressed_data
 
 class Instruments:
     def __init__(self, db):
@@ -84,7 +91,7 @@ class Instruments:
             "venue": exchange,
             # "positionType": positionType.lower(),
             "account": "Main Account",
-            "instrument_value": instrumentValue,
+            "instrument_value": instrumentValue['info'],
             "active": True,
             "entry": False,
             "exit": False,
@@ -118,9 +125,15 @@ class Instruments:
 
         instrument_values = self.insturments_db.find(query).sort('_id', -1).limit(1)
         for item in instrument_values:
-            latest_instrument = item
-            if latest_instrument['instrument_value'] == instrumentValue:
-                return True
+            latest_instrument = item['instrument_value']
+            
+            for i in range(len(latest_instrument)):
+                if latest_instrument[i] != instrumentValue[i]:
+                    diff = True
+                    break
+        
+        if diff == False:
+            return False
 
         try:
             self.insturments_db.insert(instrument)
