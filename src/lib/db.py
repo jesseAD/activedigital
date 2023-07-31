@@ -19,8 +19,8 @@ class MongoDB:
     def find_one(self, query):
         return self.collection.find_one(query)
 
-    def update(self, query, data):
-        self.collection.update_one(query, {"$set": data})
+    def update(self, query, data, upsert = False):
+        self.collection.update_one(query, {"$set": data}, upsert=upsert)
 
     def delete(self, query):
         self.collection.delete_one(query)

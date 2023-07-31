@@ -111,8 +111,45 @@ class Balances:
 
         try:
             balance["runid"] = latest_run_id
-            self.balances_db.insert(balance)
-            #self.balances_cloud.insert_one(balance)
+            if config["balances"]["store_type"] == "timeseries":
+                self.balances_db.insert(balance)
+                self.balances_cloud.insert_one(balance)
+            elif config["balances"]["store_type"] == "snapshot":
+                self.balances_db.update(
+                    {
+                        "client": balance["client"],
+                        "venue": balance["venue"],
+                        "account": balance["account"]
+                    },
+                    {
+                        "balance_value": balance["balance_value"],
+                        "active": balance["active"],
+                        "entry": balance["entry"],
+                        "exit": balance["exit"],
+                        "timestamp": balance["timestamp"],
+                        "runid": balance["runid"]
+                    },
+                    upsert=True
+                )
+                
+                self.balances_cloud.update_one(
+                    {
+                        "client": balance["client"],
+                        "venue": balance["venue"],
+                        "account": balance["account"]
+                    },
+                    {"$set": {
+                        "balance_value": balance["balance_value"],
+                        "active": balance["active"],
+                        "entry": balance["entry"],
+                        "exit": balance["exit"],
+                        "timestamp": balance["timestamp"],
+                        "runid": balance["runid"]
+                        }
+                    },
+                    upsert=True
+                )
+                
             return balance
         except Exception as e:
             log.error(e)

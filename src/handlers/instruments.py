@@ -16,16 +16,18 @@ load_dotenv()
 log = Log()
 config = read_config_file()
 
+
 def compress_list(data):
     serialized_data = pickle.dumps(data)
     compressed_data = gzip.compress(serialized_data)
     return compressed_data
 
+
 class Instruments:
     def __init__(self, db):
-        self.runs_db = MongoDB(config['mongo_db'], 'runs')
-        self.insturments_db = MongoDB(config['mongo_db'], db)
-        self.instruments_cloud = database_connector('instruments')
+        self.runs_db = MongoDB(config["mongo_db"], "runs")
+        self.insturments_db = MongoDB(config["mongo_db"], db)
+        self.instruments_cloud = database_connector("instruments")
 
     def get(
         self,
@@ -74,24 +76,24 @@ class Instruments:
         spot: str = None,
         future: str = None,
         perp: str = None,
-        instrumentValue: str = None
+        instrumentValue: str = None,
     ):
         if instrumentValue is None:
             spec = exchange.upper() + "_" + sub_account.upper() + "_"
             API_KEY = os.getenv(spec + "API_KEY")
             API_SECRET = os.getenv(spec + "API_SECRET")
             exch = Exchange(exchange, sub_account, API_KEY, API_SECRET).exch()
-            if exchange == 'okx':
-                instrumentValue = OKXHelper().get_instruments(exch = exch)
+            if exchange == "okx":
+                instrumentValue = OKXHelper().get_instruments(exch=exch)
             else:
-                instrumentValue = Helper().get_instruments(exch = exch)
-        
+                instrumentValue = Helper().get_instruments(exch=exch)
+
         instrument = {
             "client": client,
             "venue": exchange,
             # "positionType": positionType.lower(),
             "account": "Main Account",
-            "instrument_value": instrumentValue['info'],
+            "instrument_value": instrumentValue[0]["info"],
             "active": True,
             "entry": False,
             "exit": False,
@@ -106,11 +108,11 @@ class Instruments:
             instrument["futureMarket"] = future
         if perp:
             instrument["perpMarket"] = perp
-        run_ids = self.runs_db.find({}).sort('_id', -1).limit(1)
+        run_ids = self.runs_db.find({}).sort("_id", -1).limit(1)
         latest_run_id = 0
         for item in run_ids:
             try:
-                latest_run_id = item['runid']
+                latest_run_id = item["runid"]
             except:
                 pass
         instrument["runid"] = latest_run_id
@@ -123,21 +125,43 @@ class Instruments:
         if sub_account:
             query["account"] = sub_account
 
-        instrument_values = self.insturments_db.find(query).sort('_id', -1).limit(1)
-        for item in instrument_values:
-            latest_instrument = item['instrument_value']
-            
-            for i in range(len(latest_instrument)):
-                if latest_instrument[i] != instrumentValue[i]:
-                    diff = True
-                    break
-        
-        if diff == False:
-            return False
+        instrument_values = self.insturments_db.find(query).sort("_id", -1).limit(1)
 
         try:
-            self.insturments_db.insert(instrument)
-            self.instruments_cloud.insert_one(instrument)
+            if config["instruments"]["store_type"] == "snapshot":
+                self.insturments_db.update(
+                    {
+                        "client": instrument["client"],
+                        "venue": instrument["venue"],
+                        "account": instrument["account"]
+                    },
+                    {
+                        "instrument_value": instrument["instrument_value"],
+                        "timestamp": instrument["timestamp"],
+                        "runid": instrument["runid"]
+                    },
+                    upsert=True
+                )
+                
+                self.instruments_cloud.update_one(
+                    filter={
+                        "client": instrument["client"],
+                        "venue": instrument["venue"],
+                        "account": instrument["account"]
+                    },
+                    update={"$set": {
+                            "instrument_value": instrument["instrument_value"],
+                            "timestamp": instrument["timestamp"],
+                            "runid": instrument["runid"]
+                        }
+                    },
+                    upsert = True
+                )
+
+                
+            elif config["instruments"]["store_type"] == "timeseries":
+                self.insturments_db.insert(instrument)
+                self.instruments_cloud.insert_one(instrument)
             return instrument
         except Exception as e:
             log.error(e)

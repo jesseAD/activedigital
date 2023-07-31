@@ -50,7 +50,7 @@ class Leverages:
             position_value = self.positions_db.find(query).sort('_id', -1).limit(1)
             for item in position_value:
                 latest_position = item['position_value']
-            print('------', latest_position)
+            #print('------', latest_position)
             balance_valule = self.balances_db.find(query).sort('_id', -1).limit(1)
             for item in balance_valule:
                 latest_balance = item['balance_value']
@@ -77,8 +77,40 @@ class Leverages:
             }
             leverage_value['leverage'] = max_notional / balance_in_base_currency
             leverage_value["runid"] = latest_run_id
-            self.leverages_db.insert(leverage_value)
-            self.leverages_cloud.insert_one(leverage_value)
+
+            if config['leverages']['store_type'] == "timeseries":
+                self.leverages_db.insert(leverage_value)
+                self.leverages_cloud.insert_one(leverage_value)
+            elif config['leverages']['store_type'] == "snapshot":
+                self.leverages_db.update(
+                    {
+                        "client": leverage_value["client"],
+                        "venue": leverage_value["venue"],
+                        "account": leverage_value["account"]
+                    },
+                    {
+                        "leverage": leverage_value["leverage"],
+                        "timestamp": leverage_value["timestamp"],
+                        "runid": leverage_value["runid"]
+                    },
+                    upsert=True
+                )
+                
+                self.leverages_cloud.update_one(
+                    {
+                        "client": leverage_value["client"],
+                        "venue": leverage_value["venue"],
+                        "account": leverage_value["account"]
+                    },
+                    {"$set": {
+                        "leverage": leverage_value["leverage"],
+                        "timestamp": leverage_value["timestamp"],
+                        "runid": leverage_value["runid"]
+                        }
+                    },
+                    upsert=True
+                )
+                
             self.runs_db.update({"runid": latest_run_id}, {"end_time": datetime.now(timezone.utc)})
             self.runs_cloud.update_one({"runid": latest_run_id}, {"$set": {"end_time": datetime.now(timezone.utc)}})
 

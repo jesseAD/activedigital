@@ -121,9 +121,47 @@ class Positions:
         try:
             self.runs_db.insert({"start_time": current_time, "runid": latest_run_id})
             position["runid"] = latest_run_id
-            self.positions_db.insert(position)
             self.runs_cloud.insert_one({"start_time": current_time, "runid": latest_run_id})
-            self.positions_cloud.insert_one(position)
+
+            if config['positions']['store_type'] == "timeseries": 
+                self.positions_db.insert(position)   
+                self.positions_cloud.insert_one(position)
+            elif config['positions']['store_type'] == "snapshot": 
+                self.positions_db.update(
+                    {
+                        "client": position["client"],
+                        "venue": position["venue"],
+                        "account": position["account"]
+                    },
+                    {
+                        "position_value": position["position_value"],
+                        "active": position["active"],
+                        "entry": position["entry"],
+                        "exit": position["exit"],
+                        "timestamp": position["timestamp"],
+                        "runid": position["runid"]
+                    },
+                    upsert=True
+                )
+                
+                self.positions_cloud.update_one(
+                    {
+                        "client": position["client"],
+                        "venue": position["venue"],
+                        "account": position["account"]
+                    },
+                    {"$set": {
+                        "position_value": position["position_value"],
+                        "active": position["active"],
+                        "entry": position["entry"],
+                        "exit": position["exit"],
+                        "timestamp": position["timestamp"],
+                        "runid": position["runid"]
+                        }
+                    },
+                    upsert=True
+                )
+                
             # log.debug(f"Position created: {position}")
             return position
         except Exception as e:
