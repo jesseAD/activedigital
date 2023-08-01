@@ -47,14 +47,14 @@ class Leverages:
             query["runid"] = latest_run_id
             
             # fetch latest position, balance, tickers
-            position_value = self.positions_db.find(query).sort('_id', -1).limit(1)
+            position_value = self.positions_db.find(query).sort('runid', -1).limit(1)
             for item in position_value:
                 latest_position = item['position_value']
             #print('------', latest_position)
-            balance_valule = self.balances_db.find(query).sort('_id', -1).limit(1)
+            balance_valule = self.balances_db.find(query).sort('runid', -1).limit(1)
             for item in balance_valule:
                 latest_balance = item['balance_value']
-            ticker_value = self.tickers_db.find(query).sort('_id', -1).limit(1)
+            ticker_value = self.tickers_db.find(query).sort('runid', -1).limit(1)
             for item in ticker_value:
                 latest_ticker = item['ticker_value']['last']
 

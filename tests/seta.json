@@ -9,7 +9,7 @@
                "unrealizedProfit":"-0.09963283",
                "positionInitialMargin":"3.02179835",
                "openOrderInitialMargin":"0",
-               "leverage":"20",
+               "leverage":"30",
                "isolated":false,
                "entryPrice":"30267.8",
                "maxNotional":"20000000",
@@ -106,8 +106,6 @@
    "instruments": {
       "subaccount1": [
          {
-            "id":"BTCUSDT",
-            "lowercaseId":"btcusdt",
             "symbol":"BTC/USDT",
             "base":"BTC",
             "quote":"USDT",
@@ -162,7 +160,7 @@
                }
             },
             "info":{
-               "symbol":"BTCUSDT",
+               "symbol":"BTCUS",
                "status":"TRADING",
                "baseAsset":"BTC",
                "baseAssetPrecision":"8",

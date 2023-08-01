@@ -125,7 +125,17 @@ class Instruments:
         if sub_account:
             query["account"] = sub_account
 
-        instrument_values = self.insturments_db.find(query).sort("_id", -1).limit(1)
+        instrument_values = self.insturments_db.find(query).sort('runid', -1).limit(1)
+
+        latest_run_id = -1
+        latest_value = None
+        for item in instrument_values:
+            if latest_run_id < item['runid']:
+                latest_run_id = item['runid']
+                latest_value = item['instrument_value']
+        
+        if latest_value == instrument['instrument_value']:
+            return False
 
         try:
             if config["instruments"]["store_type"] == "snapshot":
@@ -157,7 +167,7 @@ class Instruments:
                     },
                     upsert = True
                 )
-
+                
                 
             elif config["instruments"]["store_type"] == "timeseries":
                 self.insturments_db.insert(instrument)

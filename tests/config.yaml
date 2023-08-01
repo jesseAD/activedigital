@@ -6,6 +6,19 @@ funding_payments: &funding_payments
   function: funding_payments.py
   scheduler: [continuous,external,5 4 * * *]
   base_ccy: USDT
+  store_type: timeseries
+
+instruments: 
+  store_type: snapshot
+
+positions:
+  store_type: timeseries
+
+tickers:
+  store_type: timeseries
+
+leverages:
+  store_type: timeseries
 
 balances: &balances
   function: balance.py

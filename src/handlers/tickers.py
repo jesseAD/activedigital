@@ -113,6 +113,27 @@ class Tickers:
                 pass
         ticker["runid"] = latest_run_id
 
+        # get latest tickers data
+        query = {}
+        if client:
+            query["client"] = client
+        if exchange:
+            query["venue"] = exchange
+        if sub_account:
+            query["account"] = sub_account
+
+        ticker_values = self.tickers_db.find(query).sort('runid', -1).limit(1)
+
+        latest_run_id = -1
+        latest_value = None
+        for item in ticker_values:
+            if latest_run_id < item['runid']:
+                latest_run_id = item['runid']
+                latest_value = item['ticker_value']
+        
+        if latest_value == ticker['ticker_value']:
+            return False
+
         try:
             if config['tickers']['store_type'] == "timeseries":
                 self.tickers_db.insert(ticker)
