@@ -132,6 +132,7 @@ class Tickers:
                 latest_value = item['ticker_value']
         
         if latest_value == ticker['ticker_value']:
+            print('same ticker')
             return False
 
         try:

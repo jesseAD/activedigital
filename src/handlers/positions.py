@@ -5,6 +5,7 @@ from datetime import datetime, timezone
 from src.lib.db import MongoDB
 from src.lib.log import Log
 from src.lib.exchange import Exchange
+from src.lib.mapping import Mapping
 from src.config import read_config_file
 from src.handlers.helpers import Helper
 from src.handlers.helpers import OKXHelper
@@ -94,7 +95,7 @@ class Positions:
             "venue": exchange,
             # "positionType": positionType.lower(),
             "account": "Main Account",
-            "position_value": position_info,
+            "position_value": Mapping().mapping(exchange=exchange, positions=position_info),
             "active": True,
             "entry": False,
             "exit": False,
@@ -129,6 +130,7 @@ class Positions:
                 latest_value = item['position_value']
         
         if latest_value == position['position_value']:
+            print('same position')
             return False
 
         run_ids = self.runs_db.find({}).sort('_id', -1).limit(1)

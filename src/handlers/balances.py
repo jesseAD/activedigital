@@ -125,9 +125,10 @@ class Balances:
         for item in balances_values:
             if latest_run_id < item['runid']:
                 latest_run_id = item['runid']
-                latest_value = item['instrument_value']
+                latest_value = item['balance_value']
         
         if latest_value == balance['balance_value']:
+            print('same balance')
             return False
 
         try:

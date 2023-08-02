@@ -44,7 +44,6 @@ class Leverages:
                 query["venue"] = exchange
             if account:
                 query["account"] = account
-            query["runid"] = latest_run_id
             
             # fetch latest position, balance, tickers
             position_value = self.positions_db.find(query).sort('runid', -1).limit(1)

@@ -1,0 +1,14 @@
+binance:
+  position:
+    info:
+      updateTime: timestamp
+      entryPrice: avgPrice
+      unrealizedProfit: unrealisedpnl
+
+okx:
+  position:
+    info:
+      uTime: timestamp
+      instId: symbol
+      avgPx: avgPrice
+      upl: unrealisedpnl

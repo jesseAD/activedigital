@@ -7,6 +7,7 @@ import pickle
 from src.lib.db import MongoDB
 from src.lib.log import Log
 from src.lib.exchange import Exchange
+from src.lib.mapping import Mapping
 from src.config import read_config_file
 from src.handlers.helpers import Helper
 from src.handlers.helpers import OKXHelper
@@ -93,7 +94,7 @@ class Instruments:
             "venue": exchange,
             # "positionType": positionType.lower(),
             "account": "Main Account",
-            "instrument_value": instrumentValue[0]["info"],
+            "instrument_value": Mapping().mapping(exchange=exchange, instrument=instrumentValue[0]["info"]),
             "active": True,
             "entry": False,
             "exit": False,
@@ -135,6 +136,7 @@ class Instruments:
                 latest_value = item['instrument_value']
         
         if latest_value == instrument['instrument_value']:
+            print('same instrument')
             return False
 
         try:
