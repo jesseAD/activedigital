@@ -17,10 +17,12 @@ config = read_config_file()
 
 class Positions:
     def __init__(self, db):
-        self.runs_db = MongoDB(config['mongo_db'], 'runs')
-        self.runs_cloud = database_connector('runs')
-        self.positions_db = MongoDB(config['mongo_db'], db)
-        self.positions_cloud = database_connector('positions')
+        if config['mode'] == "testing":
+            self.runs_db = MongoDB(config['mongo_db'], 'runs')
+            self.positions_db = MongoDB(config['mongo_db'], db)
+        else:
+            self.runs_db = database_connector('runs')
+            self.positions_db = database_connector('positions')
 
     def get(
         self,
@@ -140,48 +142,28 @@ class Positions:
                 latest_run_id = item['runid'] + 1
             except:
                 pass
-
+        
         try:
-            self.runs_db.insert({"start_time": current_time, "runid": latest_run_id})
+            self.runs_db.insert_one({"start_time": current_time, "runid": latest_run_id})
             position["runid"] = latest_run_id
-            self.runs_cloud.insert_one({"start_time": current_time, "runid": latest_run_id})
 
             if config['positions']['store_type'] == "timeseries": 
-                self.positions_db.insert(position)   
-                self.positions_cloud.insert_one(position)
+                self.positions_db.insert_one(position)   
             elif config['positions']['store_type'] == "snapshot": 
-                self.positions_db.update(
+                self.positions_db.update_one(
                     {
                         "client": position["client"],
                         "venue": position["venue"],
                         "account": position["account"]
                     },
-                    {
+                    { "$set": {
                         "position_value": position["position_value"],
                         "active": position["active"],
                         "entry": position["entry"],
                         "exit": position["exit"],
                         "timestamp": position["timestamp"],
                         "runid": position["runid"]
-                    },
-                    upsert=True
-                )
-                
-                self.positions_cloud.update_one(
-                    {
-                        "client": position["client"],
-                        "venue": position["venue"],
-                        "account": position["account"]
-                    },
-                    {"$set": {
-                        "position_value": position["position_value"],
-                        "active": position["active"],
-                        "entry": position["entry"],
-                        "exit": position["exit"],
-                        "timestamp": position["timestamp"],
-                        "runid": position["runid"]
-                        }
-                    },
+                    }},
                     upsert=True
                 )
                 
@@ -199,7 +181,7 @@ class Positions:
             try:
                 self.positions_db.update(
                     {"_id": position["_id"]},
-                    {"entry": status},
+                    {"$set": {"entry": status}},
                 )
                 log.debug(
                     f"position in account entry {account} has been set to {status}"
@@ -223,7 +205,7 @@ class Positions:
             try:
                 self.positions_db.update(
                     {"_id": position["_id"]},
-                    {"exit": status},
+                    {"$set": {"exit": status}},
                 )
                 log.debug(
                     f"Position in account exit {account} has been set to {status}"
@@ -240,9 +222,9 @@ class Positions:
 
         for position in positions:
             try:
-                self.positions_db.update(
+                self.positions_db.update_one(
                     {"_id": position["_id"]},
-                    kwargs,
+                    {"$set": kwargs},
                 )
                 log.debug(f"Position in account {account} has been updated")
             except Exception as e:

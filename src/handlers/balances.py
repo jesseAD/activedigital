@@ -16,9 +16,12 @@ config = read_config_file()
 
 class Balances:
     def __init__(self, db):
-        self.runs_db = MongoDB(config['mongo_db'], 'runs')
-        self.balances_db = MongoDB(config['mongo_db'], db)
-        self.balances_cloud = database_connector('balances')
+        if config['mode'] == "testing":
+            self.runs_db = MongoDB(config['mongo_db'], 'runs')
+            self.balances_db = MongoDB(config['mongo_db'], db)
+        else:
+            self.balances_db = database_connector('balances')
+            self.runs_db = database_connector('runs')
 
     def get(
         self,
@@ -130,44 +133,25 @@ class Balances:
         if latest_value == balance['balance_value']:
             print('same balance')
             return False
-
+        
         try:
             if config["balances"]["store_type"] == "timeseries":
-                self.balances_db.insert(balance)
-                self.balances_cloud.insert_one(balance)
+                self.balances_db.insert_one(balance)
             elif config["balances"]["store_type"] == "snapshot":
-                self.balances_db.update(
+                self.balances_db.update_one(
                     {
                         "client": balance["client"],
                         "venue": balance["venue"],
                         "account": balance["account"]
                     },
-                    {
+                    { "$set": {
                         "balance_value": balance["balance_value"],
                         "active": balance["active"],
                         "entry": balance["entry"],
                         "exit": balance["exit"],
                         "timestamp": balance["timestamp"],
                         "runid": balance["runid"]
-                    },
-                    upsert=True
-                )
-                
-                self.balances_cloud.update_one(
-                    {
-                        "client": balance["client"],
-                        "venue": balance["venue"],
-                        "account": balance["account"]
-                    },
-                    {"$set": {
-                        "balance_value": balance["balance_value"],
-                        "active": balance["active"],
-                        "entry": balance["entry"],
-                        "exit": balance["exit"],
-                        "timestamp": balance["timestamp"],
-                        "runid": balance["runid"]
-                        }
-                    },
+                    }},
                     upsert=True
                 )
                 

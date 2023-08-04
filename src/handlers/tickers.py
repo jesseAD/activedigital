@@ -16,9 +16,12 @@ config = read_config_file()
 
 class Tickers:
     def __init__(self, db):
-        self.runs_db = MongoDB(config['mongo_db'], 'runs')
-        self.tickers_db = MongoDB(config['mongo_db'], db)
-        self.tickers_cloud = database_connector('tickers')
+        if config['mode'] == "testing":
+            self.runs_db = MongoDB(config['mongo_db'], 'runs')
+            self.tickers_db = MongoDB(config['mongo_db'], db)
+        else:
+            self.runs_db = database_connector('runs')
+            self.tickers_db = database_connector('tickers')
 
     def get(
         self,
@@ -134,31 +137,12 @@ class Tickers:
         if latest_value == ticker['ticker_value']:
             print('same ticker')
             return False
-
+        
         try:
             if config['tickers']['store_type'] == "timeseries":
-                self.tickers_db.insert(ticker)
-                self.tickers_cloud.insert_one(ticker)
+                self.tickers_db.insert_one(ticker)
             elif config['tickers']['store_type'] == "snapshot":
-                self.tickers_db.update(
-                    {
-                        "client": ticker["client"],
-                        "venue": ticker["venue"],
-                        "account": ticker["account"],
-                        "symbol": ticker["symbol"]
-                    },
-                    {
-                        "ticker_value": ticker["ticker_value"],
-                        "active": ticker["active"],
-                        "entry": ticker["entry"],
-                        "exit": ticker["exit"],
-                        "timestamp": ticker["timestamp"],
-                        "runid": ticker["runid"]
-                    },
-                    upsert=True
-                )
-                
-                self.tickers_cloud.update_one(
+                self.tickers_db.update_one(
                     {
                         "client": ticker["client"],
                         "venue": ticker["venue"],
@@ -172,8 +156,7 @@ class Tickers:
                         "exit": ticker["exit"],
                         "timestamp": ticker["timestamp"],
                         "runid": ticker["runid"]
-                        }
-                    },
+                    }},
                     upsert=True
                 )
                 

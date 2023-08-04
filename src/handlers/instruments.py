@@ -26,9 +26,12 @@ def compress_list(data):
 
 class Instruments:
     def __init__(self, db):
-        self.runs_db = MongoDB(config["mongo_db"], "runs")
-        self.insturments_db = MongoDB(config["mongo_db"], db)
-        self.instruments_cloud = database_connector("instruments")
+        if config['mode'] == "testing":
+            self.runs_db = MongoDB(config["mongo_db"], "runs")
+            self.insturments_db = MongoDB(config["mongo_db"], db)
+        else:
+            self.runs_db = database_connector("runs")
+            self.insturments_db = database_connector("instruments")
 
     def get(
         self,
@@ -138,42 +141,26 @@ class Instruments:
         if latest_value == instrument['instrument_value']:
             print('same instrument')
             return False
-
+        
         try:
             if config["instruments"]["store_type"] == "snapshot":
-                self.insturments_db.update(
+                self.insturments_db.update_one(
                     {
                         "client": instrument["client"],
                         "venue": instrument["venue"],
                         "account": instrument["account"]
                     },
-                    {
+                    { "$set": {
                         "instrument_value": instrument["instrument_value"],
                         "timestamp": instrument["timestamp"],
                         "runid": instrument["runid"]
-                    },
+                    }},
                     upsert=True
-                )
-                
-                self.instruments_cloud.update_one(
-                    filter={
-                        "client": instrument["client"],
-                        "venue": instrument["venue"],
-                        "account": instrument["account"]
-                    },
-                    update={"$set": {
-                            "instrument_value": instrument["instrument_value"],
-                            "timestamp": instrument["timestamp"],
-                            "runid": instrument["runid"]
-                        }
-                    },
-                    upsert = True
                 )
                 
                 
             elif config["instruments"]["store_type"] == "timeseries":
-                self.insturments_db.insert(instrument)
-                self.instruments_cloud.insert_one(instrument)
+                self.insturments_db.insert_one(instrument)
             return instrument
         except Exception as e:
             log.error(e)

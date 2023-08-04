@@ -10,7 +10,7 @@ class MongoDB:
 
         self.collection = self.db[collection_name]
 
-    def insert(self, data):
+    def insert_one(self, data):
         self.collection.insert_one(data)
 
     def find(self, query):
@@ -19,8 +19,8 @@ class MongoDB:
     def find_one(self, query):
         return self.collection.find_one(query)
 
-    def update(self, query, data, upsert = False):
-        self.collection.update_one(query, {"$set": data}, upsert=upsert)
+    def update_one(self, query, data, upsert = False):
+        self.collection.update_one(query, data, upsert=upsert)
 
     def delete(self, query):
         self.collection.delete_one(query)
