@@ -52,17 +52,29 @@ class Leverages:
             # fetch latest position, balance, tickers
             position_value = self.positions_db.find(query).sort('runid', -1).limit(1)
             for item in position_value:
-                latest_position = item['position_value']
+                try:
+                    latest_position = item['position_value']
+                except:
+                    return False
             
             balance_valule = self.balances_db.find(query).sort('runid', -1).limit(1)
             for item in balance_valule:
-                latest_balance = item['balance_value']
+                try: 
+                    latest_balance = item['balance_value']
+                except:
+                    return False
             
             ticker_value = self.tickers_db.find(query).sort('runid', -1).limit(1)
             for item in ticker_value:
-                latest_ticker = item['ticker_value']['last']
+                try: 
+                    latest_ticker = item['ticker_value']['last']
+                except:
+                    return False               
 
-            max_notional = abs(float(max(latest_position, key=lambda x: abs(float(x['notional'])))['notional']))
+            try:
+                max_notional = abs(float(max(latest_position, key=lambda x: abs(float(x['notional'])))['notional']))
+            except:
+                return False
             
             base_currency = config['balances']['base_ccy']
 
@@ -79,7 +91,10 @@ class Leverages:
                 "account": account,
                 "timestamp": datetime.now(timezone.utc),
             }
-            leverage_value['leverage'] = max_notional / balance_in_base_currency
+            try:
+                leverage_value['leverage'] = max_notional / balance_in_base_currency
+            except:
+                return False
             leverage_value["runid"] = latest_run_id
             
             if config['leverages']['store_type'] == "timeseries":

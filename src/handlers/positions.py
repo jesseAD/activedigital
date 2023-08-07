@@ -86,9 +86,13 @@ class Positions:
             else:
                 position_value = Helper().get_positions(exch = exch)
 
+        print(exch.fetch_balance()['info']['margin']['netAsset'])
+
         position_info =[]
         for value in position_value:
                 if float(value['initialMargin']) > 0:
+                    if exchange == 'binance':
+                        value['markPrice'] = exch.fetch_trades(value['symbol'])[0]['price']
                     position_info.append(value)
 
         current_time = datetime.now(timezone.utc)
