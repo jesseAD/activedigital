@@ -86,8 +86,6 @@ class Positions:
             else:
                 position_value = Helper().get_positions(exch = exch)
 
-        print(exch.fetch_balance()['info']['margin']['netAsset'])
-
         position_info =[]
         for value in position_value:
                 if float(value['initialMargin']) > 0:
