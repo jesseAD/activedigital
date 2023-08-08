@@ -20,6 +20,7 @@ instruments:
 
 positions:
   store_type: timeseries
+  margin_mode: non_portfolio
 
 tickers:
   store_type: timeseries

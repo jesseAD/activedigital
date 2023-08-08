@@ -17,6 +17,10 @@ class Exchange:
             'apiKey': self.key,
             'secret': self.secret,
             'enableRateLimit': True,
+            'requests_trust_env':True,
+            'options': {
+                'adjustForTimeDifference':True,
+            }
         }
 
         if self.sub_account:
