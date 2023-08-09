@@ -4,6 +4,7 @@ from src.handlers.balances import Balances
 from src.handlers.instruments import Instruments
 from src.handlers.tickers import Tickers
 from src.handlers.leverages import Leverages
+from src.handlers.transactions import Transactions
 from src.config import read_config_file
 
 def instantiate(client, collection, exchange, account=None):
@@ -70,7 +71,6 @@ def collect_tickers(client_alias, data_collector):
         client=client_alias,
         exchange=data_collector.exchange,
         sub_account=data_collector.account,
-        symbol='BTC/USDT'
     )
 
 def collect_leverages(client_alias, data_collector):
@@ -78,4 +78,12 @@ def collect_leverages(client_alias, data_collector):
         client=client_alias,
         exchange=data_collector.exchange,
         account=data_collector.account
+    )
+
+def collect_transactions(client_alias, data_collector):
+    Transactions('transactions').create(
+        client=client_alias,
+        exchange=data_collector.exchange,
+        sub_account=data_collector.account,
+        symbol='BTCUSDT',
     )

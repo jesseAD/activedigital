@@ -78,8 +78,8 @@ class Helper():
     def get_instruments(self, exch):
         return exch.fetch_markets()
     
-    def get_tickers(self, exch, symbol):
-        return exch.fetch_ticker(symbol)
+    def get_tickers(self, exch):
+        return exch.fetch_tickers()
 
 class OKXHelper(Helper):
     def get_positions(self, exch):

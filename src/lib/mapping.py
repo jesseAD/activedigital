@@ -6,23 +6,18 @@ current_directory = os.path.dirname(current_file)
 
 class Mapping:
     def __init__(self):
-        self.mapping_data = None
 
-    def read_mapping_file(self, file_path = current_directory+'/mapping.yaml'):
-        with open(file_path, 'r') as mapping_file:
+        with open(current_directory+'/mapping.yaml', 'r') as mapping_file:
             mapping_data = yaml.safe_load(mapping_file)
         
         self.mapping_data = mapping_data
 
-    def mapping(self, exchange, positions = None, instrument = None):
-        self.read_mapping_file()
+    
+    def mapping_positions(self, exchange, positions = None):
 
         if exchange not in self.mapping_data.keys():
-            if positions is not None:
-                return positions
-            else:
-                return instrument
-
+            return positions
+        
         if positions is not None:
             if 'position' not in self.mapping_data[exchange].keys():
                 return positions
@@ -53,8 +48,13 @@ class Mapping:
                 new_positions.append(new_postion)
 
             return new_positions
+        
 
-        elif instrument is not None:
+    def mapping_instruments(self, exchange, instrument = None):
+        if exchange not in self.mapping_data.keys():
+            return instrument
+        
+        if instrument is not None:
             if 'instrument' not in self.mapping_data[exchange].keys():
                 return instrument
             
@@ -80,6 +80,46 @@ class Mapping:
                         new_instrument[_key] = _value
             
             return new_instrument
+        
+    def mapping_transactions(self, exchange, transactions = None):
 
-        else:
-            return None
+        if exchange not in self.mapping_data.keys():
+            return transactions
+        
+        if transactions is not None:
+            if 'transaction' not in self.mapping_data[exchange].keys():
+                return transactions
+            
+            new_transactions = []
+            mapping_data = self.mapping_data[exchange]['transaction']
+            
+            for transaction in transactions:
+                new_transaction = {}
+                for _key, _value in transaction.items():
+
+                    if _key == 'type':
+                        if exchange == 'okx':
+                            if ('_' + _value) in mapping_data['values']['type'].keys():
+                                new_transaction[_key] = mapping_data['values']['type']['_' + _value]
+                            else:
+                                new_transaction[_key] = _value
+                        elif exchange == 'binance':
+                            if _value in mapping_data['values'].keys():
+                                new_transaction[_key] = mapping_data['values'][_value]
+                            else:
+                                new_transaction[_key] = _value
+
+                    elif _key == 'subType':
+                        if exchange == 'okx':
+                            if ('_' + _value) in mapping_data['values']['subType'].keys():
+                                new_transaction[_key] = mapping_data['values']['subType']['_' + _value]
+                            else:
+                                new_transaction[_key] = _value
+
+                    elif _key in mapping_data.keys():
+                        new_transaction[mapping_data[_key]] = _value
+                    else:
+                        new_transaction[_key] = _value
+                new_transactions.append(new_transaction)
+
+            return new_transactions

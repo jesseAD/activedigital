@@ -67,7 +67,7 @@ class Leverages:
             ticker_value = self.tickers_db.find(query).sort('runid', -1).limit(1)
             for item in ticker_value:
                 try: 
-                    latest_ticker = item['ticker_value']['last']
+                    latest_ticker = item['ticker_value']['BTC/USDT']['last']
                 except:
                     return False               
 

@@ -153,7 +153,6 @@ class TestRuns(unittest.TestCase):
             client='deepspace',
             exchange='binance',
             sub_account='subaccount1',
-            symbol='BTC/USDT',
             tickerValue=self.sesa_data['tickers'][0]
         )['ticker_value']
 
@@ -212,7 +211,6 @@ class TestRuns(unittest.TestCase):
             client='deepspace',
             exchange='binance',
             sub_account='subaccount1',
-            symbol='BTC/USDT',
             tickerValue=self.tdin_data['tickers'][0]
         )['ticker_value']
 

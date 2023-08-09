@@ -84,18 +84,19 @@ class Positions:
             if exchange == 'okx':
                 position_value = OKXHelper().get_positions(exch = exch)
             else:
-                position_value = Helper().get_positions(exch = exch)        
+                position_value = Helper().get_positions(exch = exch)
         
         position_info =[]
         for value in position_value:
                 if float(value['initialMargin']) > 0:
-                    portfolio = None
-                    if exchange == 'binance':
-                        if config['positions']['margin_mode'] == "non_portfolio":
-                            portfolio = exch.fapiprivatev2_get_positionrisk({'symbol': value['info']['symbol']})[0]
-                        elif config['positions']['margin_mode'] == "portfolio":
-                            portfolio = exch.fapiprivate_get_balance({'symbol': 'USDT'})
-                    value['margin'] = portfolio
+                    if position_value is None:
+                        portfolio = None
+                        if exchange == 'binance':
+                            if config['positions']['margin_mode'] == "non_portfolio":
+                                portfolio = exch.fapiprivatev2_get_positionrisk({'symbol': value['info']['symbol']})[0]
+                            elif config['positions']['margin_mode'] == "portfolio":
+                                portfolio = exch.fapiprivate_get_balance({'symbol': 'USDT'})
+                        value['margin'] = portfolio
                     position_info.append(value)
 
         current_time = datetime.now(timezone.utc)
@@ -104,7 +105,7 @@ class Positions:
             "venue": exchange,
             # "positionType": positionType.lower(),
             "account": "Main Account",
-            "position_value": Mapping().mapping(exchange=exchange, positions=position_info),
+            "position_value": Mapping().mapping_positions(exchange=exchange, positions=position_info),
             "active": True,
             "entry": False,
             "exit": False,

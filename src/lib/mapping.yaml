@@ -5,6 +5,16 @@ binance:
       entryPrice: avgPrice
       unrealizedProfit: unrealisedpnl
 
+  transaction:
+    time: timestamp
+    values:
+      INTERNAL_TRANSFER: TRANSFER
+      DELIVERED_SETTELMENT: REALIZED_PNL
+      OPTIONS_SETTLE_PROFIT: REALIZED_PNL
+      INSURANCE_CLEAR: CLAWBACK
+      COMMISSION_REBATE: COMMISSION
+      API_REBATE: COMMISSION
+
 okx:
   position:
     info:
@@ -12,3 +22,22 @@ okx:
       instId: symbol
       avgPx: avgPrice
       upl: unrealisedpnl
+  
+  transaction:
+    ts: timestamp
+    values:
+      type:
+        _1: TRANSFER
+        _2: COMMISSION
+        _3: REALIZED_PNL
+        _8: FUNDING_FEE
+        _10: CLAWBACK
+        _15: BORROW
+      subType:
+        _17: BORROW
+        _210: BORROW
+        _212: BORROW
+        _173: FUNDING_FEE
+        _174: FUNDING_FEE
+        _11: COIN_SWAP_DEPOSIT
+        _12: COIN_SWAP_WITHDRAW

@@ -97,7 +97,7 @@ class Instruments:
             "venue": exchange,
             # "positionType": positionType.lower(),
             "account": "Main Account",
-            "instrument_value": Mapping().mapping(exchange=exchange, instrument=instrumentValue[0]["info"]),
+            "instrument_value": Mapping().mapping_instruments(exchange=exchange, instrument=instrumentValue[0]["info"]),
             "active": True,
             "entry": False,
             "exit": False,

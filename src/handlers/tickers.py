@@ -18,9 +18,13 @@ class Tickers:
     def __init__(self, db):
         if config['mode'] == "testing":
             self.runs_db = MongoDB(config['mongo_db'], 'runs')
+            self.positions_db = MongoDB(config['mongo_db'], 'positions')
+            self.balances_db = MongoDB(config['mongo_db'], 'balances')
             self.tickers_db = MongoDB(config['mongo_db'], db)
         else:
             self.runs_db = database_connector('runs')
+            self.balances_db = database_connector('balances')
+            self.positions_db = database_connector('positions')
             self.tickers_db = database_connector('tickers')
 
     def get(
@@ -74,7 +78,6 @@ class Tickers:
         future: str = None,
         perp: str = None,
         tickerValue: str = None,
-        symbol: str = None
     ):
         if tickerValue is None:
             spec = exchange.upper() + "_" + sub_account.upper() + "_"
@@ -82,16 +85,16 @@ class Tickers:
             API_SECRET = os.getenv(spec + "API_SECRET")
             exch = Exchange(exchange, sub_account, API_KEY, API_SECRET).exch()
             if exchange == 'okx':
-                tickerValue = OKXHelper().get_tickers(symbol=symbol, exch = exch)
+                tickerValue = OKXHelper().get_tickers(exch = exch)
             else:
-                tickerValue = Helper().get_tickers(symbol=symbol, exch = exch)
+                tickerValue = Helper().get_tickers(exch = exch)
+
+        tickerValue = {symbol: tickerValue[symbol] for symbol in config['tickers']['symbols'] if symbol in tickerValue}
         
         ticker = {
             "client": client,
             "venue": exchange,
-            # "positionType": positionType.lower(),
             "account": "Main Account",
-            "symbol": symbol,
             "ticker_value": tickerValue,
             "active": True,
             "entry": False,
@@ -107,6 +110,7 @@ class Tickers:
             ticker["futureMarket"] = future
         if perp:
             ticker["perpMarket"] = perp
+
         run_ids = self.runs_db.find({}).sort('_id', -1).limit(1)
         latest_run_id = 0
         for item in run_ids:
@@ -115,6 +119,41 @@ class Tickers:
             except:
                 pass
         ticker["runid"] = latest_run_id
+
+        # insert usd base balance into positions collection
+        query = {}
+        if client:
+            query["client"] = client
+        if exchange:
+            query["venue"] = exchange
+        if sub_account:
+            query["account"] = sub_account
+        balance_values = self.balances_db.find(query).sort('runid', -1).limit(1)
+
+        btc_balance = usdt_balance = 0
+        for item in balance_values:
+            try:
+                btc_balance = item['balance_value']['BTC']
+            except:
+                pass
+            try:
+                usdt_balance = item['balance_value']['USDT']
+            except:
+                pass
+
+        usd_base_balance = usdt_balance + btc_balance * tickerValue['BTC/USDT']['last']
+        
+        self.positions_db.update_one(
+            {
+                'client': client,
+                'venue': exchange,
+                'account': sub_account,
+                'runid': latest_run_id
+            },
+            {"$set": {
+                'USDBaseBalance': usd_base_balance
+            }}
+        )
 
         # get latest tickers data
         query = {}

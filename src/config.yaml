@@ -23,10 +23,14 @@ positions:
   margin_mode: non_portfolio
 
 tickers:
+  symbols: ['BTC/USDT', 'USDT/USD', 'BTC/USD']
   store_type: timeseries
 
 leverages:
   store_type: timeseries
+
+transactions:
+  store_type: snapshot
 
 funding_rates:
   bybit:

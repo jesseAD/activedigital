@@ -12,6 +12,7 @@ from src.handlers.instantiator import collect_balances
 from src.handlers.instantiator import collect_instruments
 from src.handlers.instantiator import collect_tickers
 from src.handlers.instantiator import collect_leverages
+from src.handlers.instantiator import collect_transactions
 from src.handlers.instantiator import get_data_collectors
 
 client_lists = [
@@ -27,6 +28,7 @@ for client in client_lists:
     collect_balances(client, data_collectors[1])
     collect_instruments(client, data_collectors[1])
     collect_tickers(client, data_collectors[1])
+    collect_transactions(client, data_collectors[1])
     collect_leverages(client, data_collectors[1])
 
     # binance_subaccount2
@@ -34,11 +36,13 @@ for client in client_lists:
     collect_balances(client, data_collectors[2]) 
     collect_instruments(client, data_collectors[2]) 
     collect_tickers(client, data_collectors[2])
+    collect_transactions(client, data_collectors[2])
     collect_leverages(client, data_collectors[2])
 
-    # okk_subaccount1
+    # okx_subaccount1
     collect_positions(client, data_collectors[3]) 
     collect_balances(client, data_collectors[3])
     collect_instruments(client, data_collectors[3]) 
     collect_tickers(client, data_collectors[3])
+    collect_transactions(client, data_collectors[3])
     collect_leverages(client, data_collectors[3])
