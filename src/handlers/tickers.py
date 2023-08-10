@@ -8,6 +8,7 @@ from src.lib.exchange import Exchange
 from src.config import read_config_file
 from src.handlers.helpers import Helper
 from src.handlers.helpers import OKXHelper
+from src.handlers.helpers import CoinbaseHelper
 from src.handlers.database_connector import database_connector
 
 load_dotenv()
@@ -90,6 +91,7 @@ class Tickers:
                 tickerValue = Helper().get_tickers(exch = exch)
 
         tickerValue = {symbol: tickerValue[symbol] for symbol in config['tickers']['symbols'] if symbol in tickerValue}
+        tickerValue['USDT/USD'] = CoinbaseHelper().get_usdt2usd_ticker(exch=Exchange(exchange='coinbase').exch())
         
         ticker = {
             "client": client,
@@ -141,7 +143,7 @@ class Tickers:
             except:
                 pass
 
-        usd_base_balance = usdt_balance + btc_balance * tickerValue['BTC/USDT']['last']
+        usd_base_balance = (usdt_balance + btc_balance * tickerValue['BTC/USDT']['last']) * tickerValue['USDT/USD']['last']
         
         self.positions_db.update_one(
             {

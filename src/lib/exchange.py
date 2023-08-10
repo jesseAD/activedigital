@@ -5,7 +5,7 @@ load_dotenv()
 
 # Create an echange class instance
 class Exchange:
-    def __init__(self, exchange, account, key, secret):
+    def __init__(self, exchange = None, account = None, key = None, secret = None):
         self.exchange = exchange
         self.sub_account = account
         self.key = key
@@ -35,6 +35,8 @@ class Exchange:
             passphrase = os.getenv('OKX_'+self.sub_account.upper()+'_PASSPHRASE')
             params['password'] = passphrase
             exchange = ccxt.okex5(params)
+        elif self.exchange == 'coinbase':
+            exchange = ccxt.coinbasepro()
         
         return exchange
 

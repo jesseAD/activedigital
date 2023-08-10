@@ -84,3 +84,8 @@ class Helper():
 class OKXHelper(Helper):
     def get_positions(self, exch):
         return exch.fetch_positions(params={'type':'swap'})
+    
+
+class CoinbaseHelper():
+    def get_usdt2usd_ticker(self, exch):
+        return exch.fetch_ticker('USDT/USD')
