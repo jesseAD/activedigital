@@ -80,6 +80,12 @@ class Helper():
     
     def get_tickers(self, exch):
         return exch.fetch_tickers()
+    
+    def get_borrow_rates(self, exch, code, limit = None, since = None, params = {}):
+        return exch.fetch_borrow_rate_history(code=code, limit=limit, since=since, params=params)
+    
+    def get_funding_rates(self, exch, symbol, limit = None, since = None, params = {}):
+        return exch.fetch_funding_rate_history(symbol=symbol, limit=limit, since=since, params=params)
 
 class OKXHelper(Helper):
     def get_positions(self, exch):

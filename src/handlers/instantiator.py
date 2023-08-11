@@ -5,6 +5,8 @@ from src.handlers.instruments import Instruments
 from src.handlers.tickers import Tickers
 from src.handlers.leverages import Leverages
 from src.handlers.transactions import Transactions
+from src.handlers.borrow_rates import BorrowRates
+from src.handlers.funding_rates import FundingRates
 from src.config import read_config_file
 
 def instantiate(client, collection, exchange, account=None):
@@ -86,4 +88,18 @@ def collect_transactions(client_alias, data_collector):
         exchange=data_collector.exchange,
         sub_account=data_collector.account,
         symbol='BTCUSDT',
+    )
+
+def collect_borrow_rates(client_alias, data_collector):
+    BorrowRates('borrow_rates').create(
+        client=client_alias,
+        exchange=data_collector.exchange,
+        sub_account=data_collector.account,
+    )
+
+def collect_funding_rates(client_alias, data_collector):
+    FundingRates('funding_rates').create(
+        client=client_alias,
+        exchange=data_collector.exchange,
+        sub_account=data_collector.account,
     )

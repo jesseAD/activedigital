@@ -33,6 +33,9 @@ transactions:
   store_type: timeseries
   fetch_type: time # time, id
 
+borrow_rates:
+  codes: ['USDT', 'BTC']
+
 funding_rates:
   bybit:
     helper: bybithelper.py
@@ -46,6 +49,8 @@ funding_rates:
     helper: okxhelper.py
     instruments:  
       ["BTC.USDT.PERP","ETH.USDT.PERP"]
+
+  symbols: ['BTC/USDT:USDT', ]
   
 deepspace:
   bybit_subaccount1: &bybit_subaccount1

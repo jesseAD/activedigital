@@ -122,41 +122,6 @@ class Tickers:
                 pass
         ticker["runid"] = latest_run_id
 
-        # insert usd base balance into positions collection
-        query = {}
-        if client:
-            query["client"] = client
-        if exchange:
-            query["venue"] = exchange
-        if sub_account:
-            query["account"] = sub_account
-        balance_values = self.balances_db.find(query).sort('runid', -1).limit(1)
-
-        btc_balance = usdt_balance = 0
-        for item in balance_values:
-            try:
-                btc_balance = item['balance_value']['BTC']
-            except:
-                pass
-            try:
-                usdt_balance = item['balance_value']['USDT']
-            except:
-                pass
-
-        usd_base_balance = (usdt_balance + btc_balance * tickerValue['BTC/USDT']['last']) * tickerValue['USDT/USD']['last']
-        
-        self.positions_db.update_one(
-            {
-                'client': client,
-                'venue': exchange,
-                'account': sub_account,
-                'runid': latest_run_id
-            },
-            {"$set": {
-                'USDBaseBalance': usd_base_balance
-            }}
-        )
-
         # get latest tickers data
         query = {}
         if client:

@@ -18,9 +18,11 @@ class Balances:
     def __init__(self, db):
         if config['mode'] == "testing":
             self.runs_db = MongoDB(config['mongo_db'], 'runs')
+            self.tickers_db = MongoDB(config['mongo_db'], 'tickers')
             self.balances_db = MongoDB(config['mongo_db'], db)
         else:
             self.balances_db = database_connector('balances')
+            self.tickers_db = database_connector('tickers')
             self.runs_db = database_connector('runs')
 
     def get(
@@ -65,7 +67,6 @@ class Balances:
         self,
         client,
         exchange: str = None,
-        positionType: str = None,
         sub_account: str = None,
         spot: str = None,
         future: str = None,
@@ -81,11 +82,33 @@ class Balances:
                 balanceValue = OKXHelper().get_balances(exch = exch)
             else:
                 balanceValue = Helper().get_balances(exch = exch)
+
+        query = {}
+        if client:
+            query["client"] = client
+        if exchange:
+            query["venue"] = exchange
+        if sub_account:
+            query["account"] = sub_account
+        ticker_values = self.tickers_db.find(query).sort('runid', -1).limit(1)
+
+        for item in ticker_values:
+            ticker_value = item['ticker_value']
+
+        usd_balance = 0
+        try:
+            usd_balance += balanceValue['USDT'] * ticker_value['USDT/USD']['last']
+        except:
+            pass
+        try:
+            usd_balance += balanceValue['BTC'] * ticker_value['BTC/USDT']['last'] * ticker_value['USDT/USD']['last']
+        except:
+            pass
+        balanceValue['USD'] = usd_balance
         
         balance = {
             "client": client,
             "venue": exchange,
-            # "positionType": positionType.lower(),
             "account": "Main Account",
             "balance_value": balanceValue,
             "active": True,
