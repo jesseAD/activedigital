@@ -15,6 +15,9 @@ binance:
       COMMISSION_REBATE: COMMISSION
       API_REBATE: COMMISSION
 
+  mark_prices:
+    time: timestamp
+
 okx:
   position:
     info:
@@ -41,3 +44,8 @@ okx:
         _174: FUNDING_FEE
         _11: COIN_SWAP_DEPOSIT
         _12: COIN_SWAP_WITHDRAW
+  
+  mark_prices:
+    ts: timestamp
+    markPx: markPrice
+    instId: symbol

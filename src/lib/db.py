@@ -13,6 +13,9 @@ class MongoDB:
     def insert_one(self, data):
         self.collection.insert_one(data)
 
+    def insert_many(self, data, ordered=True):
+        self.collection.insert_many(data, ordered=ordered)
+
     def find(self, query):
         return self.collection.find(query)
 

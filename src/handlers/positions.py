@@ -93,9 +93,9 @@ class Positions:
                         portfolio = None
                         if exchange == 'binance':
                             if config['positions']['margin_mode'] == "non_portfolio":
-                                portfolio = exch.fapiprivatev2_get_positionrisk({'symbol': value['info']['symbol']})[0]
+                                portfolio = Helper().get_non_portfolio_margin(exch=exch, params={'symbol': value['info']['symbol']})
                             elif config['positions']['margin_mode'] == "portfolio":
-                                portfolio = exch.fapiprivate_get_balance({'symbol': 'USDT'})
+                                portfolio = Helper().get_portfolio_margin(exch=exch, params={'symbol': 'USDT'})
                         value['margin'] = portfolio
                     position_info.append(value)
 

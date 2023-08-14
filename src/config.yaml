@@ -1,4 +1,4 @@
-mode: prod
+mode: testing
 
 mongo_host: 127.0.0.1
 mongo_db: 'active_digital'
@@ -32,6 +32,9 @@ leverages:
 transactions:
   store_type: timeseries
   fetch_type: time # time, id
+
+mark_prices:
+  store_type: timeseries
 
 borrow_rates:
   codes: ['USDT', 'BTC']

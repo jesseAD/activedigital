@@ -86,11 +86,31 @@ class Helper():
     
     def get_funding_rates(self, exch, symbol, limit = None, since = None, params = {}):
         return exch.fetch_funding_rate_history(symbol=symbol, limit=limit, since=since, params=params)
+    
+    def get_portfolio_margin(self, exch, params={}):
+        return exch.fapiprivate_get_balance(params)
+    
+    def get_non_portfolio_margin(self, exch, params={}):
+        return exch.fapiprivatev2_get_positionrisk(params)[0]
+    
+    def get_mark_prices(self, exch, params={}):
+        return exch.fapipublic_get_premiumindex(params)
+    
+    def get_future_transactions(self, exch, params={}):
+        return exch.fapiprivate_get_income(params)
+    
+    def get_spot_transactions(self, exch, params={}):
+        return exch.private_get_mytrades(params)
 
 class OKXHelper(Helper):
     def get_positions(self, exch):
         return exch.fetch_positions(params={'type':'swap'})
     
+    def get_mark_prices(self, exch, params={}):
+        return exch.public_get_public_mark_price(params)['data'][0]
+    
+    def get_transactions(self, exch, params={}):
+        return exch.private_get_account_bills_archive(params)['data']
 
 class CoinbaseHelper():
     def get_usdt2usd_ticker(self, exch):

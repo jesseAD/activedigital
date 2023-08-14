@@ -73,55 +73,38 @@ class FundingRates:
             API_KEY = os.getenv(spec + "API_KEY")
             API_SECRET = os.getenv(spec + "API_SECRET")
             exch = Exchange(exchange, sub_account, API_KEY, API_SECRET).exch()
-
-            query = {}
-            if client:
-                query["client"] = client
-            if exchange:
-                query["venue"] = exchange
-            if sub_account:
-                query["account"] = sub_account
-
-            funding_rate_values = self.funding_rates_db.find(query)
-
-            current_values = None
-            for item in funding_rate_values:
-                current_values = item['funding_rates_value']
-
+            
             funding_rates_value = {}
-            if current_values is None:
-                for symbol in config['funding_rates']['symbols']:
+
+            for symbol in config['funding_rates']['symbols']:
+                query = {}
+                if client:
+                    query["client"] = client
+                if exchange:
+                    query["venue"] = exchange
+                if sub_account:
+                    query["account"] = sub_account
+                query['symbol'] = symbol
+
+                funding_rate_values = self.funding_rates_db.find(query).sort('_id', -1).limit(1)
+
+                current_values = None
+                for item in funding_rate_values:
+                    current_values = item['funding_rates_value']
+
+                if current_values is None:
                     if exchange == 'okx':
                         funding_rates_value[symbol] = OKXHelper().get_funding_rates(exch = exch, limit=100, symbol=symbol)
                     else:
                         funding_rates_value[symbol] = Helper().get_funding_rates(exch = exch, limit=100, symbol=symbol)
-            else:
-                for symbol in config['funding_rates']['symbols']:
-                    last_time = int(current_values[symbol][-1]['timestamp'])
+                else:
+                    last_time = int(current_values['info']['fundingTime'])
                     if exchange == 'okx':
-                        funding_rates_value[symbol] = current_values[symbol] + OKXHelper().get_funding_rates(exch = exch, limit=100, symbol=symbol, since=last_time)
+                        funding_rates_value[symbol] = OKXHelper().get_funding_rates(exch = exch, limit=100, symbol=symbol, since=last_time)
                     else:
-                        funding_rates_value[symbol] = current_values[symbol] + Helper().get_funding_rates(exch = exch, limit=100, symbol=symbol, since=last_time)
+                        funding_rates_value[symbol] = Helper().get_funding_rates(exch = exch, limit=100, symbol=symbol, since=last_time)
 
-        funding_rates = {
-            "client": client,
-            "venue": exchange,
-            "account": "Main Account",
-            "funding_rates_value": funding_rates_value,
-            "active": True,
-            "entry": False,
-            "exit": False,
-            "timestamp": datetime.now(timezone.utc),
-        }
-
-        if sub_account:
-            funding_rates["account"] = sub_account
-        if spot:
-            funding_rates["spotMarket"] = spot
-        if future:
-            funding_rates["futureMarket"] = future
-        if perp:
-            funding_rates["perpMarket"] = perp
+        funding_rates = []
 
         run_ids = self.runs_db.find({}).sort('_id', -1).limit(1)
 
@@ -131,25 +114,37 @@ class FundingRates:
                 latest_run_id = item['runid']
             except:
                 pass
-        
-        funding_rates["runid"] = latest_run_id
+
+        for symbol in config['funding_rates']['symbols']:
+            for item in funding_rates_value[symbol]:
+                new_value = {
+                    "client": client,
+                    "venue": exchange,
+                    "account": "Main Account",
+                    "funding_rates_value": item,
+                    "symbol": symbol,
+                    "active": True,
+                    "entry": False,
+                    "exit": False,
+                    "timestamp": datetime.now(timezone.utc),
+                }
+
+                if sub_account:
+                    new_value["account"] = sub_account
+                if spot:
+                    new_value["spotMarket"] = spot
+                if future:
+                    new_value["futureMarket"] = future
+                if perp:
+                    new_value["perpMarket"] = perp        
+            
+                new_value["runid"] = latest_run_id
+
+                funding_rates.append(new_value)
         
         try:
-            self.funding_rates_db.update_one(
-                {
-                    "client": funding_rates["client"],
-                    "venue": funding_rates["venue"],
-                    "account": funding_rates["account"]
-                },
-                { "$set": {
-                    "funding_rates_value": funding_rates["funding_rates_value"],
-                    "active": funding_rates["active"],
-                    "entry": funding_rates["entry"],
-                    "exit": funding_rates["exit"],
-                    "timestamp": funding_rates["timestamp"],
-                    "runid": funding_rates["runid"]
-                }},
-                upsert=True
+            self.funding_rates_db.insert_many(
+                funding_rates
             )
                 
             return funding_rates

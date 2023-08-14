@@ -15,6 +15,7 @@ from src.handlers.instantiator import collect_leverages
 from src.handlers.instantiator import collect_transactions
 from src.handlers.instantiator import collect_borrow_rates
 from src.handlers.instantiator import collect_funding_rates
+from src.handlers.instantiator import collect_mark_prices
 from src.handlers.instantiator import get_data_collectors
 
 client_lists = [
@@ -27,30 +28,33 @@ for client in client_lists:
 
     # binance_subaccount1
     collect_positions(client, data_collectors[1])
+    collect_mark_prices(client, data_collectors[1])
     collect_tickers(client, data_collectors[1])
     collect_borrow_rates(client, data_collectors[1])
     collect_funding_rates(client, data_collectors[1])
     collect_balances(client, data_collectors[1])
     collect_instruments(client, data_collectors[1])
-    # collect_transactions(client, data_collectors[1])
+    collect_transactions(client, data_collectors[1])
     collect_leverages(client, data_collectors[1])
 
     # binance_subaccount2
     collect_positions(client, data_collectors[2]) 
+    collect_mark_prices(client, data_collectors[2])
     collect_tickers(client, data_collectors[2])
     collect_borrow_rates(client, data_collectors[2])
     collect_funding_rates(client, data_collectors[2])
     collect_balances(client, data_collectors[2]) 
     collect_instruments(client, data_collectors[2]) 
-    # collect_transactions(client, data_collectors[2])
+    collect_transactions(client, data_collectors[2])
     collect_leverages(client, data_collectors[2])
 
     # okx_subaccount1
     collect_positions(client, data_collectors[3]) 
+    collect_mark_prices(client, data_collectors[3])
     collect_tickers(client, data_collectors[3])
     collect_borrow_rates(client, data_collectors[3])
     collect_funding_rates(client, data_collectors[3])
     collect_balances(client, data_collectors[3])
     collect_instruments(client, data_collectors[3]) 
-    # collect_transactions(client, data_collectors[3])
+    collect_transactions(client, data_collectors[3])
     collect_leverages(client, data_collectors[3])

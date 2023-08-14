@@ -19,13 +19,9 @@ class Tickers:
     def __init__(self, db):
         if config['mode'] == "testing":
             self.runs_db = MongoDB(config['mongo_db'], 'runs')
-            self.positions_db = MongoDB(config['mongo_db'], 'positions')
-            self.balances_db = MongoDB(config['mongo_db'], 'balances')
             self.tickers_db = MongoDB(config['mongo_db'], db)
         else:
             self.runs_db = database_connector('runs')
-            self.balances_db = database_connector('balances')
-            self.positions_db = database_connector('positions')
             self.tickers_db = database_connector('tickers')
 
     def get(
@@ -34,7 +30,6 @@ class Tickers:
         spot: str = None,
         future: str = None,
         perp: str = None,
-        position_type: str = None,
         exchange: str = None,
         account: str = None,
         symbol: str = None
@@ -53,8 +48,6 @@ class Tickers:
             pipeline.append({"$match": {"futureMarket": future}})
         if perp:
             pipeline.append({"$match": {"perpMarket": perp}})
-        if position_type:
-            pipeline.append({"$match": {"positionType": position_type}})
         if exchange:
             pipeline.append({"$match": {"venue": exchange}})
         if account:
@@ -73,7 +66,6 @@ class Tickers:
         self,
         client,
         exchange: str = None,
-        positionType: str = None,
         sub_account: str = None,
         spot: str = None,
         future: str = None,
@@ -170,63 +162,3 @@ class Tickers:
         except Exception as e:
             log.error(e)
             return False
-
-    # def entry(self, account: str = None, status: bool = True):
-    #     # get all positions with account
-    #     positions = Positions.get(active=True, account=account)
-
-    #     for position in positions:
-    #         try:
-    #             self.positions_db.update(
-    #                 {"_id": position["_id"]},
-    #                 {"entry": status},
-    #             )
-    #             log.debug(
-    #                 f"position in account entry {account} has been set to {status}"
-    #             )
-    #         except Exception as e:
-    #             log.error(e)
-    #             return False
-
-    #     return True
-
-    # def exit(self, account: str = None, status: bool = False):
-    #     # get all positions with account
-    #     positions = Positions.get(active=True, account=account)
-
-    #     for position in positions:
-    #         if position["entry"] is False:
-    #             log.debug(
-    #                 f"position in account {account} has not been entered, skipping"
-    #             )
-    #             continue
-    #         try:
-    #             self.positions_db.update(
-    #                 {"_id": position["_id"]},
-    #                 {"exit": status},
-    #             )
-    #             log.debug(
-    #                 f"Position in account exit {account} has been set to {status}"
-    #             )
-    #         except Exception as e:
-    #             log.error(e)
-    #             return False
-
-    #     return True
-
-    # def update(self, account: str = None, **kwargs: dict):
-    #     # get all positions with account
-    #     positions = Positions.get(account=account)
-
-    #     for position in positions:
-    #         try:
-    #             self.positions_db.update(
-    #                 {"_id": position["_id"]},
-    #                 kwargs,
-    #             )
-    #             log.debug(f"Position in account {account} has been updated")
-    #         except Exception as e:
-    #             log.error(e)
-    #             return False
-
-    #     return True
