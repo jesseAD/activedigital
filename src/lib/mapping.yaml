@@ -18,6 +18,9 @@ binance:
   mark_prices:
     time: timestamp
 
+  fills:
+    time: timestamp
+
 okx:
   position:
     info:
@@ -49,3 +52,10 @@ okx:
     ts: timestamp
     markPx: markPrice
     instId: symbol
+
+  fills:
+    instId: symbol
+    feeCcy: commissionAsset
+    billId: id
+    ts: timestamp
+    posSide: positionSide

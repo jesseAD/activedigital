@@ -14,14 +14,15 @@ load_dotenv()
 log = Log()
 config = read_config_file()
 
+
 class FundingRates:
     def __init__(self, db):
-        if config['mode'] == "testing":
-            self.runs_db = MongoDB(config['mongo_db'], 'runs')
-            self.funding_rates_db = MongoDB(config['mongo_db'], db)
+        if config["mode"] == "testing":
+            self.runs_db = MongoDB(config["mongo_db"], "runs")
+            self.funding_rates_db = MongoDB(config["mongo_db"], db)
         else:
             self.funding_rates_db = database_connector(db)
-            self.runs_db = database_connector('runs')
+            self.runs_db = database_connector("runs")
 
     def get(
         self,
@@ -66,17 +67,17 @@ class FundingRates:
         spot: str = None,
         future: str = None,
         perp: str = None,
-        balanceValue: str = None
+        fundingRatesValue: str = None,
     ):
-        if balanceValue is None:
+        if fundingRatesValue is None:
             spec = exchange.upper() + "_" + sub_account.upper() + "_"
             API_KEY = os.getenv(spec + "API_KEY")
             API_SECRET = os.getenv(spec + "API_SECRET")
             exch = Exchange(exchange, sub_account, API_KEY, API_SECRET).exch()
-            
-            funding_rates_value = {}
 
-            for symbol in config['funding_rates']['symbols']:
+            fundingRatesValue = {}
+
+            for symbol in config["funding_rates"]["symbols"]:
                 query = {}
                 if client:
                     query["client"] = client
@@ -84,39 +85,49 @@ class FundingRates:
                     query["venue"] = exchange
                 if sub_account:
                     query["account"] = sub_account
-                query['symbol'] = symbol
+                query["symbol"] = symbol
 
-                funding_rate_values = self.funding_rates_db.find(query).sort('_id', -1).limit(1)
+                funding_rate_values = (
+                    self.funding_rates_db.find(query).sort("_id", -1).limit(1)
+                )
 
                 current_values = None
                 for item in funding_rate_values:
-                    current_values = item['funding_rates_value']
+                    current_values = item["funding_rates_value"]
 
                 if current_values is None:
-                    if exchange == 'okx':
-                        funding_rates_value[symbol] = OKXHelper().get_funding_rates(exch = exch, limit=100, symbol=symbol)
+                    if exchange == "okx":
+                        fundingRatesValue[symbol] = OKXHelper().get_funding_rates(
+                            exch=exch, limit=100, symbol=symbol
+                        )
                     else:
-                        funding_rates_value[symbol] = Helper().get_funding_rates(exch = exch, limit=100, symbol=symbol)
+                        fundingRatesValue[symbol] = Helper().get_funding_rates(
+                            exch=exch, limit=100, symbol=symbol
+                        )
                 else:
-                    last_time = int(current_values['info']['fundingTime'])
-                    if exchange == 'okx':
-                        funding_rates_value[symbol] = OKXHelper().get_funding_rates(exch = exch, limit=100, symbol=symbol, since=last_time)
+                    last_time = int(current_values["info"]["fundingTime"])
+                    if exchange == "okx":
+                        fundingRatesValue[symbol] = OKXHelper().get_funding_rates(
+                            exch=exch, limit=100, symbol=symbol, since=last_time
+                        )
                     else:
-                        funding_rates_value[symbol] = Helper().get_funding_rates(exch = exch, limit=100, symbol=symbol, since=last_time)
+                        fundingRatesValue[symbol] = Helper().get_funding_rates(
+                            exch=exch, limit=100, symbol=symbol, since=last_time
+                        )
 
         funding_rates = []
 
-        run_ids = self.runs_db.find({}).sort('_id', -1).limit(1)
+        run_ids = self.runs_db.find({}).sort("_id", -1).limit(1)
 
         latest_run_id = 0
         for item in run_ids:
             try:
-                latest_run_id = item['runid']
+                latest_run_id = item["runid"]
             except:
                 pass
 
-        for symbol in config['funding_rates']['symbols']:
-            for item in funding_rates_value[symbol]:
+        for symbol in config["funding_rates"]["symbols"]:
+            for item in fundingRatesValue[symbol]:
                 new_value = {
                     "client": client,
                     "venue": exchange,
@@ -136,18 +147,17 @@ class FundingRates:
                 if future:
                     new_value["futureMarket"] = future
                 if perp:
-                    new_value["perpMarket"] = perp        
-            
+                    new_value["perpMarket"] = perp
+
                 new_value["runid"] = latest_run_id
 
                 funding_rates.append(new_value)
-        
+
         try:
-            self.funding_rates_db.insert_many(
-                funding_rates
-            )
-                
+            self.funding_rates_db.insert_many(funding_rates)
+
             return funding_rates
+        
         except Exception as e:
             log.error(e)
             return False

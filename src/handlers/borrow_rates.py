@@ -14,14 +14,15 @@ load_dotenv()
 log = Log()
 config = read_config_file()
 
+
 class BorrowRates:
     def __init__(self, db):
-        if config['mode'] == "testing":
-            self.runs_db = MongoDB(config['mongo_db'], 'runs')
-            self.borrow_rates_db = MongoDB(config['mongo_db'], db)
+        if config["mode"] == "testing":
+            self.runs_db = MongoDB(config["mongo_db"], "runs")
+            self.borrow_rates_db = MongoDB(config["mongo_db"], db)
         else:
             self.borrow_rates_db = database_connector(db)
-            self.runs_db = database_connector('runs')
+            self.runs_db = database_connector("runs")
 
     def get(
         self,
@@ -66,93 +67,106 @@ class BorrowRates:
         spot: str = None,
         future: str = None,
         perp: str = None,
-        balanceValue: str = None
+        borrowRatesValue: str = None,
     ):
-        if balanceValue is None:
+        if borrowRatesValue is None:
             spec = exchange.upper() + "_" + sub_account.upper() + "_"
             API_KEY = os.getenv(spec + "API_KEY")
             API_SECRET = os.getenv(spec + "API_SECRET")
             exch = Exchange(exchange, sub_account, API_KEY, API_SECRET).exch()
 
-            query = {}
-            if client:
-                query["client"] = client
-            if exchange:
-                query["venue"] = exchange
-            if sub_account:
-                query["account"] = sub_account
+            borrowRatesValue = {}
 
-            borrow_rate_values = self.borrow_rates_db.find(query)
+            for code in config["borrow_rates"]["codes"]:
+                query = {}
+                if client:
+                    query["client"] = client
+                if exchange:
+                    query["venue"] = exchange
+                if sub_account:
+                    query["account"] = sub_account
+                query["code"] = code
 
-            current_values = None
-            for item in borrow_rate_values:
-                current_values = item['borrow_rates_value']
+                borrow_rate_values = (
+                    self.borrow_rates_db.find(query).sort("_id", -1).limit(1)
+                )
 
-            borrow_rates_value = {}
-            if current_values is None:
-                for code in config['borrow_rates']['codes']:
-                    if exchange == 'okx':
-                        borrow_rates_value[code] = OKXHelper().get_borrow_rates(exch = exch, limit=92, code=code)
+                current_values = None
+                for item in borrow_rate_values:
+                    current_values = item["borrow_rates_value"]
+
+                if current_values is None:
+                    if exchange == "okx":
+                        borrowRatesValue[code] = OKXHelper().get_borrow_rates(
+                            exch=exch, limit=92, code=code
+                        )
                     else:
-                        borrow_rates_value[code] = Helper().get_borrow_rates(exch = exch, limit=92, code=code)
-            else:
-                for code in config['borrow_rates']['codes']:
-                    last_time = int(current_values[code][-1]['timestamp'])
-                    if exchange == 'okx':
-                        borrow_rates_value[code] = current_values[code] + OKXHelper().get_borrow_rates(exch = exch, limit=92, code=code, since=last_time)
+                        borrowRatesValue[code] = Helper().get_borrow_rates(
+                            exch=exch, limit=92, code=code
+                        )
+                else:
+                    last_time = int(current_values["timestamp"])
+                    if exchange == "okx":
+                        borrowRatesValue[code] = OKXHelper().get_borrow_rates(
+                            exch=exch, limit=92, code=code, since=last_time
+                        )
                     else:
-                        borrow_rates_value[code] = current_values[code] + Helper().get_borrow_rates(exch = exch, limit=92, code=code, since=last_time)
+                        borrowRatesValue[code] = Helper().get_borrow_rates(
+                            exch=exch, limit=92, code=code, since=last_time
+                        )
 
-        borrow_rates = {
-            "client": client,
-            "venue": exchange,
-            "account": "Main Account",
-            "borrow_rates_value": borrow_rates_value,
-            "active": True,
-            "entry": False,
-            "exit": False,
-            "timestamp": datetime.now(timezone.utc),
-        }
+        flag = False
+        for code in config["borrow_rates"]["codes"]:
+            if len(borrowRatesValue[code]) > 0:
+                flag = True
+                break
 
-        if sub_account:
-            borrow_rates["account"] = sub_account
-        if spot:
-            borrow_rates["spotMarket"] = spot
-        if future:
-            borrow_rates["futureMarket"] = future
-        if perp:
-            borrow_rates["perpMarket"] = perp
+        if flag == False:
+            return []
 
-        run_ids = self.runs_db.find({}).sort('_id', -1).limit(1)
+        borrow_rates = []
+
+        run_ids = self.runs_db.find({}).sort("_id", -1).limit(1)
 
         latest_run_id = 0
         for item in run_ids:
             try:
-                latest_run_id = item['runid']
+                latest_run_id = item["runid"]
             except:
                 pass
-        
-        borrow_rates["runid"] = latest_run_id
-        
+
+        for code in config["borrow_rates"]["codes"]:
+            for item in borrowRatesValue[code]:    
+                new_value = {
+                    "client": client,
+                    "venue": exchange,
+                    "account": "Main Account",
+                    "borrow_rates_value": item,
+                    "code": code,
+                    "active": True,
+                    "entry": False,
+                    "exit": False,
+                    "timestamp": datetime.now(timezone.utc),
+                }
+
+                if sub_account:
+                    new_value["account"] = sub_account
+                if spot:
+                    new_value["spotMarket"] = spot
+                if future:
+                    new_value["futureMarket"] = future
+                if perp:
+                    new_value["perpMarket"] = perp
+
+                new_value["runid"] = latest_run_id
+
+                borrow_rates.append(new_value)
+
         try:
-            self.borrow_rates_db.update_one(
-                {
-                    "client": borrow_rates["client"],
-                    "venue": borrow_rates["venue"],
-                    "account": borrow_rates["account"]
-                },
-                { "$set": {
-                    "borrow_rates_value": borrow_rates["borrow_rates_value"],
-                    "active": borrow_rates["active"],
-                    "entry": borrow_rates["entry"],
-                    "exit": borrow_rates["exit"],
-                    "timestamp": borrow_rates["timestamp"],
-                    "runid": borrow_rates["runid"]
-                }},
-                upsert=True
-            )
-                
+            self.borrow_rates_db.insert_many(borrow_rates)
+
             return borrow_rates
+        
         except Exception as e:
             log.error(e)
             return False

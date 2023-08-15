@@ -101,6 +101,9 @@ class Helper():
     
     def get_spot_transactions(self, exch, params={}):
         return exch.private_get_mytrades(params)
+    
+    def get_fills(self, exch, params={}):
+        return exch.fapiprivate_get_usertrades(params)
 
 class OKXHelper(Helper):
     def get_positions(self, exch):
@@ -111,6 +114,9 @@ class OKXHelper(Helper):
     
     def get_transactions(self, exch, params={}):
         return exch.private_get_account_bills_archive(params)['data']
+    
+    def get_fills(self, exch, params={}):
+        return exch.private_get_trade_fills_history(params)['data']
 
 class CoinbaseHelper():
     def get_usdt2usd_ticker(self, exch):

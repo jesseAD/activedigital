@@ -157,3 +157,26 @@ class Mapping:
                     new_mark_price[_key] = _value
 
             return new_mark_price
+        
+    def mapping_fills(self, exchange, fills=None):
+        if exchange not in self.mapping_data.keys():
+            return fills
+
+        if fills is not None:
+            if "fills" not in self.mapping_data[exchange].keys():
+                return fills
+
+            new_fills = []
+            mapping_data = self.mapping_data[exchange]["fills"]
+
+            for item in fills:
+                new_fill = {}
+                for _key, _value in item.items():
+                    if _key in mapping_data.keys():
+                        new_fill[mapping_data[_key]] = _value
+                    else:
+                        new_fill[_key] = _value
+                
+                new_fills.append(new_fill)
+
+            return new_fills

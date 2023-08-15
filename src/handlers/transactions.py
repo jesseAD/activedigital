@@ -91,7 +91,7 @@ class Transactions:
                 elif exchange == "binance":
                     futures_trades = Helper().get_future_transactions(
                         exch=exch,
-                        params={"limit": 500}
+                        params={"limit": 100}
                     )
                     futures_trades = Mapping().mapping_transactions(
                         exchange=exchange, transactions=futures_trades
@@ -104,37 +104,57 @@ class Transactions:
                     transaction_value = {"future": futures_trades, "spot": spot_trades}
 
             elif config["transactions"]["store_type"] == "timeseries":
-                query = {}
-                if client:
-                    query["client"] = client
-                if exchange:
-                    query["venue"] = exchange
-                if sub_account:
-                    query["account"] = sub_account
-                transactions_values = self.transactions_db.find(query)
+                if exchange == "okx":
+                    query = {}
+                    if client:
+                        query["client"] = client
+                    if exchange:
+                        query["venue"] = exchange
+                    if sub_account:
+                        query["account"] = sub_account
 
-                current_values = None
-                for item in transactions_values:
-                    current_values = item["transaction_value"]
+                    transactions_values = self.transactions_db.find(query).sort('transaction_value.timestamp', -1).limit(1)
 
-                if current_values is None:
-                    if exchange == "okx":
+                    current_value = None
+                    for item in transactions_values:
+                        current_value = item["transaction_value"]
+
+                    if current_value is None:
                         transactions = OKXHelper().get_transactions(exch=exch)
                         transaction_value = Mapping().mapping_transactions(
                             exchange=exchange, transactions=transactions
                         )
+                    else:
+                        if config["transactions"]["fetch_type"] == "id":
+                            last_id = current_value["billId"]
+                            transactions = OKXHelper().get_transactions(
+                                exch=exch,
+                                params={"before": last_id}
+                            )
+                            transaction_value = Mapping().mapping_transactions(
+                                exchange=exchange, transactions=transactions
+                            )
+                        elif config["transactions"]["fetch_type"] == "time":
+                            last_time = current_value["timestamp"]
+                            transactions = OKXHelper().get_transactions(
+                                exch=exch,
+                                params={"begin": last_time}
+                            )
+                            transaction_value = Mapping().mapping_transactions(
+                                exchange=exchange, transactions=transactions
+                            )
 
-                    elif exchange == "binance":
+                    if exchange == "binance":
                         futures_trades = Helper().get_future_transactions(
                             exch=exch,
-                            params={"limit": 500}
+                            params={"limit": 100}
                         )
                         futures_trades = Mapping().mapping_transactions(
                             exchange=exchange, transactions=futures_trades
                         )
                         spot_trades = Helper().get_spot_transactions(
                             exch=exch,
-                            params={"symbol": symbol, "limit": 500}
+                            params={"symbol": symbol, "limit": 100}
                         )
 
                         transaction_value = {
@@ -144,7 +164,7 @@ class Transactions:
                 else:
                     if exchange == "okx":
                         if config["transactions"]["fetch_type"] == "id":
-                            last_id = current_values[0]["billId"]
+                            last_id = current_value[0]["billId"]
                             transactions = OKXHelper().get_transactions(
                                 exch=exch,
                                 params={"before": last_id}
@@ -153,7 +173,7 @@ class Transactions:
                                 exchange=exchange, transactions=transactions
                             )
                         elif config["transactions"]["fetch_type"] == "time":
-                            last_time = current_values[0]["timestamp"]
+                            last_time = current_value[0]["timestamp"]
                             transactions = OKXHelper().get_transactions(
                                 exch=exch,
                                 params={"begin": last_time}
@@ -162,57 +182,57 @@ class Transactions:
                                 exchange=exchange, transactions=transactions
                             )
 
-                        transaction_value = transactions + current_values
+                        transaction_value = transactions + current_value
 
                     elif exchange == "binance":
-                        if len(current_values["future"]) != 0:
-                            last_time = current_values["future"][0]["timestamp"]
+                        if len(current_value["future"]) != 0:
+                            last_time = current_value["future"][0]["timestamp"]
                             futures_trades = Helper().get_future_transactions(
                                 exch=exch,
                                 params={
                                     "startTime": last_time,
-                                    "limit": 500,
+                                    "limit": 100,
                                     "symbol": symbol,
                                 }
                             )
                             futures_trades = Mapping().mapping_transactions(
                                 exchange=exchange, transactions=futures_trades
                             )
-                            futures_trades += current_values["future"]
+                            futures_trades += current_value["future"]
                         else:
                             futures_trades = Helper().get_future_transactions(
                                 exch=exch,
-                                params={"limit": 500, "symbol": symbol}
+                                params={"limit": 100, "symbol": symbol}
                             )
                             futures_trades = Mapping().mapping_transactions(
                                 exchange=exchange, transactions=futures_trades
                             )
 
-                        if len(current_values["spot"]) != 0:
+                        if len(current_value["spot"]) != 0:
                             if config["transactions"]["fetch_type"] == "id":
-                                last_id = current_values["spot"][0]["id"]
+                                last_id = current_value["spot"][0]["id"]
                                 spot_trades = Helper().get_spot_transactions(
                                     exch=exch,
                                     params={
                                         "fromId": last_id,
                                         "symbol": symbol,
-                                        "limit": 500,
+                                        "limit": 100,
                                     }
                                 )
                             elif config["transactions"]["fetch_type"] == "time":
-                                last_time = current_values["spot"][0]["time"]
+                                last_time = current_value["spot"][0]["time"]
                                 spot_trades = Helper().get_spot_transactions(
                                     exch=exch,
                                     params={
                                         "startTime": last_time,
                                         "symbol": symbol,
-                                        "limit": 500,
+                                        "limit": 100,
                                     }
                                 )
                         else:
                             spot_trades = Helper().get_spot_transactions(
                                 exch=exch,
-                                params={"symbol": symbol, "limit": 500}
+                                params={"symbol": symbol, "limit": 100}
                             )
 
                         transaction_value = {
@@ -221,26 +241,6 @@ class Transactions:
                         }
 
         current_time = datetime.now(timezone.utc)
-        transaction = {
-            "client": client,
-            "venue": exchange,
-            "account": "Main Account",
-            "transaction_value": transaction_value,
-            "active": True,
-            "entry": False,
-            "exit": False,
-            "timestamp": current_time,
-        }
-
-        if sub_account:
-            transaction["account"] = sub_account
-        if spot:
-            transaction["spotMarket"] = spot
-        if future:
-            transaction["futureMarket"] = future
-        if perp:
-            transaction["perpMarket"] = perp
-
         run_ids = self.runs_db.find({}).sort("_id", -1).limit(1)
         latest_run_id = 0
         for item in run_ids:
@@ -248,50 +248,136 @@ class Transactions:
                 latest_run_id = item["runid"]
             except:
                 pass
-        transaction["runid"] = latest_run_id
 
         if config["transactions"]["store_type"] == "snapshot":
-            # get latest transaction data
-            query = {}
-            if client:
-                query["client"] = client
-            if exchange:
-                query["venue"] = exchange
+            transaction = {
+                "client": client,
+                "venue": exchange,
+                "account": "Main Account",
+                "transaction_value": transaction_value,
+                "runid": latest_run_id,
+                "active": True,
+                "entry": False,
+                "exit": False,
+                "timestamp": current_time,
+            }
+
             if sub_account:
-                query["account"] = sub_account
+                transaction["account"] = sub_account
+            if spot:
+                transaction["spotMarket"] = spot
+            if future:
+                transaction["futureMarket"] = future
+            if perp:
+                transaction["perpMarket"] = perp
+            
+        elif config["transactions"]["store_type"] == "timeseries":
+            transaction = []
 
-            transactions_values = self.transactions_db.find(query).sort("_id", -1)
+            if exchange == 'okx':
+                if len(transaction_value) == 0:
+                    return False
+                
+                for item in transaction_value:
+                    new_value = {
+                        "client": client,
+                        "venue": exchange,
+                        "account": "Main Account",
+                        "transaction_value": item,
+                        "runid": latest_run_id,
+                        "active": True,
+                        "entry": False,
+                        "exit": False,
+                        "timestamp": current_time,
+                    }
+                    if sub_account:
+                        new_value["account"] = sub_account
+                    if spot:
+                        new_value["spotMarket"] = spot
+                    if future:
+                        new_value["futureMarket"] = future
+                    if perp:
+                        new_value["perpMarket"] = perp
+                    
+                    transaction.append(new_value)
+            
+            if exchange == 'binance':
+                if len(transaction_value['future']) > 0:
+                    for item in transaction_value['future']:
+                        new_value = {
+                            "client": client,
+                            "venue": exchange,
+                            "account": "Main Account",
+                            "transaction_value": item,
+                            "trade_type": "future",
+                            "runid": latest_run_id,
+                            "active": True,
+                            "entry": False,
+                            "exit": False,
+                            "timestamp": current_time,
+                        }
+                        if sub_account:
+                            new_value["account"] = sub_account
+                        if spot:
+                            new_value["spotMarket"] = spot
+                        if future:
+                            new_value["futureMarket"] = future
+                        if perp:
+                            new_value["perpMarket"] = perp
+                        
+                        transaction.append(new_value)
 
-            latest_run_id = -1
-            latest_value = None
-            for item in transactions_values:
-                if latest_run_id < item["runid"]:
-                    latest_run_id = item["runid"]
-                    latest_value = item["transaction_value"]
+                if len(transaction_value['spot']) > 0:
+                    for item in transaction_value['spot']:
+                        new_value = {
+                            "client": client,
+                            "venue": exchange,
+                            "account": "Main Account",
+                            "transaction_value": item,
+                            "trade_type": "spot",
+                            "runid": latest_run_id,
+                            "active": True,
+                            "entry": False,
+                            "exit": False,
+                            "timestamp": current_time,
+                        }
+                        if sub_account:
+                            new_value["account"] = sub_account
+                        if spot:
+                            new_value["spotMarket"] = spot
+                        if future:
+                            new_value["futureMarket"] = future
+                        if perp:
+                            new_value["perpMarket"] = perp
+                        
+                        transaction.append(new_value)
 
-            if latest_value == transaction["transaction_value"]:
-                print("same transaction")
-                return False
+                if len(transaction) == 0:
+                    return False
 
         try:
-            self.transactions_db.update_one(
-                {
-                    "client": transaction["client"],
-                    "venue": transaction["venue"],
-                    "account": transaction["account"],
-                },
-                {
-                    "$set": {
-                        "transaction_value": transaction["transaction_value"],
-                        "timestamp": transaction["timestamp"],
-                        "runid": transaction["runid"],
-                        "active": transaction["active"],
-                        "entry": transaction["entry"],
-                        "exit": transaction["exit"],
-                    }
-                },
-                upsert=True,
-            )
+            if config["transactions"]["store_type"] == "snapshot":
+                self.transactions_db.update_one(
+                    {
+                        "client": transaction["client"],
+                        "venue": transaction["venue"],
+                        "account": transaction["account"],
+                    },
+                    {
+                        "$set": {
+                            "transaction_value": transaction["transaction_value"],
+                            "timestamp": transaction["timestamp"],
+                            "runid": transaction["runid"],
+                            "active": transaction["active"],
+                            "entry": transaction["entry"],
+                            "exit": transaction["exit"],
+                        }
+                    },
+                    upsert=True,
+                )
+
+            elif config["transactions"]["store_type"] == "timeseries":
+                self.transactions_db.insert_many(transaction)
 
             # log.debug(f"transaction created: {transaction}")
             return transaction

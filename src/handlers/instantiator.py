@@ -8,6 +8,7 @@ from src.handlers.transactions import Transactions
 from src.handlers.borrow_rates import BorrowRates
 from src.handlers.funding_rates import FundingRates
 from src.handlers.mark_price import MarkPrices
+from src.handlers.fills import Fills
 from src.config import read_config_file
 
 def instantiate(client, collection, exchange, account=None):
@@ -107,6 +108,13 @@ def collect_funding_rates(client_alias, data_collector):
 
 def collect_mark_prices(client_alias, data_collector):
     MarkPrices('mark_prices').create(
+        client=client_alias,
+        exchange=data_collector.exchange,
+        sub_account=data_collector.account,
+    )
+
+def collect_fills(client_alias, data_collector):
+    Fills('fills').create(
         client=client_alias,
         exchange=data_collector.exchange,
         sub_account=data_collector.account,

@@ -1,4 +1,4 @@
-mode: testing
+mode: prod
 
 mongo_host: 127.0.0.1
 mongo_db: 'active_digital'
@@ -32,6 +32,13 @@ leverages:
 transactions:
   store_type: timeseries
   fetch_type: time # time, id
+
+fills:
+  store_type: timeseries
+  fetch_type: time # time, id
+  symbols:
+    binance: ['BTCUSDT',]
+    okx: ['BTC-USDT-SWAP',]
 
 mark_prices:
   store_type: timeseries
