@@ -68,7 +68,11 @@ class FundingRates:
         future: str = None,
         perp: str = None,
         fundingRatesValue: str = None,
+        symbols: str = None,
     ):
+        if symbols is None:
+            symbols = config["funding_rates"]["symbols"]
+
         if fundingRatesValue is None:
             spec = exchange.upper() + "_" + sub_account.upper() + "_"
             API_KEY = os.getenv(spec + "API_KEY")
@@ -77,7 +81,7 @@ class FundingRates:
 
             fundingRatesValue = {}
 
-            for symbol in config["funding_rates"]["symbols"]:
+            for symbol in symbols:
                 query = {}
                 if client:
                     query["client"] = client
@@ -114,7 +118,16 @@ class FundingRates:
                         fundingRatesValue[symbol] = Helper().get_funding_rates(
                             exch=exch, limit=100, symbol=symbol, since=last_time
                         )
+        
+        flag = False
+        for symbol in symbols:
+            if len(fundingRatesValue[symbol]) > 0:
+                flag = True
+                break
 
+        if flag == False:
+            return []
+        
         funding_rates = []
 
         run_ids = self.runs_db.find({}).sort("_id", -1).limit(1)
@@ -126,7 +139,7 @@ class FundingRates:
             except:
                 pass
 
-        for symbol in config["funding_rates"]["symbols"]:
+        for symbol in symbols:
             for item in fundingRatesValue[symbol]:
                 new_value = {
                     "client": client,

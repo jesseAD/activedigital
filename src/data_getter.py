@@ -36,7 +36,7 @@ for client in client_lists:
     collect_fills(client, data_collectors[1])
     collect_balances(client, data_collectors[1])
     collect_instruments(client, data_collectors[1])
-    # collect_transactions(client, data_collectors[1])
+    collect_transactions(client, data_collectors[1])
     collect_leverages(client, data_collectors[1])
 
     # binance_subaccount2
@@ -48,7 +48,7 @@ for client in client_lists:
     collect_fills(client, data_collectors[2])
     collect_balances(client, data_collectors[2]) 
     collect_instruments(client, data_collectors[2]) 
-    # collect_transactions(client, data_collectors[2])
+    collect_transactions(client, data_collectors[2])
     collect_leverages(client, data_collectors[2])
 
     # okx_subaccount1
@@ -60,5 +60,5 @@ for client in client_lists:
     collect_fills(client, data_collectors[3])
     collect_balances(client, data_collectors[3])
     collect_instruments(client, data_collectors[3]) 
-    # collect_transactions(client, data_collectors[3])
+    collect_transactions(client, data_collectors[3])
     collect_leverages(client, data_collectors[3])

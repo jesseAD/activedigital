@@ -32,6 +32,7 @@ class BorrowRates:
         perp: str = None,
         exchange: str = None,
         account: str = None,
+        code: str = None,
     ):
         results = []
 
@@ -51,6 +52,8 @@ class BorrowRates:
             pipeline.append({"$match": {"venue": exchange}})
         if account:
             pipeline.append({"$match": {"account": account}})
+        if code:
+            pipeline.append({"$match": {"code": code}})
 
         try:
             results = self.borrow_rates_db.aggregate(pipeline)
@@ -68,7 +71,11 @@ class BorrowRates:
         future: str = None,
         perp: str = None,
         borrowRatesValue: str = None,
+        codes: str = None,
     ):
+        if codes is None:
+            codes = config["borrow_rates"]["codes"]
+            
         if borrowRatesValue is None:
             spec = exchange.upper() + "_" + sub_account.upper() + "_"
             API_KEY = os.getenv(spec + "API_KEY")
@@ -77,7 +84,7 @@ class BorrowRates:
 
             borrowRatesValue = {}
 
-            for code in config["borrow_rates"]["codes"]:
+            for code in codes:
                 query = {}
                 if client:
                     query["client"] = client
@@ -116,7 +123,7 @@ class BorrowRates:
                         )
 
         flag = False
-        for code in config["borrow_rates"]["codes"]:
+        for code in codes:
             if len(borrowRatesValue[code]) > 0:
                 flag = True
                 break
@@ -135,7 +142,7 @@ class BorrowRates:
             except:
                 pass
 
-        for code in config["borrow_rates"]["codes"]:
+        for code in codes:
             for item in borrowRatesValue[code]:    
                 new_value = {
                     "client": client,

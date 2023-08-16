@@ -1,0 +1,150 @@
+{
+    "USDT": [
+        {
+            "currency": "USDT",
+            "rate": 0.00014816,
+            "period": 86400000,
+            "timestamp": 1692072000000.0,
+            "info": {
+                "asset": "USDT",
+                "timestamp": "1692072000000",
+                "dailyInterestRate": "0.00014816",
+                "vipLevel": "0"
+            }
+        },
+        {
+            "currency": "USDT",
+            "rate": 0.00015066,
+            "period": 86400000,
+            "timestamp": 1692133200000.0,
+            "info": {
+                "asset": "USDT",
+                "timestamp": "1692133200000",
+                "dailyInterestRate": "0.00015066",
+                "vipLevel": "0"
+            }
+        },
+        {
+            "currency": "USDT",
+            "rate": 0.00015066,
+            "period": 86400000,
+            "timestamp": 1692144000000.0,
+            "info": {
+                "asset": "USDT",
+                "timestamp": "1692144000000",
+                "dailyInterestRate": "0.00015066",
+                "vipLevel": "0"
+            }
+        },
+        {
+            "currency": "USDT",
+            "rate": 0.00015304,
+            "period": 86400000,
+            "timestamp": 1692147600000.0,
+            "info": {
+                "asset": "USDT",
+                "timestamp": "1692147600000",
+                "dailyInterestRate": "0.00015304",
+                "vipLevel": "0"
+            }
+        },
+        {
+            "currency": "USDT",
+            "rate": 0.00014532,
+            "period": 86400000,
+            "timestamp": 1692154800000.0,
+            "info": {
+                "asset": "USDT",
+                "timestamp": "1692154800000",
+                "dailyInterestRate": "0.00014532",
+                "vipLevel": "0"
+            }
+        },
+        {
+            "currency": "USDT",
+            "rate": 0.00014696,
+            "period": 86400000,
+            "timestamp": 1692187200000.0,
+            "info": {
+                "asset": "USDT",
+                "timestamp": "1692187200000",
+                "dailyInterestRate": "0.00014696",
+                "vipLevel": "0"
+            }
+        }
+    ],
+    "BTC": [
+        {
+            "currency": "BTC",
+            "rate": 4.219e-05,
+            "period": 86400000,
+            "timestamp": 1692104400000.0,
+            "info": {
+                "asset": "BTC",
+                "timestamp": "1692104400000",
+                "dailyInterestRate": "0.00004219",
+                "vipLevel": "0"
+            }
+        },
+        {
+            "currency": "BTC",
+            "rate": 4.219e-05,
+            "period": 86400000,
+            "timestamp": 1692144000000.0,
+            "info": {
+                "asset": "BTC",
+                "timestamp": "1692144000000",
+                "dailyInterestRate": "0.00004219",
+                "vipLevel": "0"
+            }
+        },
+        {
+            "currency": "BTC",
+            "rate": 4.177e-05,
+            "period": 86400000,
+            "timestamp": 1692154800000.0,
+            "info": {
+                "asset": "BTC",
+                "timestamp": "1692154800000",
+                "dailyInterestRate": "0.00004177",
+                "vipLevel": "0"
+            }
+        },
+        {
+            "currency": "BTC",
+            "rate": 4.134e-05,
+            "period": 86400000,
+            "timestamp": 1692169200000.0,
+            "info": {
+                "asset": "BTC",
+                "timestamp": "1692169200000",
+                "dailyInterestRate": "0.00004134",
+                "vipLevel": "0"
+            }
+        },
+        {
+            "currency": "BTC",
+            "rate": 4.083e-05,
+            "period": 86400000,
+            "timestamp": 1692176400000.0,
+            "info": {
+                "asset": "BTC",
+                "timestamp": "1692176400000",
+                "dailyInterestRate": "0.00004083",
+                "vipLevel": "0"
+            }
+        },
+        {
+            "currency": "BTC",
+            "rate": 4.156e-05,
+            "period": 86400000,
+            "timestamp": 1692194400000.0,
+            "info": {
+                "asset": "BTC",
+                "timestamp": "1692194400000",
+                "dailyInterestRate": "0.00004156",
+                "vipLevel": "0"
+            }
+        }
+    ]
+}
