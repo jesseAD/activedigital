@@ -60,28 +60,10 @@ class Mapping:
             new_instrument = {}
             mapping_data = self.mapping_data[exchange]["instrument"]
             for _key, _value in instrument.items():
-                if type(_value) is dict:
-                    new_instrument[_key] = {}
-
-                    if _key in mapping_data.keys():
-                        for __key, __value in _value.items():
-                            if __key in mapping_data[_key].keys():
-                                new_instrument[_key][
-                                    mapping_data[_key][__key]
-                                ] = __value
-                            else:
-                                new_instrument[_key][__key] = __value
-                    else:
-                        for (
-                            __key,
-                            __value,
-                        ) in _value.items():
-                            new_instrument[_key][__key] = __value
+                if _key in mapping_data.keys():
+                    new_instrument[mapping_data[_key]] = _value
                 else:
-                    if _key in mapping_data.keys():
-                        new_instrument[mapping_data[_key]] = _value
-                    else:
-                        new_instrument[_key] = _value
+                    new_instrument[_key] = _value
 
             return new_instrument
 

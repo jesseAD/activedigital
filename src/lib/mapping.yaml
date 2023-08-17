@@ -5,6 +5,10 @@ binance:
       entryPrice: avgPrice
       unrealizedProfit: unrealisedpnl
 
+  instrument:
+    quoteAsset: quoteCcy
+    baseAsset: baseCcy
+
   transaction:
     time: timestamp
     values:
@@ -28,6 +32,10 @@ okx:
       instId: symbol
       avgPx: avgPrice
       upl: unrealisedpnl
+
+  instrument:
+    instId: symbol
+    state: status
   
   transaction:
     ts: timestamp

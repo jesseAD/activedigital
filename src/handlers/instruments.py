@@ -28,9 +28,11 @@ class Instruments:
     def __init__(self, db):
         if config['mode'] == "testing":
             self.runs_db = MongoDB(config["mongo_db"], "runs")
+            self.bid_asks_db = MongoDB(config["mongo_db"], "bid_asks")
             self.insturments_db = MongoDB(config["mongo_db"], db)
         else:
             self.runs_db = database_connector("runs")
+            self.bid_asks_db = database_connector("bid_asks")
             self.insturments_db = database_connector("instruments")
 
     def get(
@@ -92,12 +94,18 @@ class Instruments:
             else:
                 instrumentValue = Helper().get_instruments(exch=exch)
 
+            if exchange == "okx":
+                bid_ask_value = OKXHelper().get_bid_ask(exch=exch, symbol="BTC/USDT")
+            elif exchange == "binance":
+                bid_ask_value = Helper().get_bid_ask(exch=exch, symbol="BTC/USDT")
+
+            bid_ask_value['mid_point'] = (bid_ask_value['bid'] + bid_ask_value['ask']) / 2.0  
+
         instrument = {
             "client": client,
             "venue": exchange,
-            # "positionType": positionType.lower(),
             "account": "Main Account",
-            "instrument_value": Mapping().mapping_instruments(exchange=exchange, instrument=instrumentValue[0]["info"]),
+            "instrument_value": Mapping().mapping_instruments(exchange=exchange, instrument=instrumentValue),
             "active": True,
             "entry": False,
             "exit": False,
@@ -112,7 +120,9 @@ class Instruments:
             instrument["futureMarket"] = future
         if perp:
             instrument["perpMarket"] = perp
+
         run_ids = self.runs_db.find({}).sort("_id", -1).limit(1)
+
         latest_run_id = 0
         for item in run_ids:
             try:
@@ -120,6 +130,34 @@ class Instruments:
             except:
                 pass
         instrument["runid"] = latest_run_id
+
+        # store best bid, ask, mid point
+        bid_ask = {
+            "client": client,
+            "venue": exchange,
+            "account": "Main Account",
+            "bid_ask_value": bid_ask_value, 
+            "symbol": "BTC/USDT",
+            "active": True,
+            "entry": False,
+            "exit": False,
+            "timestamp": datetime.now(timezone.utc),
+            "runid": latest_run_id,
+        }
+        if sub_account:
+            bid_ask["account"] = sub_account
+        if spot:
+            bid_ask["spotMarket"] = spot
+        if future:
+            bid_ask["futureMarket"] = future
+        if perp:
+            bid_ask["perpMarket"] = perp
+
+        try:
+            self.bid_asks_db.insert_one(bid_ask)
+        except:
+            pass
+
         # get latest instruments data
         query = {}
         if client:

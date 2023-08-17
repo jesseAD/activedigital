@@ -69,16 +69,20 @@ class Fills:
         future: str = None,
         perp: str = None,
         fillsValue: str = None,
+        symbols: str = None,
     ):
+        if symbols is None:
+            symbols = config["fills"]["symbols"][exchange]
+
         if fillsValue is None:
             spec = exchange.upper() + "_" + sub_account.upper() + "_"
             API_KEY = os.getenv(spec + "API_KEY")
             API_SECRET = os.getenv(spec + "API_SECRET")
             exch = Exchange(exchange, sub_account, API_KEY, API_SECRET).exch()
 
-            fills_value = {}
+            fillsValue = {}
 
-            for symbol in config["fills"]["symbols"][exchange]:
+            for symbol in symbols:
                 query = {}
                 if client:
                     query["client"] = client
@@ -96,7 +100,7 @@ class Fills:
 
                 if current_value is None:
                     if exchange == "okx":
-                        fills_value[symbol] = Mapping().mapping_fills(
+                        fillsValue[symbol] = Mapping().mapping_fills(
                             exchange=exchange,
                             fills=OKXHelper().get_fills(
                                 exch=exch,
@@ -108,7 +112,7 @@ class Fills:
                             ),
                         )
                     else:
-                        fills_value[symbol] = Mapping().mapping_fills(
+                        fillsValue[symbol] = Mapping().mapping_fills(
                             exchange=exchange,
                             fills=Helper().get_fills(
                                 exch=exch, params={"symbol": symbol, "limit": 100}
@@ -118,7 +122,7 @@ class Fills:
                     if config["fills"]["fetch_type"] == "time":
                         last_time = int(current_value["timestamp"])
                         if exchange == "okx":
-                            fills_value[symbol] = Mapping().mapping_fills(
+                            fillsValue[symbol] = Mapping().mapping_fills(
                                 exchange=exchange,
                                 fills=OKXHelper().get_fills(
                                     exch=exch,
@@ -131,7 +135,7 @@ class Fills:
                                 ),
                             )
                         else:
-                            fills_value[symbol] = Mapping().mapping_fills(
+                            fillsValue[symbol] = Mapping().mapping_fills(
                                 exchange=exchange,
                                 fills=Helper().get_fills(
                                     exch=exch,
@@ -145,7 +149,7 @@ class Fills:
                     elif config["fills"]["fetch_type"] == "id":
                         last_id = int(current_value["id"])
                         if exchange == "okx":
-                            fills_value[symbol] = Mapping().mapping_fills(
+                            fillsValue[symbol] = Mapping().mapping_fills(
                                 exchange=exchange,
                                 fills=OKXHelper().get_fills(
                                     exch=exch,
@@ -158,7 +162,7 @@ class Fills:
                                 ),
                             )
                         else:
-                            fills_value[symbol] = Mapping().mapping_fills(
+                            fillsValue[symbol] = Mapping().mapping_fills(
                                 exchange=exchange,
                                 fills=Helper().get_fills(
                                     exch=exch,
@@ -169,7 +173,7 @@ class Fills:
                                     },
                                 ),
                             )
-
+                            
         fills = []
 
         run_ids = self.runs_db.find({}).sort("_id", -1).limit(1)
@@ -181,8 +185,8 @@ class Fills:
             except:
                 pass
 
-        for symbol in config["fills"]["symbols"][exchange]:
-            for item in fills_value[symbol]:
+        for symbol in symbols:
+            for item in fillsValue[symbol]:
                 new_value = {
                     "client": client,
                     "venue": exchange,

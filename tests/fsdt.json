@@ -1,0 +1,3402 @@
+{
+    "BTCUSDT": [
+        {
+            "symbol": "BTCUSDT",
+            "id": "4008259477",
+            "orderId": "180515569453",
+            "side": "SELL",
+            "price": "29302.10",
+            "qty": "0.004",
+            "realizedPnl": "-0.01889999",
+            "marginAsset": "USDT",
+            "quoteQty": "117.20840",
+            "commission": "0.02344168",
+            "commissionAsset": "USDT",
+            "timestamp": "1692123425789",
+            "positionSide": "BOTH"
+            
+            
+        },
+        {
+            "symbol": "BTCUSDT",
+            "id": "4008260347",
+            "orderId": "180515752256",
+            "side": "SELL",
+            "price": "29305.90",
+            "qty": "0.001",
+            "realizedPnl": "0",
+            "marginAsset": "USDT",
+            "quoteQty": "29.30590",
+            "commission": "0.00586118",
+            "commissionAsset": "USDT",
+            "timestamp": "1692123529888",
+            "positionSide": "BOTH"
+            
+            
+        },
+        {
+            "symbol": "BTCUSDT",
+            "id": "4008318990",
+            "orderId": "180523101198",
+            "side": "BUY",
+            "price": "29204.30",
+            "qty": "0.001",
+            "realizedPnl": "0.10160000",
+            "marginAsset": "USDT",
+            "quoteQty": "29.20430",
+            "commission": "0.00584086",
+            "commissionAsset": "USDT",
+            "timestamp": "1692126499559",
+            "positionSide": "BOTH"
+            
+            
+        },
+        {
+            "symbol": "BTCUSDT",
+            "id": "4008452219",
+            "orderId": "180526204621",
+            "side": "SELL",
+            "price": "29149.80",
+            "qty": "0.001",
+            "realizedPnl": "0",
+            "marginAsset": "USDT",
+            "quoteQty": "29.14980",
+            "commission": "0.00582996",
+            "commissionAsset": "USDT",
+            "timestamp": "1692126997379",
+            "positionSide": "BOTH"
+            
+            
+        },
+        {
+            "symbol": "BTCUSDT",
+            "id": "4008464983",
+            "orderId": "180527105802",
+            "side": "SELL",
+            "price": "29162.60",
+            "qty": "0.001",
+            "realizedPnl": "0",
+            "marginAsset": "USDT",
+            "quoteQty": "29.16260",
+            "commission": "0.00583252",
+            "commissionAsset": "USDT",
+            "timestamp": "1692127117643",
+            "positionSide": "BOTH"
+            
+            
+        },
+        {
+            "symbol": "BTCUSDT",
+            "id": "4008468432",
+            "orderId": "180527254541",
+            "side": "SELL",
+            "price": "29180.90",
+            "qty": "0.001",
+            "realizedPnl": "0",
+            "marginAsset": "USDT",
+            "quoteQty": "29.18090",
+            "commission": "0.00583618",
+            "commissionAsset": "USDT",
+            "timestamp": "1692127135584",
+            "positionSide": "BOTH"
+            
+            
+        },
+        {
+            "symbol": "BTCUSDT",
+            "id": "4008510968",
+            "orderId": "180531047458",
+            "side": "BUY",
+            "price": "29159.30",
+            "qty": "0.002",
+            "realizedPnl": "0.01026666",
+            "marginAsset": "USDT",
+            "quoteQty": "58.31860",
+            "commission": "0.01166372",
+            "commissionAsset": "USDT",
+            "timestamp": "1692127776478",
+            "positionSide": "BOTH"
+            
+            
+        },
+        {
+            "symbol": "BTCUSDT",
+            "id": "4008510977",
+            "orderId": "180531047504",
+            "side": "BUY",
+            "price": "29159",
+            "qty": "0.003",
+            "realizedPnl": "0.00543333",
+            "marginAsset": "USDT",
+            "quoteQty": "87.47700",
+            "commission": "0.01749540",
+            "commissionAsset": "USDT",
+            "timestamp": "1692127776478",
+            "positionSide": "BOTH"
+            
+            
+        },
+        {
+            "symbol": "BTCUSDT",
+            "id": "4008517079",
+            "orderId": "180531777523",
+            "side": "BUY",
+            "price": "29157",
+            "qty": "0.001",
+            "realizedPnl": "0",
+            "marginAsset": "USDT",
+            "quoteQty": "29.15700",
+            "commission": "0.00583140",
+            "commissionAsset": "USDT",
+            "timestamp": "1692127882532",
+            "positionSide": "BOTH"
+            
+            
+        },
+        {
+            "symbol": "BTCUSDT",
+            "id": "4008545323",
+            "orderId": "180535143929",
+            "side": "SELL",
+            "price": "29171.40",
+            "qty": "0.003",
+            "realizedPnl": "0.03920000",
+            "marginAsset": "USDT",
+            "quoteQty": "87.51420",
+            "commission": "0.01750283",
+            "commissionAsset": "USDT",
+            "timestamp": "1692128549896",
+            "positionSide": "BOTH"
+            
+            
+        },
+        {
+            "symbol": "BTCUSDT",
+            "id": "4008551322",
+            "orderId": "180535917856",
+            "side": "SELL",
+            "price": "29168",
+            "qty": "0.001",
+            "realizedPnl": "0",
+            "marginAsset": "USDT",
+            "quoteQty": "29.16800",
+            "commission": "0.00583360",
+            "commissionAsset": "USDT",
+            "timestamp": "1692128756219",
+            "positionSide": "BOTH"
+            
+            
+        },
+        {
+            "symbol": "BTCUSDT",
+            "id": "4008557710",
+            "orderId": "180536697131",
+            "side": "SELL",
+            "price": "29179.40",
+            "qty": "0.001",
+            "realizedPnl": "0",
+            "marginAsset": "USDT",
+            "quoteQty": "29.17940",
+            "commission": "0.00583588",
+            "commissionAsset": "USDT",
+            "timestamp": "1692128925501",
+            "positionSide": "BOTH"
+            
+            
+        },
+        {
+            "symbol": "BTCUSDT",
+            "id": "4008573460",
+            "orderId": "180538419532",
+            "side": "SELL",
+            "price": "29197.20",
+            "qty": "0.001",
+            "realizedPnl": "0",
+            "marginAsset": "USDT",
+            "quoteQty": "29.19720",
+            "commission": "0.00583944",
+            "commissionAsset": "USDT",
+            "timestamp": "1692129360855",
+            "positionSide": "BOTH"
+            
+            
+        },
+        {
+            "symbol": "BTCUSDT",
+            "id": "4008593799",
+            "orderId": "180540703625",
+            "side": "SELL",
+            "price": "29168.90",
+            "qty": "0.001",
+            "realizedPnl": "0",
+            "marginAsset": "USDT",
+            "quoteQty": "29.16890",
+            "commission": "0.00583378",
+            "commissionAsset": "USDT",
+            "timestamp": "1692129851567",
+            "positionSide": "BOTH"
+            
+            
+        },
+        {
+            "symbol": "BTCUSDT",
+            "id": "4008667689",
+            "orderId": "180552429089",
+            "side": "BUY",
+            "price": "29179.30",
+            "qty": "0.004",
+            "realizedPnl": "-0.00370000",
+            "marginAsset": "USDT",
+            "quoteQty": "116.71720",
+            "commission": "0.02334344",
+            "commissionAsset": "USDT",
+            "timestamp": "1692133566967",
+            "positionSide": "BOTH"
+            
+            
+        },
+        {
+            "symbol": "BTCUSDT",
+            "id": "4008667690",
+            "orderId": "180552429176",
+            "side": "BUY",
+            "price": "29179.30",
+            "qty": "0.001",
+            "realizedPnl": "0",
+            "marginAsset": "USDT",
+            "quoteQty": "29.17930",
+            "commission": "0.00583586",
+            "commissionAsset": "USDT",
+            "timestamp": "1692133566967",
+            "positionSide": "BOTH"
+            
+            
+        },
+        {
+            "symbol": "BTCUSDT",
+            "id": "4008689924",
+            "orderId": "180556954064",
+            "side": "BUY",
+            "price": "29222.40",
+            "qty": "0.001",
+            "realizedPnl": "0",
+            "marginAsset": "USDT",
+            "quoteQty": "29.22240",
+            "commission": "0.00584448",
+            "commissionAsset": "USDT",
+            "timestamp": "1692135084406",
+            "positionSide": "BOTH"
+            
+            
+        },
+        {
+            "symbol": "BTCUSDT",
+            "id": "4008737566",
+            "orderId": "180567602346",
+            "side": "BUY",
+            "price": "29190",
+            "qty": "0.001",
+            "realizedPnl": "0",
+            "marginAsset": "USDT",
+            "quoteQty": "29.19000",
+            "commission": "0.00583800",
+            "commissionAsset": "USDT",
+            "timestamp": "1692139414892",
+            "positionSide": "BOTH"
+            
+            
+        },
+        {
+            "symbol": "BTCUSDT",
+            "id": "4008737980",
+            "orderId": "180567651490",
+            "side": "BUY",
+            "price": "29190.10",
+            "qty": "0.001",
+            "realizedPnl": "0",
+            "marginAsset": "USDT",
+            "quoteQty": "29.19010",
+            "commission": "0.00583802",
+            "commissionAsset": "USDT",
+            "timestamp": "1692139480455",
+            "positionSide": "BOTH"
+            
+            
+        },
+        {
+            "symbol": "BTCUSDT",
+            "id": "4008789251",
+            "orderId": "180578752647",
+            "side": "SELL",
+            "price": "29191",
+            "qty": "0.001",
+            "realizedPnl": "-0.00445000",
+            "marginAsset": "USDT",
+            "quoteQty": "29.19100",
+            "commission": "0.00583820",
+            "commissionAsset": "USDT",
+            "timestamp": "1692144228319",
+            "positionSide": "BOTH"
+            
+            
+        },
+        {
+            "symbol": "BTCUSDT",
+            "id": "4008807982",
+            "orderId": "180582673347",
+            "side": "SELL",
+            "price": "29202.10",
+            "qty": "0.003",
+            "realizedPnl": "0.01994999",
+            "marginAsset": "USDT",
+            "quoteQty": "87.60630",
+            "commission": "0.01752126",
+            "commissionAsset": "USDT",
+            "timestamp": "1692146033814",
+            "positionSide": "BOTH"
+            
+            
+        },
+        {
+            "symbol": "BTCUSDT",
+            "id": "4008811542",
+            "orderId": "180583421863",
+            "side": "SELL",
+            "price": "29194.60",
+            "qty": "0.001",
+            "realizedPnl": "0",
+            "marginAsset": "USDT",
+            "quoteQty": "29.19460",
+            "commission": "0.00583892",
+            "commissionAsset": "USDT",
+            "timestamp": "1692146390703",
+            "positionSide": "BOTH"
+            
+            
+        },
+        {
+            "symbol": "BTCUSDT",
+            "id": "4008829321",
+            "orderId": "180586252834",
+            "side": "SELL",
+            "price": "29228.40",
+            "qty": "0.002",
+            "realizedPnl": "0",
+            "marginAsset": "USDT",
+            "quoteQty": "58.45680",
+            "commission": "0.01169136",
+            "commissionAsset": "USDT",
+            "timestamp": "1692147370846",
+            "positionSide": "BOTH"
+            
+            
+        },
+        {
+            "symbol": "BTCUSDT",
+            "id": "4008839918",
+            "orderId": "180588561807",
+            "side": "SELL",
+            "price": "29211.50",
+            "qty": "0.001",
+            "realizedPnl": "0",
+            "marginAsset": "USDT",
+            "quoteQty": "29.21150",
+            "commission": "0.00584230",
+            "commissionAsset": "USDT",
+            "timestamp": "1692148236501",
+            "positionSide": "BOTH"
+            
+            
+        },
+        {
+            "symbol": "BTCUSDT",
+            "id": "4008889425",
+            "orderId": "180598531838",
+            "side": "BUY",
+            "price": "29244.50",
+            "qty": "0.003",
+            "realizedPnl": "-0.08632500",
+            "marginAsset": "USDT",
+            "quoteQty": "87.73350",
+            "commission": "0.01754669",
+            "commissionAsset": "USDT",
+            "timestamp": "1692152102014",
+            "positionSide": "BOTH"
+            
+            
+        },
+        {
+            "symbol": "BTCUSDT",
+            "id": "4008890040",
+            "orderId": "180598609958",
+            "side": "BUY",
+            "price": "29245.60",
+            "qty": "0.001",
+            "realizedPnl": "-0.02987500",
+            "marginAsset": "USDT",
+            "quoteQty": "29.24560",
+            "commission": "0.00584912",
+            "commissionAsset": "USDT",
+            "timestamp": "1692152159881",
+            "positionSide": "BOTH"
+            
+            
+        },
+        {
+            "symbol": "BTCUSDT",
+            "id": "4008895347",
+            "orderId": "180599866453",
+            "side": "SELL",
+            "price": "29234",
+            "qty": "0.001",
+            "realizedPnl": "0",
+            "marginAsset": "USDT",
+            "quoteQty": "29.23400",
+            "commission": "0.00584680",
+            "commissionAsset": "USDT",
+            "timestamp": "1692152684500",
+            "positionSide": "BOTH"
+            
+            
+        },
+        {
+            "symbol": "BTCUSDT",
+            "id": "4008928872",
+            "orderId": "180608557123",
+            "side": "BUY",
+            "price": "29217.50",
+            "qty": "0.002",
+            "realizedPnl": "0.01650000",
+            "marginAsset": "USDT",
+            "quoteQty": "58.43500",
+            "commission": "0.01168700",
+            "commissionAsset": "USDT",
+            "timestamp": "1692156487069",
+            "positionSide": "BOTH"
+            
+            
+        },
+        {
+            "symbol": "BTCUSDT",
+            "id": "4008931130",
+            "orderId": "180609280448",
+            "side": "SELL",
+            "price": "29216.90",
+            "qty": "0.001",
+            "realizedPnl": "-0.00059999",
+            "marginAsset": "USDT",
+            "quoteQty": "29.21690",
+            "commission": "0.01168676",
+            "commissionAsset": "USDT",
+            "timestamp": "1692156860930",
+            "positionSide": "BOTH"
+            
+        },
+        {
+            "symbol": "BTCUSDT",
+            "id": "4008961897",
+            "orderId": "180618691210",
+            "side": "SELL",
+            "price": "29196",
+            "qty": "0.002",
+            "realizedPnl": "0",
+            "marginAsset": "USDT",
+            "quoteQty": "58.39200",
+            "commission": "0.01167840",
+            "commissionAsset": "USDT",
+            "timestamp": "1692161321329",
+            "positionSide": "BOTH"
+            
+            
+        },
+        {
+            "symbol": "BTCUSDT",
+            "id": "4008983272",
+            "orderId": "180624054020",
+            "side": "SELL",
+            "price": "29175.70",
+            "qty": "0.001",
+            "realizedPnl": "0",
+            "marginAsset": "USDT",
+            "quoteQty": "29.17570",
+            "commission": "0.00583514",
+            "commissionAsset": "USDT",
+            "timestamp": "1692163543882",
+            "positionSide": "BOTH"
+            
+            
+        },
+        {
+            "symbol": "BTCUSDT",
+            "id": "4009000911",
+            "orderId": "180626165288",
+            "side": "SELL",
+            "price": "29149.80",
+            "qty": "0.001",
+            "realizedPnl": "0",
+            "marginAsset": "USDT",
+            "quoteQty": "29.14980",
+            "commission": "0.00582996",
+            "commissionAsset": "USDT",
+            "timestamp": "1692164245576",
+            "positionSide": "BOTH"
+            
+            
+        },
+        {
+            "symbol": "BTCUSDT",
+            "id": "4009001355",
+            "orderId": "180626192763",
+            "side": "SELL",
+            "price": "29150",
+            "qty": "0.001",
+            "realizedPnl": "0",
+            "marginAsset": "USDT",
+            "quoteQty": "29.15000",
+            "commission": "0.00583000",
+            "commissionAsset": "USDT",
+            "timestamp": "1692164258115",
+            "positionSide": "BOTH"
+            
+            
+        },
+        {
+            "symbol": "BTCUSDT",
+            "id": "4009002360",
+            "orderId": "180626334561",
+            "side": "SELL",
+            "price": "29166.30",
+            "qty": "0.001",
+            "realizedPnl": "0",
+            "marginAsset": "USDT",
+            "quoteQty": "29.16630",
+            "commission": "0.00583326",
+            "commissionAsset": "USDT",
+            "timestamp": "1692164274521",
+            "positionSide": "BOTH"
+            
+            
+        },
+        {
+            "symbol": "BTCUSDT",
+            "id": "4009007354",
+            "orderId": "180627072051",
+            "side": "SELL",
+            "price": "29157.40",
+            "qty": "0.001",
+            "realizedPnl": "0",
+            "marginAsset": "USDT",
+            "quoteQty": "29.15740",
+            "commission": "0.00583148",
+            "commissionAsset": "USDT",
+            "timestamp": "1692164469647",
+            "positionSide": "BOTH"
+            
+            
+        },
+        {
+            "symbol": "BTCUSDT",
+            "id": "4009019667",
+            "orderId": "180629036539",
+            "side": "BUY",
+            "price": "29146.20",
+            "qty": "0.001",
+            "realizedPnl": "0.02397142",
+            "marginAsset": "USDT",
+            "quoteQty": "29.14620",
+            "commission": "0.00582924",
+            "commissionAsset": "USDT",
+            "timestamp": "1692165005755",
+            "positionSide": "BOTH"
+            
+            
+        },
+        {
+            "symbol": "BTCUSDT",
+            "id": "4009019669",
+            "orderId": "180629036588",
+            "side": "BUY",
+            "price": "29146.20",
+            "qty": "0.007",
+            "realizedPnl": "0.14382857",
+            "marginAsset": "USDT",
+            "quoteQty": "204.02340",
+            "commission": "0.04080468",
+            "commissionAsset": "USDT",
+            "timestamp": "1692165005755",
+            "positionSide": "BOTH"
+            
+            
+        },
+        {
+            "symbol": "BTCUSDT",
+            "id": "4009028416",
+            "orderId": "180630381741",
+            "side": "BUY",
+            "price": "29152.30",
+            "qty": "0.001",
+            "realizedPnl": "0",
+            "marginAsset": "USDT",
+            "quoteQty": "29.15230",
+            "commission": "0.00583046",
+            "commissionAsset": "USDT",
+            "timestamp": "1692165390357",
+            "positionSide": "BOTH"
+            
+            
+        },
+        {
+            "symbol": "BTCUSDT",
+            "id": "4009033074",
+            "orderId": "180630971197",
+            "side": "SELL",
+            "price": "29137.70",
+            "qty": "0.001",
+            "realizedPnl": "-0.01155000",
+            "marginAsset": "USDT",
+            "quoteQty": "29.13770",
+            "commission": "0.00582754",
+            "commissionAsset": "USDT",
+            "timestamp": "1692165615083",
+            "positionSide": "BOTH"
+            
+            
+        },
+        {
+            "symbol": "BTCUSDT",
+            "id": "4009033075",
+            "orderId": "180630971233",
+            "side": "SELL",
+            "price": "29137.70",
+            "qty": "0.002",
+            "realizedPnl": "-0.01155000",
+            "marginAsset": "USDT",
+            "quoteQty": "58.27540",
+            "commission": "0.01165508",
+            "commissionAsset": "USDT",
+            "timestamp": "1692165615083",
+            "positionSide": "BOTH"
+            
+            
+        },
+        {
+            "symbol": "BTCUSDT",
+            "id": "4009041685",
+            "orderId": "180632234999",
+            "side": "BUY",
+            "price": "29121.60",
+            "qty": "0.002",
+            "realizedPnl": "0.01610000",
+            "marginAsset": "USDT",
+            "quoteQty": "58.24320",
+            "commission": "0.01164864",
+            "commissionAsset": "USDT",
+            "timestamp": "1692166008259",
+            "positionSide": "BOTH"
+            
+            
+        },
+        {
+            "symbol": "BTCUSDT",
+            "id": "4009041687",
+            "orderId": "180632235441",
+            "side": "BUY",
+            "price": "29121.60",
+            "qty": "0.001",
+            "realizedPnl": "0",
+            "marginAsset": "USDT",
+            "quoteQty": "29.12160",
+            "commission": "0.00582432",
+            "commissionAsset": "USDT",
+            "timestamp": "1692166008259",
+            "positionSide": "BOTH"
+            
+            
+        },
+        {
+            "symbol": "BTCUSDT",
+            "id": "4009075284",
+            "orderId": "180636445666",
+            "side": "SELL",
+            "price": "29155.90",
+            "qty": "0.002",
+            "realizedPnl": "0.06860000",
+            "marginAsset": "USDT",
+            "quoteQty": "58.31180",
+            "commission": "0.01166236",
+            "commissionAsset": "USDT",
+            "timestamp": "1692167061023",
+            "positionSide": "BOTH"
+            
+            
+        },
+        {
+            "symbol": "BTCUSDT",
+            "id": "4009075291",
+            "orderId": "180636445475",
+            "side": "SELL",
+            "price": "29156.10",
+            "qty": "0.001",
+            "realizedPnl": "0",
+            "marginAsset": "USDT",
+            "quoteQty": "29.15610",
+            "commission": "0.00583122",
+            "commissionAsset": "USDT",
+            "timestamp": "1692167061023",
+            "positionSide": "BOTH"
+            
+            
+        },
+        {
+            "symbol": "BTCUSDT",
+            "id": "4009106168",
+            "orderId": "180642406602",
+            "side": "BUY",
+            "price": "29181.50",
+            "qty": "0.002",
+            "realizedPnl": "-0.02540000",
+            "marginAsset": "USDT",
+            "quoteQty": "58.36300",
+            "commission": "0.01167260",
+            "commissionAsset": "USDT",
+            "timestamp": "1692169193037",
+            "positionSide": "BOTH"
+            
+            
+        },
+        {
+            "symbol": "BTCUSDT",
+            "id": "4009114879",
+            "orderId": "180644018781",
+            "side": "BUY",
+            "price": "29188",
+            "qty": "0.001",
+            "realizedPnl": "0",
+            "marginAsset": "USDT",
+            "quoteQty": "29.18800",
+            "commission": "0.00583760",
+            "commissionAsset": "USDT",
+            "timestamp": "1692169820227",
+            "positionSide": "BOTH"
+            
+            
+        },
+        {
+            "symbol": "BTCUSDT",
+            "id": "4009132521",
+            "orderId": "180647275259",
+            "side": "SELL",
+            "price": "29173.60",
+            "qty": "0.002",
+            "realizedPnl": "-0.02229999",
+            "marginAsset": "USDT",
+            "quoteQty": "58.34720",
+            "commission": "0.01166944",
+            "commissionAsset": "USDT",
+            "timestamp": "1692171117786",
+            "positionSide": "BOTH"
+            
+            
+        },
+        {
+            "symbol": "BTCUSDT",
+            "id": "4009132522",
+            "orderId": "180647275453",
+            "side": "SELL",
+            "price": "29173.60",
+            "qty": "0.001",
+            "realizedPnl": "0",
+            "marginAsset": "USDT",
+            "quoteQty": "29.17360",
+            "commission": "0.00583472",
+            "commissionAsset": "USDT",
+            "timestamp": "1692171117786",
+            "positionSide": "BOTH"
+            
+            
+        },
+        {
+            "symbol": "BTCUSDT",
+            "id": "4009135486",
+            "orderId": "180647689578",
+            "side": "SELL",
+            "price": "29171.30",
+            "qty": "0.001",
+            "realizedPnl": "0",
+            "marginAsset": "USDT",
+            "quoteQty": "29.17130",
+            "commission": "0.00583426",
+            "commissionAsset": "USDT",
+            "timestamp": "1692171284211",
+            "positionSide": "BOTH"
+            
+            
+        },
+        {
+            "symbol": "BTCUSDT",
+            "id": "4009135916",
+            "orderId": "180647787018",
+            "side": "SELL",
+            "price": "29175.30",
+            "qty": "0.001",
+            "realizedPnl": "0",
+            "marginAsset": "USDT",
+            "quoteQty": "29.17530",
+            "commission": "0.00583506",
+            "commissionAsset": "USDT",
+            "timestamp": "1692171313400",
+            "positionSide": "BOTH"
+            
+            
+        },
+        {
+            "symbol": "BTCUSDT",
+            "id": "4009137951",
+            "orderId": "180648373789",
+            "side": "SELL",
+            "price": "29171",
+            "qty": "0.001",
+            "realizedPnl": "0",
+            "marginAsset": "USDT",
+            "quoteQty": "29.17100",
+            "commission": "0.00583420",
+            "commissionAsset": "USDT",
+            "timestamp": "1692171546942",
+            "positionSide": "BOTH"
+            
+            
+        },
+        {
+            "symbol": "BTCUSDT",
+            "id": "4009190458",
+            "orderId": "180658676642",
+            "side": "BUY",
+            "price": "29202",
+            "qty": "0.004",
+            "realizedPnl": "-0.11680000",
+            "marginAsset": "USDT",
+            "quoteQty": "116.80800",
+            "commission": "0.02336160",
+            "commissionAsset": "USDT",
+            "timestamp": "1692175589792",
+            "positionSide": "BOTH"
+            
+            
+        },
+        {
+            "symbol": "BTCUSDT",
+            "id": "4009190459",
+            "orderId": "180658676644",
+            "side": "BUY",
+            "price": "29202",
+            "qty": "0.001",
+            "realizedPnl": "0",
+            "marginAsset": "USDT",
+            "quoteQty": "29.20200",
+            "commission": "0.00584040",
+            "commissionAsset": "USDT",
+            "timestamp": "1692175589792",
+            "positionSide": "BOTH"
+            
+            
+        },
+        {
+            "symbol": "BTCUSDT",
+            "id": "4009230753",
+            "orderId": "180666761423",
+            "side": "SELL",
+            "price": "29143.60",
+            "qty": "0.001",
+            "realizedPnl": "-0.05840000",
+            "marginAsset": "USDT",
+            "quoteQty": "29.14360",
+            "commission": "0.00582872",
+            "commissionAsset": "USDT",
+            "timestamp": "1692178128793",
+            "positionSide": "BOTH"
+            
+            
+        },
+        {
+            "symbol": "BTCUSDT",
+            "id": "4009257849",
+            "orderId": "180669571515",
+            "side": "SELL",
+            "price": "29122.90",
+            "qty": "0.001",
+            "realizedPnl": "0",
+            "marginAsset": "USDT",
+            "quoteQty": "29.12290",
+            "commission": "0.00582458",
+            "commissionAsset": "USDT",
+            "timestamp": "1692178786708",
+            "positionSide": "BOTH"
+            
+            
+        },
+        {
+            "symbol": "BTCUSDT",
+            "id": "4009280718",
+            "orderId": "180672474709",
+            "side": "SELL",
+            "price": "29149.20",
+            "qty": "0.001",
+            "realizedPnl": "0",
+            "marginAsset": "USDT",
+            "quoteQty": "29.14920",
+            "commission": "0.00582984",
+            "commissionAsset": "USDT",
+            "timestamp": "1692179581083",
+            "positionSide": "BOTH"
+            
+            
+        },
+        {
+            "symbol": "BTCUSDT",
+            "id": "4009293433",
+            "orderId": "180674984992",
+            "side": "BUY",
+            "price": "29158.90",
+            "qty": "0.001",
+            "realizedPnl": "-0.02285000",
+            "marginAsset": "USDT",
+            "quoteQty": "29.15890",
+            "commission": "0.00583178",
+            "commissionAsset": "USDT",
+            "timestamp": "1692180563403",
+            "positionSide": "BOTH"
+            
+            
+        },
+        {
+            "symbol": "BTCUSDT",
+            "id": "4009293434",
+            "orderId": "180674984997",
+            "side": "BUY",
+            "price": "29158.90",
+            "qty": "0.002",
+            "realizedPnl": "-0.02285000",
+            "marginAsset": "USDT",
+            "quoteQty": "58.31780",
+            "commission": "0.01166356",
+            "commissionAsset": "USDT",
+            "timestamp": "1692180563403",
+            "positionSide": "BOTH"
+            
+            
+        },
+        {
+            "symbol": "BTCUSDT",
+            "id": "4009405210",
+            "orderId": "180694438466",
+            "side": "SELL",
+            "price": "29119.30",
+            "qty": "0.001",
+            "realizedPnl": "-0.03960000",
+            "marginAsset": "USDT",
+            "quoteQty": "29.11930",
+            "commission": "0.00582386",
+            "commissionAsset": "USDT",
+            "timestamp": "1692188305502",
+            "positionSide": "BOTH"
+            
+            
+        },
+        {
+            "symbol": "BTCUSDT",
+            "id": "4009405224",
+            "orderId": "180694436646",
+            "side": "SELL",
+            "price": "29119.60",
+            "qty": "0.002",
+            "realizedPnl": "0",
+            "marginAsset": "USDT",
+            "quoteQty": "58.23920",
+            "commission": "0.01164784",
+            "commissionAsset": "USDT",
+            "timestamp": "1692188305502",
+            "positionSide": "BOTH"
+            
+            
+        },
+        {
+            "symbol": "BTCUSDT",
+            "id": "4009475721",
+            "orderId": "180700494116",
+            "side": "SELL",
+            "price": "29093.70",
+            "qty": "0.001",
+            "realizedPnl": "0",
+            "marginAsset": "USDT",
+            "quoteQty": "29.09370",
+            "commission": "0.00581874",
+            "commissionAsset": "USDT",
+            "timestamp": "1692189625345",
+            "positionSide": "BOTH"
+            
+            
+        },
+        {
+            "symbol": "BTCUSDT",
+            "id": "4009476344",
+            "orderId": "180700539546",
+            "side": "SELL",
+            "price": "29095.70",
+            "qty": "0.001",
+            "realizedPnl": "0",
+            "marginAsset": "USDT",
+            "quoteQty": "29.09570",
+            "commission": "0.00581914",
+            "commissionAsset": "USDT",
+            "timestamp": "1692189630595",
+            "positionSide": "BOTH"
+            
+            
+        },
+        {
+            "symbol": "BTCUSDT",
+            "id": "4009675620",
+            "orderId": "180724778163",
+            "side": "BUY",
+            "price": "29070",
+            "qty": "0.001",
+            "realizedPnl": "0.03715000",
+            "marginAsset": "USDT",
+            "quoteQty": "29.07000",
+            "commission": "0.00581400",
+            "commissionAsset": "USDT",
+            "timestamp": "1692194590605",
+            "positionSide": "BOTH"
+            
+            
+        },
+        {
+            "symbol": "BTCUSDT",
+            "id": "4009734347",
+            "orderId": "180732101457",
+            "side": "BUY",
+            "price": "29130.90",
+            "qty": "0.001",
+            "realizedPnl": "-0.02375000",
+            "marginAsset": "USDT",
+            "quoteQty": "29.13090",
+            "commission": "0.00582618",
+            "commissionAsset": "USDT",
+            "timestamp": "1692196339166",
+            "positionSide": "BOTH"
+            
+            
+        },
+        {
+            "symbol": "BTCUSDT",
+            "id": "4009742720",
+            "orderId": "180733569549",
+            "side": "SELL",
+            "price": "29134.60",
+            "qty": "0.001",
+            "realizedPnl": "0",
+            "marginAsset": "USDT",
+            "quoteQty": "29.13460",
+            "commission": "0.00582692",
+            "commissionAsset": "USDT",
+            "timestamp": "1692196789783",
+            "positionSide": "BOTH"
+            
+            
+        },
+        {
+            "symbol": "BTCUSDT",
+            "id": "4009751840",
+            "orderId": "180734765103",
+            "side": "SELL",
+            "price": "29145.90",
+            "qty": "0.001",
+            "realizedPnl": "0",
+            "marginAsset": "USDT",
+            "quoteQty": "29.14590",
+            "commission": "0.00582918",
+            "commissionAsset": "USDT",
+            "timestamp": "1692197103073",
+            "positionSide": "BOTH"
+            
+            
+        },
+        {
+            "symbol": "BTCUSDT",
+            "id": "4009781342",
+            "orderId": "180739816063",
+            "side": "BUY",
+            "price": "29161.20",
+            "qty": "0.001",
+            "realizedPnl": "-0.03750000",
+            "marginAsset": "USDT",
+            "quoteQty": "29.16120",
+            "commission": "0.00583224",
+            "commissionAsset": "USDT",
+            "timestamp": "1692198623761",
+            "positionSide": "BOTH"
+            
+            
+        },
+        {
+            "symbol": "BTCUSDT",
+            "id": "4009781350",
+            "orderId": "180739816019",
+            "side": "BUY",
+            "price": "29161.10",
+            "qty": "0.004",
+            "realizedPnl": "-0.11220000",
+            "marginAsset": "USDT",
+            "quoteQty": "116.64440",
+            "commission": "0.02332888",
+            "commissionAsset": "USDT",
+            "timestamp": "1692198623761",
+            "positionSide": "BOTH"
+            
+            
+        },
+        {
+            "symbol": "BTCUSDT",
+            "id": "4009805246",
+            "orderId": "180743158210",
+            "side": "BUY",
+            "price": "29145.20",
+            "qty": "0.001",
+            "realizedPnl": "0",
+            "marginAsset": "USDT",
+            "quoteQty": "29.14520",
+            "commission": "0.00582904",
+            "commissionAsset": "USDT",
+            "timestamp": "1692199751323",
+            "positionSide": "BOTH"
+            
+            
+        },
+        {
+            "symbol": "BTCUSDT",
+            "id": "4009806746",
+            "orderId": "180743481979",
+            "side": "BUY",
+            "price": "29152.90",
+            "qty": "0.001",
+            "realizedPnl": "0",
+            "marginAsset": "USDT",
+            "quoteQty": "29.15290",
+            "commission": "0.00583058",
+            "commissionAsset": "USDT",
+            "timestamp": "1692199824949",
+            "positionSide": "BOTH"
+            
+            
+        },
+        {
+            "symbol": "BTCUSDT",
+            "id": "4009807648",
+            "orderId": "180743608461",
+            "side": "BUY",
+            "price": "29148.70",
+            "qty": "0.001",
+            "realizedPnl": "0",
+            "marginAsset": "USDT",
+            "quoteQty": "29.14870",
+            "commission": "0.00582974",
+            "commissionAsset": "USDT",
+            "timestamp": "1692199864202",
+            "positionSide": "BOTH"
+            
+            
+        },
+        {
+            "symbol": "BTCUSDT",
+            "id": "4009829473",
+            "orderId": "180747005922",
+            "side": "BUY",
+            "price": "29138.20",
+            "qty": "0.001",
+            "realizedPnl": "0",
+            "marginAsset": "USDT",
+            "quoteQty": "29.13820",
+            "commission": "0.00582764",
+            "commissionAsset": "USDT",
+            "timestamp": "1692201006956",
+            "positionSide": "BOTH"
+            
+            
+        },
+        {
+            "symbol": "BTCUSDT",
+            "id": "4009859371",
+            "orderId": "180750746809",
+            "side": "BUY",
+            "price": "29074.30",
+            "qty": "0.001",
+            "realizedPnl": "0",
+            "marginAsset": "USDT",
+            "quoteQty": "29.07430",
+            "commission": "0.00581486",
+            "commissionAsset": "USDT",
+            "timestamp": "1692201976069",
+            "positionSide": "BOTH"
+            
+            
+        },
+        {
+            "symbol": "BTCUSDT",
+            "id": "4009902857",
+            "orderId": "180752618944",
+            "side": "SELL",
+            "price": "29060",
+            "qty": "0.001",
+            "realizedPnl": "-0.07673333",
+            "marginAsset": "USDT",
+            "quoteQty": "29.06000",
+            "commission": "0.00581200",
+            "commissionAsset": "USDT",
+            "timestamp": "1692202325203",
+            "positionSide": "BOTH"
+            
+            
+        },
+        {
+            "symbol": "BTCUSDT",
+            "id": "4010013830",
+            "orderId": "180759752156",
+            "side": "SELL",
+            "price": "28980.10",
+            "qty": "0.001",
+            "realizedPnl": "-0.15663333",
+            "marginAsset": "USDT",
+            "quoteQty": "28.98010",
+            "commission": "0.00579602",
+            "commissionAsset": "USDT",
+            "timestamp": "1692203246173",
+            "positionSide": "BOTH"
+            
+            
+        },
+        {
+            "symbol": "BTCUSDT",
+            "id": "4010040448",
+            "orderId": "180762610344",
+            "side": "SELL",
+            "price": "28974.50",
+            "qty": "0.001",
+            "realizedPnl": "-0.16223333",
+            "marginAsset": "USDT",
+            "quoteQty": "28.97450",
+            "commission": "0.00579490",
+            "commissionAsset": "USDT",
+            "timestamp": "1692203688678",
+            "positionSide": "BOTH"
+            
+            
+        },
+        {
+            "symbol": "BTCUSDT",
+            "id": "4010040449",
+            "orderId": "180762610461",
+            "side": "SELL",
+            "price": "28974.50",
+            "qty": "0.004",
+            "realizedPnl": "-0.48669999",
+            "marginAsset": "USDT",
+            "quoteQty": "115.89800",
+            "commission": "0.02317960",
+            "commissionAsset": "USDT",
+            "timestamp": "1692203688678",
+            "positionSide": "BOTH"
+            
+            
+        },
+        {
+            "symbol": "BTCUSDT",
+            "id": "4010058052",
+            "orderId": "180764957950",
+            "side": "SELL",
+            "price": "28989.90",
+            "qty": "0.001",
+            "realizedPnl": "0",
+            "marginAsset": "USDT",
+            "quoteQty": "28.98990",
+            "commission": "0.00579798",
+            "commissionAsset": "USDT",
+            "timestamp": "1692204119300",
+            "positionSide": "BOTH"
+            
+            
+        },
+        {
+            "symbol": "BTCUSDT",
+            "id": "4010074736",
+            "orderId": "180766711866",
+            "side": "SELL",
+            "price": "29055.70",
+            "qty": "0.002",
+            "realizedPnl": "0",
+            "marginAsset": "USDT",
+            "quoteQty": "58.11140",
+            "commission": "0.01162228",
+            "commissionAsset": "USDT",
+            "timestamp": "1692204438137",
+            "positionSide": "BOTH"
+            
+            
+        },
+        {
+            "symbol": "BTCUSDT",
+            "id": "4010075058",
+            "orderId": "180766741067",
+            "side": "SELL",
+            "price": "29051.30",
+            "qty": "0.002",
+            "realizedPnl": "0",
+            "marginAsset": "USDT",
+            "quoteQty": "58.10260",
+            "commission": "0.01162052",
+            "commissionAsset": "USDT",
+            "timestamp": "1692204440513",
+            "positionSide": "BOTH"
+            
+            
+        },
+        {
+            "symbol": "BTCUSDT",
+            "id": "4010078701",
+            "orderId": "180767037358",
+            "side": "SELL",
+            "price": "29052.10",
+            "qty": "0.001",
+            "realizedPnl": "0",
+            "marginAsset": "USDT",
+            "quoteQty": "29.05210",
+            "commission": "0.00581042",
+            "commissionAsset": "USDT",
+            "timestamp": "1692204496016",
+            "positionSide": "BOTH"
+            
+            
+        },
+        {
+            "symbol": "BTCUSDT",
+            "id": "4010098926",
+            "orderId": "180769594564",
+            "side": "BUY",
+            "price": "29071.40",
+            "qty": "0.002",
+            "realizedPnl": "-0.07694285",
+            "marginAsset": "USDT",
+            "quoteQty": "58.14280",
+            "commission": "0.01162856",
+            "commissionAsset": "USDT",
+            "timestamp": "1692205108489",
+            "positionSide": "BOTH"
+            
+            
+        },
+        {
+            "symbol": "BTCUSDT",
+            "id": "4010196948",
+            "orderId": "180781462066",
+            "side": "BUY",
+            "price": "29133.10",
+            "qty": "0.001",
+            "realizedPnl": "-0.10017142",
+            "marginAsset": "USDT",
+            "quoteQty": "29.13310",
+            "commission": "0.00582662",
+            "commissionAsset": "USDT",
+            "timestamp": "1692207742059",
+            "positionSide": "BOTH"
+            
+            
+        },
+        {
+            "symbol": "BTCUSDT",
+            "id": "4010208320",
+            "orderId": "180783225209",
+            "side": "BUY",
+            "price": "29126.50",
+            "qty": "0.002",
+            "realizedPnl": "-0.18714285",
+            "marginAsset": "USDT",
+            "quoteQty": "58.25300",
+            "commission": "0.01165060",
+            "commissionAsset": "USDT",
+            "timestamp": "1692208282008",
+            "positionSide": "BOTH"
+            
+            
+        },
+        {
+            "symbol": "BTCUSDT",
+            "id": "4010210951",
+            "orderId": "180783661635",
+            "side": "BUY",
+            "price": "29140.40",
+            "qty": "0.002",
+            "realizedPnl": "-0.21494285",
+            "marginAsset": "USDT",
+            "quoteQty": "58.28080",
+            "commission": "0.01165616",
+            "commissionAsset": "USDT",
+            "timestamp": "1692208446976",
+            "positionSide": "BOTH"
+            
+            
+        },
+        {
+            "symbol": "BTCUSDT",
+            "id": "4010210952",
+            "orderId": "180783661636",
+            "side": "BUY",
+            "price": "29140.40",
+            "qty": "0.002",
+            "realizedPnl": "0",
+            "marginAsset": "USDT",
+            "quoteQty": "58.28080",
+            "commission": "0.01165616",
+            "commissionAsset": "USDT",
+            "timestamp": "1692208446976",
+            "positionSide": "BOTH"
+            
+            
+        },
+        {
+            "symbol": "BTCUSDT",
+            "id": "4010217558",
+            "orderId": "180784684575",
+            "side": "BUY",
+            "price": "29158.70",
+            "qty": "0.001",
+            "realizedPnl": "0",
+            "marginAsset": "USDT",
+            "quoteQty": "29.15870",
+            "commission": "0.00583174",
+            "commissionAsset": "USDT",
+            "timestamp": "1692208715683",
+            "positionSide": "BOTH"
+            
+            
+        },
+        {
+            "symbol": "BTCUSDT",
+            "id": "4010308671",
+            "orderId": "180794770299",
+            "side": "BUY",
+            "price": "29216.10",
+            "qty": "0.001",
+            "realizedPnl": "0",
+            "marginAsset": "USDT",
+            "quoteQty": "29.21610",
+            "commission": "0.00584322",
+            "commissionAsset": "USDT",
+            "timestamp": "1692210721973",
+            "positionSide": "BOTH"
+            
+            
+        },
+        {
+            "symbol": "BTCUSDT",
+            "id": "4010339552",
+            "orderId": "180799407041",
+            "side": "SELL",
+            "price": "29170.70",
+            "qty": "0.001",
+            "realizedPnl": "0.00679999",
+            "marginAsset": "USDT",
+            "quoteQty": "29.17070",
+            "commission": "0.00583414",
+            "commissionAsset": "USDT",
+            "timestamp": "1692211862175",
+            "positionSide": "BOTH"
+            
+            
+        },
+        {
+            "symbol": "BTCUSDT",
+            "id": "4010339556",
+            "orderId": "180799408287",
+            "side": "SELL",
+            "price": "29170.70",
+            "qty": "0.001",
+            "realizedPnl": "0.00679999",
+            "marginAsset": "USDT",
+            "quoteQty": "29.17070",
+            "commission": "0.00583414",
+            "commissionAsset": "USDT",
+            "timestamp": "1692211862320",
+            "positionSide": "BOTH"
+            
+            
+        },
+        {
+            "symbol": "BTCUSDT",
+            "id": "4010339560",
+            "orderId": "180799408287",
+            "side": "SELL",
+            "price": "29170.70",
+            "qty": "0.003",
+            "realizedPnl": "0.01360000",
+            "marginAsset": "USDT",
+            "quoteQty": "87.51210",
+            "commission": "0.01750242",
+            "commissionAsset": "USDT",
+            "timestamp": "1692211862640",
+            "positionSide": "BOTH"
+            
+            
+        },
+        {
+            "symbol": "BTCUSDT",
+            "id": "4010357158",
+            "orderId": "180802160004",
+            "side": "BUY",
+            "price": "29149.40",
+            "qty": "0.001",
+            "realizedPnl": "0.02130000",
+            "marginAsset": "USDT",
+            "quoteQty": "29.14940",
+            "commission": "0.00582988",
+            "commissionAsset": "USDT",
+            "timestamp": "1692212604932",
+            "positionSide": "BOTH"
+            
+            
+        },
+        {
+            "symbol": "BTCUSDT",
+            "id": "4010359155",
+            "orderId": "180802527243",
+            "side": "BUY",
+            "price": "29155.40",
+            "qty": "0.003",
+            "realizedPnl": "0",
+            "marginAsset": "USDT",
+            "quoteQty": "87.46620",
+            "commission": "0.01749324",
+            "commissionAsset": "USDT",
+            "timestamp": "1692212698546",
+            "positionSide": "BOTH"
+            
+            
+        },
+        {
+            "symbol": "BTCUSDT",
+            "id": "4010390531",
+            "orderId": "180807422166",
+            "side": "BUY",
+            "price": "29105.10",
+            "qty": "0.001",
+            "realizedPnl": "0",
+            "marginAsset": "USDT",
+            "quoteQty": "29.10510",
+            "commission": "0.00582102",
+            "commissionAsset": "USDT",
+            "timestamp": "1692214061310",
+            "positionSide": "BOTH"
+            
+            
+        },
+        {
+            "symbol": "BTCUSDT",
+            "id": "4010405711",
+            "orderId": "180810162961",
+            "side": "SELL",
+            "price": "29133.90",
+            "qty": "0.004",
+            "realizedPnl": "-0.03570000",
+            "marginAsset": "USDT",
+            "quoteQty": "116.53560",
+            "commission": "0.02330712",
+            "commissionAsset": "USDT",
+            "timestamp": "1692215035317",
+            "positionSide": "BOTH"
+            
+            
+        },
+        {
+            "symbol": "BTCUSDT",
+            "id": "4010405712",
+            "orderId": "180810162968",
+            "side": "SELL",
+            "price": "29133.90",
+            "qty": "0.001",
+            "realizedPnl": "0",
+            "marginAsset": "USDT",
+            "quoteQty": "29.13390",
+            "commission": "0.00582678",
+            "commissionAsset": "USDT",
+            "timestamp": "1692215035317",
+            "positionSide": "BOTH"
+            
+            
+        },
+        {
+            "symbol": "BTCUSDT",
+            "id": "4010668512",
+            "orderId": "180829857332",
+            "side": "BUY",
+            "price": "28942.30",
+            "qty": "0.001",
+            "realizedPnl": "0.19160000",
+            "marginAsset": "USDT",
+            "quoteQty": "28.94230",
+            "commission": "0.01157692",
+            "commissionAsset": "USDT",
+            "timestamp": "1692219647020",
+            "positionSide": "BOTH"
+            
+        },
+        {
+            "symbol": "BTCUSDT",
+            "id": "4010851530",
+            "orderId": "180855501062",
+            "side": "BUY",
+            "price": "28895.80",
+            "qty": "0.002",
+            "realizedPnl": "0",
+            "marginAsset": "USDT",
+            "quoteQty": "57.79160",
+            "commission": "0.01155832",
+            "commissionAsset": "USDT",
+            "timestamp": "1692226742036",
+            "positionSide": "BOTH"
+            
+            
+        },
+        {
+            "symbol": "BTCUSDT",
+            "id": "4010856920",
+            "orderId": "180856190889",
+            "side": "BUY",
+            "price": "28885.40",
+            "qty": "0.001",
+            "realizedPnl": "0",
+            "marginAsset": "USDT",
+            "quoteQty": "28.88540",
+            "commission": "0.00577708",
+            "commissionAsset": "USDT",
+            "timestamp": "1692226906584",
+            "positionSide": "BOTH"
+            
+            
+        },
+        {
+            "symbol": "BTCUSDT",
+            "id": "4010862871",
+            "orderId": "180856826997",
+            "side": "BUY",
+            "price": "28872.30",
+            "qty": "0.001",
+            "realizedPnl": "0",
+            "marginAsset": "USDT",
+            "quoteQty": "28.87230",
+            "commission": "0.00577446",
+            "commissionAsset": "USDT",
+            "timestamp": "1692227064046",
+            "positionSide": "BOTH"
+            
+            
+        }
+    ],
+    "USDTETH": [
+        {
+            "symbol": "BTCUSDT",
+            "id": "4008259477",
+            "orderId": "180515569453",
+            "side": "SELL",
+            "price": "29302.10",
+            "qty": "0.004",
+            "realizedPnl": "-0.01889999",
+            "marginAsset": "USDT",
+            "quoteQty": "117.20840",
+            "commission": "0.02344168",
+            "commissionAsset": "USDT",
+            "timestamp": "1692123425789",
+            "positionSide": "BOTH"
+            
+            
+        },
+        {
+            "symbol": "BTCUSDT",
+            "id": "4008260347",
+            "orderId": "180515752256",
+            "side": "SELL",
+            "price": "29305.90",
+            "qty": "0.001",
+            "realizedPnl": "0",
+            "marginAsset": "USDT",
+            "quoteQty": "29.30590",
+            "commission": "0.00586118",
+            "commissionAsset": "USDT",
+            "timestamp": "1692123529888",
+            "positionSide": "BOTH"
+            
+            
+        },
+        {
+            "symbol": "BTCUSDT",
+            "id": "4008318990",
+            "orderId": "180523101198",
+            "side": "BUY",
+            "price": "29204.30",
+            "qty": "0.001",
+            "realizedPnl": "0.10160000",
+            "marginAsset": "USDT",
+            "quoteQty": "29.20430",
+            "commission": "0.00584086",
+            "commissionAsset": "USDT",
+            "timestamp": "1692126499559",
+            "positionSide": "BOTH"
+            
+            
+        },
+        {
+            "symbol": "BTCUSDT",
+            "id": "4008452219",
+            "orderId": "180526204621",
+            "side": "SELL",
+            "price": "29149.80",
+            "qty": "0.001",
+            "realizedPnl": "0",
+            "marginAsset": "USDT",
+            "quoteQty": "29.14980",
+            "commission": "0.00582996",
+            "commissionAsset": "USDT",
+            "timestamp": "1692126997379",
+            "positionSide": "BOTH"
+            
+            
+        },
+        {
+            "symbol": "BTCUSDT",
+            "id": "4008464983",
+            "orderId": "180527105802",
+            "side": "SELL",
+            "price": "29162.60",
+            "qty": "0.001",
+            "realizedPnl": "0",
+            "marginAsset": "USDT",
+            "quoteQty": "29.16260",
+            "commission": "0.00583252",
+            "commissionAsset": "USDT",
+            "timestamp": "1692127117643",
+            "positionSide": "BOTH"
+            
+            
+        },
+        {
+            "symbol": "BTCUSDT",
+            "id": "4008468432",
+            "orderId": "180527254541",
+            "side": "SELL",
+            "price": "29180.90",
+            "qty": "0.001",
+            "realizedPnl": "0",
+            "marginAsset": "USDT",
+            "quoteQty": "29.18090",
+            "commission": "0.00583618",
+            "commissionAsset": "USDT",
+            "timestamp": "1692127135584",
+            "positionSide": "BOTH"
+            
+            
+        },
+        {
+            "symbol": "BTCUSDT",
+            "id": "4008510968",
+            "orderId": "180531047458",
+            "side": "BUY",
+            "price": "29159.30",
+            "qty": "0.002",
+            "realizedPnl": "0.01026666",
+            "marginAsset": "USDT",
+            "quoteQty": "58.31860",
+            "commission": "0.01166372",
+            "commissionAsset": "USDT",
+            "timestamp": "1692127776478",
+            "positionSide": "BOTH"
+            
+            
+        },
+        {
+            "symbol": "BTCUSDT",
+            "id": "4008510977",
+            "orderId": "180531047504",
+            "side": "BUY",
+            "price": "29159",
+            "qty": "0.003",
+            "realizedPnl": "0.00543333",
+            "marginAsset": "USDT",
+            "quoteQty": "87.47700",
+            "commission": "0.01749540",
+            "commissionAsset": "USDT",
+            "timestamp": "1692127776478",
+            "positionSide": "BOTH"
+            
+            
+        },
+        {
+            "symbol": "BTCUSDT",
+            "id": "4008517079",
+            "orderId": "180531777523",
+            "side": "BUY",
+            "price": "29157",
+            "qty": "0.001",
+            "realizedPnl": "0",
+            "marginAsset": "USDT",
+            "quoteQty": "29.15700",
+            "commission": "0.00583140",
+            "commissionAsset": "USDT",
+            "timestamp": "1692127882532",
+            "positionSide": "BOTH"
+            
+            
+        },
+        {
+            "symbol": "BTCUSDT",
+            "id": "4008545323",
+            "orderId": "180535143929",
+            "side": "SELL",
+            "price": "29171.40",
+            "qty": "0.003",
+            "realizedPnl": "0.03920000",
+            "marginAsset": "USDT",
+            "quoteQty": "87.51420",
+            "commission": "0.01750283",
+            "commissionAsset": "USDT",
+            "timestamp": "1692128549896",
+            "positionSide": "BOTH"
+            
+            
+        },
+        {
+            "symbol": "BTCUSDT",
+            "id": "4008551322",
+            "orderId": "180535917856",
+            "side": "SELL",
+            "price": "29168",
+            "qty": "0.001",
+            "realizedPnl": "0",
+            "marginAsset": "USDT",
+            "quoteQty": "29.16800",
+            "commission": "0.00583360",
+            "commissionAsset": "USDT",
+            "timestamp": "1692128756219",
+            "positionSide": "BOTH"
+            
+            
+        },
+        {
+            "symbol": "BTCUSDT",
+            "id": "4008557710",
+            "orderId": "180536697131",
+            "side": "SELL",
+            "price": "29179.40",
+            "qty": "0.001",
+            "realizedPnl": "0",
+            "marginAsset": "USDT",
+            "quoteQty": "29.17940",
+            "commission": "0.00583588",
+            "commissionAsset": "USDT",
+            "timestamp": "1692128925501",
+            "positionSide": "BOTH"
+            
+            
+        },
+        {
+            "symbol": "BTCUSDT",
+            "id": "4008573460",
+            "orderId": "180538419532",
+            "side": "SELL",
+            "price": "29197.20",
+            "qty": "0.001",
+            "realizedPnl": "0",
+            "marginAsset": "USDT",
+            "quoteQty": "29.19720",
+            "commission": "0.00583944",
+            "commissionAsset": "USDT",
+            "timestamp": "1692129360855",
+            "positionSide": "BOTH"
+            
+            
+        },
+        {
+            "symbol": "BTCUSDT",
+            "id": "4008593799",
+            "orderId": "180540703625",
+            "side": "SELL",
+            "price": "29168.90",
+            "qty": "0.001",
+            "realizedPnl": "0",
+            "marginAsset": "USDT",
+            "quoteQty": "29.16890",
+            "commission": "0.00583378",
+            "commissionAsset": "USDT",
+            "timestamp": "1692129851567",
+            "positionSide": "BOTH"
+            
+            
+        },
+        {
+            "symbol": "BTCUSDT",
+            "id": "4008667689",
+            "orderId": "180552429089",
+            "side": "BUY",
+            "price": "29179.30",
+            "qty": "0.004",
+            "realizedPnl": "-0.00370000",
+            "marginAsset": "USDT",
+            "quoteQty": "116.71720",
+            "commission": "0.02334344",
+            "commissionAsset": "USDT",
+            "timestamp": "1692133566967",
+            "positionSide": "BOTH"
+            
+            
+        },
+        {
+            "symbol": "BTCUSDT",
+            "id": "4008667690",
+            "orderId": "180552429176",
+            "side": "BUY",
+            "price": "29179.30",
+            "qty": "0.001",
+            "realizedPnl": "0",
+            "marginAsset": "USDT",
+            "quoteQty": "29.17930",
+            "commission": "0.00583586",
+            "commissionAsset": "USDT",
+            "timestamp": "1692133566967",
+            "positionSide": "BOTH"
+            
+            
+        },
+        {
+            "symbol": "BTCUSDT",
+            "id": "4008689924",
+            "orderId": "180556954064",
+            "side": "BUY",
+            "price": "29222.40",
+            "qty": "0.001",
+            "realizedPnl": "0",
+            "marginAsset": "USDT",
+            "quoteQty": "29.22240",
+            "commission": "0.00584448",
+            "commissionAsset": "USDT",
+            "timestamp": "1692135084406",
+            "positionSide": "BOTH"
+            
+            
+        },
+        {
+            "symbol": "BTCUSDT",
+            "id": "4008737566",
+            "orderId": "180567602346",
+            "side": "BUY",
+            "price": "29190",
+            "qty": "0.001",
+            "realizedPnl": "0",
+            "marginAsset": "USDT",
+            "quoteQty": "29.19000",
+            "commission": "0.00583800",
+            "commissionAsset": "USDT",
+            "timestamp": "1692139414892",
+            "positionSide": "BOTH"
+            
+            
+        },
+        {
+            "symbol": "BTCUSDT",
+            "id": "4008737980",
+            "orderId": "180567651490",
+            "side": "BUY",
+            "price": "29190.10",
+            "qty": "0.001",
+            "realizedPnl": "0",
+            "marginAsset": "USDT",
+            "quoteQty": "29.19010",
+            "commission": "0.00583802",
+            "commissionAsset": "USDT",
+            "timestamp": "1692139480455",
+            "positionSide": "BOTH"
+            
+            
+        },
+        {
+            "symbol": "BTCUSDT",
+            "id": "4008789251",
+            "orderId": "180578752647",
+            "side": "SELL",
+            "price": "29191",
+            "qty": "0.001",
+            "realizedPnl": "-0.00445000",
+            "marginAsset": "USDT",
+            "quoteQty": "29.19100",
+            "commission": "0.00583820",
+            "commissionAsset": "USDT",
+            "timestamp": "1692144228319",
+            "positionSide": "BOTH"
+            
+            
+        },
+        {
+            "symbol": "BTCUSDT",
+            "id": "4008807982",
+            "orderId": "180582673347",
+            "side": "SELL",
+            "price": "29202.10",
+            "qty": "0.003",
+            "realizedPnl": "0.01994999",
+            "marginAsset": "USDT",
+            "quoteQty": "87.60630",
+            "commission": "0.01752126",
+            "commissionAsset": "USDT",
+            "timestamp": "1692146033814",
+            "positionSide": "BOTH"
+            
+            
+        },
+        {
+            "symbol": "BTCUSDT",
+            "id": "4008811542",
+            "orderId": "180583421863",
+            "side": "SELL",
+            "price": "29194.60",
+            "qty": "0.001",
+            "realizedPnl": "0",
+            "marginAsset": "USDT",
+            "quoteQty": "29.19460",
+            "commission": "0.00583892",
+            "commissionAsset": "USDT",
+            "timestamp": "1692146390703",
+            "positionSide": "BOTH"
+            
+            
+        },
+        {
+            "symbol": "BTCUSDT",
+            "id": "4008829321",
+            "orderId": "180586252834",
+            "side": "SELL",
+            "price": "29228.40",
+            "qty": "0.002",
+            "realizedPnl": "0",
+            "marginAsset": "USDT",
+            "quoteQty": "58.45680",
+            "commission": "0.01169136",
+            "commissionAsset": "USDT",
+            "timestamp": "1692147370846",
+            "positionSide": "BOTH"
+            
+            
+        },
+        {
+            "symbol": "BTCUSDT",
+            "id": "4008839918",
+            "orderId": "180588561807",
+            "side": "SELL",
+            "price": "29211.50",
+            "qty": "0.001",
+            "realizedPnl": "0",
+            "marginAsset": "USDT",
+            "quoteQty": "29.21150",
+            "commission": "0.00584230",
+            "commissionAsset": "USDT",
+            "timestamp": "1692148236501",
+            "positionSide": "BOTH"
+            
+            
+        },
+        {
+            "symbol": "BTCUSDT",
+            "id": "4008889425",
+            "orderId": "180598531838",
+            "side": "BUY",
+            "price": "29244.50",
+            "qty": "0.003",
+            "realizedPnl": "-0.08632500",
+            "marginAsset": "USDT",
+            "quoteQty": "87.73350",
+            "commission": "0.01754669",
+            "commissionAsset": "USDT",
+            "timestamp": "1692152102014",
+            "positionSide": "BOTH"
+            
+            
+        },
+        {
+            "symbol": "BTCUSDT",
+            "id": "4008890040",
+            "orderId": "180598609958",
+            "side": "BUY",
+            "price": "29245.60",
+            "qty": "0.001",
+            "realizedPnl": "-0.02987500",
+            "marginAsset": "USDT",
+            "quoteQty": "29.24560",
+            "commission": "0.00584912",
+            "commissionAsset": "USDT",
+            "timestamp": "1692152159881",
+            "positionSide": "BOTH"
+            
+            
+        },
+        {
+            "symbol": "BTCUSDT",
+            "id": "4008895347",
+            "orderId": "180599866453",
+            "side": "SELL",
+            "price": "29234",
+            "qty": "0.001",
+            "realizedPnl": "0",
+            "marginAsset": "USDT",
+            "quoteQty": "29.23400",
+            "commission": "0.00584680",
+            "commissionAsset": "USDT",
+            "timestamp": "1692152684500",
+            "positionSide": "BOTH"
+            
+            
+        },
+        {
+            "symbol": "BTCUSDT",
+            "id": "4008928872",
+            "orderId": "180608557123",
+            "side": "BUY",
+            "price": "29217.50",
+            "qty": "0.002",
+            "realizedPnl": "0.01650000",
+            "marginAsset": "USDT",
+            "quoteQty": "58.43500",
+            "commission": "0.01168700",
+            "commissionAsset": "USDT",
+            "timestamp": "1692156487069",
+            "positionSide": "BOTH"
+            
+            
+        },
+        {
+            "symbol": "BTCUSDT",
+            "id": "4008931130",
+            "orderId": "180609280448",
+            "side": "SELL",
+            "price": "29216.90",
+            "qty": "0.001",
+            "realizedPnl": "-0.00059999",
+            "marginAsset": "USDT",
+            "quoteQty": "29.21690",
+            "commission": "0.01168676",
+            "commissionAsset": "USDT",
+            "timestamp": "1692156860930",
+            "positionSide": "BOTH"
+            
+        },
+        {
+            "symbol": "BTCUSDT",
+            "id": "4008961897",
+            "orderId": "180618691210",
+            "side": "SELL",
+            "price": "29196",
+            "qty": "0.002",
+            "realizedPnl": "0",
+            "marginAsset": "USDT",
+            "quoteQty": "58.39200",
+            "commission": "0.01167840",
+            "commissionAsset": "USDT",
+            "timestamp": "1692161321329",
+            "positionSide": "BOTH"
+            
+            
+        },
+        {
+            "symbol": "BTCUSDT",
+            "id": "4008983272",
+            "orderId": "180624054020",
+            "side": "SELL",
+            "price": "29175.70",
+            "qty": "0.001",
+            "realizedPnl": "0",
+            "marginAsset": "USDT",
+            "quoteQty": "29.17570",
+            "commission": "0.00583514",
+            "commissionAsset": "USDT",
+            "timestamp": "1692163543882",
+            "positionSide": "BOTH"
+            
+            
+        },
+        {
+            "symbol": "BTCUSDT",
+            "id": "4009000911",
+            "orderId": "180626165288",
+            "side": "SELL",
+            "price": "29149.80",
+            "qty": "0.001",
+            "realizedPnl": "0",
+            "marginAsset": "USDT",
+            "quoteQty": "29.14980",
+            "commission": "0.00582996",
+            "commissionAsset": "USDT",
+            "timestamp": "1692164245576",
+            "positionSide": "BOTH"
+            
+            
+        },
+        {
+            "symbol": "BTCUSDT",
+            "id": "4009001355",
+            "orderId": "180626192763",
+            "side": "SELL",
+            "price": "29150",
+            "qty": "0.001",
+            "realizedPnl": "0",
+            "marginAsset": "USDT",
+            "quoteQty": "29.15000",
+            "commission": "0.00583000",
+            "commissionAsset": "USDT",
+            "timestamp": "1692164258115",
+            "positionSide": "BOTH"
+            
+            
+        },
+        {
+            "symbol": "BTCUSDT",
+            "id": "4009002360",
+            "orderId": "180626334561",
+            "side": "SELL",
+            "price": "29166.30",
+            "qty": "0.001",
+            "realizedPnl": "0",
+            "marginAsset": "USDT",
+            "quoteQty": "29.16630",
+            "commission": "0.00583326",
+            "commissionAsset": "USDT",
+            "timestamp": "1692164274521",
+            "positionSide": "BOTH"
+            
+            
+        },
+        {
+            "symbol": "BTCUSDT",
+            "id": "4009007354",
+            "orderId": "180627072051",
+            "side": "SELL",
+            "price": "29157.40",
+            "qty": "0.001",
+            "realizedPnl": "0",
+            "marginAsset": "USDT",
+            "quoteQty": "29.15740",
+            "commission": "0.00583148",
+            "commissionAsset": "USDT",
+            "timestamp": "1692164469647",
+            "positionSide": "BOTH"
+            
+            
+        },
+        {
+            "symbol": "BTCUSDT",
+            "id": "4009019667",
+            "orderId": "180629036539",
+            "side": "BUY",
+            "price": "29146.20",
+            "qty": "0.001",
+            "realizedPnl": "0.02397142",
+            "marginAsset": "USDT",
+            "quoteQty": "29.14620",
+            "commission": "0.00582924",
+            "commissionAsset": "USDT",
+            "timestamp": "1692165005755",
+            "positionSide": "BOTH"
+            
+            
+        },
+        {
+            "symbol": "BTCUSDT",
+            "id": "4009019669",
+            "orderId": "180629036588",
+            "side": "BUY",
+            "price": "29146.20",
+            "qty": "0.007",
+            "realizedPnl": "0.14382857",
+            "marginAsset": "USDT",
+            "quoteQty": "204.02340",
+            "commission": "0.04080468",
+            "commissionAsset": "USDT",
+            "timestamp": "1692165005755",
+            "positionSide": "BOTH"
+            
+            
+        },
+        {
+            "symbol": "BTCUSDT",
+            "id": "4009028416",
+            "orderId": "180630381741",
+            "side": "BUY",
+            "price": "29152.30",
+            "qty": "0.001",
+            "realizedPnl": "0",
+            "marginAsset": "USDT",
+            "quoteQty": "29.15230",
+            "commission": "0.00583046",
+            "commissionAsset": "USDT",
+            "timestamp": "1692165390357",
+            "positionSide": "BOTH"
+            
+            
+        },
+        {
+            "symbol": "BTCUSDT",
+            "id": "4009033074",
+            "orderId": "180630971197",
+            "side": "SELL",
+            "price": "29137.70",
+            "qty": "0.001",
+            "realizedPnl": "-0.01155000",
+            "marginAsset": "USDT",
+            "quoteQty": "29.13770",
+            "commission": "0.00582754",
+            "commissionAsset": "USDT",
+            "timestamp": "1692165615083",
+            "positionSide": "BOTH"
+            
+            
+        },
+        {
+            "symbol": "BTCUSDT",
+            "id": "4009033075",
+            "orderId": "180630971233",
+            "side": "SELL",
+            "price": "29137.70",
+            "qty": "0.002",
+            "realizedPnl": "-0.01155000",
+            "marginAsset": "USDT",
+            "quoteQty": "58.27540",
+            "commission": "0.01165508",
+            "commissionAsset": "USDT",
+            "timestamp": "1692165615083",
+            "positionSide": "BOTH"
+            
+            
+        },
+        {
+            "symbol": "BTCUSDT",
+            "id": "4009041685",
+            "orderId": "180632234999",
+            "side": "BUY",
+            "price": "29121.60",
+            "qty": "0.002",
+            "realizedPnl": "0.01610000",
+            "marginAsset": "USDT",
+            "quoteQty": "58.24320",
+            "commission": "0.01164864",
+            "commissionAsset": "USDT",
+            "timestamp": "1692166008259",
+            "positionSide": "BOTH"
+            
+            
+        },
+        {
+            "symbol": "BTCUSDT",
+            "id": "4009041687",
+            "orderId": "180632235441",
+            "side": "BUY",
+            "price": "29121.60",
+            "qty": "0.001",
+            "realizedPnl": "0",
+            "marginAsset": "USDT",
+            "quoteQty": "29.12160",
+            "commission": "0.00582432",
+            "commissionAsset": "USDT",
+            "timestamp": "1692166008259",
+            "positionSide": "BOTH"
+            
+            
+        },
+        {
+            "symbol": "BTCUSDT",
+            "id": "4009075284",
+            "orderId": "180636445666",
+            "side": "SELL",
+            "price": "29155.90",
+            "qty": "0.002",
+            "realizedPnl": "0.06860000",
+            "marginAsset": "USDT",
+            "quoteQty": "58.31180",
+            "commission": "0.01166236",
+            "commissionAsset": "USDT",
+            "timestamp": "1692167061023",
+            "positionSide": "BOTH"
+            
+            
+        },
+        {
+            "symbol": "BTCUSDT",
+            "id": "4009075291",
+            "orderId": "180636445475",
+            "side": "SELL",
+            "price": "29156.10",
+            "qty": "0.001",
+            "realizedPnl": "0",
+            "marginAsset": "USDT",
+            "quoteQty": "29.15610",
+            "commission": "0.00583122",
+            "commissionAsset": "USDT",
+            "timestamp": "1692167061023",
+            "positionSide": "BOTH"
+            
+            
+        },
+        {
+            "symbol": "BTCUSDT",
+            "id": "4009106168",
+            "orderId": "180642406602",
+            "side": "BUY",
+            "price": "29181.50",
+            "qty": "0.002",
+            "realizedPnl": "-0.02540000",
+            "marginAsset": "USDT",
+            "quoteQty": "58.36300",
+            "commission": "0.01167260",
+            "commissionAsset": "USDT",
+            "timestamp": "1692169193037",
+            "positionSide": "BOTH"
+            
+            
+        },
+        {
+            "symbol": "BTCUSDT",
+            "id": "4009114879",
+            "orderId": "180644018781",
+            "side": "BUY",
+            "price": "29188",
+            "qty": "0.001",
+            "realizedPnl": "0",
+            "marginAsset": "USDT",
+            "quoteQty": "29.18800",
+            "commission": "0.00583760",
+            "commissionAsset": "USDT",
+            "timestamp": "1692169820227",
+            "positionSide": "BOTH"
+            
+            
+        },
+        {
+            "symbol": "BTCUSDT",
+            "id": "4009132521",
+            "orderId": "180647275259",
+            "side": "SELL",
+            "price": "29173.60",
+            "qty": "0.002",
+            "realizedPnl": "-0.02229999",
+            "marginAsset": "USDT",
+            "quoteQty": "58.34720",
+            "commission": "0.01166944",
+            "commissionAsset": "USDT",
+            "timestamp": "1692171117786",
+            "positionSide": "BOTH"
+            
+            
+        },
+        {
+            "symbol": "BTCUSDT",
+            "id": "4009132522",
+            "orderId": "180647275453",
+            "side": "SELL",
+            "price": "29173.60",
+            "qty": "0.001",
+            "realizedPnl": "0",
+            "marginAsset": "USDT",
+            "quoteQty": "29.17360",
+            "commission": "0.00583472",
+            "commissionAsset": "USDT",
+            "timestamp": "1692171117786",
+            "positionSide": "BOTH"
+            
+            
+        },
+        {
+            "symbol": "BTCUSDT",
+            "id": "4009135486",
+            "orderId": "180647689578",
+            "side": "SELL",
+            "price": "29171.30",
+            "qty": "0.001",
+            "realizedPnl": "0",
+            "marginAsset": "USDT",
+            "quoteQty": "29.17130",
+            "commission": "0.00583426",
+            "commissionAsset": "USDT",
+            "timestamp": "1692171284211",
+            "positionSide": "BOTH"
+            
+            
+        },
+        {
+            "symbol": "BTCUSDT",
+            "id": "4009135916",
+            "orderId": "180647787018",
+            "side": "SELL",
+            "price": "29175.30",
+            "qty": "0.001",
+            "realizedPnl": "0",
+            "marginAsset": "USDT",
+            "quoteQty": "29.17530",
+            "commission": "0.00583506",
+            "commissionAsset": "USDT",
+            "timestamp": "1692171313400",
+            "positionSide": "BOTH"
+            
+            
+        },
+        {
+            "symbol": "BTCUSDT",
+            "id": "4009137951",
+            "orderId": "180648373789",
+            "side": "SELL",
+            "price": "29171",
+            "qty": "0.001",
+            "realizedPnl": "0",
+            "marginAsset": "USDT",
+            "quoteQty": "29.17100",
+            "commission": "0.00583420",
+            "commissionAsset": "USDT",
+            "timestamp": "1692171546942",
+            "positionSide": "BOTH"
+            
+            
+        },
+        {
+            "symbol": "BTCUSDT",
+            "id": "4009190458",
+            "orderId": "180658676642",
+            "side": "BUY",
+            "price": "29202",
+            "qty": "0.004",
+            "realizedPnl": "-0.11680000",
+            "marginAsset": "USDT",
+            "quoteQty": "116.80800",
+            "commission": "0.02336160",
+            "commissionAsset": "USDT",
+            "timestamp": "1692175589792",
+            "positionSide": "BOTH"
+            
+            
+        },
+        {
+            "symbol": "BTCUSDT",
+            "id": "4009190459",
+            "orderId": "180658676644",
+            "side": "BUY",
+            "price": "29202",
+            "qty": "0.001",
+            "realizedPnl": "0",
+            "marginAsset": "USDT",
+            "quoteQty": "29.20200",
+            "commission": "0.00584040",
+            "commissionAsset": "USDT",
+            "timestamp": "1692175589792",
+            "positionSide": "BOTH"
+            
+            
+        },
+        {
+            "symbol": "BTCUSDT",
+            "id": "4009230753",
+            "orderId": "180666761423",
+            "side": "SELL",
+            "price": "29143.60",
+            "qty": "0.001",
+            "realizedPnl": "-0.05840000",
+            "marginAsset": "USDT",
+            "quoteQty": "29.14360",
+            "commission": "0.00582872",
+            "commissionAsset": "USDT",
+            "timestamp": "1692178128793",
+            "positionSide": "BOTH"
+            
+            
+        },
+        {
+            "symbol": "BTCUSDT",
+            "id": "4009257849",
+            "orderId": "180669571515",
+            "side": "SELL",
+            "price": "29122.90",
+            "qty": "0.001",
+            "realizedPnl": "0",
+            "marginAsset": "USDT",
+            "quoteQty": "29.12290",
+            "commission": "0.00582458",
+            "commissionAsset": "USDT",
+            "timestamp": "1692178786708",
+            "positionSide": "BOTH"
+            
+            
+        },
+        {
+            "symbol": "BTCUSDT",
+            "id": "4009280718",
+            "orderId": "180672474709",
+            "side": "SELL",
+            "price": "29149.20",
+            "qty": "0.001",
+            "realizedPnl": "0",
+            "marginAsset": "USDT",
+            "quoteQty": "29.14920",
+            "commission": "0.00582984",
+            "commissionAsset": "USDT",
+            "timestamp": "1692179581083",
+            "positionSide": "BOTH"
+            
+            
+        },
+        {
+            "symbol": "BTCUSDT",
+            "id": "4009293433",
+            "orderId": "180674984992",
+            "side": "BUY",
+            "price": "29158.90",
+            "qty": "0.001",
+            "realizedPnl": "-0.02285000",
+            "marginAsset": "USDT",
+            "quoteQty": "29.15890",
+            "commission": "0.00583178",
+            "commissionAsset": "USDT",
+            "timestamp": "1692180563403",
+            "positionSide": "BOTH"
+            
+            
+        },
+        {
+            "symbol": "BTCUSDT",
+            "id": "4009293434",
+            "orderId": "180674984997",
+            "side": "BUY",
+            "price": "29158.90",
+            "qty": "0.002",
+            "realizedPnl": "-0.02285000",
+            "marginAsset": "USDT",
+            "quoteQty": "58.31780",
+            "commission": "0.01166356",
+            "commissionAsset": "USDT",
+            "timestamp": "1692180563403",
+            "positionSide": "BOTH"
+            
+            
+        },
+        {
+            "symbol": "BTCUSDT",
+            "id": "4009405210",
+            "orderId": "180694438466",
+            "side": "SELL",
+            "price": "29119.30",
+            "qty": "0.001",
+            "realizedPnl": "-0.03960000",
+            "marginAsset": "USDT",
+            "quoteQty": "29.11930",
+            "commission": "0.00582386",
+            "commissionAsset": "USDT",
+            "timestamp": "1692188305502",
+            "positionSide": "BOTH"
+            
+            
+        },
+        {
+            "symbol": "BTCUSDT",
+            "id": "4009405224",
+            "orderId": "180694436646",
+            "side": "SELL",
+            "price": "29119.60",
+            "qty": "0.002",
+            "realizedPnl": "0",
+            "marginAsset": "USDT",
+            "quoteQty": "58.23920",
+            "commission": "0.01164784",
+            "commissionAsset": "USDT",
+            "timestamp": "1692188305502",
+            "positionSide": "BOTH"
+            
+            
+        },
+        {
+            "symbol": "BTCUSDT",
+            "id": "4009475721",
+            "orderId": "180700494116",
+            "side": "SELL",
+            "price": "29093.70",
+            "qty": "0.001",
+            "realizedPnl": "0",
+            "marginAsset": "USDT",
+            "quoteQty": "29.09370",
+            "commission": "0.00581874",
+            "commissionAsset": "USDT",
+            "timestamp": "1692189625345",
+            "positionSide": "BOTH"
+            
+            
+        },
+        {
+            "symbol": "BTCUSDT",
+            "id": "4009476344",
+            "orderId": "180700539546",
+            "side": "SELL",
+            "price": "29095.70",
+            "qty": "0.001",
+            "realizedPnl": "0",
+            "marginAsset": "USDT",
+            "quoteQty": "29.09570",
+            "commission": "0.00581914",
+            "commissionAsset": "USDT",
+            "timestamp": "1692189630595",
+            "positionSide": "BOTH"
+            
+            
+        },
+        {
+            "symbol": "BTCUSDT",
+            "id": "4009675620",
+            "orderId": "180724778163",
+            "side": "BUY",
+            "price": "29070",
+            "qty": "0.001",
+            "realizedPnl": "0.03715000",
+            "marginAsset": "USDT",
+            "quoteQty": "29.07000",
+            "commission": "0.00581400",
+            "commissionAsset": "USDT",
+            "timestamp": "1692194590605",
+            "positionSide": "BOTH"
+            
+            
+        },
+        {
+            "symbol": "BTCUSDT",
+            "id": "4009734347",
+            "orderId": "180732101457",
+            "side": "BUY",
+            "price": "29130.90",
+            "qty": "0.001",
+            "realizedPnl": "-0.02375000",
+            "marginAsset": "USDT",
+            "quoteQty": "29.13090",
+            "commission": "0.00582618",
+            "commissionAsset": "USDT",
+            "timestamp": "1692196339166",
+            "positionSide": "BOTH"
+            
+            
+        },
+        {
+            "symbol": "BTCUSDT",
+            "id": "4009742720",
+            "orderId": "180733569549",
+            "side": "SELL",
+            "price": "29134.60",
+            "qty": "0.001",
+            "realizedPnl": "0",
+            "marginAsset": "USDT",
+            "quoteQty": "29.13460",
+            "commission": "0.00582692",
+            "commissionAsset": "USDT",
+            "timestamp": "1692196789783",
+            "positionSide": "BOTH"
+            
+            
+        },
+        {
+            "symbol": "BTCUSDT",
+            "id": "4009751840",
+            "orderId": "180734765103",
+            "side": "SELL",
+            "price": "29145.90",
+            "qty": "0.001",
+            "realizedPnl": "0",
+            "marginAsset": "USDT",
+            "quoteQty": "29.14590",
+            "commission": "0.00582918",
+            "commissionAsset": "USDT",
+            "timestamp": "1692197103073",
+            "positionSide": "BOTH"
+            
+            
+        },
+        {
+            "symbol": "BTCUSDT",
+            "id": "4009781342",
+            "orderId": "180739816063",
+            "side": "BUY",
+            "price": "29161.20",
+            "qty": "0.001",
+            "realizedPnl": "-0.03750000",
+            "marginAsset": "USDT",
+            "quoteQty": "29.16120",
+            "commission": "0.00583224",
+            "commissionAsset": "USDT",
+            "timestamp": "1692198623761",
+            "positionSide": "BOTH"
+            
+            
+        },
+        {
+            "symbol": "BTCUSDT",
+            "id": "4009781350",
+            "orderId": "180739816019",
+            "side": "BUY",
+            "price": "29161.10",
+            "qty": "0.004",
+            "realizedPnl": "-0.11220000",
+            "marginAsset": "USDT",
+            "quoteQty": "116.64440",
+            "commission": "0.02332888",
+            "commissionAsset": "USDT",
+            "timestamp": "1692198623761",
+            "positionSide": "BOTH"
+            
+            
+        },
+        {
+            "symbol": "BTCUSDT",
+            "id": "4009805246",
+            "orderId": "180743158210",
+            "side": "BUY",
+            "price": "29145.20",
+            "qty": "0.001",
+            "realizedPnl": "0",
+            "marginAsset": "USDT",
+            "quoteQty": "29.14520",
+            "commission": "0.00582904",
+            "commissionAsset": "USDT",
+            "timestamp": "1692199751323",
+            "positionSide": "BOTH"
+            
+            
+        },
+        {
+            "symbol": "BTCUSDT",
+            "id": "4009806746",
+            "orderId": "180743481979",
+            "side": "BUY",
+            "price": "29152.90",
+            "qty": "0.001",
+            "realizedPnl": "0",
+            "marginAsset": "USDT",
+            "quoteQty": "29.15290",
+            "commission": "0.00583058",
+            "commissionAsset": "USDT",
+            "timestamp": "1692199824949",
+            "positionSide": "BOTH"
+            
+            
+        },
+        {
+            "symbol": "BTCUSDT",
+            "id": "4009807648",
+            "orderId": "180743608461",
+            "side": "BUY",
+            "price": "29148.70",
+            "qty": "0.001",
+            "realizedPnl": "0",
+            "marginAsset": "USDT",
+            "quoteQty": "29.14870",
+            "commission": "0.00582974",
+            "commissionAsset": "USDT",
+            "timestamp": "1692199864202",
+            "positionSide": "BOTH"
+            
+            
+        },
+        {
+            "symbol": "BTCUSDT",
+            "id": "4009829473",
+            "orderId": "180747005922",
+            "side": "BUY",
+            "price": "29138.20",
+            "qty": "0.001",
+            "realizedPnl": "0",
+            "marginAsset": "USDT",
+            "quoteQty": "29.13820",
+            "commission": "0.00582764",
+            "commissionAsset": "USDT",
+            "timestamp": "1692201006956",
+            "positionSide": "BOTH"
+            
+            
+        },
+        {
+            "symbol": "BTCUSDT",
+            "id": "4009859371",
+            "orderId": "180750746809",
+            "side": "BUY",
+            "price": "29074.30",
+            "qty": "0.001",
+            "realizedPnl": "0",
+            "marginAsset": "USDT",
+            "quoteQty": "29.07430",
+            "commission": "0.00581486",
+            "commissionAsset": "USDT",
+            "timestamp": "1692201976069",
+            "positionSide": "BOTH"
+            
+            
+        },
+        {
+            "symbol": "BTCUSDT",
+            "id": "4009902857",
+            "orderId": "180752618944",
+            "side": "SELL",
+            "price": "29060",
+            "qty": "0.001",
+            "realizedPnl": "-0.07673333",
+            "marginAsset": "USDT",
+            "quoteQty": "29.06000",
+            "commission": "0.00581200",
+            "commissionAsset": "USDT",
+            "timestamp": "1692202325203",
+            "positionSide": "BOTH"
+            
+            
+        },
+        {
+            "symbol": "BTCUSDT",
+            "id": "4010013830",
+            "orderId": "180759752156",
+            "side": "SELL",
+            "price": "28980.10",
+            "qty": "0.001",
+            "realizedPnl": "-0.15663333",
+            "marginAsset": "USDT",
+            "quoteQty": "28.98010",
+            "commission": "0.00579602",
+            "commissionAsset": "USDT",
+            "timestamp": "1692203246173",
+            "positionSide": "BOTH"
+            
+            
+        },
+        {
+            "symbol": "BTCUSDT",
+            "id": "4010040448",
+            "orderId": "180762610344",
+            "side": "SELL",
+            "price": "28974.50",
+            "qty": "0.001",
+            "realizedPnl": "-0.16223333",
+            "marginAsset": "USDT",
+            "quoteQty": "28.97450",
+            "commission": "0.00579490",
+            "commissionAsset": "USDT",
+            "timestamp": "1692203688678",
+            "positionSide": "BOTH"
+            
+            
+        },
+        {
+            "symbol": "BTCUSDT",
+            "id": "4010040449",
+            "orderId": "180762610461",
+            "side": "SELL",
+            "price": "28974.50",
+            "qty": "0.004",
+            "realizedPnl": "-0.48669999",
+            "marginAsset": "USDT",
+            "quoteQty": "115.89800",
+            "commission": "0.02317960",
+            "commissionAsset": "USDT",
+            "timestamp": "1692203688678",
+            "positionSide": "BOTH"
+            
+            
+        },
+        {
+            "symbol": "BTCUSDT",
+            "id": "4010058052",
+            "orderId": "180764957950",
+            "side": "SELL",
+            "price": "28989.90",
+            "qty": "0.001",
+            "realizedPnl": "0",
+            "marginAsset": "USDT",
+            "quoteQty": "28.98990",
+            "commission": "0.00579798",
+            "commissionAsset": "USDT",
+            "timestamp": "1692204119300",
+            "positionSide": "BOTH"
+            
+            
+        },
+        {
+            "symbol": "BTCUSDT",
+            "id": "4010074736",
+            "orderId": "180766711866",
+            "side": "SELL",
+            "price": "29055.70",
+            "qty": "0.002",
+            "realizedPnl": "0",
+            "marginAsset": "USDT",
+            "quoteQty": "58.11140",
+            "commission": "0.01162228",
+            "commissionAsset": "USDT",
+            "timestamp": "1692204438137",
+            "positionSide": "BOTH"
+            
+            
+        },
+        {
+            "symbol": "BTCUSDT",
+            "id": "4010075058",
+            "orderId": "180766741067",
+            "side": "SELL",
+            "price": "29051.30",
+            "qty": "0.002",
+            "realizedPnl": "0",
+            "marginAsset": "USDT",
+            "quoteQty": "58.10260",
+            "commission": "0.01162052",
+            "commissionAsset": "USDT",
+            "timestamp": "1692204440513",
+            "positionSide": "BOTH"
+            
+            
+        },
+        {
+            "symbol": "BTCUSDT",
+            "id": "4010078701",
+            "orderId": "180767037358",
+            "side": "SELL",
+            "price": "29052.10",
+            "qty": "0.001",
+            "realizedPnl": "0",
+            "marginAsset": "USDT",
+            "quoteQty": "29.05210",
+            "commission": "0.00581042",
+            "commissionAsset": "USDT",
+            "timestamp": "1692204496016",
+            "positionSide": "BOTH"
+            
+            
+        },
+        {
+            "symbol": "BTCUSDT",
+            "id": "4010098926",
+            "orderId": "180769594564",
+            "side": "BUY",
+            "price": "29071.40",
+            "qty": "0.002",
+            "realizedPnl": "-0.07694285",
+            "marginAsset": "USDT",
+            "quoteQty": "58.14280",
+            "commission": "0.01162856",
+            "commissionAsset": "USDT",
+            "timestamp": "1692205108489",
+            "positionSide": "BOTH"
+            
+            
+        },
+        {
+            "symbol": "BTCUSDT",
+            "id": "4010196948",
+            "orderId": "180781462066",
+            "side": "BUY",
+            "price": "29133.10",
+            "qty": "0.001",
+            "realizedPnl": "-0.10017142",
+            "marginAsset": "USDT",
+            "quoteQty": "29.13310",
+            "commission": "0.00582662",
+            "commissionAsset": "USDT",
+            "timestamp": "1692207742059",
+            "positionSide": "BOTH"
+            
+            
+        },
+        {
+            "symbol": "BTCUSDT",
+            "id": "4010208320",
+            "orderId": "180783225209",
+            "side": "BUY",
+            "price": "29126.50",
+            "qty": "0.002",
+            "realizedPnl": "-0.18714285",
+            "marginAsset": "USDT",
+            "quoteQty": "58.25300",
+            "commission": "0.01165060",
+            "commissionAsset": "USDT",
+            "timestamp": "1692208282008",
+            "positionSide": "BOTH"
+            
+            
+        },
+        {
+            "symbol": "BTCUSDT",
+            "id": "4010210951",
+            "orderId": "180783661635",
+            "side": "BUY",
+            "price": "29140.40",
+            "qty": "0.002",
+            "realizedPnl": "-0.21494285",
+            "marginAsset": "USDT",
+            "quoteQty": "58.28080",
+            "commission": "0.01165616",
+            "commissionAsset": "USDT",
+            "timestamp": "1692208446976",
+            "positionSide": "BOTH"
+            
+            
+        },
+        {
+            "symbol": "BTCUSDT",
+            "id": "4010210952",
+            "orderId": "180783661636",
+            "side": "BUY",
+            "price": "29140.40",
+            "qty": "0.002",
+            "realizedPnl": "0",
+            "marginAsset": "USDT",
+            "quoteQty": "58.28080",
+            "commission": "0.01165616",
+            "commissionAsset": "USDT",
+            "timestamp": "1692208446976",
+            "positionSide": "BOTH"
+            
+            
+        },
+        {
+            "symbol": "BTCUSDT",
+            "id": "4010217558",
+            "orderId": "180784684575",
+            "side": "BUY",
+            "price": "29158.70",
+            "qty": "0.001",
+            "realizedPnl": "0",
+            "marginAsset": "USDT",
+            "quoteQty": "29.15870",
+            "commission": "0.00583174",
+            "commissionAsset": "USDT",
+            "timestamp": "1692208715683",
+            "positionSide": "BOTH"
+            
+            
+        },
+        {
+            "symbol": "BTCUSDT",
+            "id": "4010308671",
+            "orderId": "180794770299",
+            "side": "BUY",
+            "price": "29216.10",
+            "qty": "0.001",
+            "realizedPnl": "0",
+            "marginAsset": "USDT",
+            "quoteQty": "29.21610",
+            "commission": "0.00584322",
+            "commissionAsset": "USDT",
+            "timestamp": "1692210721973",
+            "positionSide": "BOTH"
+            
+            
+        },
+        {
+            "symbol": "BTCUSDT",
+            "id": "4010339552",
+            "orderId": "180799407041",
+            "side": "SELL",
+            "price": "29170.70",
+            "qty": "0.001",
+            "realizedPnl": "0.00679999",
+            "marginAsset": "USDT",
+            "quoteQty": "29.17070",
+            "commission": "0.00583414",
+            "commissionAsset": "USDT",
+            "timestamp": "1692211862175",
+            "positionSide": "BOTH"
+            
+            
+        },
+        {
+            "symbol": "BTCUSDT",
+            "id": "4010339556",
+            "orderId": "180799408287",
+            "side": "SELL",
+            "price": "29170.70",
+            "qty": "0.001",
+            "realizedPnl": "0.00679999",
+            "marginAsset": "USDT",
+            "quoteQty": "29.17070",
+            "commission": "0.00583414",
+            "commissionAsset": "USDT",
+            "timestamp": "1692211862320",
+            "positionSide": "BOTH"
+            
+            
+        },
+        {
+            "symbol": "BTCUSDT",
+            "id": "4010339560",
+            "orderId": "180799408287",
+            "side": "SELL",
+            "price": "29170.70",
+            "qty": "0.003",
+            "realizedPnl": "0.01360000",
+            "marginAsset": "USDT",
+            "quoteQty": "87.51210",
+            "commission": "0.01750242",
+            "commissionAsset": "USDT",
+            "timestamp": "1692211862640",
+            "positionSide": "BOTH"
+            
+            
+        },
+        {
+            "symbol": "BTCUSDT",
+            "id": "4010357158",
+            "orderId": "180802160004",
+            "side": "BUY",
+            "price": "29149.40",
+            "qty": "0.001",
+            "realizedPnl": "0.02130000",
+            "marginAsset": "USDT",
+            "quoteQty": "29.14940",
+            "commission": "0.00582988",
+            "commissionAsset": "USDT",
+            "timestamp": "1692212604932",
+            "positionSide": "BOTH"
+            
+            
+        },
+        {
+            "symbol": "BTCUSDT",
+            "id": "4010359155",
+            "orderId": "180802527243",
+            "side": "BUY",
+            "price": "29155.40",
+            "qty": "0.003",
+            "realizedPnl": "0",
+            "marginAsset": "USDT",
+            "quoteQty": "87.46620",
+            "commission": "0.01749324",
+            "commissionAsset": "USDT",
+            "timestamp": "1692212698546",
+            "positionSide": "BOTH"
+            
+            
+        },
+        {
+            "symbol": "BTCUSDT",
+            "id": "4010390531",
+            "orderId": "180807422166",
+            "side": "BUY",
+            "price": "29105.10",
+            "qty": "0.001",
+            "realizedPnl": "0",
+            "marginAsset": "USDT",
+            "quoteQty": "29.10510",
+            "commission": "0.00582102",
+            "commissionAsset": "USDT",
+            "timestamp": "1692214061310",
+            "positionSide": "BOTH"
+            
+            
+        },
+        {
+            "symbol": "BTCUSDT",
+            "id": "4010405711",
+            "orderId": "180810162961",
+            "side": "SELL",
+            "price": "29133.90",
+            "qty": "0.004",
+            "realizedPnl": "-0.03570000",
+            "marginAsset": "USDT",
+            "quoteQty": "116.53560",
+            "commission": "0.02330712",
+            "commissionAsset": "USDT",
+            "timestamp": "1692215035317",
+            "positionSide": "BOTH"
+            
+            
+        },
+        {
+            "symbol": "BTCUSDT",
+            "id": "4010405712",
+            "orderId": "180810162968",
+            "side": "SELL",
+            "price": "29133.90",
+            "qty": "0.001",
+            "realizedPnl": "0",
+            "marginAsset": "USDT",
+            "quoteQty": "29.13390",
+            "commission": "0.00582678",
+            "commissionAsset": "USDT",
+            "timestamp": "1692215035317",
+            "positionSide": "BOTH"
+            
+            
+        },
+        {
+            "symbol": "BTCUSDT",
+            "id": "4010668512",
+            "orderId": "180829857332",
+            "side": "BUY",
+            "price": "28942.30",
+            "qty": "0.001",
+            "realizedPnl": "0.19160000",
+            "marginAsset": "USDT",
+            "quoteQty": "28.94230",
+            "commission": "0.01157692",
+            "commissionAsset": "USDT",
+            "timestamp": "1692219647020",
+            "positionSide": "BOTH"
+            
+        },
+        {
+            "symbol": "BTCUSDT",
+            "id": "4010851530",
+            "orderId": "180855501062",
+            "side": "BUY",
+            "price": "28895.80",
+            "qty": "0.002",
+            "realizedPnl": "0",
+            "marginAsset": "USDT",
+            "quoteQty": "57.79160",
+            "commission": "0.01155832",
+            "commissionAsset": "USDT",
+            "timestamp": "1692226742036",
+            "positionSide": "BOTH"
+            
+            
+        },
+        {
+            "symbol": "BTCUSDT",
+            "id": "4010856920",
+            "orderId": "180856190889",
+            "side": "BUY",
+            "price": "28885.40",
+            "qty": "0.001",
+            "realizedPnl": "0",
+            "marginAsset": "USDT",
+            "quoteQty": "28.88540",
+            "commission": "0.00577708",
+            "commissionAsset": "USDT",
+            "timestamp": "1692226906584",
+            "positionSide": "BOTH"
+            
+            
+        },
+        {
+            "symbol": "BTCUSDT",
+            "id": "4010862871",
+            "orderId": "180856826997",
+            "side": "BUY",
+            "price": "28872.30",
+            "qty": "0.001",
+            "realizedPnl": "0",
+            "marginAsset": "USDT",
+            "quoteQty": "28.87230",
+            "commission": "0.00577446",
+            "commissionAsset": "USDT",
+            "timestamp": "1692227064046",
+            "positionSide": "BOTH"
+            
+            
+        }
+    ]
+}
