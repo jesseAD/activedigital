@@ -118,7 +118,7 @@ class FundingRates:
                         fundingRatesValue[symbol] = Helper().get_funding_rates(
                             exch=exch, limit=100, symbol=symbol, since=last_time
                         )
-        
+
         flag = False
         for symbol in symbols:
             if len(fundingRatesValue[symbol]) > 0:
@@ -127,7 +127,7 @@ class FundingRates:
 
         if flag == False:
             return []
-        
+
         funding_rates = []
 
         run_ids = self.runs_db.find({}).sort("_id", -1).limit(1)
@@ -140,12 +140,108 @@ class FundingRates:
                 pass
 
         for symbol in symbols:
+            query = {}
+            if client:
+                query["client"] = client
+            if exchange:
+                query["venue"] = exchange
+            if sub_account:
+                query["account"] = sub_account
+            query["symbol"] = symbol
+
+            last_funding_rates = list(self.funding_rates_db.find(query))
+
             for item in fundingRatesValue[symbol]:
+                last_24h_rates = [
+                    data["funding_rates_value"]["fundingRate"]
+                    for data in last_funding_rates
+                    if data["funding_rates_value"]["timestamp"]
+                    >= (item["timestamp"] - 86400000)
+                ]
+                last_3d_rates = [
+                    data["funding_rates_value"]["fundingRate"]
+                    for data in last_funding_rates
+                    if data["funding_rates_value"]["timestamp"]
+                    >= (item["timestamp"] - 259200000)
+                ]
+                last_7d_rates = [
+                    data["funding_rates_value"]["fundingRate"]
+                    for data in last_funding_rates
+                    if data["funding_rates_value"]["timestamp"]
+                    >= (item["timestamp"] - 604800000)
+                ]
+                last_90d_rates = [
+                    data["funding_rates_value"]["fundingRate"]
+                    for data in last_funding_rates
+                    if data["funding_rates_value"]["timestamp"]
+                    >= (item["timestamp"] - 7776000000)
+                ]
+
+                last_24h_value = 0
+                num_values = len(last_24h_rates) + len(funding_rates)
+                if num_values > 0:
+                    last_24h_value = (
+                        sum(last_24h_rates)
+                        + sum(
+                            [
+                                rates["funding_rates_value"]["fundingRate"]
+                                for rates in funding_rates
+                            ]
+                        )
+                        / num_values
+                    )
+
+                last_3d_value = 0
+                num_values = len(last_3d_rates) + len(funding_rates)
+                if num_values > 0:
+                    last_3d_value = (
+                        sum(last_3d_rates)
+                        + sum(
+                            [
+                                rates["funding_rates_value"]["fundingRate"]
+                                for rates in funding_rates
+                            ]
+                        )
+                        / num_values
+                    )
+
+                last_7d_value = 0
+                num_values = len(last_7d_rates) + len(funding_rates)
+                if num_values > 0:
+                    last_7d_value = (
+                        sum(last_7d_rates)
+                        + sum(
+                            [
+                                rates["funding_rates_value"]["fundingRate"]
+                                for rates in funding_rates
+                            ]
+                        )
+                        / num_values
+                    )
+
+                last_90d_value = 0
+                num_values = len(last_90d_rates) + len(funding_rates)
+                if num_values > 0:
+                    last_90d_value = (
+                        sum(last_90d_rates)
+                        + sum(
+                            [
+                                rates["funding_rates_value"]["fundingRate"]
+                                for rates in funding_rates
+                            ]
+                        )
+                        / num_values
+                    )
+
                 new_value = {
                     "client": client,
                     "venue": exchange,
                     "account": "Main Account",
                     "funding_rates_value": item,
+                    "last_24h": last_24h_value,
+                    "last_3d": last_3d_value,
+                    "last_7d": last_7d_value,
+                    "last_90d": last_90d_value,
                     "symbol": symbol,
                     "active": True,
                     "entry": False,
@@ -166,11 +262,14 @@ class FundingRates:
 
                 funding_rates.append(new_value)
 
+        if len(funding_rates) <= 0:
+            return False
+
         try:
             self.funding_rates_db.insert_many(funding_rates)
 
             return funding_rates
-        
+
         except Exception as e:
             log.error(e)
             return False

@@ -76,16 +76,18 @@ class Helper():
         return result
     
     def get_instruments(self, exch):
-        return exch.fetch_markets({'symbol': "BTCUSDT"})[0]['info']
+        #return exch.fetch_markets({'symbol': "BTCUSDT"})[0]['info']
+        return exch.fetch_markets()
     
     def get_bid_ask(self, exch, symbol):
-        order_book = exch.fetch_l2_order_book(symbol)
+        order_book = exch.fetch_order_book(symbol)
         best_bid = order_book['bids'][0][0]  # price of the highest bid
         best_ask = order_book['asks'][0][0]  # price of the lowest ask
 
         return {
             'bid': best_bid,
-            'ask': best_ask
+            'ask': best_ask,
+            'mid_point': (best_ask + best_bid) / 2.0
         }
     
     def get_tickers(self, exch):

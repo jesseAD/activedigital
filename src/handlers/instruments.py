@@ -83,6 +83,7 @@ class Instruments:
         future: str = None,
         perp: str = None,
         instrumentValue: str = None,
+        bid_ask_value: str = None,
     ):
         if instrumentValue is None:
             spec = exchange.upper() + "_" + sub_account.upper() + "_"
@@ -94,18 +95,35 @@ class Instruments:
             else:
                 instrumentValue = Helper().get_instruments(exch=exch)
 
-            if exchange == "okx":
-                bid_ask_value = OKXHelper().get_bid_ask(exch=exch, symbol="BTC/USDT")
-            elif exchange == "binance":
-                bid_ask_value = Helper().get_bid_ask(exch=exch, symbol="BTC/USDT")
+        if bid_ask_value is None:
+            bid_ask_value = {}
 
-            bid_ask_value['mid_point'] = (bid_ask_value['bid'] + bid_ask_value['ask']) / 2.0  
+            for i in range(len(config['bid_ask']['spot'])):
+                if exchange == "okx":
+                    spot_value = OKXHelper().get_bid_ask(exch=exch, symbol=config['bid_ask']['spot'][i])
+                    perp_value = OKXHelper().get_bid_ask(exch=exch, symbol=config['bid_ask']['perp'][i])
+
+                    bid_ask_value[config['bid_ask']['spot'][i]] = {
+                        'spot': spot_value,
+                        'perp': perp_value,
+                        'spread': spot_value['mid_point'] - perp_value['mid_point'],
+                    }
+
+                elif exchange == "binance":
+                    spot_value = Helper().get_bid_ask(exch=exch, symbol=config['bid_ask']['spot'][i])
+                    perp_value = Helper().get_bid_ask(exch=exch, symbol=config['bid_ask']['perp'][i])
+
+                    bid_ask_value[config['bid_ask']['spot'][i]] = {
+                        'spot': spot_value,
+                        'perp': perp_value,
+                        'spread': spot_value['mid_point'] - perp_value['mid_point'],
+                    }   
 
         instrument = {
             "client": client,
             "venue": exchange,
             "account": "Main Account",
-            "instrument_value": Mapping().mapping_instruments(exchange=exchange, instrument=instrumentValue),
+            "instrument_value": instrumentValue,#Mapping().mapping_instruments(exchange=exchange, instrument=instrumentValue),
             "active": True,
             "entry": False,
             "exit": False,
@@ -132,29 +150,34 @@ class Instruments:
         instrument["runid"] = latest_run_id
 
         # store best bid, ask, mid point
-        bid_ask = {
-            "client": client,
-            "venue": exchange,
-            "account": "Main Account",
-            "bid_ask_value": bid_ask_value, 
-            "symbol": "BTC/USDT",
-            "active": True,
-            "entry": False,
-            "exit": False,
-            "timestamp": datetime.now(timezone.utc),
-            "runid": latest_run_id,
-        }
-        if sub_account:
-            bid_ask["account"] = sub_account
-        if spot:
-            bid_ask["spotMarket"] = spot
-        if future:
-            bid_ask["futureMarket"] = future
-        if perp:
-            bid_ask["perpMarket"] = perp
+        bid_ask = []
+
+        for _key, _value in bid_ask_value.items():
+            new_value = {
+                "client": client,
+                "venue": exchange,
+                "account": "Main Account",
+                "bid_ask_value": _value, 
+                "symbol": _key,
+                "active": True,
+                "entry": False,
+                "exit": False,
+                "timestamp": datetime.now(timezone.utc),
+                "runid": latest_run_id,
+            }
+            if sub_account:
+                new_value["account"] = sub_account
+            if spot:
+                new_value["spotMarket"] = spot
+            if future:
+                new_value["futureMarket"] = future
+            if perp:
+                new_value["perpMarket"] = perp
+
+            bid_ask.append(new_value)
 
         try:
-            self.bid_asks_db.insert_one(bid_ask)
+            self.bid_asks_db.insert_many(bid_ask)
         except:
             pass
 

@@ -46,6 +46,10 @@ mark_prices:
 borrow_rates:
   codes: ['USDT', 'BTC']
 
+bid_ask:
+  spot: ['BTC/USDT', 'ETH/USDT', ]
+  perp: ['BTC/USDT:USDT', 'ETH/USDT:USDT', ]
+
 funding_rates:
   bybit:
     helper: bybithelper.py
@@ -60,7 +64,7 @@ funding_rates:
     instruments:  
       ["BTC.USDT.PERP","ETH.USDT.PERP"]
 
-  symbols: ['BTC/USDT:USDT', ]
+  symbols: ['BTC/USDT:USDT', 'ETH/USDT:USDT', ]
   
 deepspace:
   bybit_subaccount1: &bybit_subaccount1
