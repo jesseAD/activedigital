@@ -89,7 +89,7 @@ class FundingRates:
                     query["venue"] = exchange
                 if sub_account:
                     query["account"] = sub_account
-                query["symbol"] = symbol
+                query["symbol"] = symbol.split(":")[0]
 
                 funding_rate_values = (
                     self.funding_rates_db.find(query).sort("_id", -1).limit(1)
@@ -118,6 +118,30 @@ class FundingRates:
                         fundingRatesValue[symbol] = Helper().get_funding_rates(
                             exch=exch, limit=100, symbol=symbol, since=last_time
                         )
+                if len(fundingRatesValue[symbol]) > 0:
+                    if exchange == "okx":
+                        funding_rate = OKXHelper().get_funding_rate(
+                            exch=exch,
+                            params={
+                                "instId": fundingRatesValue[symbol][0]["info"]["instId"]
+                            },
+                        )["data"][0]
+
+                        for item in fundingRatesValue[symbol]:
+                            item["nextFundingRate"] = funding_rate["nextFundingRate"]
+                            item["nextFundingTime"] = funding_rate["nextFundingTime"]
+
+                    elif exchange == "binance":
+                        funding_rate = Helper().get_mark_prices(
+                            exch=exch,
+                            params={
+                                "symbol": fundingRatesValue[symbol][0]["info"]["symbol"]
+                            },
+                        )
+
+                        for item in fundingRatesValue[symbol]:
+                            item["nextFundingRate"] = funding_rate["lastFundingRate"]
+                            item["nextFundingTime"] = funding_rate["nextFundingTime"]
 
         flag = False
         for symbol in symbols:
@@ -147,7 +171,8 @@ class FundingRates:
                 query["venue"] = exchange
             if sub_account:
                 query["account"] = sub_account
-            query["symbol"] = symbol
+            query["symbol"] = symbol.split(":")[0]
+            query['funding_rates_value.timestamp'] = {"$gte": fundingRatesValue[symbol][0]["timestamp"] - 7776000000}
 
             last_funding_rates = list(self.funding_rates_db.find(query))
 
@@ -188,8 +213,7 @@ class FundingRates:
                                 for rates in funding_rates
                             ]
                         )
-                        / num_values
-                    )
+                    ) / num_values
 
                 last_3d_value = 0
                 num_values = len(last_3d_rates) + len(funding_rates)
@@ -202,8 +226,7 @@ class FundingRates:
                                 for rates in funding_rates
                             ]
                         )
-                        / num_values
-                    )
+                    ) / num_values
 
                 last_7d_value = 0
                 num_values = len(last_7d_rates) + len(funding_rates)
@@ -216,8 +239,7 @@ class FundingRates:
                                 for rates in funding_rates
                             ]
                         )
-                        / num_values
-                    )
+                    ) / num_values
 
                 last_90d_value = 0
                 num_values = len(last_90d_rates) + len(funding_rates)
@@ -229,9 +251,8 @@ class FundingRates:
                                 rates["funding_rates_value"]["fundingRate"]
                                 for rates in funding_rates
                             ]
-                        )
-                        / num_values
-                    )
+                        )                       
+                    ) / num_values
 
                 new_value = {
                     "client": client,
@@ -242,7 +263,7 @@ class FundingRates:
                     "last_3d": last_3d_value,
                     "last_7d": last_7d_value,
                     "last_90d": last_90d_value,
-                    "symbol": symbol,
+                    "symbol": symbol.split(":")[0],
                     "active": True,
                     "entry": False,
                     "exit": False,

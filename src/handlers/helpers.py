@@ -96,6 +96,9 @@ class Helper():
     def get_borrow_rates(self, exch, code, limit = None, since = None, params = {}):
         return exch.fetch_borrow_rate_history(code=code, limit=limit, since=since, params=params)
     
+    def get_borrow_rate(self, exch, code):
+        return exch.fetch_borrow_rate(code=code)
+    
     def get_funding_rates(self, exch, symbol, limit = None, since = None, params = {}):
         return exch.fetch_funding_rate_history(symbol=symbol, limit=limit, since=since, params=params)
     
@@ -129,6 +132,9 @@ class OKXHelper(Helper):
     
     def get_fills(self, exch, params={}):
         return exch.private_get_trade_fills_history(params)['data']
+    
+    def get_funding_rate(self, exch, params={}):
+        return exch.public_get_public_funding_rate(params)
 
 class CoinbaseHelper():
     def get_usdt2usd_ticker(self, exch):

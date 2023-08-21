@@ -121,6 +121,16 @@ class BorrowRates:
                         borrowRatesValue[code] = Helper().get_borrow_rates(
                             exch=exch, limit=92, code=code, since=last_time
                         )
+                if len(borrowRatesValue[code]) > 0:
+                    if exchange == "okx":
+                        borrow_rate = OKXHelper().get_borrow_rate(exch=exch, code=code)['rate']
+                        for item in borrowRatesValue[code]:
+                            item['nextBorrowRate'] = borrow_rate
+
+                    elif exchange == "binance":
+                        borrow_rate = Helper().get_borrow_rate(exch=exch, code=code)['rate']
+                        for item in borrowRatesValue[code]:
+                            item['nextBorrowRate'] = borrow_rate
 
         flag = False
         for code in codes:
@@ -143,12 +153,106 @@ class BorrowRates:
                 pass
 
         for code in codes:
-            for item in borrowRatesValue[code]:    
+            query = {}
+            if client:
+                query["client"] = client
+            if exchange:
+                query["venue"] = exchange
+            if sub_account:
+                query["account"] = sub_account
+            query["code"] = code
+            query['borrow_rates_value.timestamp'] = {"$gte": borrowRatesValue[code][0]["timestamp"] - 7776000000}
+
+            last_borrow_rates = list(self.borrow_rates_db.find(query))
+
+            for item in borrowRatesValue[code]:   
+                last_24h_rates = [
+                    data["borrow_rates_value"]["rate"]
+                    for data in last_borrow_rates
+                    if data["borrow_rates_value"]["timestamp"]
+                    >= (item["timestamp"] - 86400000)
+                ]
+                last_3d_rates = [
+                    data["borrow_rates_value"]["rate"]
+                    for data in last_borrow_rates
+                    if data["borrow_rates_value"]["timestamp"]
+                    >= (item["timestamp"] - 259200000)
+                ]
+                last_7d_rates = [
+                    data["borrow_rates_value"]["rate"]
+                    for data in last_borrow_rates
+                    if data["borrow_rates_value"]["timestamp"]
+                    >= (item["timestamp"] - 604800000)
+                ]
+                last_90d_rates = [
+                    data["borrow_rates_value"]["rate"]
+                    for data in last_borrow_rates
+                    if data["borrow_rates_value"]["timestamp"]
+                    >= (item["timestamp"] - 7776000000)
+                ]
+
+                last_24h_value = 0
+                num_values = len(last_24h_rates) + len(borrow_rates)
+                if num_values > 0:
+                    last_24h_value = (
+                        sum(last_24h_rates)
+                        + sum(
+                            [
+                                rates["borrow_rates_value"]["rate"]
+                                for rates in borrow_rates
+                            ]
+                        )
+                    ) / num_values
+
+                last_3d_value = 0
+                num_values = len(last_3d_rates) + len(borrow_rates)
+                if num_values > 0:
+                    last_3d_value = (
+                        sum(last_3d_rates)
+                        + sum(
+                            [
+                                rates["borrow_rates_value"]["rate"]
+                                for rates in borrow_rates
+                            ]
+                        )
+                    ) / num_values
+
+                last_7d_value = 0
+                num_values = len(last_7d_rates) + len(borrow_rates)
+                if num_values > 0:
+                    last_7d_value = (
+                        sum(last_7d_rates)
+                        + sum(
+                            [
+                                rates["borrow_rates_value"]["rate"]
+                                for rates in borrow_rates
+                            ]
+                        )
+                    ) / num_values
+
+                last_90d_value = 0
+                num_values = len(last_90d_rates) + len(borrow_rates)
+                if num_values > 0:
+                    last_90d_value = (
+                        sum(last_90d_rates)
+                        + sum(
+                            [
+                                rates["borrow_rates_value"]["rate"]
+                                for rates in borrow_rates
+                            ]
+                        )
+                       
+                    ) / num_values
+
                 new_value = {
                     "client": client,
                     "venue": exchange,
                     "account": "Main Account",
                     "borrow_rates_value": item,
+                    "last_24h": last_24h_value,
+                    "last_3d": last_3d_value,
+                    "last_7d": last_7d_value,
+                    "last_90d": last_90d_value,
                     "code": code,
                     "active": True,
                     "entry": False,
