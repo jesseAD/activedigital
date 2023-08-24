@@ -39,6 +39,7 @@ okx:
   
   transaction:
     ts: timestamp
+    fee: income
     values:
       type:
         _1: TRANSFER
@@ -67,3 +68,4 @@ okx:
     billId: id
     ts: timestamp
     posSide: positionSide
+    fillPnl: realizedPnl

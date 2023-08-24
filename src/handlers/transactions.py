@@ -1,6 +1,6 @@
 import os
 from dotenv import load_dotenv
-from datetime import datetime, timezone
+from datetime import datetime, timezone, timedelta
 
 from src.lib.db import MongoDB
 from src.lib.log import Log
@@ -59,6 +59,122 @@ class Transactions:
         try:
             results = self.transactions_db.aggregate(pipeline)
             return results
+
+        except Exception as e:
+            log.error(e)
+
+    def get_last_funding_payments(
+        self,
+        client,
+        exchange,
+        account,
+        start_date,
+        field_name,
+    ):
+        pipeline = [
+            {"$sort": {"_id": -1}},
+        ]
+        pipeline.append({"$match": {"client": client}})
+        pipeline.append({"$match": {"venue": exchange}})
+        pipeline.append({"$match": {"account": account}})
+        pipeline.append(
+            {
+                "$match": {
+                    "$or": [
+                        {"transaction_value.incomeType": "FUNDING_FEE"},
+                        {"transaction_value.subType": "FUNDING_FEE"},
+                        {"transaction_value.type": "FUNDING_FEE"},
+                    ]
+                }
+            }
+        )
+        pipeline.append(
+            {"$match": {"transaction_value.timestamp": {"$gte": start_date}}}
+        )
+
+        pipeline.append(
+            {
+                "$group": {
+                    "_id": {
+                        "client": "$client",
+                        "venue": "$venue",
+                        "account": "$account",
+                    },
+                    "client": {"$last": "$client"},
+                    "venue": {"$last": "$venue"},
+                    "account": {"$last": "$account"},
+                    field_name: {"$sum": "$transaction_value.income"},
+                    "timestamp": {"$last": "$timestamp"},
+                }
+            }
+        )
+
+        pipeline.append({"$project": {"_id": 0}})
+
+        pipeline.append(
+            {"$merge": {"into": "funding_payments", "whenMatched": "replace"}}
+        )
+
+        try:
+            self.transactions_db.aggregate(pipeline)
+
+        except Exception as e:
+            log.error(e)
+
+    def get_last_borrow_payments(
+        self,
+        client,
+        exchange,
+        account,
+        start_date,
+        field_name,
+    ):
+        pipeline = [
+            {"$sort": {"_id": -1}},
+        ]
+        pipeline.append({"$match": {"client": client}})
+        pipeline.append({"$match": {"venue": exchange}})
+        pipeline.append({"$match": {"account": account}})
+        pipeline.append(
+            {
+                "$match": {
+                    "$or": [
+                        {"transaction_value.incomeType": "BORROW"},
+                        {"transaction_value.subType": "BORROW"},
+                        {"transaction_value.type": "BORROW"},
+                    ]
+                }
+            }
+        )
+        pipeline.append(
+            {"$match": {"transaction_value.timestamp": {"$gte": start_date}}}
+        )
+
+        pipeline.append(
+            {
+                "$group": {
+                    "_id": {
+                        "client": "$client",
+                        "venue": "$venue",
+                        "account": "$account",
+                    },
+                    "client": {"$last": "$client"},
+                    "venue": {"$last": "$venue"},
+                    "account": {"$last": "$account"},
+                    field_name: {"$sum": "$transaction_value.income"},
+                    "timestamp": {"$last": "$timestamp"},
+                }
+            }
+        )
+
+        pipeline.append({"$project": {"_id": 0}})
+
+        pipeline.append(
+            {"$merge": {"into": "borrow_payments", "whenMatched": "replace"}}
+        )
+
+        try:
+            self.transactions_db.aggregate(pipeline)
 
         except Exception as e:
             log.error(e)
@@ -243,8 +359,8 @@ class Transactions:
                         spot_trades = Mapping().mapping_transactions(
                             exchange=exchange, transactions=spot_trades
                         )
-                        transaction_value['spot'] = spot_trades
-                    
+                        transaction_value["spot"] = spot_trades
+
         current_time = datetime.now(timezone.utc)
         run_ids = self.runs_db.find({}).sort("_id", -1).limit(1)
         latest_run_id = 0
@@ -284,6 +400,8 @@ class Transactions:
                     return False
 
                 for item in transaction_value:
+                    item['timestamp'] = int(item["timestamp"])
+                    item['income'] = float(item["income"])
                     new_value = {
                         "client": client,
                         "venue": exchange,
@@ -295,6 +413,7 @@ class Transactions:
                         "exit": False,
                         "timestamp": current_time,
                     }
+                    
                     if sub_account:
                         new_value["account"] = sub_account
                     if spot:
@@ -309,6 +428,8 @@ class Transactions:
             if exchange == "binance":
                 if len(transaction_value["future"]) > 0:
                     for item in transaction_value["future"]:
+                        item['timestamp'] = int(item["timestamp"])
+                        item['income'] = float(item["income"])
                         new_value = {
                             "client": client,
                             "venue": exchange,
@@ -334,6 +455,8 @@ class Transactions:
 
                 if len(transaction_value["spot"]) > 0:
                     for item in transaction_value["spot"]:
+                        item['timestamp'] = int(item["timestamp"])
+                        # item['income'] = float(item["income"])
                         new_value = {
                             "client": client,
                             "venue": exchange,
@@ -383,6 +506,22 @@ class Transactions:
 
             elif config["transactions"]["store_type"] == "timeseries":
                 self.transactions_db.insert_many(transaction)
+
+            start_date = int((current_time - timedelta(days=28)).timestamp() * 1000)
+            self.get_last_funding_payments(
+                client=client,
+                exchange=exchange,
+                account=sub_account,
+                start_date=start_date,
+                field_name="last_28d",
+            )
+            self.get_last_borrow_payments(
+                client=client,
+                exchange=exchange,
+                account=sub_account,
+                start_date=start_date,
+                field_name="last_28d",
+            )
 
             # log.debug(f"transaction created: {transaction}")
             return transaction
