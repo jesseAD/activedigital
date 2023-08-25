@@ -44,7 +44,7 @@ mark_prices:
   store_type: timeseries
 
 borrow_rates:
-  codes: ['USDT', 'BTC', 'ETH', ]
+  codes: ['BTC', 'ETH', 'USDT', ]
 
 bid_ask:
   spot: ['BTC/USDT', 'ETH/USDT', ]

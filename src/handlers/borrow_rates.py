@@ -75,7 +75,7 @@ class BorrowRates:
     ):
         if codes is None:
             codes = config["borrow_rates"]["codes"]
-            
+
         if borrowRatesValue is None:
             spec = exchange.upper() + "_" + sub_account.upper() + "_"
             API_KEY = os.getenv(spec + "API_KEY")
@@ -123,14 +123,18 @@ class BorrowRates:
                         )
                 if len(borrowRatesValue[code]) > 0:
                     if exchange == "okx":
-                        borrow_rate = OKXHelper().get_borrow_rate(exch=exch, code=code)['rate']
+                        borrow_rate = OKXHelper().get_borrow_rate(
+                            exch=exch, params={"ccy": code}
+                        )["data"][0]["interestRate"]
                         for item in borrowRatesValue[code]:
-                            item['nextBorrowRate'] = borrow_rate
+                            item["nextBorrowRate"] = borrow_rate
 
                     elif exchange == "binance":
-                        borrow_rate = Helper().get_borrow_rate(exch=exch, code=code)['rate']
+                        borrow_rate = Helper().get_borrow_rate(
+                            exch=exch, params={"assets": code, "isIsolated": False}
+                        )[0]["nextHourlyInterestRate"]
                         for item in borrowRatesValue[code]:
-                            item['nextBorrowRate'] = borrow_rate
+                            item["nextBorrowRate"] = borrow_rate
 
         flag = False
         for code in codes:
@@ -161,11 +165,13 @@ class BorrowRates:
             if sub_account:
                 query["account"] = sub_account
             query["code"] = code
-            query['borrow_rates_value.timestamp'] = {"$gte": borrowRatesValue[code][0]["timestamp"] - 7776000000}
+            query["borrow_rates_value.timestamp"] = {
+                "$gte": borrowRatesValue[code][0]["timestamp"] - 7776000000
+            }
 
             last_borrow_rates = list(self.borrow_rates_db.find(query))
 
-            for item in borrowRatesValue[code]:   
+            for item in borrowRatesValue[code]:
                 last_24h_rates = [
                     data["borrow_rates_value"]["rate"]
                     for data in last_borrow_rates
@@ -241,7 +247,6 @@ class BorrowRates:
                                 for rates in borrow_rates
                             ]
                         )
-                       
                     ) / num_values
 
                 new_value = {
@@ -277,7 +282,7 @@ class BorrowRates:
             self.borrow_rates_db.insert_many(borrow_rates)
 
             return borrow_rates
-        
+
         except Exception as e:
             log.error(e)
             return False
