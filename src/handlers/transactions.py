@@ -61,123 +61,7 @@ class Transactions:
             return results
 
         except Exception as e:
-            log.error(e)
-
-    def get_last_funding_payments(
-        self,
-        client,
-        exchange,
-        account,
-        start_date,
-        field_name,
-    ):
-        pipeline = [
-            {"$sort": {"_id": -1}},
-        ]
-        pipeline.append({"$match": {"client": client}})
-        pipeline.append({"$match": {"venue": exchange}})
-        pipeline.append({"$match": {"account": account}})
-        pipeline.append(
-            {
-                "$match": {
-                    "$or": [
-                        {"transaction_value.incomeType": "FUNDING_FEE"},
-                        {"transaction_value.subType": "FUNDING_FEE"},
-                        {"transaction_value.type": "FUNDING_FEE"},
-                    ]
-                }
-            }
-        )
-        pipeline.append(
-            {"$match": {"transaction_value.timestamp": {"$gte": start_date}}}
-        )
-
-        pipeline.append(
-            {
-                "$group": {
-                    "_id": {
-                        "client": "$client",
-                        "venue": "$venue",
-                        "account": "$account",
-                    },
-                    "client": {"$last": "$client"},
-                    "venue": {"$last": "$venue"},
-                    "account": {"$last": "$account"},
-                    field_name: {"$sum": "$transaction_value.income"},
-                    "timestamp": {"$last": "$timestamp"},
-                }
-            }
-        )
-
-        pipeline.append({"$project": {"_id": 0}})
-
-        pipeline.append(
-            {"$merge": {"into": "funding_payments", "whenMatched": "replace"}}
-        )
-
-        try:
-            self.transactions_db.aggregate(pipeline)
-
-        except Exception as e:
-            log.error(e)
-
-    def get_last_borrow_payments(
-        self,
-        client,
-        exchange,
-        account,
-        start_date,
-        field_name,
-    ):
-        pipeline = [
-            {"$sort": {"_id": -1}},
-        ]
-        pipeline.append({"$match": {"client": client}})
-        pipeline.append({"$match": {"venue": exchange}})
-        pipeline.append({"$match": {"account": account}})
-        pipeline.append(
-            {
-                "$match": {
-                    "$or": [
-                        {"transaction_value.incomeType": "BORROW"},
-                        {"transaction_value.subType": "BORROW"},
-                        {"transaction_value.type": "BORROW"},
-                    ]
-                }
-            }
-        )
-        pipeline.append(
-            {"$match": {"transaction_value.timestamp": {"$gte": start_date}}}
-        )
-
-        pipeline.append(
-            {
-                "$group": {
-                    "_id": {
-                        "client": "$client",
-                        "venue": "$venue",
-                        "account": "$account",
-                    },
-                    "client": {"$last": "$client"},
-                    "venue": {"$last": "$venue"},
-                    "account": {"$last": "$account"},
-                    field_name: {"$sum": "$transaction_value.income"},
-                    "timestamp": {"$last": "$timestamp"},
-                }
-            }
-        )
-
-        pipeline.append({"$project": {"_id": 0}})
-
-        pipeline.append(
-            {"$merge": {"into": "borrow_payments", "whenMatched": "replace"}}
-        )
-
-        try:
-            self.transactions_db.aggregate(pipeline)
-
-        except Exception as e:
-            log.error(e)
+            log.error(e)    
 
     def create(
         self,
@@ -506,22 +390,6 @@ class Transactions:
 
             elif config["transactions"]["store_type"] == "timeseries":
                 self.transactions_db.insert_many(transaction)
-
-            start_date = int((current_time - timedelta(days=28)).timestamp() * 1000)
-            self.get_last_funding_payments(
-                client=client,
-                exchange=exchange,
-                account=sub_account,
-                start_date=start_date,
-                field_name="last_28d",
-            )
-            self.get_last_borrow_payments(
-                client=client,
-                exchange=exchange,
-                account=sub_account,
-                start_date=start_date,
-                field_name="last_28d",
-            )
 
             # log.debug(f"transaction created: {transaction}")
             return transaction
