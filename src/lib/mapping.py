@@ -81,40 +81,44 @@ class Mapping:
             for transaction in transactions:
                 new_transaction = {}
                 for _key, _value in transaction.items():
-                    if _key == "type":
-                        if exchange == "okx":
-                            if ("_" + _value) in mapping_data["values"]["type"].keys():
-                                new_transaction[_key] = mapping_data["values"]["type"][
-                                    "_" + _value
-                                ]
-                            else:
-                                new_transaction[_key] = _value
-                        else:
-                            new_transaction[_key] = _value
+                    # if _key == "type":
+                    #     if exchange == "okx":
+                    #         if ("_" + _value) in mapping_data["values"]["type"].keys():
+                    #             new_transaction[_key] = mapping_data["values"]["type"][
+                    #                 "_" + _value
+                    #             ]
+                    #         else:
+                    #             new_transaction[_key] = _value
+                    #     else:
+                    #         new_transaction[_key] = _value
 
-                    elif _key == "subType":
-                        if exchange == "okx":
-                            if ("_" + _value) in mapping_data["values"][
-                                "subType"
-                            ].keys():
-                                new_transaction[_key] = mapping_data["values"][
-                                    "subType"
-                                ]["_" + _value]
-                            else:
-                                new_transaction[_key] = _value
-                        else:
-                            new_transaction[_key] = _value
+                    # elif _key == "subType":
+                    #     if exchange == "okx":
+                    #         if ("_" + _value) in mapping_data["values"][
+                    #             "subType"
+                    #         ].keys():
+                    #             new_transaction[_key] = mapping_data["values"][
+                    #                 "subType"
+                    #             ]["_" + _value]
+                    #         else:
+                    #             new_transaction[_key] = _value
+                    #     else:
+                    #         new_transaction[_key] = _value
 
-                    elif _key == "incomeType":
-                        if exchange == "binance":
-                            if _value in mapping_data["values"].keys():
-                                new_transaction[_key] = mapping_data["values"][_value]
-                            else:
-                                new_transaction[_key] = _value
-                        else:
-                            new_transaction[_key] = _value
+                    # elif _key == "incomeType":
+                    #     if exchange == "binance":
+                    #         if _value in mapping_data["values"].keys():
+                    #             new_transaction[_key] = mapping_data["values"][_value]
+                    #         else:
+                    #             new_transaction[_key] = _value
+                    #     else:
+                    #         new_transaction[_key] = _value
 
-                    elif _key in mapping_data.keys():
+                    # elif _key in mapping_data.keys():
+                    #     new_transaction[mapping_data[_key]] = _value
+                    # else:
+                    #     new_transaction[_key] = _value
+                    if _key in mapping_data.keys():
                         new_transaction[mapping_data[_key]] = _value
                     else:
                         new_transaction[_key] = _value
