@@ -83,24 +83,24 @@ class Transactions:
 
             if config["transactions"]["store_type"] == "snapshot":
                 if exchange == "okx":
-                    transactions = OKXHelper().get_transactions(exch=exch)
-                    transaction_value = Mapping().mapping_transactions(
-                        exchange=exchange, transactions=transactions
-                    )
+                    transaction_value = OKXHelper().get_transactions(exch=exch)
+                    # transaction_value = Mapping().mapping_transactions(
+                    #     exchange=exchange, transactions=transactions
+                    # )
 
                 elif exchange == "binance":
                     futures_trades = Helper().get_future_transactions(
                         exch=exch, params={"limit": 100}
                     )
-                    futures_trades = Mapping().mapping_transactions(
-                        exchange=exchange, transactions=futures_trades
-                    )
+                    # futures_trades = Mapping().mapping_transactions(
+                    #     exchange=exchange, transactions=futures_trades
+                    # )
                     spot_trades = Helper().get_spot_transactions(
                         exch=exch, params={"symbol": symbol}
                     )
-                    spot_trades = Mapping().mapping_transactions(
-                        exchange=exchange, transactions=spot_trades
-                    )
+                    # spot_trades = Mapping().mapping_transactions(
+                    #     exchange=exchange, transactions=spot_trades
+                    # )
 
                     transaction_value = {"future": futures_trades, "spot": spot_trades}
 
@@ -125,27 +125,27 @@ class Transactions:
                         current_value = item["transaction_value"]
 
                     if current_value is None:
-                        transactions = OKXHelper().get_transactions(exch=exch)
-                        transaction_value = Mapping().mapping_transactions(
-                            exchange=exchange, transactions=transactions
-                        )
+                        transaction_value = OKXHelper().get_transactions(exch=exch)
+                        # transaction_value = Mapping().mapping_transactions(
+                        #     exchange=exchange, transactions=transactions
+                        # )
                     else:
                         if config["transactions"]["fetch_type"] == "id":
                             last_id = current_value["billId"]
-                            transactions = OKXHelper().get_transactions(
+                            transaction_value = OKXHelper().get_transactions(
                                 exch=exch, params={"before": last_id}
                             )
-                            transaction_value = Mapping().mapping_transactions(
-                                exchange=exchange, transactions=transactions
-                            )
+                            # transaction_value = Mapping().mapping_transactions(
+                            #     exchange=exchange, transactions=transactions
+                            # )
                         elif config["transactions"]["fetch_type"] == "time":
                             last_time = current_value["timestamp"]
-                            transactions = OKXHelper().get_transactions(
+                            transaction_value = OKXHelper().get_transactions(
                                 exch=exch, params={"begin": last_time}
                             )
-                            transaction_value = Mapping().mapping_transactions(
-                                exchange=exchange, transactions=transactions
-                            )
+                            # transaction_value = Mapping().mapping_transactions(
+                            #     exchange=exchange, transactions=transactions
+                            # )
                 elif exchange == "binance":
                     query = {}
                     if client:
@@ -170,9 +170,9 @@ class Transactions:
                         futures_trades = Helper().get_future_transactions(
                             exch=exch, params={"limit": 100}
                         )
-                        futures_trades = Mapping().mapping_transactions(
-                            exchange=exchange, transactions=futures_trades
-                        )
+                        # futures_trades = Mapping().mapping_transactions(
+                        #     exchange=exchange, transactions=futures_trades
+                        # )
 
                         transaction_value = {
                             "future": futures_trades,
@@ -187,9 +187,9 @@ class Transactions:
                                 "symbol": symbol,
                             },
                         )
-                        futures_trades = Mapping().mapping_transactions(
-                            exchange=exchange, transactions=futures_trades
-                        )
+                        # futures_trades = Mapping().mapping_transactions(
+                        #     exchange=exchange, transactions=futures_trades
+                        # )
 
                         transaction_value = {
                             "future": futures_trades,
@@ -211,9 +211,9 @@ class Transactions:
                         spot_trades = Helper().get_spot_transactions(
                             exch=exch, params={"symbol": symbol, "limit": 100}
                         )
-                        spot_trades = Mapping().mapping_transactions(
-                            exchange=exchange, transactions=spot_trades
-                        )
+                        # spot_trades = Mapping().mapping_transactions(
+                        #     exchange=exchange, transactions=spot_trades
+                        # )
 
                         transaction_value["spot"] = spot_trades
 
@@ -240,9 +240,9 @@ class Transactions:
                                 },
                             )
 
-                        spot_trades = Mapping().mapping_transactions(
-                            exchange=exchange, transactions=spot_trades
-                        )
+                        # spot_trades = Mapping().mapping_transactions(
+                        #     exchange=exchange, transactions=spot_trades
+                        # )
                         transaction_value["spot"] = spot_trades
 
         current_time = datetime.now(timezone.utc)
