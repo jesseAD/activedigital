@@ -284,8 +284,8 @@ class Transactions:
                     return False
 
                 for item in transaction_value:
-                    item['timestamp'] = int(item["timestamp"])
-                    item['income'] = float(item["income"])
+                    # item['timestamp'] = int(item["timestamp"])
+                    # item['income'] = float(item["income"])
                     new_value = {
                         "client": client,
                         "venue": exchange,
@@ -312,8 +312,8 @@ class Transactions:
             if exchange == "binance":
                 if len(transaction_value["future"]) > 0:
                     for item in transaction_value["future"]:
-                        item['timestamp'] = int(item["timestamp"])
-                        item['income'] = float(item["income"])
+                        # item['timestamp'] = int(item["timestamp"])
+                        # item['income'] = float(item["income"])
                         new_value = {
                             "client": client,
                             "venue": exchange,
@@ -339,7 +339,7 @@ class Transactions:
 
                 if len(transaction_value["spot"]) > 0:
                     for item in transaction_value["spot"]:
-                        item['timestamp'] = int(item["timestamp"])
+                        # item['timestamp'] = int(item["timestamp"])
                         # item['income'] = float(item["income"])
                         new_value = {
                             "client": client,
