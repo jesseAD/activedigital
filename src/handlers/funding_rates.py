@@ -164,6 +164,7 @@ class FundingRates:
                 pass
 
         for symbol in symbols:
+            for item in fundingRatesValue[symbol]:
 
                 new_value = {
                     "client": client,
