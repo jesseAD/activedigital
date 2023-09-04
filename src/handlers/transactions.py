@@ -285,7 +285,8 @@ class Transactions:
 
                 for item in transaction_value:
                     item['timestamp'] = int(item["timestamp"])
-                    item['income'] = float(item["income"])
+                    if item['income'] != '':
+                        item['income'] = float(item["income"])
                     new_value = {
                         "client": client,
                         "venue": exchange,
