@@ -71,13 +71,17 @@ class FundingRates:
         symbols: str = None,
     ):
         if symbols is None:
-            symbols = config["funding_rates"]["symbols"]
+            if exchange == "binance":
+                symbols = config["funding_rates"]["symbols"]["binance_f"]
+                symbols_d = config["funding_rates"]["symbols"]["binance_d"]
+            elif exchange == "okx":
+                symbols = config["funding_rates"]["symbols"]["okx"]
 
         if fundingRatesValue is None:
             spec = exchange.upper() + "_" + sub_account.upper() + "_"
             API_KEY = os.getenv(spec + "API_KEY")
             API_SECRET = os.getenv(spec + "API_SECRET")
-            exch = Exchange(exchange, sub_account, API_KEY, API_SECRET).exch()
+            exch = Exchange(exchange).exch()
 
             fundingRatesValue = {}
 
@@ -143,6 +147,45 @@ class FundingRates:
                             item["nextFundingRate"] = funding_rate["lastFundingRate"]
                             item["nextFundingTime"] = funding_rate["nextFundingTime"]
 
+            if exchange == "binance":
+                for symbol in symbols_d:
+                    query = {}
+                    if client:
+                        query["client"] = client
+                    if exchange:
+                        query["venue"] = exchange
+                    if sub_account:
+                        query["account"] = sub_account
+                    query["symbol"] = symbol
+
+                    funding_rate_values = (
+                        self.funding_rates_db.find(query).sort("_id", -1).limit(1)
+                    )
+
+                    current_values = None
+                    for item in funding_rate_values:
+                        current_values = item["funding_rates_value"]
+
+                    if current_values is None:
+                        fundingRatesValue[symbol] = Helper().get_funding_rates_dapi(
+                            params={'limit': 100, 'symbol': symbol}, exch=exch
+                        )
+                    else:
+                        last_time = int(current_values["fundingTime"])
+
+                        fundingRatesValue[symbol] = Helper().get_funding_rates_dapi(
+                            exch=exch, params={'limit': 100, 'symbol': symbol, 'startTime': last_time}
+                        )
+                    for item in fundingRatesValue[symbol]:
+                        item = {
+                            'timestamp': item['fundingTime'],
+                            'symbol': item['symbol'],
+                            'fundingRate': float(item['fundingRate'])
+                        }
+                    
+        if exchange == "binance":
+            symbols = symbols + symbols_d
+
         flag = False
         for symbol in symbols:
             if len(fundingRatesValue[symbol]) > 0:
@@ -165,7 +208,6 @@ class FundingRates:
 
         for symbol in symbols:
             for item in fundingRatesValue[symbol]:
-
                 new_value = {
                     "client": client,
                     "venue": exchange,

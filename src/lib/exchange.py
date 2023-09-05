@@ -32,8 +32,9 @@ class Exchange:
         elif self.exchange == 'bybit':
             exchange = ccxt.bybit(params)
         elif self.exchange == 'okx':
-            passphrase = os.getenv('OKX_'+self.sub_account.upper()+'_PASSPHRASE')
-            params['password'] = passphrase
+            if self.sub_account is not None:
+                passphrase = os.getenv('OKX_'+self.sub_account.upper()+'_PASSPHRASE')
+                params['password'] = passphrase
             exchange = ccxt.okex5(params)
         elif self.exchange == 'coinbase':
             exchange = ccxt.coinbasepro()

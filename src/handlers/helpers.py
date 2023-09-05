@@ -102,6 +102,9 @@ class Helper():
     def get_funding_rates(self, exch, symbol, limit = None, since = None, params = {}):
         return exch.fetch_funding_rate_history(symbol=symbol, limit=limit, since=since, params=params)
     
+    def get_funding_rates_dapi(self, exch, params = {}):
+        return exch.dapipublic_get_fundingrate(params=params)
+    
     def get_portfolio_margin(self, exch, params={}):
         return exch.fapiprivate_get_balance(params)
     
