@@ -43,7 +43,7 @@ def get_data_collectors(client):
                 continue
             exchange_data = config[client][collection][exchange]
             for account in exchange_data:
-                if account.startswith('subaccount'):
+                if account.startswith('sub'):
                     data_collector = instantiate(client, collection, exchange, account)
                     data_collectors.append(data_collector)
          

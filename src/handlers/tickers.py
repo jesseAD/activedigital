@@ -64,7 +64,7 @@ class Tickers:
 
     def create(
         self,
-        client,
+        client: str = None,
         exchange: str = None,
         sub_account: str = None,
         spot: str = None,
@@ -73,10 +73,15 @@ class Tickers:
         tickerValue: str = None,
     ):
         if tickerValue is None:
-            spec = exchange.upper() + "_" + sub_account.upper() + "_"
+            spec = client.upper() + "_" + exchange.upper() + "_" + sub_account.upper() + "_"
             API_KEY = os.getenv(spec + "API_KEY")
             API_SECRET = os.getenv(spec + "API_SECRET")
-            exch = Exchange(exchange, sub_account, API_KEY, API_SECRET).exch()
+            PASSPHRASE = None
+            if exchange == "okx":
+                PASSPHRASE = os.getenv(spec + "PASSPHRASE")
+
+            exch = Exchange(exchange, sub_account, API_KEY, API_SECRET, PASSPHRASE).exch()
+            
             if exchange == 'okx':
                 tickerValue = OKXHelper().get_tickers(exch = exch)
             else:

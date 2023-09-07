@@ -15,6 +15,24 @@ balances: &balances
   base_ccy: USDT
   store_type: timeseries
 
+symbols:
+  symbols_1: &symbols_1 ['BTC', 'ETH', 'USDT', 'XRP', 'BNB', 'DOGE', 'SOL', 'LTC', 'BCH', 'DOT', 'ARB', 'ADA', 'OP', 'SUI', 'APT', 'EOS', 
+    'ECT', FIL', 'DYDX', 'ATOM', 'APE', 'CRV', 'TRX', 'RUNE', 'UNI', 'GALA', 'NEAR', '1000PEPE', 'PEPE', 'XMR', 'SAND', 'AAVE', 'USDC', 'AXS', 
+    'COMP', 'GMT', 'ICP', 'MANA', 'ALGO', 'SHIB', 'SUSHI', 'GRT', '1INCH', 'CHZ', 'NEO', 'KNC', 'XTZ', 'THETA', 
+    'DASH', 'PEOPLE', 'LRC', 'ZIL', 'OMG', 'ROSE', 'AR', 'COTI', 'ICX', ]
+  symbols_2: &symbols_2 ['BTC/USDT', 'ETH/USDT', 'USDT/USDT', 'XRP/USDT', 'BNB/USDT', 'DOGE/USDT', 'SOL/USDT', 'LTC/USDT', 'BCH/USDT', 'DOT/USDT', 'ARB/USDT', 'ADA/USDT', 'OP/USDT', 'SUI/USDT', 'APT/USDT', 'EOS/USDT', 
+    'ECT/USDT', FIL/USDT', 'DYDX/USDT', 'ATOM/USDT', 'APE/USDT', 'CRV/USDT', 'TRX/USDT', 'RUNE/USDT', 'UNI/USDT', 'GALA/USDT', 'NEAR/USDT', '1000PEPE/USDT', 'PEPE/USDT', 'XMR/USDT', 'SAND/USDT', 'AAVE/USDT', 'USDC/USDT', 'AXS/USDT', 
+    'COMP/USDT', 'GMT/USDT', 'ICP/USDT', 'MANA/USDT', 'ALGO/USDT', 'SHIB/USDT', 'SUSHI/USDT', 'GRT/USDT', '1INCH/USDT', 'CHZ/USDT', 'NEO/USDT', 'KNC/USDT', 'XTZ/USDT', 'THETA/USDT', 
+    'DASH/USDT', 'PEOPLE/USDT', 'LRC/USDT', 'ZIL/USDT', 'OMG/USDT', 'ROSE/USDT', 'AR/USDT', 'COTI/USDT', 'ICX/USDT', ]
+  symbols_3: &symbols_3 ['BTC/USDT:USDT', 'ETH/USDT:USDT', 'USDT/USDT:USDT', 'XRP/USDT:USDT', 'BNB/USDT:USDT', 'DOGE/USDT:USDT', 'SOL/USDT:USDT', 'LTC/USDT:USDT', 'BCH/USDT:USDT', 'DOT/USDT:USDT', 'ARB/USDT:USDT', 'ADA/USDT:USDT', 'OP/USDT:USDT', 'SUI/USDT:USDT', 'APT/USDT:USDT', 'EOS/USDT:USDT', 
+    'ECT/USDT:USDT', FIL/USDT:USDT', 'DYDX/USDT:USDT', 'ATOM/USDT:USDT', 'APE/USDT:USDT', 'CRV/USDT:USDT', 'TRX/USDT:USDT', 'RUNE/USDT:USDT', 'UNI/USDT:USDT', 'GALA/USDT:USDT', 'NEAR/USDT:USDT', '1000PEPE/USDT:USDT', 'PEPE/USDT:USDT', 'XMR/USDT:USDT', 'SAND/USDT:USDT', 'AAVE/USDT:USDT', 'USDC/USDT:USDT', 'AXS/USDT:USDT', 
+    'COMP/USDT:USDT', 'GMT/USDT:USDT', 'ICP/USDT:USDT', 'MANA/USDT:USDT', 'ALGO/USDT:USDT', 'SHIB/USDT:USDT', 'SUSHI/USDT:USDT', 'GRT/USDT:USDT', '1INCH/USDT:USDT', 'CHZ/USDT:USDT', 'NEO/USDT:USDT', 'KNC/USDT:USDT', 'XTZ/USDT:USDT', 'THETA/USDT:USDT', 
+    'DASH/USDT:USDT', 'PEOPLE/USDT:USDT', 'LRC/USDT:USDT', 'ZIL/USDT:USDT', 'OMG/USDT:USDT', 'ROSE/USDT:USDT', 'AR/USDT:USDT', 'COTI/USDT:USDT', 'ICX/USDT:USDT', ]
+  symbols_4: &symbols_4 ['BTCUSD_PERP', 'ETHUSD_PERP', 'USDTUSD_PERP', 'XRPUSD_PERP', 'BNBUSD_PERP', 'DOGEUSD_PERP', 'SOLUSD_PERP', 'LTCUSD_PERP', 'BCHUSD_PERP', 'DOTUSD_PERP', 'ARBUSD_PERP', 'ADAUSD_PERP', 'OPUSD_PERP', 'SUIUSD_PERP', 'APTUSD_PERP', 'EOSUSD_PERP', 
+    'ECTUSD_PERP', FILUSD_PERP', 'DYDXUSD_PERP', 'ATOMUSD_PERP', 'APEUSD_PERP', 'CRVUSD_PERP', 'TRXUSD_PERP', 'RUNEUSD_PERP', 'UNIUSD_PERP', 'GALAUSD_PERP', 'NEARUSD_PERP', '1000PEPEUSD_PERP', 'PEPEUSD_PERP', 'XMRUSD_PERP', 'SANDUSD_PERP', 'AAVEUSD_PERP', 'USDCUSD_PERP', 'AXSUSD_PERP', 
+    'COMPUSD_PERP', 'GMTUSD_PERP', 'ICPUSD_PERP', 'MANAUSD_PERP', 'ALGOUSD_PERP', 'SHIBUSD_PERP', 'SUSHIUSD_PERP', 'GRTUSD_PERP', '1INCHUSD_PERP', 'CHZUSD_PERP', 'NEOUSD_PERP', 'KNCUSD_PERP', 'XTZUSD_PERP', 'THETAUSD_PERP', 
+    'DASHUSD_PERP', 'PEOPLEUSD_PERP', 'LRCUSD_PERP', 'ZILUSD_PERP', 'OMGUSD_PERP', 'ROSEUSD_PERP', 'ARUSD_PERP', 'COTIUSD_PERP', 'ICXUSD_PERP', ]
+
 instruments: 
   store_type: snapshot
 
@@ -36,6 +54,7 @@ transactions:
 fills:
   store_type: timeseries
   fetch_type: time # time, id
+
   symbols:
     binance: ['BTCUSDT',]
     okx: ['BTC-USDT-SWAP',]
@@ -43,12 +62,16 @@ fills:
 mark_prices:
   store_type: timeseries
 
-borrow_rates:
-  codes: ['BTC', 'ETH', 'USDT', ]
-
 bid_ask:
-  spot: ['BTC/USDT', 'ETH/USDT', ]
-  perp: ['BTC/USDT:USDT', 'ETH/USDT:USDT', ]
+  spot: *symbols_2
+  perp: *symbols_3
+
+borrow_rates:
+  period: interval # yearly, daily or interval
+
+  codes: *symbols_1
+
+
 
 funding_rates:
   bybit:
@@ -64,35 +87,13 @@ funding_rates:
     instruments:  
       ["BTC.USDT.PERP","ETH.USDT.PERP"]
 
+  period: interval
+
   symbols: 
-    binance_f: ['BTC/USDT:USDT', 'ETH/USDT:USDT', 'XRP/USDT:USDT', 'SOL/USDT:USDT', 'LTC/USDT:USDT', 
-      'OP/USDT:USDT', 'SUI/USDT:USDT', 'TRX/USDT:USDT', 'UNI/USDT:USDT', 'RUNE/USDT:USDT', 
-      'XMR/USDT:USDT', 'SAND/USDT:USDT', 'USDC/USDT:USDT', 'MANA/USDT:USDT', 'SUSHI/USDT:USDT', 'NEO/USDT:USDT', 
-      'XTZ/USDT:USDT', 'THETA/USDT:USDT', 'PEOPLE/USDT:USDT', 'LRC/USDT:USDT', 'OMG/USDT:USDT', 'ICX/USDT:USDT', 
-      'NEAR/USDT:USDT', 'DASH/USDT:USDT', 'BNB/USDT:USDT', 'DOGE/USDT:USDT', 'BCH/USDT:USDT', 'DOT/USDT:USDT', 
-      'ARB/USDT:USDT', 'ADA/USDT:USDT', 'APT/USDT:USDT', 'EOS/USDT:USDT', 'GMT/USDT:USDT', 'FIL/USDT:USDT', 'DYDX/USDT:USDT', 
-      'ATOM/USDT:USDT', 'APE/USDT:USDT', 'CRV/USDT:USDT', 'GALA/USDT:USDT', 'AAVE/USDT:USDT', 'AXS/USDT:USDT', 
-      'COMP/USDT:USDT', 'ICP/USDT:USDT', 'ALGO/USDT:USDT', 'GRT/USDT:USDT', '1INCH/USDT:USDT', 'CHZ/USDT:USDT', 
-      'KNC/USDT:USDT', 'ZIL/USDT:USDT', 'AR/USDT:USDT', 'ROSE/USDT:USDT', '1000PEPE/USDT:USDT', ]
+    binance_f: *symbols_3
+    binance_d: *symbols_4
+    okx: *symbols_3
 
-    binance_d: ['BTCUSD_PERP', 'ETHUSD_PERP', 'XRPUSD_PERP', 'SOLUSD_PERP', 'LTCUSD_PERP', 
-      'OPUSD_PERP', 'TRXUSD_PERP', 'UNIUSD_PERP', 'RUNEUSD_PERP', 
-      'XMRUSD_PERP', 'SANDUSD_PERP', 'MANAUSD_PERP', 'XTZUSD_PERP', 'THETAUSD_PERP', 'ICXUSD_PERP', 
-      'NEARUSD_PERP', 'BNBUSD_PERP', 'DOGEUSD_PERP', 'BCHUSD_PERP', 'DOTUSD_PERP', 
-      'ADAUSD_PERP', 'APTUSD_PERP', 'EOSUSD_PERP', 'GMTUSD_PERP', 'FILUSD_PERP', 
-      'ATOMUSD_PERP', 'APEUSD_PERP', 'CRVUSD_PERP', 'GALAUSD_PERP', 'AAVEUSD_PERP', 'AXSUSD_PERP', 
-      'ALGOUSD_PERP', 'CHZUSD_PERP', 'KNCUSD_PERP', 'ZILUSD_PERP', 'ROSEUSD_PERP', ]
-
-    okx: ['BTC/USDT:USDT', 'ETH/USDT:USDT', 'XRP/USDT:USDT', 'SOL/USDT:USDT', 'LTC/USDT:USDT', 'DOGE/USDT:USDT', 
-      'OP/USDT:USDT', 'SUI/USDT:USDT', 'TRX/USDT:USDT', 'UNI/USDT:USDT', 
-      'XMR/USDT:USDT', 'SAND/USDT:USDT', 'USDC/USDT:USDT', 'MANA/USDT:USDT', 'SUSHI/USDT:USDT', 'NEO/USDT:USDT', 
-      'XTZ/USDT:USDT', 'THETA/USDT:USDT', 'PEOPLE/USDT:USDT', 'LRC/USDT:USDT', 'OMG/USDT:USDT', 
-      'NEAR/USDT:USDT', 'DASH/USDT:USDT', 'BNB/USDT:USDT', 'BCH/USDT:USDT', 'DOT/USDT:USDT', 'SHIB/USDT:USDT', 
-      'ARB/USDT:USDT', 'ADA/USDT:USDT', 'APT/USDT:USDT', 'EOS/USDT:USDT', 'GMT/USDT:USDT', 'FIL/USDT:USDT', 'DYDX/USDT:USDT', 
-      'ATOM/USDT:USDT', 'APE/USDT:USDT', 'CRV/USDT:USDT', 'GALA/USDT:USDT', 'AAVE/USDT:USDT', 'AXS/USDT:USDT', 
-      'COMP/USDT:USDT', 'ICP/USDT:USDT', 'ALGO/USDT:USDT', 'GRT/USDT:USDT', '1INCH/USDT:USDT', 'CHZ/USDT:USDT', 
-      'KNC/USDT:USDT', 'ZIL/USDT:USDT', 'AR/USDT:USDT', 'BSV/USDT:USDT', ]
-  
 deepspace:
   bybit_subaccount1: &bybit_subaccount1
     apikey: xyz
@@ -104,6 +105,9 @@ deepspace:
     apikey: xyz
     apisecret: xyz
   okx_subaccount1: &okx_subaccount1
+    apikey: zyx
+    apisecret: xyz
+  okx_subaccount2: &okx_subaccount2
     apikey: zyx
     apisecret: xyz
   
@@ -171,3 +175,37 @@ highsky:
       <<: *balances
       helper: okxhelper.py
       subaccount1: *okx_subaccount1
+
+besttrader:  
+
+  funding_payments:
+    bybit:
+      <<: *funding_payments
+      helper: bybithelper.py
+      subaccount1: *bybit_subaccount1
+    binance:
+      <<: *funding_payments
+      helper: binancehelper.py
+      subaccount1: *binance_subaccount1
+    okx:
+      <<: *funding_payments
+      helper: okxhelper.py
+      sub1ap: *okx_subaccount1
+      sub2aa: *okx_subaccount2
+
+  balances:    
+    function: balance.py
+    scheduler: [continuous,external,5 4 * * * ]
+    bybit:
+      <<: *balances
+      helper: bybithelper.py
+      subaccount1: *bybit_subaccount1
+    binance:
+      <<: *balances
+      helper: binancehelper.py
+      subaccount1: *binance_subaccount1
+    okx:
+      <<: *balances
+      helper: okxhelper.py
+      sub1ap: *okx_subaccount1
+      sub2aa: *okx_subaccount2

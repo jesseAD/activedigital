@@ -21,7 +21,8 @@ from src.handlers.instantiator import get_data_collectors
 
 client_lists = [
     'deepspace',
-    'highsky'
+    'highsky',
+    # 'besttrader'
 ]
 
 for client in client_lists:

@@ -1,15 +1,15 @@
 import ccxt
-import os
 from dotenv import load_dotenv
 load_dotenv()
 
 # Create an echange class instance
 class Exchange:
-    def __init__(self, exchange = None, account = None, key = None, secret = None):
+    def __init__(self, exchange = None, account = None, key = None, secret = None, passphrase = None):
         self.exchange = exchange
         self.sub_account = account
         self.key = key
         self.secret = secret
+        self.passphrase = passphrase
 
     def exch(self):
         
@@ -32,9 +32,7 @@ class Exchange:
         elif self.exchange == 'bybit':
             exchange = ccxt.bybit(params)
         elif self.exchange == 'okx':
-            if self.sub_account is not None:
-                passphrase = os.getenv('OKX_'+self.sub_account.upper()+'_PASSPHRASE')
-                params['password'] = passphrase
+            params['password'] = self.passphrase
             exchange = ccxt.okex5(params)
         elif self.exchange == 'coinbase':
             exchange = ccxt.coinbasepro()

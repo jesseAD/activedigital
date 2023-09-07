@@ -86,10 +86,15 @@ class Instruments:
         bid_ask_value: str = None,
     ):
         if instrumentValue is None:
-            spec = exchange.upper() + "_" + sub_account.upper() + "_"
+            spec = client.upper() + "_" + exchange.upper() + "_" + sub_account.upper() + "_"
             API_KEY = os.getenv(spec + "API_KEY")
             API_SECRET = os.getenv(spec + "API_SECRET")
-            exch = Exchange(exchange, sub_account, API_KEY, API_SECRET).exch()
+            PASSPHRASE = None
+            if exchange == "okx":
+                PASSPHRASE = os.getenv(spec + "PASSPHRASE")
+
+            exch = Exchange(exchange, sub_account, API_KEY, API_SECRET, PASSPHRASE).exch()
+            
             if exchange == "okx":
                 instrumentValue = OKXHelper().get_instruments(exch=exch)
             else:
@@ -99,25 +104,28 @@ class Instruments:
             bid_ask_value = {}
 
             for i in range(len(config['bid_ask']['spot'])):
-                if exchange == "okx":
-                    spot_value = OKXHelper().get_bid_ask(exch=exch, symbol=config['bid_ask']['spot'][i])
-                    perp_value = OKXHelper().get_bid_ask(exch=exch, symbol=config['bid_ask']['perp'][i])
+                try:
+                    if exchange == "okx":
+                        spot_value = OKXHelper().get_bid_ask(exch=exch, symbol=config['bid_ask']['spot'][i])
+                        perp_value = OKXHelper().get_bid_ask(exch=exch, symbol=config['bid_ask']['perp'][i])
 
-                    bid_ask_value[config['bid_ask']['spot'][i]] = {
-                        'spot': spot_value,
-                        'perp': perp_value,
-                        'spread': spot_value['mid_point'] - perp_value['mid_point'],
-                    }
+                        bid_ask_value[config['bid_ask']['spot'][i]] = {
+                            'spot': spot_value,
+                            'perp': perp_value,
+                            'spread': spot_value['mid_point'] - perp_value['mid_point'],
+                        }
 
-                elif exchange == "binance":
-                    spot_value = Helper().get_bid_ask(exch=exch, symbol=config['bid_ask']['spot'][i])
-                    perp_value = Helper().get_bid_ask(exch=exch, symbol=config['bid_ask']['perp'][i])
+                    elif exchange == "binance":
+                        spot_value = Helper().get_bid_ask(exch=exch, symbol=config['bid_ask']['spot'][i])
+                        perp_value = Helper().get_bid_ask(exch=exch, symbol=config['bid_ask']['perp'][i])
 
-                    bid_ask_value[config['bid_ask']['spot'][i]] = {
-                        'spot': spot_value,
-                        'perp': perp_value,
-                        'spread': spot_value['mid_point'] - perp_value['mid_point'],
-                    }   
+                        bid_ask_value[config['bid_ask']['spot'][i]] = {
+                            'spot': spot_value,
+                            'perp': perp_value,
+                            'spread': spot_value['mid_point'] - perp_value['mid_point'],
+                        }   
+                except:
+                    pass
 
         instrument = {
             "client": client,
