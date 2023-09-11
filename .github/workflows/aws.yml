@@ -1,7 +1,7 @@
 name: CI/CD Pipeline
 on:
   push:
-    branches: [ ACTIVEDEV-20-Unified-Leverage-Dashboard ]
+    branches: [ main ]
 
 jobs:
   continuous-integration:
@@ -31,7 +31,7 @@ jobs:
   continuous-deployment:
     runs-on: ubuntu-latest
     needs: [continuous-integration]
-    if: github.ref == 'refs/heads/ACTIVEDEV-20-Unified-Leverage-Dashboard'
+    if: github.ref == 'refs/heads/main'
     steps:
      # Step 1
       - name: Configure AWS credentials
