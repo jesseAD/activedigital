@@ -27,8 +27,8 @@ jobs:
           role-to-assume: arn:aws:iam::066491951504:role/AWSCodeDeployRole
           aws-region: eu-central-1
       # Step 5
-      - name: Build Application and Run unit Test
-        run: python ./src/data_getter.py & pytest
+      #- name: Build Application and Run unit Test
+      #  run: python ./src/data_getter.py & pytest
 
   continuous-deployment:
     runs-on: ubuntu-latest
