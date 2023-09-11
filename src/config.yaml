@@ -130,9 +130,6 @@ clients:
         subaccount1: *okx_subaccount1
 
   besttrader:
-    binance_subaccount1: &binance_subaccount1
-      apikey: xyz
-      apisecret: xyz
     okx_sub1ap: &okx_sub1ap
       apikey: zyx
       apisecret: xyz
@@ -141,10 +138,6 @@ clients:
       apisecret: xyz
 
     funding_payments:
-      binance:
-        <<: *funding_payments
-        helper: binancehelper.py
-        subaccount1: *binance_subaccount1
       okx:
         <<: *funding_payments
         helper: okxhelper.py
@@ -154,10 +147,6 @@ clients:
     balances:
       function: balance.py
       scheduler: [continuous,external,5 4 * * * ]
-      binance:
-        <<: *balances
-        helper: binancehelper.py
-        subaccount1: *binance_subaccount1
       okx:
         <<: *balances
         helper: okxhelper.py
