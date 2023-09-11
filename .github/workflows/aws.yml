@@ -2,7 +2,9 @@ name: CI/CD Pipeline
 on:
   push:
     branches: [ "main" ]
-
+permissions:
+  id-token: write
+  contents: write
 jobs:
   continuous-integration:
     runs-on: ubuntu-latest
