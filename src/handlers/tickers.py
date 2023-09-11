@@ -86,7 +86,7 @@ class Tickers:
                 tickerValue = OKXHelper().get_tickers(exch = exch)
             else:
                 tickerValue = Helper().get_tickers(exch = exch)
-
+        
         tickerValue = {symbol: tickerValue[symbol] for symbol in config['tickers']['symbols'] if symbol in tickerValue}
         tickerValue['USDT/USD'] = CoinbaseHelper().get_usdt2usd_ticker(exch=Exchange(exchange='coinbase').exch())
         

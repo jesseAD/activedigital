@@ -85,6 +85,7 @@ class Positions:
                 PASSPHRASE = os.getenv(spec + "PASSPHRASE")
 
             exch = Exchange(exchange, sub_account, API_KEY, API_SECRET, PASSPHRASE).exch()
+            # print(exch.papi_get_balance ())
             
             if exchange == 'okx':
                 position_value = OKXHelper().get_positions(exch = exch)
@@ -94,14 +95,14 @@ class Positions:
         position_info =[]
         for value in position_value:
                 if float(value['initialMargin']) > 0:
-                    if position_value is None:
-                        portfolio = None
-                        if exchange == 'binance':
-                            if config['positions']['margin_mode'] == "non_portfolio":
-                                portfolio = Helper().get_non_portfolio_margin(exch=exch, params={'symbol': value['info']['symbol']})
-                            elif config['positions']['margin_mode'] == "portfolio":
-                                portfolio = Helper().get_portfolio_margin(exch=exch, params={'symbol': 'USDT'})
-                        value['margin'] = portfolio
+                    portfolio = None
+                    if exchange == 'binance':
+                        if config['positions']['margin_mode'] == "non_portfolio":
+                            portfolio = Helper().get_non_portfolio_margin(exch=exch, params={'symbol': value['info']['symbol']})
+                        elif config['positions']['margin_mode'] == "portfolio":
+                            portfolio = Helper().get_portfolio_margin(exch=exch, params={'symbol': 'USDT'})
+                            portfolio = [item for item in portfolio if float(item['balance']) != 0]
+                    value['margin'] = portfolio
                     position_info.append(value)
 
         current_time = datetime.now(timezone.utc)

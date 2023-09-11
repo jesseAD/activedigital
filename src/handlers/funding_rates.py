@@ -114,11 +114,11 @@ class FundingRates:
                         last_time = int(current_values["info"]["fundingTime"])
                         if exchange == "okx":
                             fundingRatesValue[symbol] = OKXHelper().get_funding_rates(
-                                exch=exch, limit=100, symbol=symbol, since=last_time + 1
+                                exch=exch, limit=100, symbol=symbol, since=last_time
                             )
                         else:
                             fundingRatesValue[symbol] = Helper().get_funding_rates(
-                                exch=exch, limit=100, symbol=symbol, since=last_time + 1
+                                exch=exch, limit=100, symbol=symbol, since=last_time
                             )
                     if len(fundingRatesValue[symbol]) > 0:
                         if exchange == "okx":
@@ -211,7 +211,7 @@ class FundingRates:
                                 params={
                                     "limit": 100,
                                     "symbol": symbol,
-                                    "startTime": last_time + 1,
+                                    "startTime": last_time,
                                 },
                             )
 
@@ -219,6 +219,7 @@ class FundingRates:
                             item["timestamp"] = item["fundingTime"]
                             item["fundingRate"] = float(item["fundingRate"])
                             item["symbolForMatch"] = item["symbol"][:-8]
+                            item.pop("fundingTime", None)
                             if scalar is not None:
                                 item['scalar'] = scalar
                     except:
@@ -229,9 +230,10 @@ class FundingRates:
 
         flag = False
         for symbol in symbols:
-            if len(fundingRatesValue[symbol]) > 0:
-                flag = True
-                break
+            if symbol in fundingRatesValue.keys():
+                if len(fundingRatesValue[symbol]) > 0:
+                    flag = True
+                    break
 
         if flag == False:
             return []

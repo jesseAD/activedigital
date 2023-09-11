@@ -106,7 +106,7 @@ class Helper():
         return exch.dapipublic_get_fundingrate(params=params)
     
     def get_portfolio_margin(self, exch, params={}):
-        return exch.fapiprivate_get_balance(params)
+        return exch.fapiprivatev2_get_balance(params)
     
     def get_non_portfolio_margin(self, exch, params={}):
         return exch.fapiprivatev2_get_positionrisk(params)[0]

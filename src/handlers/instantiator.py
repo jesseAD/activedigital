@@ -13,7 +13,7 @@ from src.config import read_config_file
 
 def instantiate(client, collection, exchange, account=None):
     config = read_config_file()
-    target = config[client][collection][exchange]
+    target = config['clients'][client][collection][exchange]
 
     data_collector = DataCollector(
         config['mongo_host'],
@@ -34,14 +34,14 @@ def get_data_collectors(client):
     config = read_config_file()
     data_collectors = []
 
-    collections = ['funding_payments', 'balances']
-    exchanges = ['bybit', 'binance', 'okx']
+    collections = ['funding_payments', ]
+    exchanges = ['binance', 'okx']
 
     for collection in collections:
-        for exchange in config[client][collection]:
+        for exchange in config['clients'][client][collection]:
             if exchange not in exchanges:
                 continue
-            exchange_data = config[client][collection][exchange]
+            exchange_data = config['clients'][client][collection][exchange]
             for account in exchange_data:
                 if account.startswith('sub'):
                     data_collector = instantiate(client, collection, exchange, account)

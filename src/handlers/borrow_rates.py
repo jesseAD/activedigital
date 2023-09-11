@@ -120,11 +120,11 @@ class BorrowRates:
                         last_time = int(current_values["timestamp"])
                         if exchange == "okx":
                             borrowRatesValue[code] = OKXHelper().get_borrow_rates(
-                                exch=exch, limit=92, code=code, since=last_time + 1
+                                exch=exch, limit=92, code=code, since=last_time
                             )
                         else:
                             borrowRatesValue[code] = Helper().get_borrow_rates(
-                                exch=exch, limit=92, code=code, since=last_time + 1
+                                exch=exch, limit=92, code=code, since=last_time
                             )
                     if len(borrowRatesValue[code]) > 0:
                         scalar = 1
