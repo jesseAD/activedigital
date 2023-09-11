@@ -28,7 +28,7 @@ jobs:
           aws-region: eu-central-1
       # Step 5
       - name: Build Application and Run unit Test
-        run: python app.py & pytest
+        run: python ./src/data_getter.py & pytest
 
   continuous-deployment:
     runs-on: ubuntu-latest
