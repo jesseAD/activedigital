@@ -95,10 +95,7 @@ funding_rates:
     okx: *symbols_3
 
 clients:
-  RUNDMC:
-    bybit_subaccount1: &bybit_subaccount1
-      apikey: xyz
-      apisecret: zyx
+  rundmc:
     binance_subaccount4: &binance_subaccount4
       apikey: xyz
       apisecret: xyz
@@ -108,12 +105,7 @@ clients:
     okx_subaccount1: &okx_subaccount1
       apikey: zyx
       apisecret: xyz
-      
     funding_payments:
-      bybit:
-        <<: *funding_payments
-        helper: bybithelper.py
-        subaccount1: *bybit_subaccount1
       binance:
         <<: *funding_payments
         helper: binancehelper.py
@@ -127,10 +119,6 @@ clients:
     balances:
       function: balance.py
       scheduler: [continuous,external,5 4 * * * ]
-      bybit:
-        <<: *balances
-        helper: bybithelper.py
-        subaccount1: *bybit_subaccount1
       binance:
         <<: *balances
         helper: binancehelper.py
@@ -141,69 +129,49 @@ clients:
         helper: okxhelper.py
         subaccount1: *okx_subaccount1
 
-besttrader:
-    funding_payments:
-      bybit:
-        <<: *funding_payments
-        helper: bybithelper.py
-        subaccount1: *bybit_subaccount1
-      binance:
-        <<: *funding_payments
-        helper: binancehelper.py
-        subaccount1: *binance_subaccount1
-      okx:
-        <<: *funding_payments
-        helper: okxhelper.py
-        sub1ap: *okx_subaccount1
-        sub2aa: *okx_subaccount2
-
-    balances:
-      function: balance.py
-      scheduler: [continuous,external,5 4 * * * ]
-      bybit:
-        <<: *balances
-        helper: bybithelper.py
-        subaccount1: *bybit_subaccount1
-      binance:
-        <<: *balances
-        helper: binancehelper.py
-        subaccount1: *binance_subaccount1
-      okx:
-        <<: *balances
-        helper: okxhelper.py
-        sub1ap: *okx_subaccount1
-        sub2aa: *okx_subaccount2
-wizardly:
-  okx_submn: &okx_submn
-    apikey: zyx
-    apisecret: xyz
-
-  funding_payments:
-    okx:
-      <<: *funding_payments
-      helper: okxhelper.py
-      submn: *okx_submn
-
-  balances:
-    function: balance.py
-    scheduler: [continuous,external,5 4 * * * ]
-    okx:
-      <<: *balances
-      helper: okxhelper.py
-      submn: *okx_submn        
-  jess:
-    okx_submn: &okx_submn
+  besttrader:
+    binance_subaccount1: &binance_subaccount1
+      apikey: xyz
+      apisecret: xyz
+    okx_sub1ap: &okx_sub1ap
+      apikey: zyx
+      apisecret: xyz
+    okx_sub1aa: &okx_sub1aa
       apikey: zyx
       apisecret: xyz
 
     funding_payments:
+      binance:
+        <<: *funding_payments
+        helper: binancehelper.py
+        subaccount1: *binance_subaccount1
       okx:
         <<: *funding_payments
         helper: okxhelper.py
-        subandyactivedigital: *okx_submn
-        subandypants: *okx_submn
-        subjessetf: *okx_submn
-        subadtest2: *okx_submn
+        sub1ap: *okx_sub1ap
+        sub2aa: *okx_sub1aa
+
+    balances:
+      function: balance.py
+      scheduler: [continuous,external,5 4 * * * ]
+      binance:
+        <<: *balances
+        helper: binancehelper.py
+        subaccount1: *binance_subaccount1
+      okx:
+        <<: *balances
+        helper: okxhelper.py
+        sub1ap: *okx_sub1ap
+        sub2aa: *okx_sub1aa
+  wizardly:
+    okx_submn: &okx_submn
+      apikey: zyx
+      apisecret: xyz
+    funding_payments:
+      okx:
+        <<: *funding_payments
+        helper: okxhelper.py
+        submn: *okx_submn
 
     balances:
       function: balance.py
@@ -211,7 +179,35 @@ wizardly:
       okx:
         <<: *balances
         helper: okxhelper.py
-        subandyactivedigital: *okx_submn
-        subandypants: *okx_submn
-        subjessetf: *okx_submn
-        subadtest2: *okx_submn
+        submn: *okx_submn
+  jess:
+    okx_subandyactivedigital: &okx_subandyactivedigital
+      apikey: zyx
+      apisecret: xyz
+    okx_subandypants: &okx_subandypants
+      apikey: zyx
+      apisecret: xyz
+    okx_subjessetf: &okx_subjessetf
+      apikey: zyx
+      apisecret: xyz
+    okx_subadtest2: &okx_subadtest2
+      apikey: zyx
+      apisecret: xyz
+    funding_payments:
+      okx:
+        <<: *funding_payments
+        helper: okxhelper.py
+        subandyactivedigital: *okx_subandyactivedigital
+        subandypants: *okx_subandypants
+        subjessetf: *okx_subjessetf
+        subadtest2: *okx_subadtest2
+    balances:
+      function: balance.py
+      scheduler: [continuous,external,5 4 * * * ]
+      okx:
+        <<: *balances
+        helper: okxhelper.py
+        subandyactivedigital: *okx_subandyactivedigital
+        subandypants: *okx_subandypants
+        subjessetf: *okx_subjessetf
+        subadtest2: *okx_subadtest2
