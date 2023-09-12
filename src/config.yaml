@@ -71,8 +71,6 @@ borrow_rates:
 
   codes: *symbols_1
 
-
-
 funding_rates:
   bybit:
     helper: bybithelper.py
@@ -80,7 +78,7 @@ funding_rates:
       ["BTC.USDT.PERP","ETH.USDT.PERP"]
   binance:
     helper: binancehelper.py
-    instruments:
+    instruments:  
       ["BTC.USDT.PERP","ETH.USDT.PERP"]
   okx:
     helper: okxhelper.py
@@ -93,6 +91,7 @@ funding_rates:
     binance_f: *symbols_3
     binance_d: *symbols_4
     okx: *symbols_3
+
 
 clients:
   rundmc:

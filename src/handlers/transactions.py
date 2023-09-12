@@ -85,169 +85,172 @@ class Transactions:
 
             exch = Exchange(exchange, sub_account, API_KEY, API_SECRET, PASSPHRASE).exch()
 
-            if config["transactions"]["store_type"] == "snapshot":
-                if exchange == "okx":
-                    transactions = OKXHelper().get_transactions(exch=exch)
-                    transaction_value = Mapping().mapping_transactions(
-                        exchange=exchange, transactions=transactions
-                    )
-
-                elif exchange == "binance":
-                    futures_trades = Helper().get_future_transactions(
-                        exch=exch, params={"limit": 100}
-                    )
-                    futures_trades = Mapping().mapping_transactions(
-                        exchange=exchange, transactions=futures_trades
-                    )
-                    spot_trades = Helper().get_spot_transactions(
-                        exch=exch, params={"symbol": symbol}
-                    )
-                    spot_trades = Mapping().mapping_transactions(
-                        exchange=exchange, transactions=spot_trades
-                    )
-
-                    transaction_value = {"future": futures_trades, "spot": spot_trades}
-
-            elif config["transactions"]["store_type"] == "timeseries":
-                if exchange == "okx":
-                    query = {}
-                    if client:
-                        query["client"] = client
-                    if exchange:
-                        query["venue"] = exchange
-                    if sub_account:
-                        query["account"] = sub_account
-
-                    transactions_values = (
-                        self.transactions_db.find(query)
-                        .sort("transaction_value.timestamp", -1)
-                        .limit(1)
-                    )
-
-                    current_value = None
-                    for item in transactions_values:
-                        current_value = item["transaction_value"]
-
-                    if current_value is None:
+            try:
+                if config["transactions"]["store_type"] == "snapshot":
+                    if exchange == "okx":
                         transactions = OKXHelper().get_transactions(exch=exch)
                         transaction_value = Mapping().mapping_transactions(
                             exchange=exchange, transactions=transactions
                         )
-                    else:
-                        if config["transactions"]["fetch_type"] == "id":
-                            last_id = current_value["billId"]
-                            transactions = OKXHelper().get_transactions(
-                                exch=exch, params={"before": last_id}
-                            )
-                            transaction_value = Mapping().mapping_transactions(
-                                exchange=exchange, transactions=transactions
-                            )
-                        elif config["transactions"]["fetch_type"] == "time":
-                            last_time = current_value["timestamp"]
-                            transactions = OKXHelper().get_transactions(
-                                exch=exch, params={"begin": last_time}
-                            )
-                            transaction_value = Mapping().mapping_transactions(
-                                exchange=exchange, transactions=transactions
-                            )
-                elif exchange == "binance":
-                    query = {}
-                    if client:
-                        query["client"] = client
-                    if exchange:
-                        query["venue"] = exchange
-                    if sub_account:
-                        query["account"] = sub_account
-                    query["trade_type"] = "future"
 
-                    transactions_values = (
-                        self.transactions_db.find(query)
-                        .sort("transaction_value.timestamp", -1)
-                        .limit(1)
-                    )
-
-                    current_value = None
-                    for item in transactions_values:
-                        current_value = item["transaction_value"]
-
-                    if current_value is None:
+                    elif exchange == "binance":
                         futures_trades = Helper().get_future_transactions(
                             exch=exch, params={"limit": 100}
                         )
                         futures_trades = Mapping().mapping_transactions(
                             exchange=exchange, transactions=futures_trades
                         )
-
-                        transaction_value = {
-                            "future": futures_trades,
-                        }
-                    else:
-                        last_time = current_value["timestamp"]
-                        futures_trades = Helper().get_future_transactions(
-                            exch=exch,
-                            params={
-                                "startTime": last_time,
-                                "limit": 100,
-                                "symbol": symbol,
-                            },
-                        )
-                        futures_trades = Mapping().mapping_transactions(
-                            exchange=exchange, transactions=futures_trades
-                        )
-
-                        transaction_value = {
-                            "future": futures_trades,
-                        }
-
-                    query["trade_type"] = "spot"
-
-                    transactions_values = (
-                        self.transactions_db.find(query)
-                        .sort("transaction_value.timestamp", -1)
-                        .limit(1)
-                    )
-
-                    current_value = None
-                    for item in transactions_values:
-                        current_value = item["transaction_value"]
-
-                    if current_value is None:
                         spot_trades = Helper().get_spot_transactions(
-                            exch=exch, params={"symbol": symbol, "limit": 100}
+                            exch=exch, params={"symbol": symbol}
                         )
                         spot_trades = Mapping().mapping_transactions(
                             exchange=exchange, transactions=spot_trades
                         )
 
-                        transaction_value["spot"] = spot_trades
+                        transaction_value = {"future": futures_trades, "spot": spot_trades}
 
-                    else:
-                        if config["transactions"]["fetch_type"] == "id":
-                            last_id = current_value["id"]
-                            spot_trades = Helper().get_spot_transactions(
-                                exch=exch,
-                                params={
-                                    "fromId": last_id,
-                                    "symbol": symbol,
-                                    "limit": 100,
-                                },
+                elif config["transactions"]["store_type"] == "timeseries":
+                    if exchange == "okx":
+                        query = {}
+                        if client:
+                            query["client"] = client
+                        if exchange:
+                            query["venue"] = exchange
+                        if sub_account:
+                            query["account"] = sub_account
+
+                        transactions_values = (
+                            self.transactions_db.find(query)
+                            .sort("transaction_value.timestamp", -1)
+                            .limit(1)
+                        )
+
+                        current_value = None
+                        for item in transactions_values:
+                            current_value = item["transaction_value"]
+
+                        if current_value is None:
+                            transactions = OKXHelper().get_transactions(exch=exch)
+                            transaction_value = Mapping().mapping_transactions(
+                                exchange=exchange, transactions=transactions
+                            )
+                        else:
+                            if config["transactions"]["fetch_type"] == "id":
+                                last_id = current_value["billId"]
+                                transactions = OKXHelper().get_transactions(
+                                    exch=exch, params={"before": last_id}
+                                )
+                                transaction_value = Mapping().mapping_transactions(
+                                    exchange=exchange, transactions=transactions
+                                )
+                            elif config["transactions"]["fetch_type"] == "time":
+                                last_time = current_value["timestamp"]
+                                transactions = OKXHelper().get_transactions(
+                                    exch=exch, params={"begin": last_time}
+                                )
+                                transaction_value = Mapping().mapping_transactions(
+                                    exchange=exchange, transactions=transactions
+                                )
+                    elif exchange == "binance":
+                        query = {}
+                        if client:
+                            query["client"] = client
+                        if exchange:
+                            query["venue"] = exchange
+                        if sub_account:
+                            query["account"] = sub_account
+                        query["trade_type"] = "future"
+
+                        transactions_values = (
+                            self.transactions_db.find(query)
+                            .sort("transaction_value.timestamp", -1)
+                            .limit(1)
+                        )
+
+                        current_value = None
+                        for item in transactions_values:
+                            current_value = item["transaction_value"]
+
+                        if current_value is None:
+                            futures_trades = Helper().get_future_transactions(
+                                exch=exch, params={"limit": 100}
+                            )
+                            futures_trades = Mapping().mapping_transactions(
+                                exchange=exchange, transactions=futures_trades
                             )
 
-                        elif config["transactions"]["fetch_type"] == "time":
+                            transaction_value = {
+                                "future": futures_trades,
+                            }
+                        else:
                             last_time = current_value["timestamp"]
-                            spot_trades = Helper().get_spot_transactions(
+                            futures_trades = Helper().get_future_transactions(
                                 exch=exch,
                                 params={
                                     "startTime": last_time,
-                                    "symbol": symbol,
                                     "limit": 100,
+                                    "symbol": symbol,
                                 },
                             )
+                            futures_trades = Mapping().mapping_transactions(
+                                exchange=exchange, transactions=futures_trades
+                            )
 
-                        spot_trades = Mapping().mapping_transactions(
-                            exchange=exchange, transactions=spot_trades
+                            transaction_value = {
+                                "future": futures_trades,
+                            }
+
+                        query["trade_type"] = "spot"
+
+                        transactions_values = (
+                            self.transactions_db.find(query)
+                            .sort("transaction_value.timestamp", -1)
+                            .limit(1)
                         )
-                        transaction_value["spot"] = spot_trades
+
+                        current_value = None
+                        for item in transactions_values:
+                            current_value = item["transaction_value"]
+
+                        if current_value is None:
+                            spot_trades = Helper().get_spot_transactions(
+                                exch=exch, params={"symbol": symbol, "limit": 100}
+                            )
+                            spot_trades = Mapping().mapping_transactions(
+                                exchange=exchange, transactions=spot_trades
+                            )
+
+                            transaction_value["spot"] = spot_trades
+
+                        else:
+                            if config["transactions"]["fetch_type"] == "id":
+                                last_id = current_value["id"]
+                                spot_trades = Helper().get_spot_transactions(
+                                    exch=exch,
+                                    params={
+                                        "fromId": last_id,
+                                        "symbol": symbol,
+                                        "limit": 100,
+                                    },
+                                )
+
+                            elif config["transactions"]["fetch_type"] == "time":
+                                last_time = current_value["timestamp"]
+                                spot_trades = Helper().get_spot_transactions(
+                                    exch=exch,
+                                    params={
+                                        "startTime": last_time,
+                                        "symbol": symbol,
+                                        "limit": 100,
+                                    },
+                                )
+
+                            spot_trades = Mapping().mapping_transactions(
+                                exchange=exchange, transactions=spot_trades
+                            )
+                            transaction_value["spot"] = spot_trades
+            except:
+                return False
 
         current_time = datetime.now(timezone.utc)
         run_ids = self.runs_db.find({}).sort("_id", -1).limit(1)

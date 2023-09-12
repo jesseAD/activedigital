@@ -147,6 +147,8 @@ class FundingRates:
                                     "nextFundingTime"
                                 ]
                                 item["symbolForMatch"] = item["symbol"][:-10]
+                                item["base"] = item["symbol"][:-10]
+                                item["quote"] = "USDT"
                                 item['scalar'] = scalar
 
                         elif exchange == "binance":
@@ -175,6 +177,8 @@ class FundingRates:
                                     "nextFundingTime"
                                 ]
                                 item["symbolForMatch"] = item["symbol"][:-10]
+                                item["base"] = item["symbol"][:-10]
+                                item["quote"] = "USDT"
                                 item['scalar'] = scalar
                 except:
                     pass
@@ -219,6 +223,8 @@ class FundingRates:
                             item["timestamp"] = item["fundingTime"]
                             item["fundingRate"] = float(item["fundingRate"])
                             item["symbolForMatch"] = item["symbol"][:-8]
+                            item["base"] = item["symbol"][:-8]
+                            item["quote"] = "USD"
                             item.pop("fundingTime", None)
                             if scalar is not None:
                                 item['scalar'] = scalar
