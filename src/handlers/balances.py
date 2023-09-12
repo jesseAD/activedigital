@@ -83,10 +83,13 @@ class Balances:
 
             exch = Exchange(exchange, sub_account, API_KEY, API_SECRET, PASSPHRASE).exch()
             
-            if exchange == 'okx':
-                balanceValue = OKXHelper().get_balances(exch = exch)
-            else:
-                balanceValue = Helper().get_balances(exch = exch)
+            try:
+                if exchange == 'okx':
+                    balanceValue = OKXHelper().get_balances(exch = exch)
+                else:
+                    balanceValue = Helper().get_balances(exch = exch)
+            except:
+                return False
 
         query = {}
         if client:

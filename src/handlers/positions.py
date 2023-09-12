@@ -85,12 +85,14 @@ class Positions:
                 PASSPHRASE = os.getenv(spec + "PASSPHRASE")
 
             exch = Exchange(exchange, sub_account, API_KEY, API_SECRET, PASSPHRASE).exch()
-            # print(exch.papi_get_balance ())
             
-            if exchange == 'okx':
-                position_value = OKXHelper().get_positions(exch = exch)
-            else:
-                position_value = Helper().get_positions(exch = exch)
+            try:
+                if exchange == 'okx':
+                    position_value = OKXHelper().get_positions(exch = exch)
+                else:
+                    position_value = Helper().get_positions(exch = exch)
+            except:
+                return False
         
         position_info =[]
         for value in position_value:

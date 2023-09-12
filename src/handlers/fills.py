@@ -102,81 +102,84 @@ class Fills:
                 for item in fills_values:
                     current_value = item["fills_value"]
 
-                if current_value is None:
-                    if exchange == "okx":
-                        fillsValue[symbol] = Mapping().mapping_fills(
-                            exchange=exchange,
-                            fills=OKXHelper().get_fills(
-                                exch=exch,
-                                params={
-                                    "instType": "SWAP",
-                                    "instId": symbol,
-                                    "limit": 100,
-                                },
-                            ),
-                        )
+                try:
+                    if current_value is None:
+                        if exchange == "okx":
+                            fillsValue[symbol] = Mapping().mapping_fills(
+                                exchange=exchange,
+                                fills=OKXHelper().get_fills(
+                                    exch=exch,
+                                    params={
+                                        "instType": "SWAP",
+                                        "instId": symbol,
+                                        "limit": 100,
+                                    },
+                                ),
+                            )
+                        else:
+                            fillsValue[symbol] = Mapping().mapping_fills(
+                                exchange=exchange,
+                                fills=Helper().get_fills(
+                                    exch=exch, params={"symbol": symbol, "limit": 100}
+                                ),
+                            )
                     else:
-                        fillsValue[symbol] = Mapping().mapping_fills(
-                            exchange=exchange,
-                            fills=Helper().get_fills(
-                                exch=exch, params={"symbol": symbol, "limit": 100}
-                            ),
-                        )
-                else:
-                    if config["fills"]["fetch_type"] == "time":
-                        last_time = int(current_value["timestamp"])
-                        if exchange == "okx":
-                            fillsValue[symbol] = Mapping().mapping_fills(
-                                exchange=exchange,
-                                fills=OKXHelper().get_fills(
-                                    exch=exch,
-                                    params={
-                                        "instType": "SWAP",
-                                        "instId": symbol,
-                                        "limit": 100,
-                                        "begin": last_time,
-                                    },
-                                ),
-                            )
-                        else:
-                            fillsValue[symbol] = Mapping().mapping_fills(
-                                exchange=exchange,
-                                fills=Helper().get_fills(
-                                    exch=exch,
-                                    params={
-                                        "symbol": symbol,
-                                        "limit": 100,
-                                        "startTime": last_time,
-                                    },
-                                ),
-                            )
-                    elif config["fills"]["fetch_type"] == "id":
-                        last_id = int(current_value["id"])
-                        if exchange == "okx":
-                            fillsValue[symbol] = Mapping().mapping_fills(
-                                exchange=exchange,
-                                fills=OKXHelper().get_fills(
-                                    exch=exch,
-                                    params={
-                                        "instType": "SWAP",
-                                        "instId": symbol,
-                                        "limit": 100,
-                                        "before": last_id,
-                                    },
-                                ),
-                            )
-                        else:
-                            fillsValue[symbol] = Mapping().mapping_fills(
-                                exchange=exchange,
-                                fills=Helper().get_fills(
-                                    exch=exch,
-                                    params={
-                                        "symbol": symbol,
-                                        "limit": 100,
-                                        "fromId": last_id,
-                                    },
-                                ),
-                            )
+                        if config["fills"]["fetch_type"] == "time":
+                            last_time = int(current_value["timestamp"])
+                            if exchange == "okx":
+                                fillsValue[symbol] = Mapping().mapping_fills(
+                                    exchange=exchange,
+                                    fills=OKXHelper().get_fills(
+                                        exch=exch,
+                                        params={
+                                            "instType": "SWAP",
+                                            "instId": symbol,
+                                            "limit": 100,
+                                            "begin": last_time,
+                                        },
+                                    ),
+                                )
+                            else:
+                                fillsValue[symbol] = Mapping().mapping_fills(
+                                    exchange=exchange,
+                                    fills=Helper().get_fills(
+                                        exch=exch,
+                                        params={
+                                            "symbol": symbol,
+                                            "limit": 100,
+                                            "startTime": last_time,
+                                        },
+                                    ),
+                                )
+                        elif config["fills"]["fetch_type"] == "id":
+                            last_id = int(current_value["id"])
+                            if exchange == "okx":
+                                fillsValue[symbol] = Mapping().mapping_fills(
+                                    exchange=exchange,
+                                    fills=OKXHelper().get_fills(
+                                        exch=exch,
+                                        params={
+                                            "instType": "SWAP",
+                                            "instId": symbol,
+                                            "limit": 100,
+                                            "before": last_id,
+                                        },
+                                    ),
+                                )
+                            else:
+                                fillsValue[symbol] = Mapping().mapping_fills(
+                                    exchange=exchange,
+                                    fills=Helper().get_fills(
+                                        exch=exch,
+                                        params={
+                                            "symbol": symbol,
+                                            "limit": 100,
+                                            "fromId": last_id,
+                                        },
+                                    ),
+                                )
+                except:
+                    return False
                             
         fills = []
 

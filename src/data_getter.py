@@ -26,16 +26,27 @@ for client in config['clients']:
     data_collectors = get_data_collectors(client)
 
     for data_collector in data_collectors:
+        print(client + data_collector.exchange + data_collector.account)
         collect_positions(client, data_collector)
+        print("collected position")
         collect_instruments(client, data_collector)
+        print("collected instruments")
         collect_mark_prices(client, data_collector)
+        print("collected mark price")
         collect_tickers(client, data_collector)
+        print("collected tickers")
         collect_borrow_rates(client, data_collector)
+        print("collected borrow rates")
         collect_funding_rates(client, data_collector)
+        print("collected funding rates")
         collect_fills(client, data_collector)
+        print("collected fills")
         collect_balances(client, data_collector)
+        print("collected balances")
         collect_transactions(client, data_collector)
+        print("collected transactions")
         collect_leverages(client, data_collector)
+        print("collected leverages")
 
 
     # binance_subaccount1
