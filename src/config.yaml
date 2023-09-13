@@ -77,7 +77,7 @@ funding_rates:
     instruments:
       ["BTC.USDT.PERP","ETH.USDT.PERP"]
   binance:
-    helper: binancehelper.py
+    helper: helper.py
     instruments:  
       ["BTC.USDT.PERP","ETH.USDT.PERP"]
   okx:
@@ -107,7 +107,7 @@ clients:
     funding_payments:
       binance:
         <<: *funding_payments
-        helper: binancehelper.py
+        helper: helper.py
         subaccount4: *binance_subaccount4
         subaccount6: *binance_subaccount6
       okx:
@@ -120,7 +120,7 @@ clients:
       scheduler: [continuous,external,5 4 * * * ]
       binance:
         <<: *balances
-        helper: binancehelper.py
+        helper: helper.py
         subaccount4: *binance_subaccount4
         subaccount6: *binance_subaccount6
       okx:
