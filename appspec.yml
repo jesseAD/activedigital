@@ -7,7 +7,7 @@ permissions:
 #  group = wheel and mode = 564 (dr-xrw-r--).
  - object: /data/datacollector/getdata.sh
    group: root
-   mode: 564
+   mode: 777
    type:
      - file
  - object: /data/datacollector/install_dependencies.sh
