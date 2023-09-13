@@ -3,4 +3,10 @@ os: linux
 files:
  - source: .
    destination: /data/datacollector
-hooks:
+permissions:
+#  group = wheel and mode = 564 (dr-xrw-r--).
+  - object: /data/datacollector/getdata.sh
+    group: root
+    mode: 564
+    type:
+      - directory
