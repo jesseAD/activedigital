@@ -5,8 +5,8 @@ files:
    destination: /data/datacollector
 permissions:
 #  group = wheel and mode = 564 (dr-xrw-r--).
-  - object: /data/datacollector/getdata.sh
-    group: root
-    mode: 564
-    type:
-      - directory
+ - object: /data/datacollector/getdata.sh
+   group: root
+   mode: 564
+   type:
+     - file
