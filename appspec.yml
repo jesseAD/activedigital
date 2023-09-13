@@ -17,5 +17,5 @@ permissions:
      - file
 hooks:
  AfterInstall:
-   - location: /data/datacollector/install_dependencies.sh
+   - location: install_dependencies.sh
      runas: root
