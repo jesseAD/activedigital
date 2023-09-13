@@ -177,15 +177,15 @@ class MarkPrices:
                     "mark_price_value"
                 ]["markPrice"]
 
-            self.positions_db.update_one(
-                {
-                    "client": latest_position["client"],
-                    "venue": latest_position["venue"],
-                    "account": latest_position["account"],
-                    "runid": latest_position["runid"],
-                },
-                {"$set": {"position_value": latest_position["position_value"]}},
-            )
+                self.positions_db.update_one(
+                    {
+                        "client": latest_position["client"],
+                        "venue": latest_position["venue"],
+                        "account": latest_position["account"],
+                        "runid": latest_position["runid"],
+                    },
+                    {"$set": {"position_value": latest_position["position_value"]}},
+                )
 
             if config["mark_prices"]["store_type"] == "timeseries":
                 self.mark_prices_db.insert_one(mark_price)
