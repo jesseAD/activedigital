@@ -26,7 +26,7 @@ for client in config['clients']:
     data_collectors = get_data_collectors(client)
 
     for data_collector in data_collectors:
-        print(client + data_collector.exchange + data_collector.account)
+        print(client + " " + data_collector.exchange + " " + data_collector.account)
         collect_positions(client, data_collector)
         print("collected position")
         collect_instruments(client, data_collector)
