@@ -1,4 +1,5 @@
 import os
+import requests
 from dotenv import load_dotenv
 from datetime import datetime, timezone
 
@@ -128,7 +129,7 @@ class BorrowRates:
                             )
                     if len(borrowRatesValue[code]) > 0:
                         scalar = 1
-                        if config['borrow_rates']['period'] != "yearly":
+                        if config['borrow_rates']['period'][exchange] != "yearly":
                             scalar = 365
 
                         if exchange == "okx":
@@ -136,7 +137,7 @@ class BorrowRates:
                                 exch=exch, params={"ccy": code}
                             )["data"][0]["interestRate"]
                             for item in borrowRatesValue[code]:
-                                item["nextBorrowRate"] = borrow_rate
+                                item["nextBorrowRate"] = float(borrow_rate) * 24 * 365 / scalar
                                 item['scalar'] = scalar
 
                         elif exchange == "binance":
@@ -144,11 +145,11 @@ class BorrowRates:
                                 exch=exch, params={"assets": code, "isIsolated": False}
                             )[0]["nextHourlyInterestRate"]
                             for item in borrowRatesValue[code]:
-                                item["nextBorrowRate"] = borrow_rate
-                                item['scalar'] = scalar
-                except:
+                                item["nextBorrowRate"] = float(borrow_rate) * 24 * 365 / scalar
+                                item['scalar'] = scalar                    
+                except :
                     pass
-
+        
         flag = False
         for code in codes:
             if code in borrowRatesValue.keys():
