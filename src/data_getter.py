@@ -22,23 +22,26 @@ from src.config import read_config_file
 
 config = read_config_file()
 
+for exchange in config['exchanges']:
+    print(exchange)
+    collect_instruments(exchange)
+    print("collected instruments")
+    collect_mark_prices(exchange)
+    print("collected mark price")
+    collect_tickers(exchange)
+    print("collected tickers")
+    collect_funding_rates(exchange)
+    print("collected funding rates")    
+    collect_borrow_rates(exchange)
+    print("collected borrow rates")  
+
 for client in config['clients']:
     data_collectors = get_data_collectors(client)
 
     for data_collector in data_collectors:
         print(client + " " + data_collector.exchange + " " + data_collector.account)
         collect_positions(client, data_collector)
-        print("collected position")
-        collect_instruments(client, data_collector)
-        print("collected instruments")
-        collect_mark_prices(client, data_collector)
-        print("collected mark price")
-        collect_tickers(client, data_collector)
-        print("collected tickers")
-        collect_borrow_rates(client, data_collector)
-        print("collected borrow rates")
-        collect_funding_rates(client, data_collector)
-        print("collected funding rates")
+        print("collected position")        
         collect_fills(client, data_collector)
         print("collected fills")
         collect_balances(client, data_collector)

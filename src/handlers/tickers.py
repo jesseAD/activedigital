@@ -31,8 +31,6 @@ class Tickers:
         future: str = None,
         perp: str = None,
         exchange: str = None,
-        account: str = None,
-        symbol: str = None
     ):
         results = []
 
@@ -50,10 +48,6 @@ class Tickers:
             pipeline.append({"$match": {"perpMarket": perp}})
         if exchange:
             pipeline.append({"$match": {"venue": exchange}})
-        if account:
-            pipeline.append({"$match": {"account": account}})
-        if symbol:
-            pipeline.append({"$match": {"symbol": symbol}})
 
         try:
             results = self.tickers_db.aggregate(pipeline)
@@ -73,27 +67,22 @@ class Tickers:
         tickerValue: str = None,
     ):
         if tickerValue is None:
-            spec = client.upper() + "_" + exchange.upper() + "_" + sub_account.upper() + "_"
-            API_KEY = os.getenv(spec + "API_KEY")
-            API_SECRET = os.getenv(spec + "API_SECRET")
-            PASSPHRASE = None
-            if exchange == "okx":
-                PASSPHRASE = os.getenv(spec + "PASSPHRASE")
-
-            exch = Exchange(exchange, sub_account, API_KEY, API_SECRET, PASSPHRASE).exch()
+            exch = Exchange(exchange).exch()
             
-            if exchange == 'okx':
-                tickerValue = OKXHelper().get_tickers(exch = exch)
-            else:
-                tickerValue = Helper().get_tickers(exch = exch)
+            try:
+                if exchange == 'okx':
+                    tickerValue = OKXHelper().get_tickers(exch = exch)
+                else:
+                    tickerValue = Helper().get_tickers(exch = exch)
+            except Exception as e:
+                print("An error occurred in Tickers:", e)
+                return False
         
         tickerValue = {symbol: tickerValue[symbol] for symbol in config['tickers']['symbols'] if symbol in tickerValue}
         tickerValue['USDT/USD'] = CoinbaseHelper().get_usdt2usd_ticker(exch=Exchange(exchange='coinbase').exch())
         
         ticker = {
-            "client": client,
             "venue": exchange,
-            "account": "Main Account",
             "ticker_value": tickerValue,
             "active": True,
             "entry": False,
@@ -101,8 +90,6 @@ class Tickers:
             "timestamp": datetime.now(timezone.utc),
         }
 
-        if sub_account:
-            ticker["account"] = sub_account
         if spot:
             ticker["spotMarket"] = spot
         if future:
@@ -121,12 +108,8 @@ class Tickers:
 
         # get latest tickers data
         query = {}
-        if client:
-            query["client"] = client
         if exchange:
             query["venue"] = exchange
-        if sub_account:
-            query["account"] = sub_account
 
         ticker_values = self.tickers_db.find(query).sort('runid', -1).limit(1)
 
@@ -147,10 +130,7 @@ class Tickers:
             elif config['tickers']['store_type'] == "snapshot":
                 self.tickers_db.update_one(
                     {
-                        "client": ticker["client"],
-                        "venue": ticker["venue"],
-                        "account": ticker["account"],
-                        "symbol": ticker["symbol"]
+                        "venue": ticker["venue"]
                     },
                     {"$set": {
                         "ticker_value": ticker["ticker_value"],

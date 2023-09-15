@@ -32,7 +32,7 @@ class FundingRates:
         future: str = None,
         perp: str = None,
         exchange: str = None,
-        account: str = None,
+        symbol: str = None,
     ):
         results = []
 
@@ -50,8 +50,8 @@ class FundingRates:
             pipeline.append({"$match": {"perpMarket": perp}})
         if exchange:
             pipeline.append({"$match": {"venue": exchange}})
-        if account:
-            pipeline.append({"$match": {"account": account}})
+        if symbol:
+            pipeline.append({"$match": {"symbol": symbol}})
 
         try:
             results = self.funding_rates_db.aggregate(pipeline)
@@ -62,7 +62,7 @@ class FundingRates:
 
     def create(
         self,
-        client,
+        client: str = None,
         exchange: str = None,
         sub_account: str = None,
         spot: str = None,
@@ -79,18 +79,15 @@ class FundingRates:
                 symbols = config["funding_rates"]["symbols"]["okx"]
 
         if fundingRatesValue is None:
-            exch = Exchange(exchange).exch()
+            exch = Exchange(exchange, 'subaccount4', 'PfDc18WYFHoVKKZj6ORLRY79olhaTehhZXKYS5OxDmhN3DAWSwMtHR4ubBwN2OAt', 'ydeBmTKEHZ4gLsG1o87rnRcK9894CRzKQPYTF5lvx4x4jB6uMPQzoCJA1RT8KM3X').exch()
+            # exch = Exchange(exchange).exch()
 
             fundingRatesValue = {}
 
             for symbol in symbols:
                 query = {}
-                if client:
-                    query["client"] = client
                 if exchange:
                     query["venue"] = exchange
-                if sub_account:
-                    query["account"] = sub_account
                 query["symbol"] = symbol.split(":")[0]
 
                 try:
@@ -196,7 +193,6 @@ class FundingRates:
                                 item["nextFundingTime"] = funding_rate[
                                     "nextFundingTime"
                                 ]
-                                item["symbolForMatch"] = item["symbol"][:-10]
                                 item["base"] = item["symbol"][:-10]
                                 item["quote"] = "USDT"
                                 item["scalar"] = scalar
@@ -228,23 +224,19 @@ class FundingRates:
                                 item["nextFundingTime"] = funding_rate[
                                     "nextFundingTime"
                                 ]
-                                item["symbolForMatch"] = item["symbol"][:-10]
                                 item["base"] = item["symbol"][:-10]
                                 item["quote"] = "USDT"
                                 item["scalar"] = scalar
 
-                except :
+                except Exception as e:
+                    print("An error occurred in Funding Rates:", e)
                     pass
-
+            
             if exchange == "binance":
                 for symbol in symbols_d:
                     query = {}
-                    if client:
-                        query["client"] = client
                     if exchange:
                         query["venue"] = exchange
-                    if sub_account:
-                        query["account"] = sub_account
                     query["symbol"] = symbol
 
                     try:
@@ -275,15 +267,15 @@ class FundingRates:
                         for item in fundingRatesValue[symbol]:
                             item["timestamp"] = item["fundingTime"]
                             item["fundingRate"] = float(item["fundingRate"])
-                            item["symbolForMatch"] = item["symbol"][:-8]
                             item["base"] = item["symbol"][:-8]
                             item["quote"] = "USD"
                             item.pop("fundingTime", None)
                             if scalar is not None:
                                 item["scalar"] = scalar
-                    except:
+                    except Exception as e:
+                        print("An error occurred:", e)
                         pass
-
+        
         if exchange == "binance":
             symbols = symbols + symbols_d
 
@@ -312,9 +304,7 @@ class FundingRates:
             if symbol in fundingRatesValue.keys():
                 for item in fundingRatesValue[symbol]:
                     new_value = {
-                        "client": client,
                         "venue": exchange,
-                        "account": "Main Account",
                         "funding_rates_value": item,
                         "symbol": symbol.split(":")[0],
                         "active": True,
@@ -323,8 +313,6 @@ class FundingRates:
                         "timestamp": datetime.now(timezone.utc),
                     }
 
-                    if sub_account:
-                        new_value["account"] = sub_account
                     if spot:
                         new_value["spotMarket"] = spot
                     if future:
