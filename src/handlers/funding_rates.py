@@ -79,8 +79,7 @@ class FundingRates:
                 symbols = config["funding_rates"]["symbols"]["okx"]
 
         if fundingRatesValue is None:
-            exch = Exchange(exchange, 'subaccount4', 'PfDc18WYFHoVKKZj6ORLRY79olhaTehhZXKYS5OxDmhN3DAWSwMtHR4ubBwN2OAt', 'ydeBmTKEHZ4gLsG1o87rnRcK9894CRzKQPYTF5lvx4x4jB6uMPQzoCJA1RT8KM3X').exch()
-            # exch = Exchange(exchange).exch()
+            exch = Exchange(exchange).exch()
 
             fundingRatesValue = {}
 
