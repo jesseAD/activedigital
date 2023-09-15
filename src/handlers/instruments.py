@@ -63,8 +63,6 @@ class Instruments:
             pipeline.append({"$match": {"positionType": position_type}})
         if exchange:
             pipeline.append({"$match": {"venue": exchange}})
-        if account:
-            pipeline.append({"$match": {"account": account}})
 
         try:
             results = self.insturments_db.aggregate(pipeline)
@@ -75,7 +73,7 @@ class Instruments:
 
     def create(
         self,
-        client,
+        client: str = None,
         exchange: str = None,
         positionType: str = None,
         sub_account: str = None,
@@ -86,19 +84,16 @@ class Instruments:
         bid_ask_value: str = None,
     ):
         if instrumentValue is None:
-            spec = client.upper() + "_" + exchange.upper() + "_" + sub_account.upper() + "_"
-            API_KEY = os.getenv(spec + "API_KEY")
-            API_SECRET = os.getenv(spec + "API_SECRET")
-            PASSPHRASE = None
-            if exchange == "okx":
-                PASSPHRASE = os.getenv(spec + "PASSPHRASE")
-
-            exch = Exchange(exchange, sub_account, API_KEY, API_SECRET, PASSPHRASE).exch()
+            exch = Exchange(exchange).exch()
             
-            if exchange == "okx":
-                instrumentValue = OKXHelper().get_instruments(exch=exch)
-            else:
-                instrumentValue = Helper().get_instruments(exch=exch)
+            try:
+                if exchange == "okx":
+                    instrumentValue = OKXHelper().get_instruments(exch=exch)
+                else:
+                    instrumentValue = Helper().get_instruments(exch=exch)
+            except Exception as e:
+                print("An error occurred in Instruments:", e)
+                pass
 
         if bid_ask_value is None:
             bid_ask_value = {}
@@ -124,13 +119,12 @@ class Instruments:
                             'perp': perp_value,
                             'spread': spot_value['mid_point'] - perp_value['mid_point'],
                         }   
-                except:
+                except Exception as e:
+                    print("An error occurred in Bids and Asks:", e)
                     pass
 
         instrument = {
-            "client": client,
             "venue": exchange,
-            "account": "Main Account",
             "instrument_value": instrumentValue,#Mapping().mapping_instruments(exchange=exchange, instrument=instrumentValue),
             "active": True,
             "entry": False,
@@ -138,8 +132,6 @@ class Instruments:
             "timestamp": datetime.now(timezone.utc),
         }
 
-        if sub_account:
-            instrument["account"] = sub_account
         if spot:
             instrument["spotMarket"] = spot
         if future:
@@ -162,9 +154,7 @@ class Instruments:
 
         for _key, _value in bid_ask_value.items():
             new_value = {
-                "client": client,
                 "venue": exchange,
-                "account": "Main Account",
                 "bid_ask_value": _value, 
                 "symbol": _key,
                 "active": True,
@@ -173,8 +163,6 @@ class Instruments:
                 "timestamp": datetime.now(timezone.utc),
                 "runid": latest_run_id,
             }
-            if sub_account:
-                new_value["account"] = sub_account
             if spot:
                 new_value["spotMarket"] = spot
             if future:
@@ -215,9 +203,7 @@ class Instruments:
             if config["instruments"]["store_type"] == "snapshot":
                 self.insturments_db.update_one(
                     {
-                        "client": instrument["client"],
                         "venue": instrument["venue"],
-                        "account": instrument["account"]
                     },
                     { "$set": {
                         "instrument_value": instrument["instrument_value"],

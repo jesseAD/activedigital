@@ -63,18 +63,14 @@ def collect_balances(client_alias, data_collector):
         sub_account=data_collector.account
     )
 
-def collect_instruments(client_alias, data_collector):
+def collect_instruments(exchange):
     Instruments('instruments').create(
-        client=client_alias,
-        exchange=data_collector.exchange,
-        sub_account=data_collector.account
+        exchange=exchange
     )
 
-def collect_tickers(client_alias, data_collector):
+def collect_tickers(exchange):
     Tickers('tickers').create(
-        client=client_alias,
-        exchange=data_collector.exchange,
-        sub_account=data_collector.account,
+        exchange=exchange,
     )
 
 def collect_leverages(client_alias, data_collector):
@@ -92,25 +88,19 @@ def collect_transactions(client_alias, data_collector):
         symbol='BTCUSDT',
     )
 
-def collect_borrow_rates(client_alias, data_collector):
+def collect_borrow_rates(exchange):
     BorrowRates('borrow_rates').create(
-        client=client_alias,
-        exchange=data_collector.exchange,
-        sub_account=data_collector.account,
+        exchange=exchange,
     )
 
-def collect_funding_rates(client_alias, data_collector):
+def collect_funding_rates(exchange):
     FundingRates('funding_rates').create(
-        client=client_alias,
-        exchange=data_collector.exchange,
-        sub_account=data_collector.account,
+        exchange=exchange,
     )
 
-def collect_mark_prices(client_alias, data_collector):
+def collect_mark_prices(exchange):
     MarkPrices('mark_prices').create(
-        client=client_alias,
-        exchange=data_collector.exchange,
-        sub_account=data_collector.account,
+        exchange=exchange,
     )
 
 def collect_fills(client_alias, data_collector):

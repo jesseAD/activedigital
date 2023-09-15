@@ -67,7 +67,7 @@ class MarkPrices:
 
     def create(
         self,
-        client,
+        client: str = None,
         exchange: str = None,
         sub_account: str = None,
         spot: str = None,
@@ -76,35 +76,33 @@ class MarkPrices:
         markPriceValue: str = None,
     ):
         if markPriceValue is None:
-            spec = client.upper() + "_" + exchange.upper() + "_" + sub_account.upper() + "_"
-            API_KEY = os.getenv(spec + "API_KEY")
-            API_SECRET = os.getenv(spec + "API_SECRET")
-            PASSPHRASE = None
-            if exchange == "okx":
-                PASSPHRASE = os.getenv(spec + "PASSPHRASE")
-
-            exch = Exchange(exchange, sub_account, API_KEY, API_SECRET, PASSPHRASE).exch()
+            exch = Exchange(exchange).exch()
+            symbols = config['mark_prices'][exchange]
             
-            if exchange == "okx":
-                markPriceValue = Mapping().mapping_mark_price(
-                    exchange=exchange,
-                    mark_price=OKXHelper().get_mark_prices(
-                        exch=exch,
-                        params={"instType": "SWAP", "instId": "BTC-USDT-SWAP"},
-                    ),
-                )
-            else:
-                markPriceValue = Mapping().mapping_mark_price(
-                    exchange=exchange,
-                    mark_price=Helper().get_mark_prices(
-                        exch=exch, params={"symbol": "BTCUSDT"}
-                    ),
-                )
+            markPriceValue = {}
+            for symbol in symbols:
+                try:
+                    if exchange == "okx":
+                        markPriceValue[symbol] = Mapping().mapping_mark_price(
+                            exchange=exchange,
+                            mark_price=OKXHelper().get_mark_prices(
+                                exch=exch,
+                                params={"instType": "SWAP", "instId": symbol},
+                            ),
+                        )
+                    elif exchange == "binance":
+                        markPriceValue[symbol] = Mapping().mapping_mark_price(
+                            exchange=exchange,
+                            mark_price=Helper().get_mark_prices(
+                                exch=exch, params={"symbol": symbol}
+                            ),
+                        )
+                except Exception as e:
+                    print("An error occurred in Mark Prices:", e)
+                    pass
 
         mark_price = {
-            "client": client,
             "venue": exchange,
-            "account": "Main Account",
             "mark_price_value": markPriceValue,
             "active": True,
             "entry": False,
@@ -112,8 +110,6 @@ class MarkPrices:
             "timestamp": datetime.now(timezone.utc),
         }
 
-        if sub_account:
-            mark_price["account"] = sub_account
         if spot:
             mark_price["spotMarket"] = spot
         if future:
@@ -132,12 +128,8 @@ class MarkPrices:
 
         # get latest mark_prices data
         query = {}
-        if client:
-            query["client"] = client
         if exchange:
             query["venue"] = exchange
-        if sub_account:
-            query["account"] = sub_account
 
         mark_price_values = self.mark_prices_db.find(query).sort("runid", -1).limit(1)
 
@@ -153,49 +145,12 @@ class MarkPrices:
             return False
 
         try:
-            latest_positions = (
-                self.positions_db.find(
-                    {
-                        "client": mark_price["client"],
-                        "venue": mark_price["venue"],
-                        "account": mark_price["account"],
-                    }
-                )
-                .sort("runid", -1)
-                .limit(1)
-            )
-
-            latest_position = None
-            for item in latest_positions:
-                latest_position = item
-
-            if (
-                latest_position is not None
-                and len(latest_position["position_value"]) != 0
-            ):
-                latest_position["position_value"][0]["markPrice"] = mark_price[
-                    "mark_price_value"
-                ]["markPrice"]
-
-                self.positions_db.update_one(
-                    {
-                        "client": latest_position["client"],
-                        "venue": latest_position["venue"],
-                        "account": latest_position["account"],
-                        "runid": latest_position["runid"],
-                    },
-                    {"$set": {"position_value": latest_position["position_value"]}},
-                )
-
             if config["mark_prices"]["store_type"] == "timeseries":
                 self.mark_prices_db.insert_one(mark_price)
             elif config["mark_prices"]["store_type"] == "snapshot":
                 self.mark_prices_db.update_one(
                     {
-                        "client": mark_price["client"],
                         "venue": mark_price["venue"],
-                        "account": mark_price["account"],
-                        "symbol": mark_price["symbol"],
                     },
                     {
                         "$set": {

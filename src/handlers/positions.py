@@ -91,21 +91,30 @@ class Positions:
                     position_value = OKXHelper().get_positions(exch = exch)
                 else:
                     position_value = Helper().get_positions(exch = exch)
-            except:
+            except Exception as e:
+                print("An error occurred in Positions:", e)
                 return False
         
-        position_info =[]
-        for value in position_value:
-                if float(value['initialMargin']) > 0:
-                    portfolio = None
-                    if exchange == 'binance':
-                        if config['positions']['margin_mode'] == "non_portfolio":
-                            portfolio = Helper().get_non_portfolio_margin(exch=exch, params={'symbol': value['info']['symbol']})
-                        elif config['positions']['margin_mode'] == "portfolio":
-                            portfolio = Helper().get_portfolio_margin(exch=exch, params={'symbol': 'USDT'})
-                            portfolio = [item for item in portfolio if float(item['balance']) != 0]
-                    value['margin'] = portfolio
-                    position_info.append(value)
+        try:
+            position_info =[]
+            for value in position_value:
+                    if float(value['initialMargin']) > 0:
+                        portfolio = None
+                        if exchange == 'binance':
+                            if config['positions']['margin_mode'] == "non_portfolio":
+                                portfolio = Helper().get_non_portfolio_margin(exch=exch, params={'symbol': value['info']['symbol']})
+                            elif config['positions']['margin_mode'] == "portfolio":
+                                portfolio = Helper().get_portfolio_margin(exch=exch, params={'symbol': 'USDT'})
+                                portfolio = [item for item in portfolio if float(item['balance']) != 0]
+                        value['margin'] = portfolio
+                        position_info.append(value)
+            
+            if exchange == "binance":
+                for position in position_info:
+                    position['markPrice'] = Helper().get_mark_prices(exch=exch, params={'symbol': position['info']['symbol']})['markPrice']
+        except Exception as e:
+            print("An error occurred in Positions:", e)
+            pass
 
         current_time = datetime.now(timezone.utc)
         position = {

@@ -92,26 +92,20 @@ class Balances:
                 return False
 
         query = {}
-        if client:
-            query["client"] = client
         if exchange:
             query["venue"] = exchange
-        if sub_account:
-            query["account"] = sub_account
-        ticker_values = self.tickers_db.find(query).sort('runid', -1).limit(1)
+        ticker_values = self.tickers_db.find(query).sort('_id', -1).limit(1)
 
         for item in ticker_values:
             ticker_value = item['ticker_value']
 
         usd_balance = 0
-        try:
-            usd_balance += balanceValue['USDT'] * ticker_value['USDT/USD']['last']
-        except:
-            pass
-        try:
-            usd_balance += balanceValue['BTC'] * ticker_value['BTC/USDT']['last'] * ticker_value['USDT/USD']['last']
-        except:
-            pass
+        for _key, _value in balanceValue.items():
+            if _key == "USDT":
+                usd_balance += _value * ticker_value['USDT/USD']['last']
+            else :
+                usd_balance += _value * ticker_value[_key + '/USDT']['last'] * ticker_value['USDT/USD']['last']
+
         balanceValue['USD'] = usd_balance
         
         balance = {
