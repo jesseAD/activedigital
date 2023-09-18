@@ -136,7 +136,7 @@ class Transactions:
                             )
                         else:
                             if config["transactions"]["fetch_type"] == "id":
-                                last_id = current_value["billId"]
+                                last_id = int(current_value["billId"]) + 1
                                 transactions = OKXHelper().get_transactions(
                                     exch=exch, params={"before": last_id}
                                 )
@@ -144,7 +144,7 @@ class Transactions:
                                     exchange=exchange, transactions=transactions
                                 )
                             elif config["transactions"]["fetch_type"] == "time":
-                                last_time = current_value["timestamp"]
+                                last_time = int(current_value["timestamp"]) + 1
                                 transactions = OKXHelper().get_transactions(
                                     exch=exch, params={"begin": last_time}
                                 )
@@ -183,7 +183,7 @@ class Transactions:
                                 "future": futures_trades,
                             }
                         else:
-                            last_time = current_value["timestamp"]
+                            last_time = current_value["timestamp"] + 1
                             futures_trades = Helper().get_future_transactions(
                                 exch=exch,
                                 params={
@@ -224,7 +224,7 @@ class Transactions:
 
                         else:
                             if config["transactions"]["fetch_type"] == "id":
-                                last_id = current_value["id"]
+                                last_id = int(current_value["id"]) + 1
                                 spot_trades = Helper().get_spot_transactions(
                                     exch=exch,
                                     params={
@@ -235,7 +235,7 @@ class Transactions:
                                 )
 
                             elif config["transactions"]["fetch_type"] == "time":
-                                last_time = current_value["timestamp"]
+                                last_time = current_value["timestamp"] + 1
                                 spot_trades = Helper().get_spot_transactions(
                                     exch=exch,
                                     params={

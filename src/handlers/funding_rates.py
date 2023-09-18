@@ -133,7 +133,7 @@ class FundingRates:
                                 exch=exch, limit=100, symbol=symbol
                             )
                     else:
-                        last_time = int(current_values["info"]["fundingTime"])
+                        last_time = int(current_values["info"]["fundingTime"]) + 1
                         if exchange == "okx":
                             fundingRatesValue[symbol] = OKXHelper().get_funding_rates(
                                 exch=exch, limit=100, symbol=symbol, since=last_time
@@ -252,7 +252,7 @@ class FundingRates:
                                 params={"limit": 100, "symbol": symbol}, exch=exch
                             )
                         else:
-                            last_time = int(current_values["fundingTime"])
+                            last_time = int(current_values["fundingTime"]) + 1
 
                             fundingRatesValue[symbol] = Helper().get_funding_rates_dapi(
                                 exch=exch,
