@@ -79,8 +79,7 @@ class FundingRates:
                 symbols = config["funding_rates"]["symbols"]["okx"]
 
         if fundingRatesValue is None:
-            exch = Exchange(exchange, 'subaccount4', 'PfDc18WYFHoVKKZj6ORLRY79olhaTehhZXKYS5OxDmhN3DAWSwMtHR4ubBwN2OAt', 'ydeBmTKEHZ4gLsG1o87rnRcK9894CRzKQPYTF5lvx4x4jB6uMPQzoCJA1RT8KM3X').exch()
-            # exch = Exchange(exchange).exch()
+            exch = Exchange(exchange).exch()
 
             fundingRatesValue = {}
 
@@ -134,7 +133,7 @@ class FundingRates:
                                 exch=exch, limit=100, symbol=symbol
                             )
                     else:
-                        last_time = int(current_values["info"]["fundingTime"])
+                        last_time = int(current_values["info"]["fundingTime"]) + 1
                         if exchange == "okx":
                             fundingRatesValue[symbol] = OKXHelper().get_funding_rates(
                                 exch=exch, limit=100, symbol=symbol, since=last_time
@@ -253,7 +252,7 @@ class FundingRates:
                                 params={"limit": 100, "symbol": symbol}, exch=exch
                             )
                         else:
-                            last_time = int(current_values["fundingTime"])
+                            last_time = int(current_values["fundingTime"]) + 1
 
                             fundingRatesValue[symbol] = Helper().get_funding_rates_dapi(
                                 exch=exch,

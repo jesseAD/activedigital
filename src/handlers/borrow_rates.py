@@ -111,11 +111,11 @@ class BorrowRates:
                         last_time = int(current_values["timestamp"])
                         if exchange == "okx":
                             borrowRatesValue[code] = OKXHelper().get_borrow_rates(
-                                exch=exch, limit=92, code=code, since=last_time
+                                exch=exch, limit=92, code=code, since=last_time+1
                             )
                         else:
                             borrowRatesValue[code] = Helper().get_borrow_rates(
-                                exch=exch, limit=92, code=code, since=last_time
+                                exch=exch, limit=92, code=code, since=last_time+1
                             )
                     
                     if len(borrowRatesValue[code]) > 0:
@@ -187,11 +187,11 @@ class BorrowRates:
                                             last_time = int(current_values["timestamp"])
                                             if exchange == "okx":
                                                 borrowRatesValue[code] = OKXHelper().get_borrow_rates(
-                                                    exch=exch, limit=92, code=code, since=last_time
+                                                    exch=exch, limit=92, code=code, since=last_time+1
                                                 )
                                             else:
                                                 borrowRatesValue[code] = Helper().get_borrow_rates(
-                                                    exch=exch, limit=92, code=code, since=last_time
+                                                    exch=exch, limit=92, code=code, since=last_time+1
                                                 )
                                         
                                         if len(borrowRatesValue[code]) > 0:
