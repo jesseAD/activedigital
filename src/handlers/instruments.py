@@ -26,7 +26,7 @@ def compress_list(data):
 
 class Instruments:
     def __init__(self, db):
-        if config['mode'] == "testing":
+        if os.getenv("mode") == "testing":
             self.runs_db = MongoDB(config["mongo_db"], "runs")
             self.bid_asks_db = MongoDB(config["mongo_db"], "bid_asks")
             self.insturments_db = MongoDB(config["mongo_db"], db)

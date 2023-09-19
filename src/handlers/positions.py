@@ -17,7 +17,7 @@ config = read_config_file()
 
 class Positions:
     def __init__(self, db):
-        if config['mode'] == "testing":
+        if os.getenv("mode") == "testing":
             self.runs_db = MongoDB(config['mongo_db'], 'runs')
             self.positions_db = MongoDB(config['mongo_db'], db)
         else:

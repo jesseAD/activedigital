@@ -18,7 +18,7 @@ config = read_config_file()
 
 class Transactions:
     def __init__(self, db):
-        if config["mode"] == "testing":
+        if os.getenv("mode") == "testing":
             self.runs_db = MongoDB(config["mongo_db"], "runs")
             self.transactions_db = MongoDB(config["mongo_db"], db)
         else:

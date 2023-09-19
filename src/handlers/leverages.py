@@ -13,7 +13,7 @@ config = read_config_file()
 
 class Leverages:
     def __init__(self, db):
-        if config['mode'] == "testing":
+        if os.getenv("mode") == "testing":
             self.leverages_db = MongoDB(config['mongo_db'], db)
             self.positions_db = MongoDB(config['mongo_db'], 'positions')
             self.balances_db = MongoDB(config['mongo_db'], 'balances')
