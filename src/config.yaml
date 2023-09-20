@@ -86,10 +86,12 @@ funding_rates:
     helper: helper.py
     instruments:  
       ["BTC.USDT.PERP","ETH.USDT.PERP"]
+    valid: valid_from # valid_to, valid_from
   okx:
     helper: okxhelper.py
     instruments:
       ["BTC.USDT.PERP","ETH.USDT.PERP"]
+    valid: valid_to
 
   period: interval # yearly, daily or interval
 
