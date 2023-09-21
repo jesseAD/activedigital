@@ -141,6 +141,9 @@ class OKXHelper(Helper):
     
     def get_borrow_rate(self, exch, params={}):
         return exch.private_get_account_interest_rate(params=params)
+    
+    def get_index_prices(self, exch, params={}):
+        return exch.public_get_market_index_tickers(params)
 
 class CoinbaseHelper():
     def get_usdt2usd_ticker(self, exch):

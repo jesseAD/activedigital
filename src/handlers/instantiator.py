@@ -3,6 +3,7 @@ from src.handlers.positions import Positions
 from src.handlers.balances import Balances
 from src.handlers.instruments import Instruments
 from src.handlers.tickers import Tickers
+from src.handlers.index_prices import IndexPrices
 from src.handlers.leverages import Leverages
 from src.handlers.transactions import Transactions
 from src.handlers.borrow_rates import BorrowRates
@@ -70,6 +71,11 @@ def collect_instruments(exchange):
 
 def collect_tickers(exchange):
     Tickers('tickers').create(
+        exchange=exchange,
+    )
+
+def collect_index_prices(exchange):
+    IndexPrices('index_prices').create(
         exchange=exchange,
     )
 

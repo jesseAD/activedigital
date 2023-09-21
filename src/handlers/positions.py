@@ -15,14 +15,15 @@ load_dotenv()
 log = Log()
 config = read_config_file()
 
+
 class Positions:
     def __init__(self, db):
         if os.getenv("mode") == "testing":
-            self.runs_db = MongoDB(config['mongo_db'], 'runs')
-            self.positions_db = MongoDB(config['mongo_db'], db)
+            self.runs_db = MongoDB(config["mongo_db"], "runs")
+            self.positions_db = MongoDB(config["mongo_db"], db)
         else:
-            self.runs_db = database_connector('runs')
-            self.positions_db = database_connector('positions')
+            self.runs_db = database_connector("runs")
+            self.positions_db = database_connector("positions")
 
     def get(
         self,
@@ -74,44 +75,71 @@ class Positions:
         spot: str = None,
         future: str = None,
         perp: str = None,
-        position_value: str = None
+        position_value: str = None,
     ):
         if position_value is None:
-            spec = client.upper() + "_" + exchange.upper() + "_" + sub_account.upper() + "_"
+            spec = (
+                client.upper()
+                + "_"
+                + exchange.upper()
+                + "_"
+                + sub_account.upper()
+                + "_"
+            )
             API_KEY = os.getenv(spec + "API_KEY")
             API_SECRET = os.getenv(spec + "API_SECRET")
             PASSPHRASE = None
             if exchange == "okx":
                 PASSPHRASE = os.getenv(spec + "PASSPHRASE")
 
-            exch = Exchange(exchange, sub_account, API_KEY, API_SECRET, PASSPHRASE).exch()
-            
+            exch = Exchange(
+                exchange, sub_account, API_KEY, API_SECRET, PASSPHRASE
+            ).exch()
+
             try:
-                if exchange == 'okx':
-                    position_value = OKXHelper().get_positions(exch = exch)
+                if exchange == "okx":
+                    position_value = OKXHelper().get_positions(exch=exch)
                 else:
-                    position_value = Helper().get_positions(exch = exch)
+                    position_value = Helper().get_positions(exch=exch)
             except Exception as e:
                 print("An error occurred in Positions:", e)
                 return False
-        
+
         try:
-            position_info =[]
+            position_info = []
             for value in position_value:
-                    if float(value['initialMargin']) > 0:
-                        portfolio = None
-                        if exchange == 'binance':
-                            if config['positions']['margin_mode'] == "non_portfolio":
-                                portfolio = Helper().get_non_portfolio_margin(exch=exch, params={'symbol': value['info']['symbol']})
-                            elif config['positions']['margin_mode'] == "portfolio":
-                                portfolio = Helper().get_portfolio_margin(exch=exch, params={'symbol': 'USDT'})
-                                portfolio = [item for item in portfolio if float(item['balance']) != 0]
-                        value['margin'] = portfolio
-                        position_info.append(value)
-            
+                if float(value["initialMargin"]) > 0:
+                    portfolio = None
+                    if exchange == "binance":
+                        try:
+                            if config["positions"]["margin_mode"] == "non_portfolio":
+                                portfolio = Helper().get_non_portfolio_margin(
+                                    exch=exch, params={"symbol": value["info"]["symbol"]}
+                                )
+                            elif config["positions"]["margin_mode"] == "portfolio":
+                                portfolio = Helper().get_portfolio_margin(
+                                    exch=exch, params={"symbol": "USDT"}
+                                )
+                                portfolio = [
+                                    item
+                                    for item in portfolio
+                                    if float(item["balance"]) != 0
+                                ]
+                        except Exception as e:
+                            print("An error occurred in Positions:", e)
+                            pass
+
+                    value["margin"] = portfolio
+                    value['base'] = value['symbol'].split('/')[0]
+                    value['quote'] = value['symbol'].split('-')[0].split('/')[1].split(':')[0]
+                    position_info.append(value)
+
             if exchange == "binance":
                 for position in position_info:
-                    position['markPrice'] = Helper().get_mark_prices(exch=exch, params={'symbol': position['info']['symbol']})['markPrice']
+                    position["markPrice"] = Helper().get_mark_prices(
+                        exch=exch, params={"symbol": position['base'] + position['quote']}
+                    )["markPrice"]
+
         except Exception as e:
             print("An error occurred in Positions:", e)
             pass
@@ -122,7 +150,9 @@ class Positions:
             "venue": exchange,
             # "positionType": positionType.lower(),
             "account": "Main Account",
-            "position_value": Mapping().mapping_positions(exchange=exchange, positions=position_info),
+            "position_value": Mapping().mapping_positions(
+                exchange=exchange, positions=position_info
+            ),
             "active": True,
             "entry": False,
             "exit": False,
@@ -147,51 +177,55 @@ class Positions:
         if sub_account:
             query["account"] = sub_account
 
-        position_values = self.positions_db.find(query).sort('_id', -1)
+        position_values = self.positions_db.find(query).sort("_id", -1)
 
         latest_run_id = -1
         latest_value = None
         for item in position_values:
-            if latest_run_id < item['runid']:
-                latest_run_id = item['runid']
-                latest_value = item['position_value']
-        
-        if latest_value == position['position_value']:
-            print('same position')
+            if latest_run_id < item["runid"]:
+                latest_run_id = item["runid"]
+                latest_value = item["position_value"]
+
+        if latest_value == position["position_value"]:
+            print("same position")
             return False
 
-        run_ids = self.runs_db.find({}).sort('_id', -1).limit(1)
+        run_ids = self.runs_db.find({}).sort("_id", -1).limit(1)
         latest_run_id = 0
         for item in run_ids:
             try:
-                latest_run_id = item['runid'] + 1
+                latest_run_id = item["runid"] + 1
             except:
                 pass
-        
+
         try:
-            self.runs_db.insert_one({"start_time": current_time, "runid": latest_run_id})
+            self.runs_db.insert_one(
+                {"start_time": current_time, "runid": latest_run_id}
+            )
             position["runid"] = latest_run_id
 
-            if config['positions']['store_type'] == "timeseries": 
-                self.positions_db.insert_one(position)   
-            elif config['positions']['store_type'] == "snapshot": 
+            if config["positions"]["store_type"] == "timeseries":
+                self.positions_db.insert_one(position)
+            elif config["positions"]["store_type"] == "snapshot":
                 self.positions_db.update_one(
                     {
                         "client": position["client"],
                         "venue": position["venue"],
-                        "account": position["account"]
+                        "account": position["account"],
                     },
-                    { "$set": {
-                        "position_value": position["position_value"],
-                        "active": position["active"],
-                        "entry": position["entry"],
-                        "exit": position["exit"],
-                        "timestamp": position["timestamp"],
-                        "runid": position["runid"]
-                    }},
-                    upsert=True
+                    {
+                        "$set": {
+                            "position_value": position["position_value"],
+                            "active": position["active"],
+                            "entry": position["entry"],
+                            "exit": position["exit"],
+                            "timestamp": position["timestamp"],
+                            "runid": position["runid"],
+                        }
+                    },
+                    upsert=True,
                 )
-                
+
             # log.debug(f"Position created: {position}")
             return position
         except Exception as e:
