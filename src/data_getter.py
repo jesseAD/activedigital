@@ -11,6 +11,7 @@ from src.handlers.instantiator import collect_positions
 from src.handlers.instantiator import collect_balances
 from src.handlers.instantiator import collect_instruments
 from src.handlers.instantiator import collect_tickers
+from src.handlers.instantiator import collect_index_prices
 from src.handlers.instantiator import collect_leverages
 from src.handlers.instantiator import collect_transactions
 from src.handlers.instantiator import collect_borrow_rates
