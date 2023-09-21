@@ -31,6 +31,8 @@ for exchange in config['exchanges']:
     print("collected mark price")
     collect_tickers(exchange)
     print("collected tickers")
+    collect_index_prices(exchange)
+    print("collected index prices")
     collect_funding_rates(exchange)
     print("collected funding rates")    
     collect_borrow_rates(exchange)
