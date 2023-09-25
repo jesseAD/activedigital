@@ -1,5 +1,8 @@
 import os
 import sys
+from dask.distributed import Client
+from dask.distributed import as_completed
+from dask.distributed import wait
 
 current_file = os.path.abspath(__file__)
 current_directory = os.path.dirname(current_file)
@@ -18,75 +21,99 @@ from src.handlers.instantiator import collect_borrow_rates
 from src.handlers.instantiator import collect_funding_rates
 from src.handlers.instantiator import collect_mark_prices
 from src.handlers.instantiator import collect_fills
+from src.handlers.instantiator import insert_runs
+from src.handlers.instantiator import enclose_runs
 from src.handlers.instantiator import get_data_collectors
 from src.config import read_config_file
 
 config = read_config_file()
+dask = Client(processes=False)
 
+#   Insert new run
+insert_runs()
+print("inserted a new run")
+
+#   Public Data
+futures1 = []
 for exchange in config['exchanges']:
-    print(exchange)
-    collect_instruments(exchange)
-    print("collected instruments")
-    collect_mark_prices(exchange)
-    print("collected mark price")
-    collect_tickers(exchange)
-    print("collected tickers")
-    collect_index_prices(exchange)
-    print("collected index prices")
-    collect_funding_rates(exchange)
-    print("collected funding rates")    
-    collect_borrow_rates(exchange)
-    print("collected borrow rates")  
+    future = dask.submit(collect_instruments, exchange)
+    futures1.append(future)
+    future = dask.submit(collect_mark_prices, exchange)
+    futures1.append(future)
+    future = dask.submit(collect_tickers, exchange)
+    futures1.append(future)
+    future = dask.submit(collect_index_prices, exchange)
+    futures1.append(future)
+    future = dask.submit(collect_funding_rates, exchange)
+    futures1.append(future)
+    future = dask.submit(collect_borrow_rates, exchange)
+    futures1.append(future)
 
+wait(futures1)
+
+# for exchange in config['exchanges']:
+#     print(exchange)
+#     collect_instruments(exchange)
+#     print("collected instruments")
+#     collect_mark_prices(exchange)
+#     print("collected mark price")
+#     collect_tickers(exchange)
+#     print("collected tickers")
+#     collect_index_prices(exchange)
+#     print("collected index prices")
+#     collect_funding_rates(exchange)
+#     print("collected funding rates")    
+#     collect_borrow_rates(exchange)
+#     print("collected borrow rates")  
+
+#   Private Data
+futures2 = []
 for client in config['clients']:
     data_collectors = get_data_collectors(client)
 
     for data_collector in data_collectors:
-        print(client + " " + data_collector.exchange + " " + data_collector.account)
-        collect_positions(client, data_collector)
-        print("collected position")        
-        collect_fills(client, data_collector)
-        print("collected fills")
-        collect_balances(client, data_collector)
-        print("collected balances")
-        collect_transactions(client, data_collector)
-        print("collected transactions")
-        collect_leverages(client, data_collector)
-        print("collected leverages")
+        future = dask.submit(collect_positions, client, data_collector)
+        futures2.append(future)
+        future = dask.submit(collect_fills, client, data_collector)
+        futures2.append(future)
+        future = dask.submit(collect_balances, client, data_collector)
+        futures2.append(future)
+        future = dask.submit(collect_transactions, client, data_collector)
+        futures2.append(future)
+
+wait(futures2)
+
+# for client in config['clients']:
+#     data_collectors = get_data_collectors(client)
+
+#     for data_collector in data_collectors:
+#         print(client + " " + data_collector.exchange + " " + data_collector.account)
+#         collect_positions(client, data_collector)
+#         print("collected position")        
+#         collect_fills(client, data_collector)
+#         print("collected fills")
+#         collect_balances(client, data_collector)
+#         print("collected balances")
+#         collect_transactions(client, data_collector)
+#         print("collected transactions")
 
 
-    # binance_subaccount1
-    # collect_positions(client, data_collectors[1])
-    # collect_instruments(client, data_collectors[1])
-    # collect_mark_prices(client, data_collectors[1])
-    # collect_tickers(client, data_collectors[1])
-    # collect_borrow_rates(client, data_collectors[1])
-    # collect_funding_rates(client, data_collectors[1])
-    # collect_fills(client, data_collectors[1])
-    # collect_balances(client, data_collectors[1])
-    # collect_transactions(client, data_collectors[1])
-    # collect_leverages(client, data_collectors[1])
+futures3 = []
+for client in config['clients']:
+    data_collectors = get_data_collectors(client)
 
-    # binance_subaccount2
-    # collect_positions(client, data_collectors[2]) 
-    # collect_instruments(client, data_collectors[2]) 
-    # collect_mark_prices(client, data_collectors[2])
-    # collect_tickers(client, data_collectors[2])
-    # collect_borrow_rates(client, data_collectors[2])
-    # collect_funding_rates(client, data_collectors[2])
-    # collect_fills(client, data_collectors[2])
-    # collect_balances(client, data_collectors[2]) 
-    # collect_transactions(client, data_collectors[2])
-    # collect_leverages(client, data_collectors[2])
+    for data_collector in data_collectors:
+        future = dask.submit(collect_leverages, client, data_collector)
+        futures3.append(future)
+        
+wait(futures3)
 
-    # okx_subaccount1
-    # collect_positions(client, data_collectors[3]) 
-    # collect_instruments(client, data_collectors[3]) 
-    # collect_mark_prices(client, data_collectors[3])
-    # collect_tickers(client, data_collectors[3])
-    # collect_borrow_rates(client, data_collectors[3])
-    # collect_funding_rates(client, data_collectors[3])
-    # collect_fills(client, data_collectors[3])
-    # collect_balances(client, data_collectors[3])
-    # collect_transactions(client, data_collectors[3])
-    # collect_leverages(client, data_collectors[3])
+# for client in config['clients']:
+#     data_collectors = get_data_collectors(client)
+
+#     for data_collector in data_collectors:
+#         print(client + " " + data_collector.exchange + " " + data_collector.account)
+#         collect_leverages(client, data_collector)
+#         print("collected leverages")
+
+enclose_runs()

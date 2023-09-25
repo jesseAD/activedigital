@@ -10,6 +10,7 @@ from src.handlers.borrow_rates import BorrowRates
 from src.handlers.funding_rates import FundingRates
 from src.handlers.mark_price import MarkPrices
 from src.handlers.fills import Fills
+from src.handlers.runs import Runs
 from src.config import read_config_file
 
 def instantiate(client, collection, exchange, account=None):
@@ -115,3 +116,9 @@ def collect_fills(client_alias, data_collector):
         exchange=data_collector.exchange,
         sub_account=data_collector.account,
     )
+
+def insert_runs():
+    Runs('runs').start()
+
+def enclose_runs():
+    Runs('runs').end()
