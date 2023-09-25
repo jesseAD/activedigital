@@ -136,8 +136,6 @@ class Leverages:
                     }},
                     upsert=True
                 )
-                
-            self.runs_db.update_one({"runid": latest_run_id}, {"$set": {"end_time": datetime.now(timezone.utc)}})
 
             return leverage_value
         

@@ -199,9 +199,6 @@ class Positions:
                 pass
 
         try:
-            self.runs_db.insert_one(
-                {"start_time": current_time, "runid": latest_run_id}
-            )
             position["runid"] = latest_run_id
 
             if config["positions"]["store_type"] == "timeseries":
