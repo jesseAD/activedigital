@@ -1,18 +1,25 @@
 import json
+import os
 import unittest
 from unittest import mock
 from pymongo import MongoClient
 
 from src.handlers.instruments import Instruments
 from src.config import read_config_file
+from src.handlers.database_connector import database_connector
+from src.lib.db import MongoDB
+from dotenv import load_dotenv
 
 class TestInstruments(unittest.TestCase):
     def setUp(self):
         config = read_config_file('tests/config.yaml')
-        mongo_client = MongoClient(config['mongo_host'], config['mongo_port'])
-        db = mongo_client['active_digital']
-        self.test_collection = db[config['mongo_db_collection']+'_instruments']
-        self.test_collection.delete_many({})
+
+        if os.getenv("mode") == "testing":
+            self.instruments_db = MongoDB(config['mongo_db'], 'test_instruments')
+        else:
+            self.instruments_db = database_connector('test_instruments')
+
+        self.instruments_db.delete_many({})
 
         # read hard-coded values
         with open('tests/sesa.json') as sesa:
@@ -26,7 +33,7 @@ class TestInstruments(unittest.TestCase):
 
     @mock.patch('src.handlers.instruments.Instruments', autospec=True)
     def test_singleExchangeSingleSubAccountInstrumentsStoredToMongoDb(self, mock_instruments):
-        self.test_collection.delete_many({})
+        self.instruments_db.delete_many({})
         mock_create = mock_instruments.return_value.create
         mock_create.return_value = {'instrument_value': self.sesa_data}
 
@@ -38,12 +45,12 @@ class TestInstruments(unittest.TestCase):
             instrumentValue=self.sesa_data
         )['instrument_value']
 
-        result = Instruments("test_instruments").get(exchange='binance', account='subaccount1')[0]['instrument_value']
+        result = list(Instruments("test_instruments").get(exchange='binance', account='subaccount1'))[0]['instrument_value']
         self.assertEqual(result, self.sesa_data)
 
     @mock.patch('src.handlers.instruments.Instruments', autospec=True)
     def test_singleExchangeTwoSubAccountsInstrumentsStoredToMongoDb(self, mock_instruments):
-        self.test_collection.delete_many({})
+        self.instruments_db.delete_many({})
         mock_create = mock_instruments.return_value.create
         mock_create.return_value = {'instrument_value': self.seta_data}
 
@@ -62,8 +69,8 @@ class TestInstruments(unittest.TestCase):
             instrumentValue=self.seta_data
         )['instrument_value']
 
-        result1 = Instruments("test_instruments").get(exchange='binance', account='subaccount1')[0]['instrument_value']['subaccount1']
-        result2 = Instruments("test_instruments").get(exchange='binance', account='subaccount2')[0]['instrument_value']['subaccount2']
+        result1 = list(Instruments("test_instruments").get(exchange='binance', account='subaccount1'))[0]['instrument_value']['subaccount1']
+        result2 = list(Instruments("test_instruments").get(exchange='binance', account='subaccount2'))[0]['instrument_value']['subaccount2']
 
         # Iterate over the result and compare the values
         self.assertEqual(result1, self.seta_data['subaccount1'])

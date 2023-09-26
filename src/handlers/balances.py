@@ -21,7 +21,7 @@ class Balances:
             self.tickers_db = MongoDB(config['mongo_db'], 'tickers')
             self.balances_db = MongoDB(config['mongo_db'], db)
         else:
-            self.balances_db = database_connector('balances')
+            self.balances_db = database_connector(db)
             self.tickers_db = database_connector('tickers')
             self.runs_db = database_connector('runs')
 
@@ -32,6 +32,7 @@ class Balances:
         future: str = None,
         perp: str = None,
         position_type: str = None,
+        client: str = None,
         exchange: str = None,
         account: str = None,
     ):
@@ -51,6 +52,8 @@ class Balances:
             pipeline.append({"$match": {"perpMarket": perp}})
         if position_type:
             pipeline.append({"$match": {"positionType": position_type}})
+        if client:
+            pipeline.append({"$match": {"client": client}})
         if exchange:
             pipeline.append({"$match": {"venue": exchange}})
         if account:

@@ -391,7 +391,8 @@ class FundingRates:
                         print("An error occurred:", e)
                         pass
 
-        symbols = symbols + symbols_d
+        if 'symbols_d' in globals() or 'symbols_d' in locals():
+            symbols = symbols + symbols_d
 
         flag = False
         for symbol in symbols:
