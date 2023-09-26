@@ -1,4 +1,5 @@
 import json
+import os
 import unittest
 from unittest import mock
 from pymongo import MongoClient
@@ -6,11 +7,23 @@ from datetime import datetime, timezone
 
 from src.handlers.fills import Fills
 from src.config import read_config_file
+from src.handlers.database_connector import database_connector
+from src.lib.db import MongoDB
+from dotenv import load_dotenv
 
+load_dotenv()
 
 class TestFills(unittest.TestCase):
     def setUp(self):
         self.config = read_config_file("tests/config.yaml")
+
+        if os.getenv("mode") == "testing":
+            self.fills_db = MongoDB(self.config['mongo_db'], 'test_fills')
+        else:
+            self.fills_db = database_connector('test_fills')
+
+        self.fills_db.delete_many({})
+
         self.mongo_client = MongoClient(
             self.config["mongo_host"], self.config["mongo_port"]
         )
@@ -19,26 +32,7 @@ class TestFills(unittest.TestCase):
             self.config["mongo_db_collection"] + "_positions"
         ]
         self.test_collection.delete_many({})
-        self.test_collection = self.db[self.config["mongo_db_collection"] + "_balances"]
-        self.test_collection.delete_many({})
-        self.test_collection = self.db[
-            self.config["mongo_db_collection"] + "_instruments"
-        ]
-        self.test_collection.delete_many({})
-        self.test_collection = self.db[
-            self.config["mongo_db_collection"] + "_leverages"
-        ]
-        self.test_collection.delete_many({})
-        self.test_collection = self.db[self.config["mongo_db_collection"] + "_tickers"]
-        self.test_collection.delete_many({})
-        self.test_collection = self.db[self.config["mongo_db_collection"] + "_runs"]
-        self.test_collection.delete_many({})
-        self.test_collection = self.db[self.config["mongo_db_collection"] + "_test"]
-        self.test_collection.delete_many({})
-        self.test_collection = self.db[
-            self.config["mongo_db_collection"] + "_fills"
-        ]
-        self.test_collection.delete_many({})
+
         # read hard-coded values
         with open("tests/fsdt.json") as fsdt:
             self.fsdt_data = json.load(fsdt)
@@ -58,7 +52,7 @@ class TestFills(unittest.TestCase):
             fillsValue=self.fsdt_data
         )
 
-        fills = self.db[self.config["mongo_db_collection"] + "_fills"].find()
+        fills = self.fills_db.find({})
 
         runid = fills[0]['runid']
         for item in fills:
@@ -79,8 +73,8 @@ class TestFills(unittest.TestCase):
             fillsValue=self.fsdt_data
         )
 
-        fills_1 = list(self.db[self.config["mongo_db_collection"] + "_fills"].find({'symbol': 'BTCUSDT'}))
-        fills_2 = list(self.db[self.config["mongo_db_collection"] + "_fills"].find({'symbol': 'USDTETH'}))
+        fills_1 = list(self.fills_db.find({'symbol': 'BTCUSDT'}))
+        fills_2 = list(self.fills_db.find({'symbol': 'USDTETH'}))
 
         self.assertEqual(len(self.fsdt_data['USDTETH']), len(fills_2))
         self.assertEqual(len(self.fsdt_data['BTCUSDT']), len(fills_1))

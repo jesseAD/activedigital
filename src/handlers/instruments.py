@@ -33,7 +33,7 @@ class Instruments:
         else:
             self.runs_db = database_connector("runs")
             self.bid_asks_db = database_connector("bid_asks")
-            self.insturments_db = database_connector("instruments")
+            self.insturments_db = database_connector(db)
 
     def get(
         self,
@@ -83,8 +83,8 @@ class Instruments:
         instrumentValue: str = None,
         bid_ask_value: str = None,
     ):
+        exch = Exchange(exchange).exch()
         if instrumentValue is None:
-            exch = Exchange(exchange).exch()
             
             try:
                 if exchange == "okx":
