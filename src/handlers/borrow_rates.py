@@ -2,6 +2,8 @@ import os
 import requests
 from dotenv import load_dotenv
 from datetime import datetime, timezone
+import ccxt 
+import time
 
 from src.lib.db import MongoDB
 from src.lib.log import Log
@@ -66,6 +68,7 @@ class BorrowRates:
     def create(
         self,
         client: str = None,
+        exch = None,
         exchange: str = None,
         sub_account: str = None,
         spot: str = None,
@@ -73,13 +76,15 @@ class BorrowRates:
         perp: str = None,
         borrowRatesValue: str = None,
         codes: str = None,
+        back_off = None,
     ):
         if codes is None:
             codes = config["borrow_rates"]["codes"]
 
         if borrowRatesValue is None:
             try:
-                exch = Exchange(exchange).exch()
+                if exch == None:
+                    exch = Exchange(exchange).exch()
 
                 borrowRatesValue = {}
 
@@ -139,6 +144,12 @@ class BorrowRates:
                                 item["nextBorrowRate"] = float(borrow_rate) * 24 * 365 / scalar
                                 item['scalar'] = scalar       
 
+            except ccxt.InvalidNonce as e:
+                print("Hit rate limit", e)
+                time.sleep(back_off[exchange] / 1000.0)
+                back_off[exchange] *= 2
+                return False
+        
             except Exception as e:
                 print("An error occurred in Borrow Rates:", e)
 
@@ -222,6 +233,8 @@ class BorrowRates:
                     break
 
                 pass
+        
+        back_off[exchange] = config['back_off']
         
         flag = False
         for code in codes:

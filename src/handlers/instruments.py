@@ -3,6 +3,8 @@ from dotenv import load_dotenv
 from datetime import datetime, timezone
 import gzip
 import pickle
+import ccxt 
+import time
 
 from src.lib.db import MongoDB
 from src.lib.log import Log
@@ -74,6 +76,7 @@ class Instruments:
     def create(
         self,
         client: str = None,
+        exch = None,
         exchange: str = None,
         positionType: str = None,
         sub_account: str = None,
@@ -82,8 +85,11 @@ class Instruments:
         perp: str = None,
         instrumentValue: str = None,
         bid_ask_value: str = None,
+        back_off = None,
     ):
-        exch = Exchange(exchange).exch()
+        if exch == None:
+            exch = Exchange(exchange).exch()
+            
         if instrumentValue is None:
             
             try:
@@ -91,6 +97,13 @@ class Instruments:
                     instrumentValue = OKXHelper().get_instruments(exch=exch)
                 else:
                     instrumentValue = Helper().get_instruments(exch=exch)
+
+            except ccxt.InvalidNonce as e:
+                print("Hit rate limit", e)
+                time.sleep(back_off[exchange] / 1000.0)
+                back_off[exchange] *= 2
+                return False
+            
             except Exception as e:
                 print("An error occurred in Instruments:", e)
                 pass
@@ -119,9 +132,18 @@ class Instruments:
                             'perp': perp_value,
                             'spread': spot_value['mid_point'] - perp_value['mid_point'],
                         }   
+
+                except ccxt.InvalidNonce as e:
+                    print("Hit rate limit", e)
+                    time.sleep(back_off[exchange] / 1000.0)
+                    back_off[exchange] *= 2
+                    return False
+            
                 except Exception as e:
                     print("An error occurred in Bids and Asks:", e)
                     pass
+
+        back_off[exchange] = config['back_off']
 
         instrument = {
             "venue": exchange,

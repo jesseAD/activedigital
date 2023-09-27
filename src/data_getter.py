@@ -10,6 +10,7 @@ target_dir = os.path.abspath(os.path.join(current_directory, os.pardir))
 
 sys.path.append(target_dir)
 
+from src.lib.exchange import Exchange
 from src.handlers.instantiator import collect_positions
 from src.handlers.instantiator import collect_balances
 from src.handlers.instantiator import collect_instruments
@@ -28,6 +29,7 @@ from src.config import read_config_file
 
 config = read_config_file()
 dask = Client(processes=False)
+back_off = {}
 
 #   Insert new run
 insert_runs()
@@ -36,17 +38,20 @@ print("inserted a new run")
 #   Public Data
 futures1 = []
 for exchange in config['exchanges']:
-    future = dask.submit(collect_instruments, exchange)
+    back_off[exchange] = config['back_off']
+    exch = Exchange(exchange).exch()
+
+    future = dask.submit(collect_instruments, exch, exchange, back_off)
     futures1.append(future)
-    future = dask.submit(collect_mark_prices, exchange)
+    future = dask.submit(collect_mark_prices, exch, exchange, back_off)
     futures1.append(future)
-    future = dask.submit(collect_tickers, exchange)
+    future = dask.submit(collect_tickers, exch, exchange, back_off)
     futures1.append(future)
-    future = dask.submit(collect_index_prices, exchange)
+    future = dask.submit(collect_index_prices, exch, exchange, back_off)
     futures1.append(future)
-    future = dask.submit(collect_funding_rates, exchange)
+    future = dask.submit(collect_funding_rates, exch, exchange, back_off)
     futures1.append(future)
-    future = dask.submit(collect_borrow_rates, exchange)
+    future = dask.submit(collect_borrow_rates, exch, exchange, back_off)
     futures1.append(future)
 
 wait(futures1)
@@ -72,13 +77,15 @@ for client in config['clients']:
     data_collectors = get_data_collectors(client)
 
     for data_collector in data_collectors:
-        future = dask.submit(collect_positions, client, data_collector)
+        back_off[client + "_" + data_collector.exchange + "_" + data_collector.account] = config['back_off']
+        
+        future = dask.submit(collect_positions, client, data_collector, back_off)
         futures2.append(future)
-        future = dask.submit(collect_fills, client, data_collector)
+        future = dask.submit(collect_fills, client, data_collector, back_off)
         futures2.append(future)
-        future = dask.submit(collect_balances, client, data_collector)
+        future = dask.submit(collect_balances, client, data_collector, back_off)
         futures2.append(future)
-        future = dask.submit(collect_transactions, client, data_collector)
+        future = dask.submit(collect_transactions, client, data_collector, back_off)
         futures2.append(future)
 
 wait(futures2)
@@ -117,3 +124,4 @@ wait(futures3)
 #         print("collected leverages")
 
 enclose_runs()
+print("enclosed run")

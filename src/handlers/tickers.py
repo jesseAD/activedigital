@@ -1,6 +1,8 @@
 import os
 from dotenv import load_dotenv
 from datetime import datetime, timezone
+import ccxt 
+import time
 
 from src.lib.db import MongoDB
 from src.lib.log import Log
@@ -59,24 +61,36 @@ class Tickers:
     def create(
         self,
         client: str = None,
+        exch = None,
         exchange: str = None,
         sub_account: str = None,
         spot: str = None,
         future: str = None,
         perp: str = None,
         tickerValue: str = None,
+        back_off = None,
     ):
         if tickerValue is None:
-            exch = Exchange(exchange).exch()
+            if exch == None:
+                exch = Exchange(exchange).exch()
             
             try:
                 if exchange == 'okx':
                     tickerValue = OKXHelper().get_tickers(exch = exch)
                 else:
                     tickerValue = Helper().get_tickers(exch = exch)
+
+            except ccxt.InvalidNonce as e:
+                print("Hit rate limit", e)
+                time.sleep(back_off[exchange] / 1000.0)
+                back_off[exchange] *= 2
+                return False
+        
             except Exception as e:
                 print("An error occurred in Tickers:", e)
                 return False
+        
+        back_off[exchange] = config['back_off']
         
         tickerValue = {symbol: tickerValue[symbol] for symbol in config['tickers']['symbols'] if symbol in tickerValue}
         tickerValue['USDT/USD'] = CoinbaseHelper().get_usdt2usd_ticker(exch=Exchange(exchange='coinbase').exch())
