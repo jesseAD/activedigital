@@ -1,6 +1,8 @@
 import os
 from dotenv import load_dotenv
 from datetime import datetime, timezone
+import time
+import ccxt 
 
 from src.lib.db import MongoDB
 from src.lib.log import Log
@@ -69,6 +71,7 @@ class Positions:
     def create(
         self,
         client,
+        exch = None,
         exchange: str = None,
         positionType: str = None,
         sub_account: str = None,
@@ -76,31 +79,40 @@ class Positions:
         future: str = None,
         perp: str = None,
         position_value: str = None,
+        back_off = None,
     ):
         if position_value is None:
-            spec = (
-                client.upper()
-                + "_"
-                + exchange.upper()
-                + "_"
-                + sub_account.upper()
-                + "_"
-            )
-            API_KEY = os.getenv(spec + "API_KEY")
-            API_SECRET = os.getenv(spec + "API_SECRET")
-            PASSPHRASE = None
-            if exchange == "okx":
-                PASSPHRASE = os.getenv(spec + "PASSPHRASE")
+            if exch == None:
+                spec = (
+                    client.upper()
+                    + "_"
+                    + exchange.upper()
+                    + "_"
+                    + sub_account.upper()
+                    + "_"
+                )
+                API_KEY = os.getenv(spec + "API_KEY")
+                API_SECRET = os.getenv(spec + "API_SECRET")
+                PASSPHRASE = None
+                if exchange == "okx":
+                    PASSPHRASE = os.getenv(spec + "PASSPHRASE")
 
-            exch = Exchange(
-                exchange, sub_account, API_KEY, API_SECRET, PASSPHRASE
-            ).exch()
+                exch = Exchange(
+                    exchange, sub_account, API_KEY, API_SECRET, PASSPHRASE
+                ).exch()
 
             try:
                 if exchange == "okx":
                     position_value = OKXHelper().get_positions(exch=exch)
                 else:
                     position_value = Helper().get_positions(exch=exch)
+            
+            except ccxt.InvalidNonce as e:
+                print("Hit rate limit", e)
+                time.sleep(back_off[client + "_" + exchange + "_" + sub_account] / 1000.0)
+                back_off[client + "_" + exchange + "_" + sub_account] *= 2
+                return False
+            
             except Exception as e:
                 print("An error occurred in Positions:", e)
                 return False
@@ -125,6 +137,13 @@ class Positions:
                                     for item in portfolio
                                     if float(item["balance"]) != 0
                                 ]
+
+                        except ccxt.InvalidNonce as e:
+                            print("Hit rate limit", e)
+                            time.sleep(back_off[client + "_" + exchange + "_" + sub_account] / 1000.0)
+                            back_off[client + "_" + exchange + "_" + sub_account] *= 2
+                            return False
+                        
                         except Exception as e:
                             print("An error occurred in Positions:", e)
                             pass
@@ -140,9 +159,17 @@ class Positions:
                         exch=exch, params={"symbol": position['base'] + position['quote']}
                     )["markPrice"]
 
+        except ccxt.InvalidNonce as e:
+            print("Hit rate limit", e)
+            time.sleep(back_off[client + "_" + exchange + "_" + sub_account] / 1000.0)
+            back_off[client + "_" + exchange + "_" + sub_account] *= 2
+            return False
+        
         except Exception as e:
             print("An error occurred in Positions:", e)
             pass
+
+        back_off[client + "_" + exchange + "_" + sub_account] = config['back_off']
 
         current_time = datetime.now(timezone.utc)
         position = {

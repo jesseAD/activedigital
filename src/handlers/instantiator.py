@@ -1,3 +1,6 @@
+import os
+
+from src.lib.exchange import Exchange
 from src.lib.data_collector import DataCollector
 from src.handlers.positions import Positions
 from src.handlers.balances import Balances
@@ -12,22 +15,35 @@ from src.handlers.mark_price import MarkPrices
 from src.handlers.fills import Fills
 from src.handlers.runs import Runs
 from src.config import read_config_file
+from dotenv import load_dotenv
+
+load_dotenv()
 
 def instantiate(client, collection, exchange, account=None):
     config = read_config_file()
     target = config['clients'][client][collection][exchange]
 
+    spec = client.upper() + "_" + exchange.upper() + "_" + account.upper() + "_"
+    API_KEY = os.getenv(spec + "API_KEY")
+    API_SECRET = os.getenv(spec + "API_SECRET")
+    PASSPHRASE = None
+    if exchange == "okx":
+        PASSPHRASE = os.getenv(spec + "PASSPHRASE")
+
+    exch = Exchange(exchange, account, API_KEY, API_SECRET, PASSPHRASE).exch()
+
     data_collector = DataCollector(
-        config['mongo_host'],
-        config['mongo_port'],
-        client,
-        exchange, 
-        collection,
-        account,
-        target['helper'],
-        target[account]['apikey'],
-        target[account]['apisecret'],
-        target['function']
+        mongo_host = config['mongo_host'],
+        mongo_port = config['mongo_port'],
+        client = client,
+        exch = exch,
+        exchange = exchange, 
+        collection = collection,
+        account = account,
+        helper = target['helper'],
+        apikey = target[account]['apikey'],
+        apisecret = target[account]['apisecret'],
+        script = target['function']
     )
     
     return data_collector
@@ -51,70 +67,85 @@ def get_data_collectors(client):
          
     return data_collectors
 
-def collect_positions(client_alias, data_collector):
+#   Private data
+def collect_positions(client_alias, data_collector, back_off):
     Positions('positions').create(
         client=client_alias,
+        exch=data_collector.exch,
         exchange=data_collector.exchange,
-        sub_account=data_collector.account
+        sub_account=data_collector.account,
+        back_off=back_off
     )
 
-def collect_balances(client_alias, data_collector):
+def collect_balances(client_alias, data_collector, back_off):
     Balances('balances').create(
         client=client_alias,
+        exch=data_collector.exch,
         exchange=data_collector.exchange,
-        sub_account=data_collector.account
+        sub_account=data_collector.account,
+        back_off=back_off
     )
 
-def collect_instruments(exchange):
-    Instruments('instruments').create(
-        exchange=exchange
-    )
-
-def collect_tickers(exchange):
-    Tickers('tickers').create(
-        exchange=exchange,
-    )
-
-def collect_index_prices(exchange):
-    IndexPrices('index_prices').create(
-        exchange=exchange,
-    )
-
-def collect_leverages(client_alias, data_collector):
-    Leverages('leverages').get(
-        client=client_alias,
-        exchange=data_collector.exchange,
-        account=data_collector.account
-    )
-
-def collect_transactions(client_alias, data_collector):
+def collect_transactions(client_alias, data_collector, back_off):
     Transactions('transactions').create(
         client=client_alias,
+        exch=data_collector.exch,
         exchange=data_collector.exchange,
         sub_account=data_collector.account,
         symbol='BTCUSDT',
+        back_off=back_off
     )
 
-def collect_borrow_rates(exchange):
-    BorrowRates('borrow_rates').create(
-        exchange=exchange,
-    )
-
-def collect_funding_rates(exchange):
-    FundingRates('funding_rates').create(
-        exchange=exchange,
-    )
-
-def collect_mark_prices(exchange):
-    MarkPrices('mark_prices').create(
-        exchange=exchange,
-    )
-
-def collect_fills(client_alias, data_collector):
+def collect_fills(client_alias, data_collector, back_off):
     Fills('fills').create(
         client=client_alias,
+        exch=data_collector.exch,
         exchange=data_collector.exchange,
         sub_account=data_collector.account,
+        back_off=back_off
+    )
+
+#   Public data
+def collect_instruments(exch, exchange, back_off):
+    Instruments('instruments').create(
+        exch=exch,
+        exchange=exchange,
+        back_off=back_off
+    )
+
+def collect_tickers(exch, exchange, back_off):
+    Tickers('tickers').create(
+        exch=exch,
+        exchange=exchange,
+        back_off=back_off
+    )
+
+def collect_index_prices(exch, exchange, back_off):
+    IndexPrices('index_prices').create(
+        exch=exch,
+        exchange=exchange,
+        back_off=back_off
+    )
+
+def collect_borrow_rates(exch, exchange, back_off):
+    BorrowRates('borrow_rates').create(
+        exch=exch,
+        exchange=exchange,
+        back_off=back_off
+    )
+
+def collect_funding_rates(exch, exchange, back_off):
+    FundingRates('funding_rates').create(
+        exch=exch,
+        exchange=exchange,
+        back_off=back_off
+    )
+
+def collect_mark_prices(exch, exchange, back_off):
+    MarkPrices('mark_prices').create(
+        exch=exch,
+        exchange=exchange,
+        back_off=back_off
     )
 
 def insert_runs():
@@ -122,3 +153,10 @@ def insert_runs():
 
 def enclose_runs():
     Runs('runs').end()
+
+def collect_leverages(client_alias, data_collector):
+    Leverages('leverages').get(
+        client=client_alias,
+        exchange=data_collector.exchange,
+        account=data_collector.account
+    )

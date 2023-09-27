@@ -1,6 +1,8 @@
 import os
 from dotenv import load_dotenv
 from datetime import datetime, timezone
+import ccxt 
+import time
 
 from src.lib.db import MongoDB
 from src.lib.log import Log
@@ -69,31 +71,44 @@ class Balances:
     def create(
         self,
         client,
+        exch=None,
         exchange: str = None,
         sub_account: str = None,
         spot: str = None,
         future: str = None,
         perp: str = None,
-        balanceValue: str = None
+        balanceValue: str = None,
+        back_off = None,
     ):
         if balanceValue is None:
-            spec = client.upper() + "_" + exchange.upper() + "_" + sub_account.upper() + "_"
-            API_KEY = os.getenv(spec + "API_KEY")
-            API_SECRET = os.getenv(spec + "API_SECRET")
-            PASSPHRASE = None
-            if exchange == "okx":
-                PASSPHRASE = os.getenv(spec + "PASSPHRASE")
+            if exch == None:
+                spec = client.upper() + "_" + exchange.upper() + "_" + sub_account.upper() + "_"
+                API_KEY = os.getenv(spec + "API_KEY")
+                API_SECRET = os.getenv(spec + "API_SECRET")
+                PASSPHRASE = None
+                if exchange == "okx":
+                    PASSPHRASE = os.getenv(spec + "PASSPHRASE")
 
-            exch = Exchange(exchange, sub_account, API_KEY, API_SECRET, PASSPHRASE).exch()
+                exch = Exchange(exchange, sub_account, API_KEY, API_SECRET, PASSPHRASE).exch()
             
             try:
                 if exchange == 'okx':
                     balanceValue = OKXHelper().get_balances(exch = exch)
                 else:
                     balanceValue = Helper().get_balances(exch = exch)
-            except:
+
+            except ccxt.InvalidNonce as e:
+                print("Hit rate limit", e)
+                time.sleep(back_off[client + "_" + exchange + "_" + sub_account] / 1000.0)
+                back_off[client + "_" + exchange + "_" + sub_account] *= 2
+                return False
+            
+            except Exception as e:
+                print("An error occurred in Balances:", e)
                 return False
 
+        back_off[client + "_" + exchange + "_" + sub_account] = config['back_off']
+        
         query = {}
         if exchange:
             query["venue"] = exchange

@@ -2,6 +2,8 @@ import os
 import requests
 from dotenv import load_dotenv
 from datetime import datetime, timezone
+import ccxt 
+import time
 
 from src.lib.db import MongoDB
 from src.lib.log import Log
@@ -63,6 +65,7 @@ class FundingRates:
     def create(
         self,
         client: str = None,
+        exch = None,
         exchange: str = None,
         sub_account: str = None,
         spot: str = None,
@@ -70,6 +73,7 @@ class FundingRates:
         perp: str = None,
         fundingRatesValue: str = None,
         symbols: str = None,
+        back_off = None,
     ):
         if symbols is None:
             if exchange == "binance":
@@ -80,7 +84,8 @@ class FundingRates:
                 symbols_d = config["funding_rates"]["symbols"]["okx_usd"]
 
         if fundingRatesValue is None:
-            exch = Exchange(exchange).exch()
+            if exch == None:
+                exch = Exchange(exchange).exch()
 
             fundingRatesValue = {}
             scalar = 1
@@ -248,6 +253,12 @@ class FundingRates:
                                 item["quote"] = "USDT"
                                 item["scalar"] = scalar
 
+                except ccxt.InvalidNonce as e:
+                    print("Hit rate limit", e)
+                    time.sleep(back_off[exchange] / 1000.0)
+                    back_off[exchange] *= 2
+                    return False
+                
                 except Exception as e:
                     print("An error occurred in Funding Rates:", e)
                     pass
@@ -292,9 +303,15 @@ class FundingRates:
                             item.pop("fundingTime", None)
                             if scalar is not None:
                                 item["scalar"] = scalar
-
+                    
+                    except ccxt.InvalidNonce as e:
+                        print("Hit rate limit", e)
+                        time.sleep(back_off[exchange] / 1000.0)
+                        back_off[exchange] *= 2
+                        return False
+                
                     except Exception as e:
-                        print("An error occurred:", e)
+                        print("An error occurred in Funding Rates:", e)
                         pass
                     
                 elif exchange == "okx":
@@ -387,9 +404,17 @@ class FundingRates:
                                         - int(funding_rate["fundingTime"])
                                     )
 
+                    except ccxt.InvalidNonce as e:
+                        print("Hit rate limit", e)
+                        time.sleep(back_off[exchange] / 1000.0)
+                        back_off[exchange] *= 2
+                        return False
+                
                     except Exception as e:
-                        print("An error occurred:", e)
+                        print("An error occurred in Funding Rates:", e)
                         pass
+
+        back_off[exchange] = config['back_off']
 
         if 'symbols_d' in globals() or 'symbols_d' in locals():
             symbols = symbols + symbols_d

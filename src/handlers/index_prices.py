@@ -1,6 +1,8 @@
 import os
 from dotenv import load_dotenv
 from datetime import datetime, timezone
+import ccxt 
+import time
 
 from src.lib.db import MongoDB
 from src.lib.log import Log
@@ -59,15 +61,18 @@ class IndexPrices:
     def create(
         self,
         client: str = None,
+        exch = None,
         exchange: str = None,
         sub_account: str = None,
         spot: str = None,
         future: str = None,
         perp: str = None,
         indexPriceValue: str = None,
+        back_off = None,
     ):
         if indexPriceValue is None:
-            exch = Exchange(exchange).exch()
+            if exch == None:
+                exch = Exchange(exchange).exch()
 
             symbols = config['index_prices']['symbols'][exchange]
             indexPriceValue = {}
@@ -90,10 +95,19 @@ class IndexPrices:
                             'timestamp': index_price['time'],
                             'symbol': index_price['symbol']
                         }
+
+                except ccxt.InvalidNonce as e:
+                    print("Hit rate limit", e)
+                    time.sleep(back_off[exchange] / 1000.0)
+                    back_off[exchange] *= 2
+                    return False
+                
                 except Exception as e:
                     print("An error occurred in Index Prices:", e)
                     pass
         
+        back_off[exchange] = config['back_off']
+
         index_price = {
             "venue": exchange,
             "index_price_value": indexPriceValue,
