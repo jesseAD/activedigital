@@ -114,7 +114,7 @@ class MarkPrices:
                     print("An error occurred in Mark Prices:", e)
                     pass
 
-        back_off[exchange] = config['back_off']
+        back_off[exchange] = config['dask']['back_off']
         
         mark_price = {
             "venue": exchange,

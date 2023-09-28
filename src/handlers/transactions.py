@@ -265,7 +265,7 @@ class Transactions:
                 print("An error occurred in Transactions:", e)
                 return False
 
-        back_off[client + "_" + exchange + "_" + sub_account] = config['back_off']
+        back_off[client + "_" + exchange + "_" + sub_account] = config['dask']['back_off']
         
         current_time = datetime.now(timezone.utc)
         run_ids = self.runs_db.find({}).sort("_id", -1).limit(1)

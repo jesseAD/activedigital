@@ -143,7 +143,7 @@ class Instruments:
                     print("An error occurred in Bids and Asks:", e)
                     pass
 
-        back_off[exchange] = config['back_off']
+        back_off[exchange] = config['dask']['back_off']
 
         instrument = {
             "venue": exchange,

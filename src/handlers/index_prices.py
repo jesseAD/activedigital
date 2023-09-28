@@ -106,7 +106,7 @@ class IndexPrices:
                     print("An error occurred in Index Prices:", e)
                     pass
         
-        back_off[exchange] = config['back_off']
+        back_off[exchange] = config['dask']['back_off']
 
         index_price = {
             "venue": exchange,
