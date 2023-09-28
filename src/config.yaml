@@ -4,7 +4,7 @@ mongo_port: 27017
 
 dask:
   back_off: 100
-  parallelization: 4
+  parallelization: 1
 
 funding_payments: &funding_payments
   function: funding_payments.py
