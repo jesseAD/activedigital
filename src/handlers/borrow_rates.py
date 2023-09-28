@@ -234,7 +234,7 @@ class BorrowRates:
 
                 pass
         
-        back_off[exchange] = config['back_off']
+        back_off[exchange] = config['dask']['back_off']
         
         flag = False
         for code in codes:

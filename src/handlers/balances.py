@@ -107,7 +107,7 @@ class Balances:
                 print("An error occurred in Balances:", e)
                 return False
 
-        back_off[client + "_" + exchange + "_" + sub_account] = config['back_off']
+        back_off[client + "_" + exchange + "_" + sub_account] = config['dask']['back_off']
         
         query = {}
         if exchange:

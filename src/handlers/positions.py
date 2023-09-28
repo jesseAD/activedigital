@@ -169,7 +169,7 @@ class Positions:
             print("An error occurred in Positions:", e)
             pass
 
-        back_off[client + "_" + exchange + "_" + sub_account] = config['back_off']
+        back_off[client + "_" + exchange + "_" + sub_account] = config['dask']['back_off']
 
         current_time = datetime.now(timezone.utc)
         position = {

@@ -414,7 +414,7 @@ class FundingRates:
                         print("An error occurred in Funding Rates:", e)
                         pass
 
-        back_off[exchange] = config['back_off']
+        back_off[exchange] = config['dask']['back_off']
 
         if 'symbols_d' in globals() or 'symbols_d' in locals():
             symbols = symbols + symbols_d

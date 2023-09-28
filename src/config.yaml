@@ -2,7 +2,9 @@ mongo_host: 127.0.0.1
 mongo_db: 'active_digital'
 mongo_port: 27017
 
-back_off: 100
+dask:
+  back_off: 100
+  parallelization: 4
 
 funding_payments: &funding_payments
   function: funding_payments.py
