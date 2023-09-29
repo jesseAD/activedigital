@@ -88,18 +88,20 @@ print("inserted a new run")
 # parallelization = 0
 
 for exchange in config['exchanges']:
+    exch = Exchange(exchange).exch()
+
     print(exchange)
-    collect_instruments(exchange)
+    collect_instruments(exch, exchange)
     print("collected instruments")
-    collect_mark_prices(exchange)
+    collect_mark_prices(exch, exchange)
     print("collected mark price")
-    collect_tickers(exchange)
+    collect_tickers(exch, exchange)
     print("collected tickers")
-    collect_index_prices(exchange)
+    collect_index_prices(exch, exchange)
     print("collected index prices")
-    collect_funding_rates(exchange)
+    collect_funding_rates(exch, exchange)
     print("collected funding rates")    
-    collect_borrow_rates(exchange)
+    collect_borrow_rates(exch, exchange)
     print("collected borrow rates")  
 
 #   Private Data
