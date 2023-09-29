@@ -68,7 +68,7 @@ def get_data_collectors(client):
     return data_collectors
 
 #   Private data
-def collect_positions(client_alias, data_collector, back_off):
+def collect_positions(client_alias, data_collector, back_off=None):
     Positions('positions').create(
         client=client_alias,
         exch=data_collector.exch,
@@ -77,7 +77,7 @@ def collect_positions(client_alias, data_collector, back_off):
         back_off=back_off
     )
 
-def collect_balances(client_alias, data_collector, back_off):
+def collect_balances(client_alias, data_collector, back_off=None):
     Balances('balances').create(
         client=client_alias,
         exch=data_collector.exch,
@@ -86,7 +86,7 @@ def collect_balances(client_alias, data_collector, back_off):
         back_off=back_off
     )
 
-def collect_transactions(client_alias, data_collector, back_off):
+def collect_transactions(client_alias, data_collector, back_off=None):
     Transactions('transactions').create(
         client=client_alias,
         exch=data_collector.exch,
@@ -96,7 +96,7 @@ def collect_transactions(client_alias, data_collector, back_off):
         back_off=back_off
     )
 
-def collect_fills(client_alias, data_collector, back_off):
+def collect_fills(client_alias, data_collector, back_off=None):
     Fills('fills').create(
         client=client_alias,
         exch=data_collector.exch,
@@ -106,42 +106,42 @@ def collect_fills(client_alias, data_collector, back_off):
     )
 
 #   Public data
-def collect_instruments(exch, exchange, back_off):
+def collect_instruments(exch, exchange, back_off=None):
     Instruments('instruments').create(
         exch=exch,
         exchange=exchange,
         back_off=back_off
     )
 
-def collect_tickers(exch, exchange, back_off):
+def collect_tickers(exch, exchange, back_off=None):
     Tickers('tickers').create(
         exch=exch,
         exchange=exchange,
         back_off=back_off
     )
 
-def collect_index_prices(exch, exchange, back_off):
+def collect_index_prices(exch, exchange, back_off=None):
     IndexPrices('index_prices').create(
         exch=exch,
         exchange=exchange,
         back_off=back_off
     )
 
-def collect_borrow_rates(exch, exchange, back_off):
+def collect_borrow_rates(exch, exchange, back_off=None):
     BorrowRates('borrow_rates').create(
         exch=exch,
         exchange=exchange,
         back_off=back_off
     )
 
-def collect_funding_rates(exch, exchange, back_off):
+def collect_funding_rates(exch, exchange, back_off=None):
     FundingRates('funding_rates').create(
         exch=exch,
         exchange=exchange,
         back_off=back_off
     )
 
-def collect_mark_prices(exch, exchange, back_off):
+def collect_mark_prices(exch, exchange, back_off=None):
     MarkPrices('mark_prices').create(
         exch=exch,
         exchange=exchange,
