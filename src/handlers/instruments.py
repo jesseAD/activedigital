@@ -153,6 +153,7 @@ class Instruments:
             "exit": False,
             "timestamp": datetime.now(timezone.utc),
         }
+        del instrumentValue
 
         if spot:
             instrument["spotMarket"] = spot
@@ -199,6 +200,8 @@ class Instruments:
         except:
             pass
 
+        del bid_ask, bid_ask_value
+
         # get latest instruments data
         query = {}
         if client:
@@ -238,7 +241,10 @@ class Instruments:
                 
             elif config["instruments"]["store_type"] == "timeseries":
                 self.insturments_db.insert_one(instrument)
-            return instrument
+
+            del instrument
+
+            # return instrument
         except Exception as e:
             log.error(e)
             return False

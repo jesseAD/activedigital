@@ -117,6 +117,8 @@ class IndexPrices:
             "timestamp": datetime.now(timezone.utc),
         }
 
+        del indexPriceValue
+
         if spot:
             index_price["spotMarket"] = spot
         if future:
@@ -135,8 +137,10 @@ class IndexPrices:
         
         try:
             self.index_prices_db.insert_one(index_price)
+
+            del index_price
                 
-            return index_price
+            # return index_price
         except Exception as e:
             log.error(e)
             return False

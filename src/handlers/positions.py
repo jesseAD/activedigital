@@ -119,6 +119,23 @@ class Positions:
 
         try:
             position_info = []
+            liquidation_buffer = None
+
+            if exchange == "okx":
+                try:
+                    cross_margin_ratio = float(OKXHelper().get_cross_margin_ratio(exch=exch))
+                    liquidation_buffer = OKXHelper().get_liquidation_buffer(exchange=exchange, mgnRatio=cross_margin_ratio)
+
+                except ccxt.InvalidNonce as e:
+                    print("Hit rate limit", e)
+                    time.sleep(back_off[client + "_" + exchange + "_" + sub_account] / 1000.0)
+                    back_off[client + "_" + exchange + "_" + sub_account] *= 2
+                    return False
+                
+                except Exception as e:
+                    print("An error occurred in Positions:", e)
+                    pass
+
             for value in position_value:
                 if float(value["initialMargin"]) > 0:
                     portfolio = None
@@ -151,6 +168,7 @@ class Positions:
                     value["margin"] = portfolio
                     value['base'] = value['symbol'].split('/')[0]
                     value['quote'] = value['symbol'].split('-')[0].split('/')[1].split(':')[0]
+                    value['liquidationBuffer'] = liquidation_buffer
                     position_info.append(value)
 
             if exchange == "binance":
@@ -169,6 +187,8 @@ class Positions:
             print("An error occurred in Positions:", e)
             pass
 
+        del position_value
+
         back_off[client + "_" + exchange + "_" + sub_account] = config['dask']['back_off']
 
         current_time = datetime.now(timezone.utc)
@@ -185,6 +205,8 @@ class Positions:
             "exit": False,
             "timestamp": current_time,
         }
+
+        del position_info
 
         if sub_account:
             position["account"] = sub_account
@@ -251,7 +273,10 @@ class Positions:
                 )
 
             # log.debug(f"Position created: {position}")
-            return position
+
+            del position
+
+            # return position
         except Exception as e:
             log.error(e)
             return False

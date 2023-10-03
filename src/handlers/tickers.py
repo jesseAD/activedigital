@@ -104,6 +104,8 @@ class Tickers:
             "timestamp": datetime.now(timezone.utc),
         }
 
+        del tickerValue
+
         if spot:
             ticker["spotMarket"] = spot
         if future:
@@ -156,8 +158,10 @@ class Tickers:
                     }},
                     upsert=True
                 )
+
+            del ticker
                 
-            return ticker
+            # return ticker
         except Exception as e:
             log.error(e)
             return False
