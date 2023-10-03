@@ -464,13 +464,17 @@ class FundingRates:
 
                     funding_rates.append(new_value)
 
+        del fundingRatesValue
+
         if len(funding_rates) <= 0:
             return False
 
         try:
             self.funding_rates_db.insert_many(funding_rates)
 
-            return funding_rates
+            del funding_rates
+
+            # return funding_rates
 
         except Exception as e:
             log.error(e)

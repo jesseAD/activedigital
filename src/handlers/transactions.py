@@ -389,6 +389,8 @@ class Transactions:
 
                 if len(transaction) == 0:
                     return False
+        
+        del transaction_value
 
         try:
             if config["transactions"]["store_type"] == "snapshot":
@@ -415,7 +417,9 @@ class Transactions:
                 self.transactions_db.insert_many(transaction)
 
             # log.debug(f"transaction created: {transaction}")
-            return transaction
+            del transaction
+
+            # return transaction
         except Exception as e:
             log.error(e)
             return False

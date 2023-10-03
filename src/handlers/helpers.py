@@ -1,10 +1,13 @@
 import os
+
 # from turtle import position
+from src.config import read_config_file
 from dotenv import load_dotenv
 from src.lib.log import Log
 from src.lib.exchange import Exchange
 
 
+config = read_config_file()
 load_dotenv()
 log = Log()
 MONGO_URI = os.getenv("MONGO_URI")
@@ -61,90 +64,108 @@ class tickers:
 
         return market_list
 
+
 # default helper for Binance
-class Helper():
+class Helper:
     def get_positions(self, exch):
-        return exch.fetch_account_positions(params={'type':'future'})
-    
+        return exch.fetch_account_positions(params={"type": "future"})
+
     def get_balances(self, exch):
-        all_balances = exch.fetch_balance()['total']
+        all_balances = exch.fetch_balance()["total"]
         result = dict()
         for currency, balance in all_balances.items():
             if float(balance) != 0:
                 result[currency] = balance
 
         return result
-    
+
     def get_instruments(self, exch):
-        #return exch.fetch_markets({'symbol': "BTCUSDT"})[0]['info']
+        # return exch.fetch_markets({'symbol': "BTCUSDT"})[0]['info']
         return exch.fetch_markets()
-    
+
     def get_bid_ask(self, exch, symbol):
         order_book = exch.fetch_order_book(symbol)
-        best_bid = order_book['bids'][0][0]  # price of the highest bid
-        best_ask = order_book['asks'][0][0]  # price of the lowest ask
+        best_bid = order_book["bids"][0][0]  # price of the highest bid
+        best_ask = order_book["asks"][0][0]  # price of the lowest ask
 
         return {
-            'bid': best_bid,
-            'ask': best_ask,
-            'mid_point': (best_ask + best_bid) / 2.0
+            "bid": best_bid,
+            "ask": best_ask,
+            "mid_point": (best_ask + best_bid) / 2.0,
         }
-    
+
     def get_tickers(self, exch):
         return exch.fetch_tickers()
-    
-    def get_borrow_rates(self, exch, code, limit = None, since = None, params = {}):
-        return exch.fetch_borrow_rate_history(code=code, limit=limit, since=since, params=params)
-    
+
+    def get_borrow_rates(self, exch, code, limit=None, since=None, params={}):
+        return exch.fetch_borrow_rate_history(
+            code=code, limit=limit, since=since, params=params
+        )
+
     def get_borrow_rate(self, exch, params={}):
         return exch.sapi_get_margin_next_hourly_interest_rate(params=params)
-    
-    def get_funding_rates(self, exch, symbol, limit = None, since = None, params = {}):
-        return exch.fetch_funding_rate_history(symbol=symbol, limit=limit, since=since, params=params)
-    
-    def get_funding_rates_dapi(self, exch, params = {}):
+
+    def get_funding_rates(self, exch, symbol, limit=None, since=None, params={}):
+        return exch.fetch_funding_rate_history(
+            symbol=symbol, limit=limit, since=since, params=params
+        )
+
+    def get_funding_rates_dapi(self, exch, params={}):
         return exch.dapipublic_get_fundingrate(params=params)
-    
+
     def get_portfolio_margin(self, exch, params={}):
         return exch.fapiprivatev2_get_balance(params)
-    
+
     def get_non_portfolio_margin(self, exch, params={}):
         return exch.fapiprivatev2_get_positionrisk(params)[0]
-    
+
     def get_mark_prices(self, exch, params={}):
         return exch.fapipublic_get_premiumindex(params)
-    
+
     def get_future_transactions(self, exch, params={}):
         return exch.fapiprivate_get_income(params)
-    
+
     def get_spot_transactions(self, exch, params={}):
         return exch.private_get_mytrades(params)
-    
+
     def get_fills(self, exch, params={}):
         return exch.fapiprivate_get_usertrades(params)
 
+    def get_liquidation_buffer(self, exchange, mgnRatio):
+        if exchange == "okx":
+            return min(
+                1,
+                config["liquidation"]["scalar"][exchange]
+                * (mgnRatio * config["liquidation"]['threshold'][exchange]),
+            )
+
+
 class OKXHelper(Helper):
     def get_positions(self, exch):
-        return exch.fetch_positions(params={'type':'swap'})
-    
+        return exch.fetch_positions(params={"type": "swap"})
+
     def get_mark_prices(self, exch, params={}):
-        return exch.public_get_public_mark_price(params)['data'][0]
-    
+        return exch.public_get_public_mark_price(params)["data"][0]
+
     def get_transactions(self, exch, params={}):
-        return exch.private_get_account_bills_archive(params)['data']
-    
+        return exch.private_get_account_bills_archive(params)["data"]
+
     def get_fills(self, exch, params={}):
-        return exch.private_get_trade_fills_history(params)['data']
-    
+        return exch.private_get_trade_fills_history(params)["data"]
+
     def get_funding_rate(self, exch, params={}):
         return exch.public_get_public_funding_rate(params)
-    
+
     def get_borrow_rate(self, exch, params={}):
         return exch.private_get_account_interest_rate(params=params)
-    
+
     def get_index_prices(self, exch, params={}):
         return exch.public_get_market_index_tickers(params)
 
-class CoinbaseHelper():
+    def get_cross_margin_ratio(self, exch):
+        return exch.private_get_account_balance()["data"][0]["mgnRatio"]
+
+
+class CoinbaseHelper:
     def get_usdt2usd_ticker(self, exch):
-        return exch.fetch_ticker('USDT/USD')
+        return exch.fetch_ticker("USDT/USD")

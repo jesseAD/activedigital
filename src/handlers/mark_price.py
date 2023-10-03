@@ -125,6 +125,8 @@ class MarkPrices:
             "timestamp": datetime.now(timezone.utc),
         }
 
+        del markPriceValue
+
         if spot:
             mark_price["spotMarket"] = spot
         if future:
@@ -180,7 +182,9 @@ class MarkPrices:
                     upsert=True,
                 )
 
-            return mark_price
+            del mark_price
+
+            # return mark_price
         except Exception as e:
             log.error(e)
             return False

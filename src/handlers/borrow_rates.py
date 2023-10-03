@@ -280,11 +280,15 @@ class BorrowRates:
                     new_value["runid"] = latest_run_id
 
                     borrow_rates.append(new_value)
+        
+        del borrowRatesValue
 
         try:
             self.borrow_rates_db.insert_many(borrow_rates)
 
-            return borrow_rates
+            del borrow_rates
+
+            # return borrow_rates
 
         except Exception as e:
             log.error(e)

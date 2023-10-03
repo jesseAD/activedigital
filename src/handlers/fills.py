@@ -234,10 +234,14 @@ class Fills:
 
                 fills.append(new_value)
 
+        del fillsValue
+
         try:
             self.fills_db.insert_many(fills)
 
-            return fills
+            del fills
+
+            # return fills
         except Exception as e:
             log.error(e)
             return False
