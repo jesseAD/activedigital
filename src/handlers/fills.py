@@ -73,7 +73,7 @@ class Fills:
         perp: str = None,
         fillsValue: str = None,
         symbols: str = None,
-        back_off = None,
+        back_off = {},
     ):
         if symbols is None:
             symbols = config["fills"]["symbols"][exchange]

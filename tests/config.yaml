@@ -3,6 +3,17 @@ mongo_db: 'active_digital'
 mongo_db_collection: 'test'
 mongo_port: 27017
 
+dask:
+  back_off: 100
+  parallelization: 4
+
+liquidation:
+  threshold: 
+    binance: 1.05
+    okx: 0.95
+  scalar:
+    okx: 0.125
+
 funding_payments: &funding_payments
   function: funding_payments.py
   scheduler: [continuous,external,5 4 * * *]

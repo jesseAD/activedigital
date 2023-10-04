@@ -76,7 +76,7 @@ class BorrowRates:
         perp: str = None,
         borrowRatesValue: str = None,
         codes: str = None,
-        back_off = None,
+        back_off = {},
     ):
         if codes is None:
             codes = config["borrow_rates"]["codes"]

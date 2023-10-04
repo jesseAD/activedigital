@@ -22,9 +22,11 @@ class Transactions:
     def __init__(self, db):
         if os.getenv("mode") == "testing":
             self.runs_db = MongoDB(config["mongo_db"], "runs")
+            self.tickers_db = MongoDB(config["mongo_db"], "tickers")
             self.transactions_db = MongoDB(config["mongo_db"], db)
         else:
             self.runs_db = database_connector("runs")
+            self.tickers_db = database_connector("tickers")
             self.transactions_db = database_connector(db)
 
     def get(
@@ -77,7 +79,7 @@ class Transactions:
         perp: str = None,
         transaction_value: str = None,
         symbol: str = None,
-        back_off = None,
+        back_off = {},
     ):
         if transaction_value is None:
             if exch == None:
@@ -266,6 +268,8 @@ class Transactions:
                 return False
 
         back_off[client + "_" + exchange + "_" + sub_account] = config['dask']['back_off']
+
+        tickers = list(self.tickers_db.find({"venue": exchange}).sort("_id", -1).limit(1))[0]['ticker_value']
         
         current_time = datetime.now(timezone.utc)
         run_ids = self.runs_db.find({}).sort("_id", -1).limit(1)
@@ -307,8 +311,33 @@ class Transactions:
 
                 for item in transaction_value:
                     item['timestamp'] = int(item["timestamp"])
-                    if item['income'] != '':
-                        item['income'] = float(item["income"])
+                    if item['fee'] != '':
+                        item['fee'] = (
+                            float(item["fee"]) * 
+                            Helper().calc_cross_ccy_ratio(
+                                item['ccy'],
+                                config["clients"][client]["funding_payments"][exchange]["base_ccy"], 
+                                tickers
+                            )
+                        )
+                    if item['sz'] != '':
+                        item['sz'] = (
+                            float(item["sz"]) * 
+                            Helper().calc_cross_ccy_ratio(
+                                item['ccy'],
+                                config["clients"][client]["funding_payments"][exchange]["base_ccy"], 
+                                tickers
+                            )
+                        )
+                    if item['pnl'] != '':
+                        item['pnl'] = (
+                            float(item["pnl"]) * 
+                            Helper().calc_cross_ccy_ratio(
+                                item['ccy'],
+                                config["clients"][client]["funding_payments"][exchange]["base_ccy"], 
+                                tickers
+                            )
+                        )
                     new_value = {
                         "client": client,
                         "venue": exchange,
@@ -336,7 +365,14 @@ class Transactions:
                 if len(transaction_value["future"]) > 0:
                     for item in transaction_value["future"]:
                         item['timestamp'] = int(item["timestamp"])
-                        item['income'] = float(item["income"])
+                        item['income'] = (
+                            float(item["income"]) * 
+                            Helper().calc_cross_ccy_ratio(
+                                item['asset'],
+                                config["clients"][client]["funding_payments"][exchange]["base_ccy"], 
+                                tickers
+                            )
+                        )
                         new_value = {
                             "client": client,
                             "venue": exchange,

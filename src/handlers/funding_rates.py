@@ -73,7 +73,7 @@ class FundingRates:
         perp: str = None,
         fundingRatesValue: str = None,
         symbols: str = None,
-        back_off = None,
+        back_off = {},
     ):
         if symbols is None:
             if exchange == "binance":
