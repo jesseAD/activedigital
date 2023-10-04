@@ -159,8 +159,8 @@ clients:
       binance:
         <<: *funding_payments
         helper: helper.py
-        # subaccount4: *binance_subaccount4
-        # subaccount6: *binance_subaccount6
+        subaccount4: *binance_subaccount4
+        subaccount6: *binance_subaccount6
       okx:
         <<: *funding_payments
         helper: okxhelper.py
@@ -202,6 +202,7 @@ clients:
         helper: okxhelper.py
         sub1ap: *okx_sub1ap
         sub2aa: *okx_sub1aa
+
   wizardly:
     okx_submn: &okx_submn
       apikey: zyx

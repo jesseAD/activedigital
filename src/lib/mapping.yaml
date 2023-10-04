@@ -39,7 +39,6 @@ okx:
   
   transaction:
     ts: timestamp
-    fee: income
     values:
       type:
         _1: TRANSFER

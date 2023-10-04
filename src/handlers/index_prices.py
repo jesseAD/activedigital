@@ -68,7 +68,7 @@ class IndexPrices:
         future: str = None,
         perp: str = None,
         indexPriceValue: str = None,
-        back_off = None,
+        back_off = {},
     ):
         if indexPriceValue is None:
             if exch == None:

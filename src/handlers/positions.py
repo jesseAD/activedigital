@@ -2,7 +2,7 @@ import os
 from dotenv import load_dotenv
 from datetime import datetime, timezone
 import time
-import ccxt 
+import ccxt
 
 from src.lib.db import MongoDB
 from src.lib.log import Log
@@ -22,10 +22,12 @@ class Positions:
     def __init__(self, db):
         if os.getenv("mode") == "testing":
             self.runs_db = MongoDB(config["mongo_db"], "runs")
+            self.tickers_db = MongoDB(config["mongo_db"], "tickers")
             self.positions_db = MongoDB(config["mongo_db"], db)
         else:
             self.runs_db = database_connector("runs")
-            self.positions_db = database_connector("positions")
+            self.tickers_db = database_connector("tickers")
+            self.positions_db = database_connector(db)
 
     def get(
         self,
@@ -71,7 +73,7 @@ class Positions:
     def create(
         self,
         client,
-        exch = None,
+        exch=None,
         exchange: str = None,
         positionType: str = None,
         sub_account: str = None,
@@ -79,7 +81,7 @@ class Positions:
         future: str = None,
         perp: str = None,
         position_value: str = None,
-        back_off = None,
+        back_off={},
     ):
         if position_value is None:
             if exch == None:
@@ -106,13 +108,15 @@ class Positions:
                     position_value = OKXHelper().get_positions(exch=exch)
                 else:
                     position_value = Helper().get_positions(exch=exch)
-            
+
             except ccxt.InvalidNonce as e:
                 print("Hit rate limit", e)
-                time.sleep(back_off[client + "_" + exchange + "_" + sub_account] / 1000.0)
+                time.sleep(
+                    back_off[client + "_" + exchange + "_" + sub_account] / 1000.0
+                )
                 back_off[client + "_" + exchange + "_" + sub_account] *= 2
                 return False
-            
+
             except Exception as e:
                 print("An error occurred in Positions:", e)
                 return False
@@ -123,15 +127,21 @@ class Positions:
 
             if exchange == "okx":
                 try:
-                    cross_margin_ratio = float(OKXHelper().get_cross_margin_ratio(exch=exch))
-                    liquidation_buffer = OKXHelper().get_liquidation_buffer(exchange=exchange, mgnRatio=cross_margin_ratio)
+                    cross_margin_ratio = float(
+                        OKXHelper().get_cross_margin_ratio(exch=exch)
+                    )
+                    liquidation_buffer = OKXHelper().calc_liquidation_buffer(
+                        exchange=exchange, mgnRatio=cross_margin_ratio
+                    )
 
                 except ccxt.InvalidNonce as e:
                     print("Hit rate limit", e)
-                    time.sleep(back_off[client + "_" + exchange + "_" + sub_account] / 1000.0)
+                    time.sleep(
+                        back_off[client + "_" + exchange + "_" + sub_account] / 1000.0
+                    )
                     back_off[client + "_" + exchange + "_" + sub_account] *= 2
                     return False
-                
+
                 except Exception as e:
                     print("An error occurred in Positions:", e)
                     pass
@@ -143,7 +153,8 @@ class Positions:
                         try:
                             if config["positions"]["margin_mode"] == "non_portfolio":
                                 portfolio = Helper().get_non_portfolio_margin(
-                                    exch=exch, params={"symbol": value["info"]["symbol"]}
+                                    exch=exch,
+                                    params={"symbol": value["info"]["symbol"]},
                                 )
                             elif config["positions"]["margin_mode"] == "portfolio":
                                 portfolio = Helper().get_portfolio_margin(
@@ -157,24 +168,53 @@ class Positions:
 
                         except ccxt.InvalidNonce as e:
                             print("Hit rate limit", e)
-                            time.sleep(back_off[client + "_" + exchange + "_" + sub_account] / 1000.0)
+                            time.sleep(
+                                back_off[client + "_" + exchange + "_" + sub_account]
+                                / 1000.0
+                            )
                             back_off[client + "_" + exchange + "_" + sub_account] *= 2
                             return False
-                        
+
                         except Exception as e:
                             print("An error occurred in Positions:", e)
                             pass
 
                     value["margin"] = portfolio
-                    value['base'] = value['symbol'].split('/')[0]
-                    value['quote'] = value['symbol'].split('-')[0].split('/')[1].split(':')[0]
-                    value['liquidationBuffer'] = liquidation_buffer
+                    value["base"] = value["symbol"].split("/")[0]
+                    value["quote"] = (
+                        value["symbol"].split("-")[0].split("/")[1].split(":")[0]
+                    )
+                    value["liquidationBuffer"] = liquidation_buffer
+
+                    if value["quote"] == "USD":
+                        tickers = list(
+                            self.tickers_db.find({"venue": exchange})
+                            .sort("_id", -1)
+                            .limit(1)
+                        )[0]['ticker_value']
+                        
+                        value["notional"] = float(
+                            value["notional"]
+                        ) * Helper().calc_cross_ccy_ratio(
+                            value["base"],
+                            config["clients"][client]["funding_payments"][exchange]["base_ccy"],
+                            tickers,
+                        )
+                        value["unrealizedPnl"] = float(
+                            value["unrealizedPnl"]
+                        ) * Helper().calc_cross_ccy_ratio(
+                            value["base"],
+                            config["clients"][client]["funding_payments"][exchange]["base_ccy"],
+                            tickers,
+                        )
+
                     position_info.append(value)
 
             if exchange == "binance":
                 for position in position_info:
                     position["markPrice"] = Helper().get_mark_prices(
-                        exch=exch, params={"symbol": position['base'] + position['quote']}
+                        exch=exch,
+                        params={"symbol": position["base"] + position["quote"]},
                     )["markPrice"]
 
         except ccxt.InvalidNonce as e:
@@ -182,14 +222,19 @@ class Positions:
             time.sleep(back_off[client + "_" + exchange + "_" + sub_account] / 1000.0)
             back_off[client + "_" + exchange + "_" + sub_account] *= 2
             return False
-        
+
         except Exception as e:
             print("An error occurred in Positions:", e)
             pass
 
         del position_value
 
-        back_off[client + "_" + exchange + "_" + sub_account] = config['dask']['back_off']
+        back_off[client + "_" + exchange + "_" + sub_account] = config["dask"][
+            "back_off"
+        ]
+
+        if len(position_info) <= 0:
+            return False
 
         current_time = datetime.now(timezone.utc)
         position = {

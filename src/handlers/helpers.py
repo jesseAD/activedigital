@@ -131,13 +131,37 @@ class Helper:
     def get_fills(self, exch, params={}):
         return exch.fapiprivate_get_usertrades(params)
 
-    def get_liquidation_buffer(self, exchange, mgnRatio):
+    def calc_liquidation_buffer(self, exchange, mgnRatio):
         if exchange == "okx":
             return min(
                 1,
                 config["liquidation"]["scalar"][exchange]
                 * (mgnRatio * config["liquidation"]['threshold'][exchange]),
             )
+        
+    def calc_cross_ccy_ratio(self, src_ccy, dest_ccy, tickers):
+        if src_ccy == dest_ccy:
+            return 1.0
+        
+        if src_ccy == "USD":
+            if dest_ccy == "USDT":
+                return 1.0 / tickers['USDT/USD']['last']
+            else:
+                return 1.0 / tickers['USDT/USD']['last'] / tickers[dest_ccy + "/USDT"]['last']
+            
+        if src_ccy == "USDT":
+            if dest_ccy == "USD":
+                return tickers['USDT/USD']['last']
+            else:
+                return 1.0 / tickers[dest_ccy + "/USDT"]['last']
+            
+        if dest_ccy == "USD":
+            return tickers['USDT/USD']['last'] * tickers[dest_ccy + "/USDT"]['last']
+        
+        if dest_ccy == "USDT":
+            return tickers[src_ccy + "/USDT"]['last']
+        
+        return tickers[src_ccy + "/USDT"]['last'] / tickers[dest_ccy + "/USDT"]['last']
 
 
 class OKXHelper(Helper):

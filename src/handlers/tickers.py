@@ -68,7 +68,7 @@ class Tickers:
         future: str = None,
         perp: str = None,
         tickerValue: str = None,
-        back_off = None,
+        back_off = {},
     ):
         if tickerValue is None:
             if exch == None:
@@ -94,6 +94,7 @@ class Tickers:
         
         tickerValue = {symbol: tickerValue[symbol] for symbol in config['tickers']['symbols'] if symbol in tickerValue}
         tickerValue['USDT/USD'] = CoinbaseHelper().get_usdt2usd_ticker(exch=Exchange(exchange='coinbase').exch())
+        print(tickerValue)
         
         ticker = {
             "venue": exchange,
