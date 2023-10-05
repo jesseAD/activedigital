@@ -1,7 +1,7 @@
 import os
 from dotenv import load_dotenv
 from datetime import datetime, timezone
-import ccxt 
+import ccxt
 import time
 
 from src.lib.db import MongoDB
@@ -16,16 +16,17 @@ load_dotenv()
 log = Log()
 config = read_config_file()
 
+
 class Balances:
     def __init__(self, db):
         if os.getenv("mode") == "testing":
-            self.runs_db = MongoDB(config['mongo_db'], 'runs')
-            self.tickers_db = MongoDB(config['mongo_db'], 'tickers')
-            self.balances_db = MongoDB(config['mongo_db'], db)
+            self.runs_db = MongoDB(config["mongo_db"], "runs")
+            self.tickers_db = MongoDB(config["mongo_db"], "tickers")
+            self.balances_db = MongoDB(config["mongo_db"], db)
         else:
             self.balances_db = database_connector(db)
-            self.tickers_db = database_connector('tickers')
-            self.runs_db = database_connector('runs')
+            self.tickers_db = database_connector("tickers")
+            self.runs_db = database_connector("runs")
 
     def get(
         self,
@@ -78,59 +79,74 @@ class Balances:
         future: str = None,
         perp: str = None,
         balanceValue: str = None,
-        back_off = {},
+        back_off={},
     ):
         if balanceValue is None:
             if exch == None:
-                spec = client.upper() + "_" + exchange.upper() + "_" + sub_account.upper() + "_"
+                spec = (
+                    client.upper()
+                    + "_"
+                    + exchange.upper()
+                    + "_"
+                    + sub_account.upper()
+                    + "_"
+                )
                 API_KEY = os.getenv(spec + "API_KEY")
                 API_SECRET = os.getenv(spec + "API_SECRET")
                 PASSPHRASE = None
                 if exchange == "okx":
                     PASSPHRASE = os.getenv(spec + "PASSPHRASE")
 
-                exch = Exchange(exchange, sub_account, API_KEY, API_SECRET, PASSPHRASE).exch()
-            
+                exch = Exchange(
+                    exchange, sub_account, API_KEY, API_SECRET, PASSPHRASE
+                ).exch()
+
             try:
-                if exchange == 'okx':
-                    balanceValue = OKXHelper().get_balances(exch = exch)
+                if exchange == "okx":
+                    balanceValue = OKXHelper().get_balances(exch=exch)
                 else:
-                    balanceValue = Helper().get_balances(exch = exch)
+                    balanceValue = Helper().get_balances(exch=exch)
 
             except ccxt.InvalidNonce as e:
                 print("Hit rate limit", e)
-                time.sleep(back_off[client + "_" + exchange + "_" + sub_account] / 1000.0)
+                time.sleep(
+                    back_off[client + "_" + exchange + "_" + sub_account] / 1000.0
+                )
                 back_off[client + "_" + exchange + "_" + sub_account] *= 2
                 return False
-            
+
             except Exception as e:
                 print("An error occurred in Balances:", e)
                 return False
 
-        back_off[client + "_" + exchange + "_" + sub_account] = config['dask']['back_off']
-        
+        back_off[client + "_" + exchange + "_" + sub_account] = config["dask"][
+            "back_off"
+        ]
+
         query = {}
         if exchange:
             query["venue"] = exchange
-        ticker_values = self.tickers_db.find(query).sort('_id', -1).limit(1)
+        ticker_values = self.tickers_db.find(query).sort("_id", -1).limit(1)
 
         for item in ticker_values:
-            ticker_value = item['ticker_value']
+            ticker_value = item["ticker_value"]
 
-        usd_balance = 0
+        base_balance = 0
         for _key, _value in balanceValue.items():
-            if _key == "USDT":
-                usd_balance += _value * ticker_value['USDT/USD']['last']
-            else :
-                usd_balance += _value * ticker_value[_key + '/USDT']['last'] * ticker_value['USDT/USD']['last']
+            base_balance += _value * Helper().calc_cross_ccy_ratio(
+                _key,
+                config["clients"][client]["funding_payments"][exchange]["base_ccy"],
+                ticker_value,
+            )
 
-        balanceValue['USD'] = usd_balance
-        
+        balanceValue["base"] = base_balance
+
         balance = {
             "client": client,
             "venue": exchange,
             "account": "Main Account",
             "balance_value": balanceValue,
+            "base_ccy": config["clients"][client]["funding_payments"][exchange]["base_ccy"],
             "active": True,
             "entry": False,
             "exit": False,
@@ -145,14 +161,14 @@ class Balances:
             balance["futureMarket"] = future
         if perp:
             balance["perpMarket"] = perp
-        run_ids = self.runs_db.find({}).sort('_id', -1).limit(1)
+        run_ids = self.runs_db.find({}).sort("_id", -1).limit(1)
         latest_run_id = 0
         for item in run_ids:
             try:
-                latest_run_id = item['runid']
+                latest_run_id = item["runid"]
             except:
                 pass
-        
+
         balance["runid"] = latest_run_id
 
         # get latest balances data
@@ -164,19 +180,19 @@ class Balances:
         if sub_account:
             query["account"] = sub_account
 
-        balances_values = self.balances_db.find(query).sort('runid', -1).limit(1)
+        balances_values = self.balances_db.find(query).sort("runid", -1).limit(1)
 
         latest_run_id = -1
         latest_value = None
         for item in balances_values:
-            if latest_run_id < item['runid']:
-                latest_run_id = item['runid']
-                latest_value = item['balance_value']
-        
-        if latest_value == balance['balance_value']:
-            print('same balance')
+            if latest_run_id < item["runid"]:
+                latest_run_id = item["runid"]
+                latest_value = item["balance_value"]
+
+        if latest_value == balance["balance_value"]:
+            print("same balance")
             return False
-        
+
         try:
             if config["balances"]["store_type"] == "timeseries":
                 self.balances_db.insert_one(balance)
@@ -185,19 +201,21 @@ class Balances:
                     {
                         "client": balance["client"],
                         "venue": balance["venue"],
-                        "account": balance["account"]
+                        "account": balance["account"],
                     },
-                    { "$set": {
-                        "balance_value": balance["balance_value"],
-                        "active": balance["active"],
-                        "entry": balance["entry"],
-                        "exit": balance["exit"],
-                        "timestamp": balance["timestamp"],
-                        "runid": balance["runid"]
-                    }},
-                    upsert=True
+                    {
+                        "$set": {
+                            "balance_value": balance["balance_value"],
+                            "active": balance["active"],
+                            "entry": balance["entry"],
+                            "exit": balance["exit"],
+                            "timestamp": balance["timestamp"],
+                            "runid": balance["runid"],
+                        }
+                    },
+                    upsert=True,
                 )
-                
+
             return balance
         except Exception as e:
             log.error(e)

@@ -16,7 +16,7 @@ liquidation:
 funding_payments: &funding_payments
   function: funding_payments.py
   scheduler: [continuous,external,5 4 * * *]
-  base_ccy: USDT
+  base_ccy: USD
 
 balances: &balances
   function: balance.py
@@ -210,6 +210,7 @@ clients:
     funding_payments:
       okx:
         <<: *funding_payments
+        base_ccy: USDT
         helper: okxhelper.py
         submn: *okx_submn
 

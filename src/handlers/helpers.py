@@ -156,7 +156,7 @@ class Helper:
                 return 1.0 / tickers[dest_ccy + "/USDT"]['last']
             
         if dest_ccy == "USD":
-            return tickers['USDT/USD']['last'] * tickers[dest_ccy + "/USDT"]['last']
+            return tickers['USDT/USD']['last'] * tickers[src_ccy + "/USDT"]['last']
         
         if dest_ccy == "USDT":
             return tickers[src_ccy + "/USDT"]['last']
