@@ -4,6 +4,9 @@ binance:
       updateTime: timestamp
       entryPrice: avgPrice
       unrealizedProfit: unrealisedpnl
+    notionalValue: notional
+    unRealizedProfit: unrealizedPnl
+    positionSide: side
 
   instrument:
     quoteAsset: quoteCcy

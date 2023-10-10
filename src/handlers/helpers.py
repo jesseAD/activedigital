@@ -69,6 +69,21 @@ class tickers:
 class Helper:
     def get_positions(self, exch):
         return exch.fetch_account_positions(params={"type": "future"})
+    
+    def get_pm_positions(self, exch):
+        position_value = []
+
+        try:
+            position_value += exch.papi_get_um_positionrisk(params={"type": "future"})
+        except:
+            pass
+
+        try:
+            position_value += exch.papi_get_cm_positionrisk(params={"type": "future"})
+        except:
+            pass
+
+        return position_value
 
     def get_balances(self, exch):
         all_balances = exch.fetch_balance()["total"]
