@@ -151,12 +151,20 @@ class Positions:
                     portfolio = None
                     if exchange == "binance":
                         try:
-                            if config["positions"]["margin_mode"] == "non_portfolio":
+                            if (
+                                config["clients"][client]["funding_payments"][exchange][
+                                    sub_account
+                                ]["margin_mode"] == "non_portfolio"
+                            ):
                                 portfolio = Helper().get_non_portfolio_margin(
                                     exch=exch,
                                     params={"symbol": value["info"]["symbol"]},
                                 )
-                            elif config["positions"]["margin_mode"] == "portfolio":
+                            elif (
+                                config["clients"][client]["funding_payments"][exchange][
+                                    sub_account
+                                ]["margin_mode"] == "portfolio"
+                            ):
                                 portfolio = Helper().get_portfolio_margin(
                                     exch=exch, params={"symbol": "USDT"}
                                 )
@@ -191,20 +199,24 @@ class Positions:
                             self.tickers_db.find({"venue": exchange})
                             .sort("_id", -1)
                             .limit(1)
-                        )[0]['ticker_value']
-                        
+                        )[0]["ticker_value"]
+
                         value["notional"] = float(
                             value["notional"]
                         ) * Helper().calc_cross_ccy_ratio(
                             value["base"],
-                            config["clients"][client]["funding_payments"][exchange]["base_ccy"],
+                            config["clients"][client]["funding_payments"][exchange][
+                                "base_ccy"
+                            ],
                             tickers,
                         )
                         value["unrealizedPnl"] = float(
                             value["unrealizedPnl"]
                         ) * Helper().calc_cross_ccy_ratio(
                             value["base"],
-                            config["clients"][client]["funding_payments"][exchange]["base_ccy"],
+                            config["clients"][client]["funding_payments"][exchange][
+                                "base_ccy"
+                            ],
                             tickers,
                         )
 
@@ -232,9 +244,6 @@ class Positions:
         back_off[client + "_" + exchange + "_" + sub_account] = config["dask"][
             "back_off"
         ]
-
-        if len(position_info) <= 0:
-            return False
 
         current_time = datetime.now(timezone.utc)
         position = {
