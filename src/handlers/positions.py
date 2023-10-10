@@ -3,7 +3,7 @@ from dotenv import load_dotenv
 from datetime import datetime, timezone
 import time
 import ccxt
-
+import pdb
 from src.lib.db import MongoDB
 from src.lib.log import Log
 from src.lib.exchange import Exchange
@@ -106,8 +106,13 @@ class Positions:
             try:
                 if exchange == "okx":
                     position_value = OKXHelper().get_positions(exch=exch)
-                else:
-                    position_value = Helper().get_positions(exch=exch)
+                elif exchange == "binance":
+                    if config['clients'][client]['funding_payments'][exchange][sub_account]['margin_mode'] == 'portfolio':
+                        position_value = Helper().get_pm_positions(exch=exch)
+                        for item in position_value:
+                            item['info'] = {**item}
+                    else:
+                        position_value = Helper().get_positions(exch=exch)
 
             except ccxt.InvalidNonce as e:
                 print("Hit rate limit", e)
@@ -120,8 +125,10 @@ class Positions:
             except Exception as e:
                 print("An error occurred in Positions:", e)
                 return False
+                
 
         try:
+            position_value = Mapping().mapping_positions(exchange=exchange, positions=position_value)
             position_info = []
             liquidation_buffer = None
 
@@ -147,51 +154,85 @@ class Positions:
                     pass
 
             for value in position_value:
-                if float(value["initialMargin"]) > 0:
-                    portfolio = None
-                    if exchange == "binance":
-                        try:
-                            if (
-                                config["clients"][client]["funding_payments"][exchange][
-                                    sub_account
-                                ]["margin_mode"] == "non_portfolio"
-                            ):
-                                portfolio = Helper().get_non_portfolio_margin(
-                                    exch=exch,
-                                    params={"symbol": value["info"]["symbol"]},
-                                )
-                            elif (
-                                config["clients"][client]["funding_payments"][exchange][
-                                    sub_account
-                                ]["margin_mode"] == "portfolio"
-                            ):
-                                portfolio = Helper().get_portfolio_margin(
-                                    exch=exch, params={"symbol": "USDT"}
-                                )
-                                portfolio = [
-                                    item
-                                    for item in portfolio
-                                    if float(item["balance"]) != 0
-                                ]
+                if config['clients'][client]['funding_payments'][exchange][sub_account]['margin_mode'] == 'non_portfolio':
+                    if float(value["initialMargin"]) > 0:
+                        # portfolio = None
+                        # if exchange == "binance":
+                        #     try:
+                        #         if (
+                        #             config["clients"][client]["funding_payments"][exchange][
+                        #                 sub_account
+                        #             ]["margin_mode"] == "non_portfolio"
+                        #         ):
+                        #             portfolio = Helper().get_non_portfolio_margin(
+                        #                 exch=exch,
+                        #                 params={"symbol": value["info"]["symbol"]},
+                        #             )
+                        #         elif (
+                        #             config["clients"][client]["funding_payments"][exchange][
+                        #                 sub_account
+                        #             ]["margin_mode"] == "portfolio"
+                        #         ):
+                        #             portfolio = Helper().get_portfolio_margin(
+                        #                 exch=exch, params={"symbol": "USDT"}
+                        #             )
+                        #             portfolio = [
+                        #                 item
+                        #                 for item in portfolio
+                        #                 if float(item["balance"]) != 0
+                        #             ]
 
-                        except ccxt.InvalidNonce as e:
-                            print("Hit rate limit", e)
-                            time.sleep(
-                                back_off[client + "_" + exchange + "_" + sub_account]
-                                / 1000.0
+                        #     except ccxt.InvalidNonce as e:
+                        #         print("Hit rate limit", e)
+                        #         time.sleep(
+                        #             back_off[client + "_" + exchange + "_" + sub_account]
+                        #             / 1000.0
+                        #         )
+                        #         back_off[client + "_" + exchange + "_" + sub_account] *= 2
+                        #         return False
+
+                        #     except Exception as e:
+                        #         print("An error occurred in Positions:", e)
+                        #         pass
+
+                        # value["margin"] = portfolio
+                        value["base"] = value["symbol"].split("/")[0]
+                        value["quote"] = (
+                            value["symbol"].split("-")[0].split("/")[1].split(":")[0]
+                        )
+                        value["liquidationBuffer"] = liquidation_buffer
+
+                        if value["quote"] == "USD":
+                            tickers = list(
+                                self.tickers_db.find({"venue": exchange})
+                                .sort("_id", -1)
+                                .limit(1)
+                            )[0]["ticker_value"]
+
+                            value["notional"] = float(
+                                value["notional"]
+                            ) * Helper().calc_cross_ccy_ratio(
+                                value["base"],
+                                config["clients"][client]["funding_payments"][exchange][
+                                    "base_ccy"
+                                ],
+                                tickers,
                             )
-                            back_off[client + "_" + exchange + "_" + sub_account] *= 2
-                            return False
+                            value["unrealizedPnl"] = float(
+                                value["unrealizedPnl"]
+                            ) * Helper().calc_cross_ccy_ratio(
+                                value["base"],
+                                config["clients"][client]["funding_payments"][exchange][
+                                    "base_ccy"
+                                ],
+                                tickers,
+                            )
 
-                        except Exception as e:
-                            print("An error occurred in Positions:", e)
-                            pass
-
-                    value["margin"] = portfolio
-                    value["base"] = value["symbol"].split("/")[0]
-                    value["quote"] = (
-                        value["symbol"].split("-")[0].split("/")[1].split(":")[0]
-                    )
+                        position_info.append(value)                
+                else:
+                    value["base"] = value["symbol"].split("_")[0].split("USD")[0]
+                    value["quote"] = "USD" + value["symbol"].split("_")[0].split("USD")[1]
+                    
                     value["liquidationBuffer"] = liquidation_buffer
 
                     if value["quote"] == "USD":
@@ -221,7 +262,7 @@ class Positions:
                         )
 
                     position_info.append(value)
-
+            
             if exchange == "binance":
                 for position in position_info:
                     position["markPrice"] = Helper().get_mark_prices(
@@ -251,9 +292,7 @@ class Positions:
             "venue": exchange,
             # "positionType": positionType.lower(),
             "account": "Main Account",
-            "position_value": Mapping().mapping_positions(
-                exchange=exchange, positions=position_info
-            ),
+            "position_value": position_info,
             "active": True,
             "entry": False,
             "exit": False,

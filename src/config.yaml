@@ -158,6 +158,7 @@ clients:
       apikey: zyx
       apisecret: xyz
       margin_mode: non_portfolio
+
     funding_payments:
       binance:
         <<: *funding_payments
@@ -200,7 +201,7 @@ clients:
       binance:
         <<: *funding_payments
         helper: helper.py
-        # subaccount1: *binance_subaccount1
+        subaccount1: *binance_subaccount1
       okx:
         <<: *funding_payments
         helper: okxhelper.py
@@ -221,6 +222,7 @@ clients:
       apikey: zyx
       apisecret: xyz
       margin_mode: non_portfolio
+
     funding_payments:
       okx:
         <<: *funding_payments
@@ -252,6 +254,7 @@ clients:
       apikey: zyx
       apisecret: xyz
       margin_mode: non_portfolio
+
     funding_payments:
       okx:
         <<: *funding_payments
@@ -260,6 +263,7 @@ clients:
         subandypants: *okx_subandypants
         subjessetf: *okx_subjessetf
         subadtest2: *okx_subadtest2
+
     balances:
       function: balance.py
       scheduler: [continuous,external,5 4 * * * ]
