@@ -104,8 +104,11 @@ class Balances:
             try:
                 if exchange == "okx":
                     balanceValue = OKXHelper().get_balances(exch=exch)
-                else:
-                    balanceValue = Helper().get_balances(exch=exch)
+                elif exchange == "binance":
+                    if config['clients'][client]['funding_payments'][exchange][sub_account]['margin_mode'] == 'portfolio':
+                        balanceValue = Helper().get_pm_balances(exch=exch)
+                    else:
+                        balanceValue = Helper().get_balances(exch=exch)
 
             except ccxt.InvalidNonce as e:
                 print("Hit rate limit", e)

@@ -99,8 +99,8 @@ fills:
   fetch_type: time # time, id
 
   symbols:
-    binance: ['BTCUSDT',]
-    okx: ['BTC-USDT-SWAP',]
+    binance: *symbols_2 # ['BTCUSDT',]
+    okx: *symbols_2 # ['BTC-USDT-SWAP',]
 
 mark_prices:
   store_type: timeseries

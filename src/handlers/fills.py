@@ -76,7 +76,11 @@ class Fills:
         back_off = {},
     ):
         if symbols is None:
-            symbols = config["fills"]["symbols"][exchange]
+            if config['clients'][client]['funding_payments'][exchange][sub_account]['margin_mode'] == 'portfolio':
+                symbols = [item.replace("/", "") for item in config["fills"]["symbols"][exchange]]
+                symbols += [item[: -1] for item in symbols]
+            else:
+                symbols = config["fills"]["symbols"][exchange]
 
         if fillsValue is None:
             if exch == None:
@@ -110,79 +114,109 @@ class Fills:
                 try:
                     if current_value is None:
                         if exchange == "okx":
-                            fillsValue[symbol] = Mapping().mapping_fills(
-                                exchange=exchange,
-                                fills=OKXHelper().get_fills(
-                                    exch=exch,
-                                    params={
-                                        "instType": "SWAP",
-                                        "instId": symbol,
-                                        "limit": 100,
-                                    },
-                                ),
-                            )
-                        else:
-                            fillsValue[symbol] = Mapping().mapping_fills(
-                                exchange=exchange,
-                                fills=Helper().get_fills(
-                                    exch=exch, params={"symbol": symbol, "limit": 100}
-                                ),
-                            )
+                            fillsValue[symbol] = OKXHelper().get_fills(exch=exch, symbol=symbol, limit=100)
+                            # fillsValue[symbol] = Mapping().mapping_fills(
+                            #     exchange=exchange,
+                            #     fills=OKXHelper().get_fills(
+                            #         exch=exch,
+                            #         params={
+                            #             "instType": "SWAP",
+                            #             "instId": symbol,
+                            #             "limit": 100,
+                            #         },
+                            #     ),
+                            # )
+                        elif exchange == "binance":
+                            if config['clients'][client]['funding_payments'][exchange][sub_account]['margin_mode'] == 'portfolio':
+                                fillsValue[symbol] = Mapping().mapping_fills(
+                                    exchange=exchange,
+                                    fills=Helper().get_pm_fills(
+                                        exch=exch, symbol=symbol, params={"limit": 100}
+                                    ),
+                                )
+                            else:
+                                fillsValue[symbol] = Helper().get_fills(exch=exch, symbol=symbol, limit=100)
+                                # fillsValue[symbol] = Mapping().mapping_fills(
+                                #     exchange=exchange,
+                                #     fills=Helper().get_fills(
+                                #         exch=exch, params={"symbol": symbol, "limit": 100}
+                                #     ),
+                                # )
                     else:
                         if config["fills"]["fetch_type"] == "time":
-                            last_time = int(current_value["timestamp"])
+                            last_time = int(current_value["timestamp"]) + 1
                             if exchange == "okx":
-                                fillsValue[symbol] = Mapping().mapping_fills(
-                                    exchange=exchange,
-                                    fills=OKXHelper().get_fills(
-                                        exch=exch,
-                                        params={
-                                            "instType": "SWAP",
-                                            "instId": symbol,
-                                            "limit": 100,
-                                            "begin": last_time,
-                                        },
-                                    ),
-                                )
-                            else:
-                                fillsValue[symbol] = Mapping().mapping_fills(
-                                    exchange=exchange,
-                                    fills=Helper().get_fills(
-                                        exch=exch,
-                                        params={
-                                            "symbol": symbol,
-                                            "limit": 100,
-                                            "startTime": last_time,
-                                        },
-                                    ),
-                                )
+                                fillsValue[symbol] = OKXHelper().get_fills(exch=exch, symbol=symbol, limit=100, since=last_time)
+                                # fillsValue[symbol] = Mapping().mapping_fills(
+                                #     exchange=exchange,
+                                #     fills=OKXHelper().get_fills(
+                                #         exch=exch,
+                                #         params={
+                                #             "instType": "SWAP",
+                                #             "instId": symbol,
+                                #             "limit": 100,
+                                #             "begin": last_time,
+                                #         },
+                                #     ),
+                                # )
+                            elif exchange == "binance":
+                                if config['clients'][client]['funding_payments'][exchange][sub_account]['margin_mode'] == 'portfolio':
+                                    fillsValue[symbol] = Mapping().mapping_fills(
+                                        exchange=exchange,
+                                        fills=Helper().get_pm_fills(
+                                            exch=exch, symbol=symbol, params={"limit": 100, 'startTime': last_time}
+                                        ),
+                                    )
+                                else:
+                                    fillsValue[symbol] = Helper().get_fills(exch=exch, symbol=symbol, limit=100, since=last_time)
+                                # fillsValue[symbol] = Mapping().mapping_fills(
+                                #     exchange=exchange,
+                                #     fills=Helper().get_fills(
+                                #         exch=exch,
+                                #         params={
+                                #             "symbol": symbol,
+                                #             "limit": 100,
+                                #             "startTime": last_time,
+                                #         },
+                                #     ),
+                                # )
                         elif config["fills"]["fetch_type"] == "id":
-                            last_id = int(current_value["id"])
+                            last_id = int(current_value["id"]) + 1
                             if exchange == "okx":
-                                fillsValue[symbol] = Mapping().mapping_fills(
-                                    exchange=exchange,
-                                    fills=OKXHelper().get_fills(
-                                        exch=exch,
-                                        params={
-                                            "instType": "SWAP",
-                                            "instId": symbol,
-                                            "limit": 100,
-                                            "before": last_id,
-                                        },
-                                    ),
-                                )
-                            else:
-                                fillsValue[symbol] = Mapping().mapping_fills(
-                                    exchange=exchange,
-                                    fills=Helper().get_fills(
-                                        exch=exch,
-                                        params={
-                                            "symbol": symbol,
-                                            "limit": 100,
-                                            "fromId": last_id,
-                                        },
-                                    ),
-                                )
+                                fillsValue[symbol] = OKXHelper().get_fills(exch=exch, symbol=symbol, limit=100, params={'before': last_id})
+                                # fillsValue[symbol] = Mapping().mapping_fills(
+                                #     exchange=exchange,
+                                #     fills=OKXHelper().get_fills(
+                                #         exch=exch,
+                                #         params={
+                                #             "instType": "SWAP",
+                                #             "instId": symbol,
+                                #             "limit": 100,
+                                #             "before": last_id,
+                                #         },
+                                #     ),
+                                # )
+                            elif exchange == "binance":
+                                if config['clients'][client]['funding_payments'][exchange][sub_account]['margin_mode'] == 'portfolio':
+                                    fillsValue[symbol] = Mapping().mapping_fills(
+                                        exchange=exchange,
+                                        fills=Helper().get_pm_fills(
+                                            exch=exch, symbol=symbol, params={"limit": 100, 'fromId': last_id}
+                                        ),
+                                    )
+                                else:
+                                    fillsValue[symbol] = Helper().get_fills(exch=exch, symbol=symbol, limit=100, params={'fromId': last_id})
+                                # fillsValue[symbol] = Mapping().mapping_fills(
+                                #     exchange=exchange,
+                                #     fills=Helper().get_fills(
+                                #         exch=exch,
+                                #         params={
+                                #             "symbol": symbol,
+                                #             "limit": 100,
+                                #             "fromId": last_id,
+                                #         },
+                                #     ),
+                                # )
                 
                 except ccxt.InvalidNonce as e:
                     print("Hit rate limit", e)
@@ -192,7 +226,7 @@ class Fills:
             
                 except Exception as e:
                     print("An error occurred in Fills:", e)
-                    return False
+                    pass
                             
         back_off[client + "_" + exchange + "_" + sub_account] = config['dask']['back_off']
         
@@ -206,8 +240,8 @@ class Fills:
                 latest_run_id = item["runid"]
             except:
                 pass
-
-        for symbol in symbols:
+        
+        for symbol in fillsValue:
             for item in fillsValue[symbol]:
                 new_value = {
                     "client": client,

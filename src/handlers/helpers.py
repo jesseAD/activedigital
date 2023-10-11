@@ -93,6 +93,16 @@ class Helper:
                 result[currency] = balance
 
         return result
+    
+    def get_pm_balances(self, exch):
+        balances = exch.papi_get_balance()
+        balances = [item for item in balances if item['totalWalletBalance'] != 0.0]
+
+        balance_value = {}
+        for item in balances:
+            balance_value[item['asset']] = float(item['totalWalletBalance'])
+
+        return balance_value
 
     def get_instruments(self, exch):
         # return exch.fetch_markets({'symbol': "BTCUSDT"})[0]['info']
@@ -143,8 +153,25 @@ class Helper:
     def get_spot_transactions(self, exch, params={}):
         return exch.private_get_mytrades(params)
 
-    def get_fills(self, exch, params={}):
-        return exch.fapiprivate_get_usertrades(params)
+    def get_fills(self, exch, symbol=None, since=None, limit=None, params={}):
+        return exch.fetch_my_trades(symbol=symbol, since=since, limit=limit, params=params)
+        # return exch.fapiprivate_get_usertrades(params)
+    
+    def get_pm_fills(self, exch, symbol, params={}):
+        fills = []
+
+        try:
+            params['pair'] = symbol
+            fills += exch.papi_get_cm_usertrades(params)
+        except:
+            pass
+        try:
+            params['symbol'] = symbol
+            fills += exch.papi_get_um_usertrades(params)        
+        except:
+            pass
+
+        return fills
 
     def calc_liquidation_buffer(self, exchange, mgnRatio):
         if exchange == "okx":
@@ -161,20 +188,30 @@ class Helper:
         if src_ccy == "USD":
             if dest_ccy == "USDT":
                 return 1.0 / tickers['USDT/USD']['last']
+            elif (dest_ccy + "/USDT") not in tickers:
+                return 0.0
             else:
                 return 1.0 / tickers['USDT/USD']['last'] / tickers[dest_ccy + "/USDT"]['last']
             
         if src_ccy == "USDT":
             if dest_ccy == "USD":
                 return tickers['USDT/USD']['last']
+            elif (dest_ccy + "/USDT") not in tickers:
+                return 0.0
             else:
                 return 1.0 / tickers[dest_ccy + "/USDT"]['last']
+            
+        if (src_ccy + "/USDT") not in tickers:
+            return 0.0
             
         if dest_ccy == "USD":
             return tickers['USDT/USD']['last'] * tickers[src_ccy + "/USDT"]['last']
         
         if dest_ccy == "USDT":
             return tickers[src_ccy + "/USDT"]['last']
+        
+        if (dest_ccy + "/USDT") not in tickers:
+            return 0.0
         
         return tickers[src_ccy + "/USDT"]['last'] / tickers[dest_ccy + "/USDT"]['last']
 
@@ -188,9 +225,6 @@ class OKXHelper(Helper):
 
     def get_transactions(self, exch, params={}):
         return exch.private_get_account_bills_archive(params)["data"]
-
-    def get_fills(self, exch, params={}):
-        return exch.private_get_trade_fills_history(params)["data"]
 
     def get_funding_rate(self, exch, params={}):
         return exch.public_get_public_funding_rate(params)
