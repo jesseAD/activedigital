@@ -22,10 +22,12 @@ class Fills:
     def __init__(self, db):
         if os.getenv("mode") == "testing":
             self.runs_db = MongoDB(config["mongo_db"], "runs")
+            self.positions_db = MongoDB(config["mongo_db"], "positions")
             self.fills_db = MongoDB(config["mongo_db"], db)
         else:
             self.fills_db = database_connector(db)
             self.runs_db = database_connector("runs")
+            self.positions_db = database_connector("positions")
 
     def get(
         self,
@@ -76,11 +78,25 @@ class Fills:
         back_off = {},
     ):
         if symbols is None:
-            if config['clients'][client]['funding_payments'][exchange][sub_account]['margin_mode'] == 'portfolio':
-                symbols = [item.replace("/", "") for item in config["fills"]["symbols"][exchange]]
-                symbols += [item[: -1] for item in symbols]
-            else:
-                symbols = config["fills"]["symbols"][exchange]
+            # get latest positions data
+            query = {}
+            if client:
+                query["client"] = client
+            if exchange:
+                query["venue"] = exchange
+            if sub_account:
+                query["account"] = sub_account
+
+            position_values = self.positions_db.find(query).sort("_id", -1).limit(1)
+            symbols = []
+            for position in position_values:
+                for item in position['position_value']:
+                    symbols.append(item['symbol'])
+            # if config['clients'][client]['funding_payments'][exchange][sub_account]['margin_mode'] == 'portfolio':
+            #     symbols = [item.replace("/", "") for item in config["fills"]["symbols"][exchange]]
+            #     symbols += [item[: -1] for item in symbols]
+            # else:
+            #     symbols = config["fills"]["symbols"][exchange]
 
         if fillsValue is None:
             if exch == None:
@@ -128,11 +144,14 @@ class Fills:
                             # )
                         elif exchange == "binance":
                             if config['clients'][client]['funding_payments'][exchange][sub_account]['margin_mode'] == 'portfolio':
+                                fills = Helper().get_pm_fills(exch=exch, symbol=symbol, params={'limit': 100})
+                                for item in fills:
+                                    item['info'] = {**item}
+                                    item['takerOrMaker'] = "maker" if item['maker'] else "taker"
+
                                 fillsValue[symbol] = Mapping().mapping_fills(
                                     exchange=exchange,
-                                    fills=Helper().get_pm_fills(
-                                        exch=exch, symbol=symbol, params={"limit": 100}
-                                    ),
+                                    fills=fills
                                 )
                             else:
                                 fillsValue[symbol] = Helper().get_fills(exch=exch, symbol=symbol, limit=100)
@@ -161,11 +180,14 @@ class Fills:
                                 # )
                             elif exchange == "binance":
                                 if config['clients'][client]['funding_payments'][exchange][sub_account]['margin_mode'] == 'portfolio':
+                                    fills = Helper().get_pm_fills(exch=exch, symbol=symbol, params={'limit': 100, 'startTime': last_time})
+                                    for item in fills:
+                                        item['info'] = {**item}
+                                        item['takerOrMaker'] = "maker" if item['maker'] else "taker"
+
                                     fillsValue[symbol] = Mapping().mapping_fills(
                                         exchange=exchange,
-                                        fills=Helper().get_pm_fills(
-                                            exch=exch, symbol=symbol, params={"limit": 100, 'startTime': last_time}
-                                        ),
+                                        fills=fills
                                     )
                                 else:
                                     fillsValue[symbol] = Helper().get_fills(exch=exch, symbol=symbol, limit=100, since=last_time)
@@ -198,11 +220,13 @@ class Fills:
                                 # )
                             elif exchange == "binance":
                                 if config['clients'][client]['funding_payments'][exchange][sub_account]['margin_mode'] == 'portfolio':
+                                    fills = Helper().get_pm_fills(exch=exch, symbol=symbol, params={'limit': 100, 'fromId': last_id})
+                                    for item in fills: 
+                                        item['info'] = {**item}
+                                        item['takerOrMaker'] = "maker" if item['maker'] else "taker"
                                     fillsValue[symbol] = Mapping().mapping_fills(
                                         exchange=exchange,
-                                        fills=Helper().get_pm_fills(
-                                            exch=exch, symbol=symbol, params={"limit": 100, 'fromId': last_id}
-                                        ),
+                                        fills=fills,
                                     )
                                 else:
                                     fillsValue[symbol] = Helper().get_fills(exch=exch, symbol=symbol, limit=100, params={'fromId': last_id})
@@ -269,6 +293,9 @@ class Fills:
                 fills.append(new_value)
 
         del fillsValue
+
+        if len(fills) <= 0:
+            return False
 
         try:
             self.fills_db.insert_many(fills)

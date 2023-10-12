@@ -27,6 +27,10 @@ binance:
 
   fills:
     time: timestamp
+    orderId: order
+    qty: amount
+    quoteQty: cost
+    baseQty: cost
 
 okx:
   position:

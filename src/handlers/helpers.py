@@ -152,6 +152,19 @@ class Helper:
 
     def get_spot_transactions(self, exch, params={}):
         return exch.private_get_mytrades(params)
+    
+    def get_pm_transactions(self, exch, params={}):
+        transactions = []
+        try:
+            transactions += exch.papi_get_um_income(params=params)
+        except:
+            pass
+        try:
+            transactions += exch.papi_get_cm_income(params=params)
+        except:
+            pass
+
+        return transactions
 
     def get_fills(self, exch, symbol=None, since=None, limit=None, params={}):
         return exch.fetch_my_trades(symbol=symbol, since=since, limit=limit, params=params)
@@ -163,12 +176,14 @@ class Helper:
         try:
             params['pair'] = symbol
             fills += exch.papi_get_cm_usertrades(params)
-        except:
+        except Exception as e:
+            print("An error occurred in PM Fills:", e)
             pass
         try:
             params['symbol'] = symbol
             fills += exch.papi_get_um_usertrades(params)        
-        except:
+        except Exception as e:
+            print("An error occurred in PM Fills:", e)
             pass
 
         return fills

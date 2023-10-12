@@ -319,7 +319,7 @@ class Positions:
         if sub_account:
             query["account"] = sub_account
 
-        position_values = self.positions_db.find(query).sort("_id", -1)
+        position_values = self.positions_db.find(query).sort("_id", -1).limit(1)
 
         latest_run_id = -1
         latest_value = None
