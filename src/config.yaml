@@ -154,6 +154,10 @@ clients:
       apikey: xyz
       apisecret: xyz
       margin_mode: non_portfolio
+    binance_subaccountpm1: &binance_subaccountpm1
+      apikey: xyz
+      apisecret: xyz
+      margin_mode: portfolio
     okx_subaccount1: &okx_subaccount1
       apikey: zyx
       apisecret: xyz
@@ -184,10 +188,6 @@ clients:
         subaccount1: *okx_subaccount1
 
   besttrader:
-    binance_subaccount1: &binance_subaccount1
-      apikey: zyx
-      apisecret: xyz
-      margin_mode: portfolio
     okx_sub1ap: &okx_sub1ap
       apikey: zyx
       apisecret: xyz
@@ -198,10 +198,6 @@ clients:
       margin_mode: non_portfolio
 
     funding_payments:
-      binance:
-        <<: *funding_payments
-        helper: helper.py
-        subaccount1: *binance_subaccount1
       okx:
         <<: *funding_payments
         helper: okxhelper.py
