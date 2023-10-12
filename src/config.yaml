@@ -9,8 +9,10 @@ dask:
 liquidation:
   threshold: 
     binance: 1.05
+    binance_pm: 1.2
     okx: 0.95
   scalar:
+    binance_pm: 1
     okx: 0.125
 
 funding_payments: &funding_payments
@@ -169,6 +171,7 @@ clients:
         helper: helper.py
         subaccount4: *binance_subaccount4
         subaccount6: *binance_subaccount6
+        subbinancepm1: *binance_subaccountpm1
       okx:
         <<: *funding_payments
         helper: okxhelper.py

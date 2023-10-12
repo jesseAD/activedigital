@@ -96,6 +96,9 @@ class Transactions:
                 if config["transactions"]["store_type"] == "snapshot":
                     if exchange == "okx":
                         transactions = OKXHelper().get_transactions(exch=exch)
+                        for item in transactions:
+                            item['info'] = {**item}
+
                         transaction_value = Mapping().mapping_transactions(
                             exchange=exchange, transactions=transactions
                         )
@@ -103,6 +106,8 @@ class Transactions:
                     elif exchange == "binance":
                         if config['clients'][client]['funding_payments'][exchange][sub_account]['margin_mode'] == 'portfolio':
                             futures_trades = Helper().get_pm_transactions(exch=exch, params={'limit': 100})
+                            for item in futures_trades:
+                                item['info'] = {**item}
                             futures_trades = Mapping().mapping_transactions(
                                 exchange=exchange, transactions=futures_trades
                             )
@@ -111,12 +116,18 @@ class Transactions:
                             futures_trades = Helper().get_future_transactions(
                                 exch=exch, params={"limit": 100}
                             )
+                            for item in futures_trades:
+                                item['info'] = {**item}
+
                             futures_trades = Mapping().mapping_transactions(
                                 exchange=exchange, transactions=futures_trades
                             )
                             spot_trades = Helper().get_spot_transactions(
                                 exch=exch, params={"symbol": symbol}
                             )
+                            for item in spot_trades:
+                                item['info'] = {**item}
+
                             spot_trades = Mapping().mapping_transactions(
                                 exchange=exchange, transactions=spot_trades
                             )
@@ -145,6 +156,9 @@ class Transactions:
 
                         if current_value is None:
                             transactions = OKXHelper().get_transactions(exch=exch)
+                            for item in transactions:
+                                item['info'] = {**item}
+
                             transaction_value = Mapping().mapping_transactions(
                                 exchange=exchange, transactions=transactions
                             )
@@ -154,6 +168,8 @@ class Transactions:
                                 transactions = OKXHelper().get_transactions(
                                     exch=exch, params={"before": last_id}
                                 )
+                                for item in transactions:
+                                    item['info'] = {**item}
                                 transaction_value = Mapping().mapping_transactions(
                                     exchange=exchange, transactions=transactions
                                 )
@@ -162,6 +178,8 @@ class Transactions:
                                 transactions = OKXHelper().get_transactions(
                                     exch=exch, params={"begin": last_time}
                                 )
+                                for item in transactions:
+                                    item['info'] = {**item}
                                 transaction_value = Mapping().mapping_transactions(
                                     exchange=exchange, transactions=transactions
                                 )
@@ -190,6 +208,8 @@ class Transactions:
                                 futures_trades = Helper().get_pm_transactions(
                                     exch=exch, params={"limit": 100}
                                 )
+                                for item in futures_trades:
+                                    item['info'] = {**item}
                                 futures_trades = Mapping().mapping_transactions(
                                     exchange=exchange, transactions=futures_trades
                                 )
@@ -207,6 +227,9 @@ class Transactions:
                                         "limit": 100,
                                     },
                                 )
+                                for item in futures_trades:
+                                    item['info'] = {**item}
+
                                 futures_trades = Mapping().mapping_transactions(
                                     exchange=exchange, transactions=futures_trades
                                 )
@@ -239,6 +262,8 @@ class Transactions:
                                 futures_trades = Helper().get_future_transactions(
                                     exch=exch, params={"limit": 100}
                                 )
+                                for item in futures_trades:
+                                    item['info'] = {**item}
                                 futures_trades = Mapping().mapping_transactions(
                                     exchange=exchange, transactions=futures_trades
                                 )
@@ -255,6 +280,9 @@ class Transactions:
                                         "limit": 100,
                                     },
                                 )
+                                for item in futures_trades:
+                                    item['info'] = {**item}
+
                                 futures_trades = Mapping().mapping_transactions(
                                     exchange=exchange, transactions=futures_trades
                                 )
@@ -279,6 +307,9 @@ class Transactions:
                                 spot_trades = Helper().get_spot_transactions(
                                     exch=exch, params={"symbol": symbol, "limit": 100}
                                 )
+                                for item in spot_trades:
+                                    item['info'] = {**item}
+
                                 spot_trades = Mapping().mapping_transactions(
                                     exchange=exchange, transactions=spot_trades
                                 )
@@ -307,6 +338,9 @@ class Transactions:
                                             "limit": 100,
                                         },
                                     )
+                                
+                                for item in spot_trades:
+                                    item['info'] = {**item}
 
                                 spot_trades = Mapping().mapping_transactions(
                                     exchange=exchange, transactions=spot_trades

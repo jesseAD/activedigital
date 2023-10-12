@@ -187,14 +187,20 @@ class Helper:
             pass
 
         return fills
+    
+    def get_pm_cross_margin_ratio(self, exch):
+        return exch.papi_get_account()['uniMMR']
 
     def calc_liquidation_buffer(self, exchange, mgnRatio):
-        if exchange == "okx":
-            return min(
-                1,
-                config["liquidation"]["scalar"][exchange]
-                * (mgnRatio * config["liquidation"]['threshold'][exchange]),
-            )
+        return max(0, min(
+            1, config["liquidation"]["scalar"][exchange] * (mgnRatio - config["liquidation"]['threshold'][exchange])
+        ))
+        # if exchange == "okx":
+        #     return min(
+        #         1,
+        #         config["liquidation"]["scalar"][exchange]
+        #         * (mgnRatio * config["liquidation"]['threshold'][exchange]),
+        #     )
         
     def calc_cross_ccy_ratio(self, src_ccy, dest_ccy, tickers):
         if src_ccy == dest_ccy:
