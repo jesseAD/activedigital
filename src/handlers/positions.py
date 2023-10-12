@@ -153,6 +153,28 @@ class Positions:
                     print("An error occurred in Positions:", e)
                     pass
 
+            elif exchange == "binance":
+                if config['clients'][client]['funding_payments'][exchange][sub_account]['margin_mode'] == 'portfolio':
+                    try:
+                        cross_margin_ratio = float(
+                            Helper().get_pm_cross_margin_ratio(exch=exch)
+                        )
+                        liquidation_buffer = Helper().calc_liquidation_buffer(
+                            exchange="binance_pm", mgnRatio=cross_margin_ratio
+                        )
+
+                    except ccxt.InvalidNonce as e:
+                        print("Hit rate limit", e)
+                        time.sleep(
+                            back_off[client + "_" + exchange + "_" + sub_account] / 1000.0
+                        )
+                        back_off[client + "_" + exchange + "_" + sub_account] *= 2
+                        return False
+
+                    except Exception as e:
+                        print("An error occurred in Positions:", e)
+                        pass
+
             for value in position_value:
                 if config['clients'][client]['funding_payments'][exchange][sub_account]['margin_mode'] == 'non_portfolio':
                     if float(value["initialMargin"]) > 0:
