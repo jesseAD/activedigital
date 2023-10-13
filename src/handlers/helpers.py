@@ -153,18 +153,11 @@ class Helper:
     def get_spot_transactions(self, exch, params={}):
         return exch.private_get_mytrades(params)
     
-    def get_pm_transactions(self, exch, params={}):
-        transactions = []
-        try:
-            transactions += exch.papi_get_um_income(params=params)
-        except:
-            pass
-        try:
-            transactions += exch.papi_get_cm_income(params=params)
-        except:
-            pass
+    def get_um_transactions(self, exch, params={}):
+        return exch.papi_get_um_income(params=params)
 
-        return transactions
+    def get_cm_transactions(self, exch, params={}):
+        return exch.papi_get_cm_income(params=params)
 
     def get_fills(self, exch, symbol=None, since=None, limit=None, params={}):
         return exch.fetch_my_trades(symbol=symbol, since=since, limit=limit, params=params)

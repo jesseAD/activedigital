@@ -105,13 +105,19 @@ class Transactions:
 
                     elif exchange == "binance":
                         if config['clients'][client]['funding_payments'][exchange][sub_account]['margin_mode'] == 'portfolio':
-                            futures_trades = Helper().get_pm_transactions(exch=exch, params={'limit': 100})
+                            cm_trades = Helper().get_cm_transactions(exch=exch, params={'limit': 100})
                             for item in futures_trades:
                                 item['info'] = {**item}
-                            futures_trades = Mapping().mapping_transactions(
-                                exchange=exchange, transactions=futures_trades
+                            cm_trades = Mapping().mapping_transactions(
+                                exchange=exchange, transactions=cm_trades
                             )
-                            transaction_value = {'future': futures_trades, 'spot': []}
+                            cm_trades = Helper().get_um_transactions(exch=exch, params={'limit': 100})
+                            for item in futures_trades:
+                                item['info'] = {**item}
+                            um_trades = Mapping().mapping_transactions(
+                                exchange=exchange, transactions=cm_trades
+                            )
+                            transaction_value = {'cm': cm_trades, 'um': um_trades}
                         else:
                             futures_trades = Helper().get_future_transactions(
                                 exch=exch, params={"limit": 100}
@@ -184,6 +190,7 @@ class Transactions:
                                     exchange=exchange, transactions=transactions
                                 )
                     elif exchange == "binance":
+                        transaction_value = {}
                         if config['clients'][client]['funding_payments'][exchange][sub_account]['margin_mode'] == 'portfolio':
                             query = {}
                             if client:
@@ -192,7 +199,7 @@ class Transactions:
                                 query["venue"] = exchange
                             if sub_account:
                                 query["account"] = sub_account
-                            query["trade_type"] = "future"
+                            query["trade_type"] = "cm"
 
                             transactions_values = (
                                 self.transactions_db.find(query)
@@ -205,39 +212,75 @@ class Transactions:
                                 current_value = item["transaction_value"]
 
                             if current_value is None:
-                                futures_trades = Helper().get_pm_transactions(
+                                cm_trades = Helper().get_cm_transactions(
                                     exch=exch, params={"limit": 100}
                                 )
-                                for item in futures_trades:
+                                for item in cm_trades:
                                     item['info'] = {**item}
-                                futures_trades = Mapping().mapping_transactions(
-                                    exchange=exchange, transactions=futures_trades
+                                cm_trades = Mapping().mapping_transactions(
+                                    exchange=exchange, transactions=cm_trades
                                 )
 
-                                transaction_value = {
-                                    "future": futures_trades,
-                                    "spot": []
-                                }
+                                transaction_value['cm'] = cm_trades
                             else:
                                 last_time = current_value["timestamp"] + 1
-                                futures_trades = Helper().get_future_transactions(
+                                cm_trades = Helper().get_cm_transactions(
                                     exch=exch,
                                     params={
                                         "startTime": last_time,
                                         "limit": 100,
                                     },
                                 )
-                                for item in futures_trades:
+                                for item in cm_trades:
                                     item['info'] = {**item}
 
-                                futures_trades = Mapping().mapping_transactions(
-                                    exchange=exchange, transactions=futures_trades
+                                cm_trades = Mapping().mapping_transactions(
+                                    exchange=exchange, transactions=cm_trades
                                 )
 
-                                transaction_value = {
-                                    "future": futures_trades,
-                                    "spot": []
-                                }
+                                transaction_value['cm'] = cm_trades
+                            
+                            query["trade_type"] = "um"
+
+                            transactions_values = (
+                                self.transactions_db.find(query)
+                                .sort("transaction_value.timestamp", -1)
+                                .limit(1)
+                            )
+
+                            current_value = None
+                            for item in transactions_values:
+                                current_value = item["transaction_value"]
+
+                            if current_value is None:
+                                um_trades = Helper().get_um_transactions(
+                                    exch=exch, params={"limit": 100}
+                                )
+                                for item in um_trades:
+                                    item['info'] = {**item}
+                                um_trades = Mapping().mapping_transactions(
+                                    exchange=exchange, transactions=um_trades
+                                )
+
+                                transaction_value['um'] = um_trades
+                            else:
+                                last_time = current_value["timestamp"] + 1
+                                um_trades = Helper().get_um_transactions(
+                                    exch=exch,
+                                    params={
+                                        "startTime": last_time,
+                                        "limit": 100,
+                                    },
+                                )
+                                for item in um_trades:
+                                    item['info'] = {**item}
+
+                                um_trades = Mapping().mapping_transactions(
+                                    exchange=exchange, transactions=um_trades
+                                )
+
+                                transaction_value['um'] = um_trades
+
                         else:
                             query = {}
                             if client:
@@ -268,9 +311,7 @@ class Transactions:
                                     exchange=exchange, transactions=futures_trades
                                 )
 
-                                transaction_value = {
-                                    "future": futures_trades,
-                                }
+                                transaction_value["future"] = futures_trades
                             else:
                                 last_time = current_value["timestamp"] + 1
                                 futures_trades = Helper().get_future_transactions(
@@ -287,9 +328,7 @@ class Transactions:
                                     exchange=exchange, transactions=futures_trades
                                 )
 
-                                transaction_value = {
-                                    "future": futures_trades,
-                                }
+                                transaction_value['future'] = futures_trades
 
                             query["trade_type"] = "spot"
 
@@ -356,7 +395,7 @@ class Transactions:
             except Exception as e:
                 print("An error occurred in Transactions:", e)
                 return False
-
+            
         back_off[client + "_" + exchange + "_" + sub_account] = config['dask']['back_off']
 
         tickers = list(self.tickers_db.find({"venue": exchange}).sort("_id", -1).limit(1))[0]['ticker_value']
@@ -452,8 +491,9 @@ class Transactions:
                     transaction.append(new_value)
 
             if exchange == "binance":
-                if len(transaction_value["future"]) > 0:
-                    for item in transaction_value["future"]:
+                # if len(transaction_value["future"]) > 0:
+                for _type in transaction_value:
+                    for item in transaction_value[_type]:
                         item['timestamp'] = int(item["timestamp"])
                         item['income'] = (
                             float(item["income"]) * 
@@ -468,7 +508,7 @@ class Transactions:
                             "venue": exchange,
                             "account": "Main Account",
                             "transaction_value": item,
-                            "trade_type": "future",
+                            "trade_type": _type,
                             "runid": latest_run_id,
                             "active": True,
                             "entry": False,
@@ -484,34 +524,7 @@ class Transactions:
                         if perp:
                             new_value["perpMarket"] = perp
 
-                        transaction.append(new_value)
-
-                if len(transaction_value["spot"]) > 0:
-                    for item in transaction_value["spot"]:
-                        item['timestamp'] = int(item["timestamp"])
-                        # item['income'] = float(item["income"])
-                        new_value = {
-                            "client": client,
-                            "venue": exchange,
-                            "account": "Main Account",
-                            "transaction_value": item,
-                            "trade_type": "spot",
-                            "runid": latest_run_id,
-                            "active": True,
-                            "entry": False,
-                            "exit": False,
-                            "timestamp": current_time,
-                        }
-                        if sub_account:
-                            new_value["account"] = sub_account
-                        if spot:
-                            new_value["spotMarket"] = spot
-                        if future:
-                            new_value["futureMarket"] = future
-                        if perp:
-                            new_value["perpMarket"] = perp
-
-                        transaction.append(new_value)
+                        transaction.append(new_value)                
 
                 if len(transaction) == 0:
                     return False
