@@ -14,6 +14,9 @@ binance:
 
   transaction:
     time: timestamp
+    quoteQty: income
+    id: tradeId
+    commissionAsset: asset
     values:
       INTERNAL_TRANSFER: TRANSFER
       DELIVERED_SETTELMENT: REALIZED_PNL
