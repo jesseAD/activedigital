@@ -111,8 +111,10 @@ class Positions:
                         position_value = Helper().get_pm_positions(exch=exch)
                         for item in position_value:
                             item['info'] = {**item}
+                            item['marginMode'] = "cross"
                     else:
                         position_value = Helper().get_positions(exch=exch)
+                position_value = Mapping().mapping_positions(exchange=exchange, positions=position_value)
 
             except ccxt.InvalidNonce as e:
                 print("Hit rate limit", e)
@@ -128,7 +130,6 @@ class Positions:
                 
 
         try:
-            position_value = Mapping().mapping_positions(exchange=exchange, positions=position_value)
             position_info = []
             liquidation_buffer = None
 
@@ -254,6 +255,7 @@ class Positions:
                 else:
                     value["base"] = value["symbol"].split("_")[0].split("USD")[0]
                     value["quote"] = "USD" + value["symbol"].split("_")[0].split("USD")[1]
+                    value['symbol'] = value['base'] + value['quote'] + "-PERP"
                     
                     value["liquidationBuffer"] = liquidation_buffer
 
@@ -287,10 +289,13 @@ class Positions:
             
             if exchange == "binance":
                 for position in position_info:
-                    position["markPrice"] = Helper().get_mark_prices(
-                        exch=exch,
-                        params={"symbol": position["base"] + position["quote"]},
-                    )["markPrice"]
+                    try:
+                        position["markPrice"] = Helper().get_mark_prices(
+                            exch=exch,
+                            params={"symbol": position["base"] + position["quote"]},
+                        )["markPrice"]
+                    except Exception as e:
+                        print("An error occurred in Positions:", e)
 
         except ccxt.InvalidNonce as e:
             print("Hit rate limit", e)
@@ -303,7 +308,7 @@ class Positions:
             pass
 
         del position_value
-
+        
         back_off[client + "_" + exchange + "_" + sub_account] = config["dask"][
             "back_off"
         ]

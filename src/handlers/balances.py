@@ -109,7 +109,7 @@ class Balances:
                         balanceValue = Helper().get_pm_balances(exch=exch)
                     else:
                         balanceValue = Helper().get_balances(exch=exch)
-
+                
             except ccxt.InvalidNonce as e:
                 print("Hit rate limit", e)
                 time.sleep(
@@ -125,6 +125,8 @@ class Balances:
         back_off[client + "_" + exchange + "_" + sub_account] = config["dask"][
             "back_off"
         ]
+
+        balanceValue = {_key: balanceValue[_key] for _key in balanceValue if balanceValue[_key] != 0.0}
 
         query = {}
         if exchange:
