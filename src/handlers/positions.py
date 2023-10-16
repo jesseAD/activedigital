@@ -296,6 +296,7 @@ class Positions:
                         )["markPrice"]
                     except Exception as e:
                         print("An error occurred in Positions:", e)
+                        pass
 
         except ccxt.InvalidNonce as e:
             print("Hit rate limit", e)
