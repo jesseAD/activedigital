@@ -13,6 +13,7 @@ from src.lib.mapping import Mapping
 from src.config import read_config_file
 from src.handlers.helpers import Helper
 from src.handlers.helpers import OKXHelper
+from src.handlers.helpers import BybitHelper
 from src.handlers.database_connector import database_connector
 
 load_dotenv()
@@ -95,8 +96,10 @@ class Instruments:
             try:
                 if exchange == "okx":
                     instrumentValue = OKXHelper().get_instruments(exch=exch)
-                else:
+                elif exchange == "binance":
                     instrumentValue = Helper().get_instruments(exch=exch)
+                elif exchange == "bybit":
+                    instrumentValue = BybitHelper().get_instruments(exch=exch)
 
             except ccxt.InvalidNonce as e:
                 print("Hit rate limit", e)

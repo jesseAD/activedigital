@@ -119,8 +119,8 @@ class Helper:
             "mid_point": (best_ask + best_bid) / 2.0,
         }
 
-    def get_tickers(self, exch):
-        return exch.fetch_tickers()
+    def get_tickers(self, exch, params={}):
+        return exch.fetch_tickers(params=params)
 
     def get_borrow_rates(self, exch, code, limit=None, since=None, params={}):
         return exch.fetch_borrow_rate_history(
@@ -251,7 +251,10 @@ class OKXHelper(Helper):
 
     def get_cross_margin_ratio(self, exch):
         return exch.private_get_account_balance()["data"][0]["mgnRatio"]
+    
 
+class BybitHelper(Helper):
+    pass
 
 class CoinbaseHelper:
     def get_usdt2usd_ticker(self, exch):
