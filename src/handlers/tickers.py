@@ -10,6 +10,7 @@ from src.lib.exchange import Exchange
 from src.config import read_config_file
 from src.handlers.helpers import Helper
 from src.handlers.helpers import OKXHelper
+from src.handlers.helpers import BybitHelper
 from src.handlers.helpers import CoinbaseHelper
 from src.handlers.database_connector import database_connector
 
@@ -77,8 +78,17 @@ class Tickers:
             try:
                 if exchange == 'okx':
                     tickerValue = OKXHelper().get_tickers(exch = exch)
-                else:
+                elif exchange == "binance":
                     tickerValue = Helper().get_tickers(exch = exch)
+                elif exchange == "bybit":
+                    tickerValue = BybitHelper().get_tickers(exch=exch)
+                    for item in tickerValue:
+                        tickerValue[item]['symbol'] = tickerValue[item]['symbol'].split(":")[0]
+
+                    tickerValue = {_val['symbol']: _val for _key, _val in tickerValue.items()}
+                
+                tickerValue = {symbol: tickerValue[symbol] for symbol in tickerValue if symbol.endswith("USDT")}
+                tickerValue['USDT/USD'] = CoinbaseHelper().get_usdt2usd_ticker(exch=Exchange(exchange='coinbase').exch())
 
             except ccxt.InvalidNonce as e:
                 print("Hit rate limit", e)
@@ -90,10 +100,7 @@ class Tickers:
                 print("An error occurred in Tickers:", e)
                 return False
         
-        back_off[exchange] = config['dask']['back_off']
-        
-        tickerValue = {symbol: tickerValue[symbol] for symbol in tickerValue if symbol.endswith("USDT")}
-        tickerValue['USDT/USD'] = CoinbaseHelper().get_usdt2usd_ticker(exch=Exchange(exchange='coinbase').exch())
+        back_off[exchange] = config['dask']['back_off']        
         
         ticker = {
             "venue": exchange,

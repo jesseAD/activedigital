@@ -87,6 +87,7 @@ index_prices:
   symbols: 
     okx: *symbols_2
     binance: *symbols_2
+    bybit: *symbols_2
   store_type: timeseries
 
 leverages:
@@ -109,6 +110,7 @@ mark_prices:
   store_type: timeseries
   binance: ["BTCUSDT", ]
   okx: ["BTC-USDT-SWAP", ]
+  bybit: ["BTCUSDT", ]
 
 bid_ask:
   spot: *symbols_2
@@ -144,8 +146,10 @@ funding_rates:
     binance_usd: *symbols_4
     okx_usdt: *symbols_3
     okx_usd: *symbols_5
+    bybit_usdt: *symbols_3
+    bybit_usd: *symbols_4
 
-exchanges: ["binance", "okx",]
+exchanges: ["binance", "okx", "bybit"]
 
 clients:
   rundmc:
