@@ -180,7 +180,7 @@ class Transactions:
                                     exchange=exchange, transactions=transactions
                                 )
                             elif config["transactions"]["fetch_type"] == "time":
-                                last_time = int(current_value["timestamp"]) + 1
+                                last_time = int(current_value["timestamp"]) + 1 + config['transactions']['time_slack']
                                 transactions = OKXHelper().get_transactions(
                                     exch=exch, params={"begin": last_time}
                                 )
@@ -223,7 +223,7 @@ class Transactions:
 
                                 transaction_value['cm'] = cm_trades
                             else:
-                                last_time = current_value["timestamp"] + 1
+                                last_time = current_value["timestamp"] + 1 + config['transactions']['time_slack']
                                 cm_trades = Helper().get_cm_transactions(
                                     exch=exch,
                                     params={
@@ -264,7 +264,7 @@ class Transactions:
 
                                 transaction_value['um'] = um_trades
                             else:
-                                last_time = current_value["timestamp"] + 1
+                                last_time = current_value["timestamp"] + 1 + config['transactions']['time_slack']
                                 um_trades = Helper().get_um_transactions(
                                     exch=exch,
                                     params={
@@ -313,7 +313,7 @@ class Transactions:
 
                                 transaction_value["future"] = futures_trades
                             else:
-                                last_time = current_value["timestamp"] + 1
+                                last_time = current_value["timestamp"] + 1 + config['transactions']['time_slack']
                                 futures_trades = Helper().get_future_transactions(
                                     exch=exch,
                                     params={
@@ -368,7 +368,7 @@ class Transactions:
                                     )
 
                                 elif config["transactions"]["fetch_type"] == "time":
-                                    last_time = current_value["timestamp"] + 1
+                                    last_time = current_value["timestamp"] + 1 + config['transactions']['time_slack']
                                     spot_trades = Helper().get_spot_transactions(
                                         exch=exch,
                                         params={
@@ -439,7 +439,7 @@ class Transactions:
                     return False
 
                 for item in transaction_value:
-                    item['timestamp'] = int(item["timestamp"])
+                    item['timestamp'] = int(item["timestamp"]) - config['transactions']['time_slack']
                     if item['fee'] != '':
                         item['fee'] = (
                             float(item["fee"]) * 
@@ -494,7 +494,7 @@ class Transactions:
                 # if len(transaction_value["future"]) > 0:
                 for _type in transaction_value:
                     for item in transaction_value[_type]:
-                        item['timestamp'] = int(item["timestamp"])
+                        item['timestamp'] = int(item["timestamp"]) - config['transactions']['time_slack']
                         item['income'] = (
                             float(item["income"]) * 
                             Helper().calc_cross_ccy_ratio(

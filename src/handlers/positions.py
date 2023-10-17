@@ -223,6 +223,7 @@ class Positions:
                         value["quote"] = (
                             value["symbol"].split("-")[0].split("/")[1].split(":")[0]
                         )
+                        value['symbol'] = value['base'] + value['quote'] + "-PERP"
                         value["liquidationBuffer"] = liquidation_buffer
 
                         if value["quote"] == "USD":
@@ -256,6 +257,7 @@ class Positions:
                     value["base"] = value["symbol"].split("_")[0].split("USD")[0]
                     value["quote"] = "USD" + value["symbol"].split("_")[0].split("USD")[1]
                     value['symbol'] = value['base'] + value['quote'] + "-PERP"
+                    value['side'] = "long" if float(value['positionAmt']) > 0 else "short"
                     
                     value["liquidationBuffer"] = liquidation_buffer
 

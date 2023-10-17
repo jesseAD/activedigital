@@ -95,6 +95,7 @@ leverages:
 transactions:
   store_type: timeseries
   fetch_type: time # time, id
+  time_slack: 600000 # in ms
 
 fills:
   store_type: timeseries
