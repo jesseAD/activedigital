@@ -8,10 +8,11 @@ dask:
 
 liquidation:
   threshold: 
-    binance: 1.05
+    binance: 1.2
     binance_pm: 1.2
     okx: 0.95
   scalar:
+    binance: 1
     binance_pm: 1
     okx: 0.125
 
@@ -59,15 +60,15 @@ symbols:
     '1INCHUSD_PERP', 'CHZUSD_PERP', 'NEOUSD_PERP', 'KNCUSD_PERP', 'XTZUSD_PERP', 'THETAUSD_PERP', 'DASHUSD_PERP', 
     'PEOPLEUSD_PERP', 'LRCUSD_PERP', 'ZILUSD_PERP', 'OMGUSD_PERP', 'ROSEUSD_PERP', 'ARUSD_PERP', 'COTIUSD_PERP', 'ICXUSD_PERP', ]
 
-  symbols_5: &symbols_5 ['BTC-USD-SWAP', 'ETH-USD-SWAP', 'XRP-USD-SWAP', 'BNB-USD-SWAP', 'DOGE-USD-SWAP', 'SOL-USD-SWAP', 
-    'LTC-USD-SWAP', 'BCH-USD-SWAP', 'DOT-USD-SWAP', 'ARB-USD-SWAP', 'ADA-USD-SWAP', 'OP-USD-SWAP', 'SUI-USD-SWAP', 
-    'APT-USD-SWAP', 'EOS-USD-SWAP', 'ECT-USD-SWAP', 'FIL-USD-SWAP', 'DYDX-USD-SWAP', 'ATOM-USD-SWAP', 'APE-USD-SWAP', 
-    'CRV-USD-SWAP', 'TRX-USD-SWAP', 'RUNE-USD-SWAP', 'UNI-USD-SWAP', 'GALA-USD-SWAP', 'NEAR-USD-SWAP', '1000PEPE-USD-SWAP', 
-    'PEPE-USD-SWAP', 'XMR-USD-SWAP', 'SAND-SWAP-USD', 'AAVE-USD-SWAP', 'USDC-USD-SWAP', 'AXS-USD-SWAP', 'COMP-USD-SWAP', 
-    'GMT-USD-SWAP', 'ICP-USD-SWAP', 'MANA-USD-SWAP', 'ALGO-USD-SWAP', 'SHIB-USD-SWAP', 'SUSHI-USD-SWAP', 'GRT-USD-SWAP', 
-    '1INCH-USD-SWAP', 'CHZ-USD-SWAP', 'NEO-USD-SWAP', 'KNC-USD-SWAP', 'XTZ-USD-SWAP', 'THETA-USD-SWAP', 'DASH-USD-SWAP', 
-    'PEOPLE-USD-SWAP', 'LRC-USD-SWAP', 'ZIL-USD-SWAP', 'OMG-USD-SWAP', 'ROSE-USD-SWAP', 'AR-USD-SWAP', 'COTI-USD-SWAP', 
-    'ICX-USD-SWAP', 'LINK-USD-SWAP']
+  symbols_5: &symbols_5 ['BTC/USD:BTC', 'ETH/USD:ETH', 'XRP/USD:XRP', 'BNB/USD:BNB', 'DOGE/USD:DOGE', 'SOL/USD:SOL', 
+    'LTC/USD:LTC', 'BCH/USD:BCH', 'DOT/USD:DOT', 'ARB/USD:ARB', 'ADA/USD:ADA', 'OP/USD:OP', 'SUI/USD:SUI', 
+    'APT/USD:APT', 'EOS/USD:EOS', 'ECT/USD:ECT', 'FIL/USD:FIL', 'DYDX/USD:DYDX', 'ATOM/USD:ATOM', 'APE/USD:APE', 
+    'CRV/USD:CRV', 'TRX/USD:TRX', 'RUNE/USD:RUNE', 'UNI/USD:UNI', 'GALA/USD:GALA', 'NEAR/USD:NEAR', '1000PEPE/USD:1000PEPE', 
+    'PEPE/USD:PEPE', 'XMR/USD:XMR', 'SAND/USD:SAND', 'AAVE/USD:AAVE', 'USDC/USD:USDC', 'AXS/USD:AXS', 'COMP/USD:COMP', 
+    'GMT/USD:GMT', 'ICP/USD:ICP', 'MANA/USD:MANA', 'ALGO/USD:ALGO', 'SHIB/USD:SHIB', 'SUSHI/USD:SUSHI', 'GRT/USD:GRT', 
+    '1INCH/USD:1INCH', 'CHZ/USD:CHZ', 'NEO/USD:NEO', 'KNC/USD:KNC', 'XTZ/USD:XTZ', 'THETA/USD:THETA', 'DASH/USD:DASH', 
+    'PEOPLE/USD:PEOPLE', 'LRC/USD:LRC', 'ZIL/USD:ZIL', 'OMG/USD:OMG', 'ROSE/USD:ROSE', 'AR/USD:AR', 'COTI/USD:COTI', 
+    'ICX/USD:ICX', 'LINK/USD:LINK']
 
 instruments:
   store_type: snapshot
@@ -143,13 +144,13 @@ funding_rates:
 
   symbols:
     binance_usdt: *symbols_3
-    binance_usd: *symbols_4
+    binance_usd: *symbols_5
     okx_usdt: *symbols_3
     okx_usd: *symbols_5
     bybit_usdt: *symbols_3
     bybit_usd: *symbols_4
 
-exchanges: ["binance", "okx", "bybit"]
+exchanges: ["binance", "okx", ] # "bybit"]
 
 clients:
   rundmc:

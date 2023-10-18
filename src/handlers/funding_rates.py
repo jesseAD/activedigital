@@ -78,11 +78,11 @@ class FundingRates:
     ):
         if symbols is None:
             if exchange == "binance":
-                symbols = config["funding_rates"]["symbols"]["binance_usdt"]
-                symbols_d = config["funding_rates"]["symbols"]["binance_usd"]
+                symbols = config["funding_rates"]["symbols"]["binance_usdt"] + config["funding_rates"]["symbols"]["binance_usd"]
+                # symbols_d = config["funding_rates"]["symbols"]["binance_usd"]
             elif exchange == "okx":
-                symbols = config["funding_rates"]["symbols"]["okx_usdt"]
-                symbols_d = config["funding_rates"]["symbols"]["okx_usd"]
+                symbols = config["funding_rates"]["symbols"]["okx_usdt"] + config["funding_rates"]["symbols"]["okx_usd"]
+                # symbols_d = config["funding_rates"]["symbols"]["okx_usd"]
             elif exchange == "bybit":
                 symbols = config["funding_rates"]["symbols"]["bybit_usdt"]
                 symbols_d = config["funding_rates"]["symbols"]["bybit_usd"]
@@ -117,27 +117,15 @@ class FundingRates:
 
                             funding_rate = OKXHelper().get_funding_rate(
                                 exch=exch,
-                                params={
-                                    "instId": fundingRatesValue[symbol][0]["info"][
-                                        "instId"
-                                    ]
-                                },
-                            )["data"][0]
-                            current_funding_rate = {}
-                            current_funding_rate["info"] = funding_rate
-                            current_funding_rate["symbol"] = symbol
-                            current_funding_rate["fundingRate"] = funding_rate[
-                                "fundingRate"
-                            ]
-                            current_funding_rate["info"]["realizedRate"] = funding_rate[
-                                "fundingRate"
-                            ]
-                            current_funding_rate["timestamp"] = funding_rate[
-                                "fundingTime"
-                            ]
-                            current_funding_rate["datetime"] = datetime.fromtimestamp(
-                                int(funding_rate["fundingTime"]) / 1000, timezone.utc
+                                symbol=symbol
                             )
+                            current_funding_rate = {}
+                            current_funding_rate["info"] = funding_rate['info']
+                            current_funding_rate["symbol"] = symbol
+                            current_funding_rate["fundingRate"] = funding_rate["fundingRate"]
+                            current_funding_rate["info"]["realizedRate"] = funding_rate["fundingRate"]
+                            current_funding_rate["timestamp"] = funding_rate["fundingTimestamp"]
+                            current_funding_rate["datetime"] = funding_rate["fundingDatetime"]
                             fundingRatesValue[symbol].append(current_funding_rate)
 
                         elif exchange == "binance":
@@ -158,27 +146,16 @@ class FundingRates:
                             if len(fundingRatesValue[symbol]) > 0:
                                 funding_rate = OKXHelper().get_funding_rate(
                                     exch=exch,
-                                    params={"instId": current_values["info"]["instId"]},
-                                )["data"][0]
+                                    symbol=symbol
+                                )
 
                                 current_funding_rate = {}
-                                current_funding_rate["info"] = funding_rate
+                                current_funding_rate["info"] = funding_rate['info']
                                 current_funding_rate["symbol"] = symbol
-                                current_funding_rate["fundingRate"] = funding_rate[
-                                    "fundingRate"
-                                ]
-                                current_funding_rate["info"][
-                                    "realizedRate"
-                                ] = funding_rate["fundingRate"]
-                                current_funding_rate["timestamp"] = funding_rate[
-                                    "fundingTime"
-                                ]
-                                current_funding_rate[
-                                    "datetime"
-                                ] = datetime.fromtimestamp(
-                                    int(funding_rate["fundingTime"]) / 1000,
-                                    timezone.utc,
-                                )
+                                current_funding_rate["fundingRate"] = funding_rate["fundingRate"]
+                                current_funding_rate["info"]["realizedRate"] = funding_rate["fundingRate"]
+                                current_funding_rate["timestamp"] = funding_rate["fundingTimestamp"]
+                                current_funding_rate["datetime"] = funding_rate["fundingDatetime"]
                                 fundingRatesValue[symbol].append(current_funding_rate)
 
                         elif exchange == "binance":
@@ -193,14 +170,7 @@ class FundingRates:
 
                     if len(fundingRatesValue[symbol]) > 0:
                         if exchange == "okx":
-                            funding_rate = OKXHelper().get_funding_rate(
-                                exch=exch,
-                                params={
-                                    "instId": fundingRatesValue[symbol][0]["info"][
-                                        "instId"
-                                    ]
-                                },
-                            )["data"][0]
+                            funding_rate = OKXHelper().get_funding_rate(exch=exch, symbol=symbol)
 
                             scalar = 1
 
@@ -208,19 +178,15 @@ class FundingRates:
                                 scalar = 365
                             elif config["funding_rates"]["period"] == "interval":
                                 scalar = 24 * 365 * 3600000
-                                scalar /= int(funding_rate["nextFundingTime"]) - int(
-                                    funding_rate["fundingTime"]
+                                scalar /= int(funding_rate["nextFundingTimestamp"]) - int(
+                                    funding_rate["fundingTimestamp"]
                                 )
 
                             for item in fundingRatesValue[symbol]:
-                                item["nextFundingRate"] = funding_rate[
-                                    "nextFundingRate"
-                                ]
-                                item["nextFundingTime"] = funding_rate[
-                                    "nextFundingTime"
-                                ]
-                                item["base"] = item["symbol"][:-10]
-                                item["quote"] = "USDT"
+                                item["nextFundingRate"] = funding_rate["nextFundingRate"]
+                                item["nextFundingTime"] = funding_rate["nextFundingTimestamp"]
+                                item["base"] = symbol.split("/")[0]
+                                item["quote"] = symbol.split("/")[1].split(":")[0]
                                 item["scalar"] = scalar
 
                                 if (
@@ -228,22 +194,17 @@ class FundingRates:
                                     == "valid_to"
                                 ):
                                     item["timestamp"] = int(item["timestamp"]) - (
-                                        int(funding_rate["nextFundingTime"])
-                                        - int(funding_rate["fundingTime"])
+                                        int(funding_rate["nextFundingTimestamp"])
+                                        - int(funding_rate["fundingTimestamp"])
                                     )
                                     item["nextFundingTime"] = int(item["nextFundingTime"]) - (
-                                        int(funding_rate["nextFundingTime"])
-                                        - int(funding_rate["fundingTime"])
+                                        int(funding_rate["nextFundingTimestamp"])
+                                        - int(funding_rate["fundingTimestamp"])
                                     )
 
                         elif exchange == "binance":
-                            funding_rate = Helper().get_mark_prices(
-                                exch=exch,
-                                params={
-                                    "symbol": fundingRatesValue[symbol][0]["info"][
-                                        "symbol"
-                                    ]
-                                },
+                            funding_rate = Helper().get_funding_rate(
+                                exch=exch, symbol=symbol
                             )
 
                             scalar = 1
@@ -252,19 +213,15 @@ class FundingRates:
                                 scalar = 365
                             elif config["funding_rates"]["period"] == "interval":
                                 scalar = 24 * 365 * 3600000
-                                scalar /= int(funding_rate["nextFundingTime"]) - int(
+                                scalar /= int(funding_rate["fundingTimestamp"]) - int(
                                     fundingRatesValue[symbol][-1]["timestamp"]
                                 )
 
                             for item in fundingRatesValue[symbol]:
-                                item["nextFundingRate"] = funding_rate[
-                                    "lastFundingRate"
-                                ]
-                                item["nextFundingTime"] = funding_rate[
-                                    "nextFundingTime"
-                                ]
-                                item["base"] = item["symbol"][:-10]
-                                item["quote"] = "USDT"
+                                item["nextFundingRate"] = funding_rate["fundingRate"]
+                                item["nextFundingTime"] = funding_rate["fundingTimestamp"]
+                                item["base"] = symbol.split("/")[0]
+                                item["quote"] = symbol.split("/")[1].split(":")[0]
                                 item["scalar"] = scalar
                         
                         elif exchange == "bybit":
@@ -298,6 +255,43 @@ class FundingRates:
                                 item["quote"] = "USDT"
                                 item["scalar"] = scalar
 
+                    else:
+                        if exchange == "binance":
+                            funding_rate = Helper().get_funding_rate(
+                                exch=exch, symbol=symbol
+                            )
+
+                            self.funding_rates_db.update_one(
+                                {
+                                    "venue": exchange,
+                                    "symbol": symbol.split(":")[0],
+                                    "funding_rates_value.timestamp": current_values['timestamp']
+                                },
+                                {
+                                    "$set": {
+                                        "funding_rates_value.nextFundingRate": funding_rate['fundingRate']
+                                    }
+                                },
+                                upsert=False
+                            )
+                        elif exchange == "okx":
+                            funding_rate = OKXHelper().get_funding_rate(exch=exch, symbol=symbol)
+
+                            self.funding_rates_db.update_one(
+                                {
+                                    "venue": exchange,
+                                    "symbol": symbol.split(":")[0],
+                                    "funding_rates_value.timestamp": current_values['timestamp']
+                                },
+                                {
+                                    "$set": {
+                                        "funding_rates_value.nextFundingRate": funding_rate['nextFundingRate']
+                                    }
+                                },
+                                upsert=False
+                            )
+                        pass
+
                 except ccxt.InvalidNonce as e:
                     print("Hit rate limit", e)
                     time.sleep(back_off[exchange] / 1000.0)
@@ -308,212 +302,200 @@ class FundingRates:
                     print("An error occurred in Funding Rates:", e)
                     pass
 
-            for symbol in symbols_d:
-                if exchange == "binance":
-                    query = {}
-                    if exchange:
-                        query["venue"] = exchange
-                    query["symbol"] = symbol
+            # for symbol in symbols_d:
+            #     if exchange == "binance":
+            #         query = {}
+            #         if exchange:
+            #             query["venue"] = exchange
+            #         query["symbol"] = symbol
 
-                    try:
-                        funding_rate_values = (
-                            self.funding_rates_db.find(query).sort("_id", -1).limit(1)
-                        )
+            #         try:
+            #             funding_rate_values = (
+            #                 self.funding_rates_db.find(query).sort("_id", -1).limit(1)
+            #             )
 
-                        current_values = None
-                        for item in funding_rate_values:
-                            current_values = item["funding_rates_value"]
+            #             current_values = None
+            #             for item in funding_rate_values:
+            #                 current_values = item["funding_rates_value"]
 
-                        if current_values is None:
-                            fundingRatesValue[symbol] = Helper().get_funding_rates_dapi(
-                                params={"limit": 100, "symbol": symbol}, exch=exch
-                            )
-                        else:
-                            last_time = int(current_values["timestamp"]) + 1
+            #             if current_values is None:
+            #                 fundingRatesValue[symbol] = Helper().get_funding_rates(
+            #                     exch=exch, symbol=symbol, limit=100
+            #                 )
+            #             else:
+            #                 last_time = int(current_values["timestamp"]) + 1
 
-                            fundingRatesValue[symbol] = Helper().get_funding_rates_dapi(
-                                exch=exch,
-                                params={
-                                    "limit": 100,
-                                    "symbol": symbol,
-                                    "startTime": last_time,
-                                },
-                            )
+            #                 fundingRatesValue[symbol] = Helper().get_funding_rates(
+            #                     exch=exch, symbol=symbol, limit=100, since=last_time
+            #                 )
 
-                        for item in fundingRatesValue[symbol]:
-                            item["timestamp"] = item["fundingTime"]
-                            item["fundingRate"] = float(item["fundingRate"])
-                            item["base"] = item["symbol"][:-8]
-                            item["quote"] = "USD"
-                            item.pop("fundingTime", None)
-                            if scalar is not None:
-                                item["scalar"] = scalar
+            #             if len(fundingRatesValue[symbol]) > 0:
+            #                 funding_rate = Helper().get_funding_rate(
+            #                     exch=exch, symbol=symbol
+            #                 )
+
+            #                 scalar = 1
+
+            #                 if config["funding_rates"]["period"] == "daily":
+            #                     scalar = 365
+            #                 elif config["funding_rates"]["period"] == "interval":
+            #                     scalar = 24 * 365 * 3600000
+            #                     scalar /= int(funding_rate["fundingTimestamp"]) - int(
+            #                         fundingRatesValue[symbol][-1]["timestamp"]
+            #                     )
+
+            #                 for item in fundingRatesValue[symbol]:
+            #                     item["nextFundingRate"] = funding_rate["fundingRate"]
+            #                     item["nextFundingTime"] = funding_rate["fundingTimestamp"]
+            #                     item["base"] = symbol.split("/")[0]
+            #                     item["quote"] = "USD"
+            #                     item["scalar"] = scalar
+                        
                     
-                    except ccxt.InvalidNonce as e:
-                        print("Hit rate limit", e)
-                        time.sleep(back_off[exchange] / 1000.0)
-                        back_off[exchange] *= 2
-                        return False
+            #         except ccxt.InvalidNonce as e:
+            #             print("Hit rate limit", e)
+            #             time.sleep(back_off[exchange] / 1000.0)
+            #             back_off[exchange] *= 2
+            #             return False
                 
-                    except Exception as e:
-                        print("An error occurred in Funding Rates:", e)
-                        pass
+            #         except Exception as e:
+            #             print("An error occurred in Funding Rates:", e)
+            #             pass
 
-                # elif exchange == "bybit":
-                #     query = {}
-                #     if exchange:
-                #         query["venue"] = exchange
-                #     query["symbol"] = symbol
+            #     # elif exchange == "bybit":
+            #     #     query = {}
+            #     #     if exchange:
+            #     #         query["venue"] = exchange
+            #     #     query["symbol"] = symbol
 
-                #     try:
-                #         funding_rate_values = (
-                #             self.funding_rates_db.find(query).sort("_id", -1).limit(1)
-                #         )
+            #     #     try:
+            #     #         funding_rate_values = (
+            #     #             self.funding_rates_db.find(query).sort("_id", -1).limit(1)
+            #     #         )
 
-                #         current_values = None
-                #         for item in funding_rate_values:
-                #             current_values = item["funding_rates_value"]
+            #     #         current_values = None
+            #     #         for item in funding_rate_values:
+            #     #             current_values = item["funding_rates_value"]
 
-                #         if current_values is None:
-                #             fundingRatesValue[symbol] = BybitHelper().get_funding_rates(
-                #                 symbol=symbol, limit=100, exch=exch
-                #             )
-                #             print(fundingRatesValue[symbol])
-                #         else:
-                #             last_time = int(current_values["timestamp"]) + 1
+            #     #         if current_values is None:
+            #     #             fundingRatesValue[symbol] = BybitHelper().get_funding_rates(
+            #     #                 symbol=symbol, limit=100, exch=exch
+            #     #             )
+            #     #             print(fundingRatesValue[symbol])
+            #     #         else:
+            #     #             last_time = int(current_values["timestamp"]) + 1
 
-                #             fundingRatesValue[symbol] = Helper().get_funding_rates_dapi(
-                #                 exch=exch,
-                #                 params={
-                #                     "limit": 100,
-                #                     "symbol": symbol,
-                #                     "startTime": last_time,
-                #                 },
-                #             )
+            #     #             fundingRatesValue[symbol] = Helper().get_funding_rates_dapi(
+            #     #                 exch=exch,
+            #     #                 params={
+            #     #                     "limit": 100,
+            #     #                     "symbol": symbol,
+            #     #                     "startTime": last_time,
+            #     #                 },
+            #     #             )
 
-                #         for item in fundingRatesValue[symbol]:
-                #             item["timestamp"] = item["fundingTime"]
-                #             item["fundingRate"] = float(item["fundingRate"])
-                #             item["base"] = item["symbol"][:-8]
-                #             item["quote"] = "USD"
-                #             item.pop("fundingTime", None)
-                #             if scalar is not None:
-                #                 item["scalar"] = scalar
+            #     #         for item in fundingRatesValue[symbol]:
+            #     #             item["timestamp"] = item["fundingTime"]
+            #     #             item["fundingRate"] = float(item["fundingRate"])
+            #     #             item["base"] = item["symbol"][:-8]
+            #     #             item["quote"] = "USD"
+            #     #             item.pop("fundingTime", None)
+            #     #             if scalar is not None:
+            #     #                 item["scalar"] = scalar
                     
-                #     except ccxt.InvalidNonce as e:
-                #         print("Hit rate limit", e)
-                #         time.sleep(back_off[exchange] / 1000.0)
-                #         back_off[exchange] *= 2
-                #         return False
+            #     #     except ccxt.InvalidNonce as e:
+            #     #         print("Hit rate limit", e)
+            #     #         time.sleep(back_off[exchange] / 1000.0)
+            #     #         back_off[exchange] *= 2
+            #     #         return False
                 
-                #     except Exception as e:
-                #         print("An error occurred in Funding Rates:", e)
-                #         pass
+            #     #     except Exception as e:
+            #     #         print("An error occurred in Funding Rates:", e)
+            #     #         pass
                     
-                elif exchange == "okx":
-                    query = {}
-                    if exchange:
-                        query["venue"] = exchange
-                    query["symbol"] = symbol
+            #     elif exchange == "okx":
+            #         query = {}
+            #         if exchange:
+            #             query["venue"] = exchange
+            #         query["symbol"] = symbol
 
-                    try:
-                        funding_rate_values = (
-                            self.funding_rates_db.find(query).sort("_id", -1).limit(1)
-                        )
+            #         try:
+            #             funding_rate_values = (
+            #                 self.funding_rates_db.find(query).sort("_id", -1).limit(1)
+            #             )
 
-                        current_values = None
-                        for item in funding_rate_values:
-                            current_values = item["funding_rates_value"]
+            #             current_values = None
+            #             for item in funding_rate_values:
+            #                 current_values = item["funding_rates_value"]
 
-                        if current_values is None:
-                            fundingRatesValue[symbol] = OKXHelper().get_funding_rates(
-                                exch=exch, limit=100, symbol=symbol
-                            )
-                        else:
-                            last_time = int(current_values["timestamp"]) + 1
+            #             if current_values is None:
+            #                 fundingRatesValue[symbol] = OKXHelper().get_funding_rates(
+            #                     exch=exch, limit=100, symbol=symbol
+            #                 )
+            #             else:
+            #                 last_time = int(current_values["timestamp"]) + 1
 
-                            fundingRatesValue[symbol] = OKXHelper().get_funding_rates(
-                                exch=exch, limit=100, symbol=symbol, since=last_time
-                            )
+            #                 fundingRatesValue[symbol] = OKXHelper().get_funding_rates(
+            #                     exch=exch, limit=100, symbol=symbol, since=last_time
+            #                 )
 
-                        if len(fundingRatesValue[symbol]) > 0:
-                            funding_rate = OKXHelper().get_funding_rate(
-                                exch=exch,
-                                params={
-                                    "instId": fundingRatesValue[symbol][0]["info"][
-                                        "instId"
-                                    ]
-                                },
-                            )["data"][0]
+            #             if len(fundingRatesValue[symbol]) > 0:
+            #                 funding_rate = OKXHelper().get_funding_rate(
+            #                     exch=exch, symbol=symbol
+            #                 )
 
-                            current_funding_rate = {}
+            #                 current_funding_rate = {}
 
-                            current_funding_rate["info"] = funding_rate
-                            current_funding_rate["symbol"] = symbol
-                            current_funding_rate["fundingRate"] = funding_rate[
-                                "fundingRate"
-                            ]
-                            current_funding_rate["info"]["realizedRate"] = funding_rate[
-                                "fundingRate"
-                            ]
-                            current_funding_rate["timestamp"] = funding_rate[
-                                "fundingTime"
-                            ]
-                            current_funding_rate["datetime"] = datetime.fromtimestamp(
-                                int(funding_rate["fundingTime"]) / 1000, timezone.utc
-                            )
+            #                 current_funding_rate["info"] = funding_rate['info']
+            #                 current_funding_rate["symbol"] = symbol
+            #                 current_funding_rate["fundingRate"] = funding_rate["fundingRate"]
+            #                 current_funding_rate["info"]["realizedRate"] = funding_rate["fundingRate"]
+            #                 current_funding_rate["timestamp"] = funding_rate["fundingTimestamp"]
+            #                 current_funding_rate["datetime"] = funding_rate["fundingDatetime"]
+            #                 fundingRatesValue[symbol].append(current_funding_rate)
 
-                            fundingRatesValue[symbol].append(current_funding_rate)
+            #                 scalar = 1
 
-                            scalar = 1
+            #                 if config["funding_rates"]["period"] == "daily":
+            #                     scalar = 365
+            #                 elif config["funding_rates"]["period"] == "interval":
+            #                     scalar = 24 * 365 * 3600000
+            #                     scalar /= int(funding_rate["nextFundingTimestamp"]) - int(
+            #                         funding_rate["fundingTimestamp"]
+            #                     )
 
-                            if config["funding_rates"]["period"] == "daily":
-                                scalar = 365
-                            elif config["funding_rates"]["period"] == "interval":
-                                scalar = 24 * 365 * 3600000
-                                scalar /= int(funding_rate["nextFundingTime"]) - int(
-                                    funding_rate["fundingTime"]
-                                )
+            #                 for item in fundingRatesValue[symbol]:
+            #                     item["nextFundingRate"] = funding_rate["nextFundingRate"]
+            #                     item["nextFundingTime"] = funding_rate["nextFundingTimestamp"]
+            #                     item["fundingRate"] = float(item["fundingRate"])
+            #                     item["base"] = symbol.split("/")[0]
+            #                     item["quote"] = "USD"
+            #                     item.pop("fundingTime", None)
+            #                     item["scalar"] = scalar
+            #                     if config["funding_rates"][exchange]["valid"] == "valid_to":
+            #                         item["timestamp"] = int(item["timestamp"]) - (
+            #                             int(funding_rate["nextFundingTimestamp"])
+            #                             - int(funding_rate["fundingTimestamp"])
+            #                         )
+            #                         item["nextFundingTime"] = int(item["nextFundingTime"]) - (
+            #                             int(funding_rate["nextFundingTimestamp"])
+            #                             - int(funding_rate["fundingTimestamp"])
+            #                         )
 
-                            for item in fundingRatesValue[symbol]:
-                                item["nextFundingRate"] = funding_rate[
-                                    "nextFundingRate"
-                                ]
-                                item["nextFundingTime"] = funding_rate[
-                                    "nextFundingTime"
-                                ]
-                                item["fundingRate"] = float(item["fundingRate"])
-                                item["base"] = symbol.split("-")[0]
-                                item["quote"] = "USD"
-                                item.pop("fundingTime", None)
-                                item["scalar"] = scalar
-                                if (
-                                    config["funding_rates"][exchange]["valid"]
-                                    == "valid_to"
-                                ):
-                                    item["timestamp"] = int(item["timestamp"]) - (
-                                        int(funding_rate["nextFundingTime"])
-                                        - int(funding_rate["fundingTime"])
-                                    )
-                                    item["nextFundingTime"] = int(item["nextFundingTime"]) - (
-                                        int(funding_rate["nextFundingTime"])
-                                        - int(funding_rate["fundingTime"])
-                                    )
-
-                    except ccxt.InvalidNonce as e:
-                        print("Hit rate limit", e)
-                        time.sleep(back_off[exchange] / 1000.0)
-                        back_off[exchange] *= 2
-                        return False
+            #         except ccxt.InvalidNonce as e:
+            #             print("Hit rate limit", e)
+            #             time.sleep(back_off[exchange] / 1000.0)
+            #             back_off[exchange] *= 2
+            #             return False
                 
-                    except Exception as e:
-                        print("An error occurred in Funding Rates:", e)
-                        pass
+            #         except Exception as e:
+            #             print("An error occurred in Funding Rates:", e)
+            #             pass
 
         back_off[exchange] = config['dask']['back_off']
 
-        if 'symbols_d' in globals() or 'symbols_d' in locals():
-            symbols = symbols + symbols_d
+        # if 'symbols_d' in globals() or 'symbols_d' in locals():
+        #     symbols = symbols + symbols_d
 
         flag = False
         for symbol in symbols:
@@ -542,7 +524,7 @@ class FundingRates:
                     new_value = {
                         "venue": exchange,
                         "funding_rates_value": item,
-                        "symbol": symbol.split(":")[0],
+                        "symbol": item['base'] + "/" + item['quote'],
                         "active": True,
                         "entry": False,
                         "exit": False,
