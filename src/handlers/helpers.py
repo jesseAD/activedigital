@@ -134,6 +134,10 @@ class Helper:
         return exch.fetch_funding_rate_history(
             symbol=symbol, limit=limit, since=since, params=params
         )
+    
+    def get_funding_rate(self, exch, symbol, params={}):
+        return exch.fetch_funding_rate(symbol=symbol)
+        # return exch.public_get_public_funding_rate(params)
 
     def get_funding_rates_dapi(self, exch, params={}):
         return exch.dapipublic_get_fundingrate(params=params)
@@ -183,6 +187,9 @@ class Helper:
     
     def get_pm_cross_margin_ratio(self, exch):
         return exch.papi_get_account()['uniMMR']
+    
+    def get_maintenance_margin_ratio(self, exch):
+        return exch.fapiPrivateV2GetAccount()['totalMaintMargin']
 
     def calc_liquidation_buffer(self, exchange, mgnRatio):
         return max(0, min(
@@ -238,10 +245,7 @@ class OKXHelper(Helper):
         return exch.public_get_public_mark_price(params)["data"][0]
 
     def get_transactions(self, exch, params={}):
-        return exch.private_get_account_bills_archive(params)["data"]
-
-    def get_funding_rate(self, exch, params={}):
-        return exch.public_get_public_funding_rate(params)
+        return exch.private_get_account_bills_archive(params)["data"]    
 
     def get_borrow_rate(self, exch, params={}):
         return exch.private_get_account_interest_rate(params=params)
