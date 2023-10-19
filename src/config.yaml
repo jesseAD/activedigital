@@ -148,9 +148,9 @@ funding_rates:
     okx_usdt: *symbols_3
     okx_usd: *symbols_5
     bybit_usdt: *symbols_3
-    bybit_usd: *symbols_4
+    bybit_usd: *symbols_5
 
-exchanges: ["binance", "okx", ] # "bybit"]
+exchanges: ["bybit", "binance", "okx", ] # 
 
 clients:
   rundmc:

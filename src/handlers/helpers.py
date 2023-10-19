@@ -148,8 +148,27 @@ class Helper:
     def get_non_portfolio_margin(self, exch, params={}):
         return exch.fapiprivatev2_get_positionrisk(params)[0]
 
-    def get_mark_prices(self, exch, params={}):
-        return exch.fapipublic_get_premiumindex(params)
+    def get_mark_prices(self, exch, symbol):
+        params = {
+            'symbol': symbol
+        }
+        res = exch.fapipublic_get_premiumindex(params)
+        return {
+            'markPrice': res['markPrice'],
+            'timestamp': res['time'],
+            'symbol': res['symbol']
+        }
+
+    def get_index_prices(self, exch, symbol):
+        params = {
+            'symbol': symbol
+        }
+        res = exch.fapipublic_get_premiumindex(params)
+        return {
+            'indexPrice': res['indexPrice'],
+            'timestamp': res['time'],
+            'symbol': res['symbol']
+        }
 
     def get_future_transactions(self, exch, params={}):
         return exch.fapiprivate_get_income(params)
@@ -241,8 +260,18 @@ class OKXHelper(Helper):
     def get_positions(self, exch):
         return exch.fetch_positions(params={"type": "swap"})
 
-    def get_mark_prices(self, exch, params={}):
-        return exch.public_get_public_mark_price(params)["data"][0]
+    def get_mark_prices(self, exch, symbol):
+        params = {
+            'instId': symbol,
+            'instType': "SWAP"
+        }
+        res = exch.public_get_public_mark_price(params)["data"][0]
+
+        return {
+            'symbol': res['instId'],
+            'timestamp': res['ts'],
+            'markPrice': res['markPx']
+        }
 
     def get_transactions(self, exch, params={}):
         return exch.private_get_account_bills_archive(params)["data"]    
@@ -250,15 +279,46 @@ class OKXHelper(Helper):
     def get_borrow_rate(self, exch, params={}):
         return exch.private_get_account_interest_rate(params=params)
 
-    def get_index_prices(self, exch, params={}):
-        return exch.public_get_market_index_tickers(params)
+    def get_index_prices(self, exch, symbol):
+        params = {'instId': symbol}
+        res = exch.public_get_market_index_tickers(params)['data'][0]
+        return {
+            'indexPrice': res['idxPx'],
+            'timestamp': res['ts'],
+            'symbol': res['instId']
+        }
 
     def get_cross_margin_ratio(self, exch):
         return exch.private_get_account_balance()["data"][0]["mgnRatio"]
     
 
 class BybitHelper(Helper):
-    pass
+    def get_mark_prices(self, exch, symbol):
+        params = {
+            'symbol': symbol,
+            'limit': 1,
+            'interval': "1"
+        }
+        res = exch.public_get_v5_market_mark_price_kline(params=params)['result']
+        return {
+            'symbol': res['symbol'],
+            'timestamp': res['list'][0][0],
+            'markPrice': res['list'][0][1]
+        }
+    
+    def get_index_prices(self, exch, symbol):
+        params = {
+            'symbol': symbol,
+            'limit': 1,
+            'interval': 1
+        }
+        res = exch.public_get_v5_market_index_price_kline(params=params)['result']
+        return {
+            'symbol': res['symbol'],
+            'timestamp': res['list'][0][0],
+            'indexPrice': res['list'][0][1]
+        }
+
 
 class CoinbaseHelper:
     def get_usdt2usd_ticker(self, exch):

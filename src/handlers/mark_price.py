@@ -10,7 +10,7 @@ from src.lib.exchange import Exchange
 from src.config import read_config_file
 from src.handlers.helpers import Helper
 from src.handlers.helpers import OKXHelper
-from src.lib.mapping import Mapping
+from src.handlers.helpers import BybitHelper
 from src.handlers.database_connector import database_connector
 
 load_dotenv()
@@ -82,26 +82,23 @@ class MarkPrices:
         if markPriceValue is None:
             if exch == None:
                 exch = Exchange(exchange).exch()
-                
-            symbols = config['mark_prices'][exchange]
+            
+            symbols = config['symbols']['symbols_1']
             
             markPriceValue = {}
             for symbol in symbols:
                 try:
                     if exchange == "okx":
-                        markPriceValue[symbol] = Mapping().mapping_mark_price(
-                            exchange=exchange,
-                            mark_price=OKXHelper().get_mark_prices(
-                                exch=exch,
-                                params={"instType": "SWAP", "instId": symbol},
-                            ),
+                        markPriceValue[symbol+"/USDT"] = OKXHelper().get_mark_prices(
+                            exch=exch, symbol=symbol+"-USDT-SWAP"
                         )
                     elif exchange == "binance":
-                        markPriceValue[symbol] = Mapping().mapping_mark_price(
-                            exchange=exchange,
-                            mark_price=Helper().get_mark_prices(
-                                exch=exch, params={"symbol": symbol}
-                            ),
+                        markPriceValue[symbol+"/USDT"] = Helper().get_mark_prices(
+                            exch=exch, symbol=symbol+"USDT"
+                        )
+                    elif exchange == "bybit":
+                        markPriceValue[symbol+"/USDT"] = BybitHelper().get_mark_prices(
+                            exch=exch, symbol=symbol+"USDT"
                         )
 
                 except ccxt.InvalidNonce as e:
