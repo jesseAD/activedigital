@@ -10,6 +10,7 @@ from src.lib.exchange import Exchange
 from src.config import read_config_file
 from src.handlers.helpers import Helper
 from src.handlers.helpers import OKXHelper
+from src.handlers.helpers import BybitHelper
 from src.handlers.helpers import CoinbaseHelper
 from src.handlers.database_connector import database_connector
 
@@ -74,27 +75,19 @@ class IndexPrices:
             if exch == None:
                 exch = Exchange(exchange).exch()
 
-            symbols = config['index_prices']['symbols'][exchange]
+            symbols = config['symbols']['symbols_1']
             indexPriceValue = {}
 
             for symbol in symbols:
                 try:
                     if exchange == "okx":
-                        symbol = symbol.replace('/', '-')
-                        index_price = OKXHelper().get_index_prices(exch=exch, params={'instId': symbol})['data'][0]
-                        indexPriceValue[symbol.replace('-', '')] = {
-                            'indexPrice': index_price['idxPx'],
-                            'timestamp': index_price['ts'],
-                            'symbol': index_price['instId']
-                        }
+                        indexPriceValue[symbol+"/USDT"] = OKXHelper().get_index_prices(exch=exch, symbol=symbol+"-USDT")
+
                     elif exchange == "binance":
-                        symbol = symbol.replace('/', '')
-                        index_price = Helper().get_mark_prices(exch=exch, params={'symbol': symbol})
-                        indexPriceValue[symbol] = {
-                            'indexPrice': index_price['indexPrice'],
-                            'timestamp': index_price['time'],
-                            'symbol': index_price['symbol']
-                        }
+                        indexPriceValue[symbol+"/USDT"] = Helper().get_index_prices(exch=exch, symbol=symbol+"USDT")
+
+                    elif exchange == "bybit":
+                        indexPriceValue[symbol+"/USDT"] = BybitHelper().get_index_prices(exch=exch, symbol=symbol+"USDT")
 
                 except ccxt.InvalidNonce as e:
                     print("Hit rate limit", e)

@@ -84,13 +84,13 @@ class FundingRates:
                 symbols = config["funding_rates"]["symbols"]["okx_usdt"] + config["funding_rates"]["symbols"]["okx_usd"]
                 # symbols_d = config["funding_rates"]["symbols"]["okx_usd"]
             elif exchange == "bybit":
-                symbols = config["funding_rates"]["symbols"]["bybit_usdt"]
-                symbols_d = config["funding_rates"]["symbols"]["bybit_usd"]
+                symbols = config["funding_rates"]["symbols"]["bybit_usdt"] + config["funding_rates"]["symbols"]["bybit_usd"]
+                # symbols_d = config["funding_rates"]["symbols"]["bybit_usd"]
 
         if fundingRatesValue is None:
             if exch == None:
                 exch = Exchange(exchange).exch()
-
+            
             fundingRatesValue = {}
             scalar = 1
 
@@ -225,39 +225,48 @@ class FundingRates:
                                 item["scalar"] = scalar
                         
                         elif exchange == "bybit":
-                            # funding_rate = BybitHelper().get_mark_prices(
-                            #     exch=exch,
-                            #     params={
-                            #         "symbol": fundingRatesValue[symbol][0]["info"][
-                            #             "symbol"
-                            #         ]
-                            #     },
-                            # )
+                            funding_rate = BybitHelper().get_funding_rate(
+                                exch=exch, symbol=symbol
+                            )
 
                             scalar = 1
 
-                            # if config["funding_rates"]["period"] == "daily":
-                            #     scalar = 365
-                            # elif config["funding_rates"]["period"] == "interval":
-                            #     scalar = 24 * 365 * 3600000
-                            #     scalar /= int(funding_rate["nextFundingTime"]) - int(
-                            #         fundingRatesValue[symbol][-1]["timestamp"]
-                            #     )
+                            if config["funding_rates"]["period"] == "daily":
+                                scalar = 365
+                            elif config["funding_rates"]["period"] == "interval":
+                                scalar = 24 * 365 * 3600000
+                                scalar /= int(funding_rate["fundingTimestamp"]) - int(
+                                    fundingRatesValue[symbol][-1]["timestamp"]
+                                )
 
                             for item in fundingRatesValue[symbol]:
-                                # item["nextFundingRate"] = funding_rate[
-                                #     "lastFundingRate"
-                                # ]
-                                # item["nextFundingTime"] = funding_rate[
-                                #     "nextFundingTime"
-                                # ]
-                                item["base"] = item["symbol"][:-10]
-                                item["quote"] = "USDT"
+                                item["nextFundingRate"] = funding_rate["fundingRate"]
+                                item["nextFundingTime"] = funding_rate["fundingTimestamp"]
+                                item["base"] = symbol.split("/")[0]
+                                item["quote"] = symbol.split("/")[1].split(":")[0]
                                 item["scalar"] = scalar
 
                     else:
                         if exchange == "binance":
                             funding_rate = Helper().get_funding_rate(
+                                exch=exch, symbol=symbol
+                            )
+
+                            self.funding_rates_db.update_one(
+                                {
+                                    "venue": exchange,
+                                    "symbol": symbol.split(":")[0],
+                                    "funding_rates_value.timestamp": current_values['timestamp']
+                                },
+                                {
+                                    "$set": {
+                                        "funding_rates_value.nextFundingRate": funding_rate['fundingRate']
+                                    }
+                                },
+                                upsert=False
+                            )
+                        elif exchange == "bybit":
+                            funding_rate = BybitHelper().get_funding_rate(
                                 exch=exch, symbol=symbol
                             )
 
@@ -493,7 +502,7 @@ class FundingRates:
             #             pass
 
         back_off[exchange] = config['dask']['back_off']
-
+        
         # if 'symbols_d' in globals() or 'symbols_d' in locals():
         #     symbols = symbols + symbols_d
 
