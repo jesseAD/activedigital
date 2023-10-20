@@ -53,7 +53,7 @@ def get_data_collectors(client):
     data_collectors = []
 
     collections = ['funding_payments', ]
-    exchanges = ['binance', 'okx']
+    exchanges = ['binance', 'okx', 'bybit']
 
     for collection in collections:
         for exchange in config['clients'][client][collection]:
