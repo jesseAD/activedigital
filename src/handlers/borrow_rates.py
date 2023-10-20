@@ -11,6 +11,7 @@ from src.lib.exchange import Exchange
 from src.config import read_config_file
 from src.handlers.helpers import Helper
 from src.handlers.helpers import OKXHelper
+from src.handlers.helpers import BybitHelper
 from src.handlers.database_connector import database_connector
 
 load_dotenv()
@@ -85,7 +86,7 @@ class BorrowRates:
             try:
                 if exch == None:
                     exch = Exchange(exchange).exch()
-
+                
                 borrowRatesValue = {}
 
                 for code in codes:
@@ -103,46 +104,70 @@ class BorrowRates:
                     for item in borrow_rate_values:
                         current_values = item["borrow_rates_value"]
 
-                    if current_values is None:
-                        if exchange == "okx":
-                            borrowRatesValue[code] = OKXHelper().get_borrow_rates(
-                                exch=exch, limit=92, code=code
-                            )
+                    try:
+                        if current_values is None:
+                            if exchange == "okx":
+                                borrowRatesValue[code] = OKXHelper().get_borrow_rates(
+                                    exch=exch, limit=92, code=code
+                                )
+                            elif exchange == "binance":
+                                borrowRatesValue[code] = Helper().get_borrow_rates(
+                                    exch=exch, limit=92, code=code
+                                )
+                            elif exchange == "bybit":
+                                res = BybitHelper().get_borrow_rate(
+                                    exch=exch, code=code
+                                )
+                                if res != None:
+                                    borrowRatesValue[code] = [res]
+                                else:
+                                    borrowRatesValue[code] = []
                         else:
-                            borrowRatesValue[code] = Helper().get_borrow_rates(
-                                exch=exch, limit=92, code=code
-                            )
-                    else:
-                        last_time = int(current_values["timestamp"])
-                        if exchange == "okx":
-                            borrowRatesValue[code] = OKXHelper().get_borrow_rates(
-                                exch=exch, limit=92, code=code, since=last_time+1
-                            )
-                        else:
-                            borrowRatesValue[code] = Helper().get_borrow_rates(
-                                exch=exch, limit=92, code=code, since=last_time+1
-                            )
-                    
-                    if len(borrowRatesValue[code]) > 0:
-                        scalar = 1
-                        if config['borrow_rates']['period'][exchange] != "yearly":
-                            scalar = 365
+                            last_time = int(current_values["timestamp"])
+                            if exchange == "okx":
+                                borrowRatesValue[code] = OKXHelper().get_borrow_rates(
+                                    exch=exch, limit=92, code=code, since=last_time+1
+                                )
+                            elif exchange == "binance":
+                                borrowRatesValue[code] = Helper().get_borrow_rates(
+                                    exch=exch, limit=92, code=code, since=last_time+1
+                                )
+                            elif exchange == "bybit":                            
+                                res = BybitHelper().get_borrow_rate(
+                                    exch=exch, code=code
+                                )
+                                if res != None:
+                                    borrowRatesValue[code] = [res]
+                                else:
+                                    borrowRatesValue[code] = []
+                        
+                        if len(borrowRatesValue[code]) > 0:
+                            scalar = 1
+                            if config['borrow_rates']['period'][exchange] != "yearly":
+                                scalar = 365
 
-                        if exchange == "okx":
-                            borrow_rate = OKXHelper().get_borrow_rate(
-                                exch=exch, params={"ccy": code}
-                            )["data"][0]["interestRate"]
-                            for item in borrowRatesValue[code]:
-                                item["nextBorrowRate"] = float(borrow_rate) * 24 * 365 / scalar
-                                item['scalar'] = scalar
+                            if exchange == "okx":
+                                borrow_rate = OKXHelper().get_borrow_rate(
+                                    exch=exch, params={"ccy": code}
+                                )["data"][0]["interestRate"]
+                                for item in borrowRatesValue[code]:
+                                    item["nextBorrowRate"] = float(borrow_rate) * 24 * 365 / scalar
+                                    item['scalar'] = scalar
 
-                        elif exchange == "binance":
-                            borrow_rate = Helper().get_borrow_rate(
-                                exch=exch, params={"assets": code, "isIsolated": False}
-                            )[0]["nextHourlyInterestRate"]
-                            for item in borrowRatesValue[code]:
-                                item["nextBorrowRate"] = float(borrow_rate) * 24 * 365 / scalar
-                                item['scalar'] = scalar       
+                            elif exchange == "binance":
+                                borrow_rate = Helper().get_borrow_rate(
+                                    exch=exch, params={"assets": code, "isIsolated": False}
+                                )[0]["nextHourlyInterestRate"]
+                                for item in borrowRatesValue[code]:
+                                    item["nextBorrowRate"] = float(borrow_rate) * 24 * 365 / scalar
+                                    item['scalar'] = scalar      
+
+                            elif exchange == "bybit":
+                                for item in borrowRatesValue[code]:
+                                    item['scalar'] = scalar 
+                    except ccxt.BadSymbol as e:
+                        print("An error occurred in Borrow Rates:", e)
+                        pass
 
             except ccxt.InvalidNonce as e:
                 print("Hit rate limit", e)
@@ -150,7 +175,7 @@ class BorrowRates:
                 back_off[exchange] *= 2
                 return False
         
-            except Exception as e:
+            except ccxt.AuthenticationError as e:
                 print("An error occurred in Borrow Rates:", e)
 
                 for _client in config['clients']:
@@ -233,6 +258,10 @@ class BorrowRates:
                     break
 
                 pass
+
+            except Exception as e:
+                print("An error occurred in Borrow Rates:", e)
+                pass
         
         back_off[exchange] = config['dask']['back_off']
         
@@ -257,29 +286,28 @@ class BorrowRates:
             except:
                 pass
 
-        for code in codes:
-            if code in borrowRatesValue.keys():
-                for item in borrowRatesValue[code]:
-                    new_value = {
-                        "venue": exchange,
-                        "borrow_rates_value": item,
-                        "code": code,
-                        "active": True,
-                        "entry": False,
-                        "exit": False,
-                        "timestamp": datetime.now(timezone.utc),
-                    }
+        for code in borrowRatesValue:
+            for item in borrowRatesValue[code]:
+                new_value = {
+                    "venue": exchange,
+                    "borrow_rates_value": item,
+                    "code": code,
+                    "active": True,
+                    "entry": False,
+                    "exit": False,
+                    "timestamp": datetime.now(timezone.utc),
+                }
 
-                    if spot:
-                        new_value["spotMarket"] = spot
-                    if future:
-                        new_value["futureMarket"] = future
-                    if perp:
-                        new_value["perpMarket"] = perp
+                if spot:
+                    new_value["spotMarket"] = spot
+                if future:
+                    new_value["futureMarket"] = future
+                if perp:
+                    new_value["perpMarket"] = perp
 
-                    new_value["runid"] = latest_run_id
+                new_value["runid"] = latest_run_id
 
-                    borrow_rates.append(new_value)
+                borrow_rates.append(new_value)
         
         del borrowRatesValue
 

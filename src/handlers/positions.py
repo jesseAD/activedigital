@@ -11,6 +11,7 @@ from src.lib.mapping import Mapping
 from src.config import read_config_file
 from src.handlers.helpers import Helper
 from src.handlers.helpers import OKXHelper
+from src.handlers.helpers import BybitHelper
 from src.handlers.database_connector import database_connector
 
 load_dotenv()
@@ -85,14 +86,7 @@ class Positions:
     ):
         if position_value is None:
             if exch == None:
-                spec = (
-                    client.upper()
-                    + "_"
-                    + exchange.upper()
-                    + "_"
-                    + sub_account.upper()
-                    + "_"
-                )
+                spec = (client.upper() + "_" + exchange.upper() + "_" + sub_account.upper() + "_")
                 API_KEY = os.getenv(spec + "API_KEY")
                 API_SECRET = os.getenv(spec + "API_SECRET")
                 PASSPHRASE = None
@@ -102,6 +96,9 @@ class Positions:
                 exch = Exchange(
                     exchange, sub_account, API_KEY, API_SECRET, PASSPHRASE
                 ).exch()
+            # print(exch.private_get_v5_account_fee_rate(params={'symbol': "BTCUSDT"}))
+            # print(exch.fetch_positions(params={}))
+            # print(exch.private_get_v5_position_list())
 
             try:
                 if exchange == "okx":
@@ -114,6 +111,9 @@ class Positions:
                             item['marginMode'] = "cross"
                     else:
                         position_value = Helper().get_positions(exch=exch)
+                elif exchange == "bybit":
+                    position_value = BybitHelper().get_positions(exch=exch, params={})
+
                 position_value = Mapping().mapping_positions(exchange=exchange, positions=position_value)
 
             except ccxt.InvalidNonce as e:
@@ -177,9 +177,11 @@ class Positions:
                         pass
                 else:
                     try:
-                        cross_margin_ratio = float(
-                            Helper().get_maintenance_margin_ratio(exch=exch)
-                        )
+                        cross_margin_ratio = 1e10
+                        for position in position_value:
+                            if position['initialMargin'] > 0:
+                                cross_margin_ratio = (position['marginRatio'] 
+                                    if cross_margin_ratio > position['marginRatio'] else cross_margin_ratio)
                         liquidation_buffer = Helper().calc_liquidation_buffer(
                             exchange=exchange, mgnRatio=cross_margin_ratio
                         )
@@ -313,8 +315,7 @@ class Positions:
                 for position in position_info:
                     try:
                         position["markPrice"] = Helper().get_mark_prices(
-                            exch=exch,
-                            params={"symbol": position["base"] + position["quote"]},
+                            exch=exch, symbol=position['base'] + position['quote']
                         )["markPrice"]
                     except Exception as e:
                         print("An error occurred in Positions:", e)

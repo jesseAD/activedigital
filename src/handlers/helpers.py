@@ -1,4 +1,5 @@
 import os
+from datetime import datetime, timezone
 
 # from turtle import position
 from src.config import read_config_file
@@ -293,6 +294,9 @@ class OKXHelper(Helper):
     
 
 class BybitHelper(Helper):
+    def get_positions(self, exch, params={}):
+        return exch.fetch_positions(params=params)
+    
     def get_mark_prices(self, exch, symbol):
         params = {
             'symbol': symbol,
@@ -317,6 +321,23 @@ class BybitHelper(Helper):
             'symbol': res['symbol'],
             'timestamp': res['list'][0][0],
             'indexPrice': res['list'][0][1]
+        }
+    
+    def get_borrow_rate(self, exch, code):
+        params = {
+            'currency': code,
+            'vipLevel': "No VIP"
+        }
+        res = exch.public_get_v5_spot_margin_trade_data(params)['result']
+        if res == None:
+            return res
+        
+        res = res['vipCoinList'][0]['list'][0]
+        return {
+            'code': res['currency'],
+            'rate': 24 * float(res['hourlyBorrowRate']),
+            'info': res,
+            'timestamp': int(datetime.now(timezone.utc).timestamp() * 1000)
         }
 
 

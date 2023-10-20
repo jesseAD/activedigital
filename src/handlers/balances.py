@@ -10,6 +10,7 @@ from src.lib.exchange import Exchange
 from src.config import read_config_file
 from src.handlers.helpers import Helper
 from src.handlers.helpers import OKXHelper
+from src.handlers.helpers import BybitHelper
 from src.handlers.database_connector import database_connector
 
 load_dotenv()
@@ -83,14 +84,7 @@ class Balances:
     ):
         if balanceValue is None:
             if exch == None:
-                spec = (
-                    client.upper()
-                    + "_"
-                    + exchange.upper()
-                    + "_"
-                    + sub_account.upper()
-                    + "_"
-                )
+                spec = (client.upper() + "_" + exchange.upper() + "_" + sub_account.upper() + "_")
                 API_KEY = os.getenv(spec + "API_KEY")
                 API_SECRET = os.getenv(spec + "API_SECRET")
                 PASSPHRASE = None
@@ -109,6 +103,8 @@ class Balances:
                         balanceValue = Helper().get_pm_balances(exch=exch)
                     else:
                         balanceValue = Helper().get_balances(exch=exch)
+                elif exchange == "bybit":
+                    balanceValue = BybitHelper().get_balances(exch=exch)
                 
             except ccxt.InvalidNonce as e:
                 print("Hit rate limit", e)

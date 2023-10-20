@@ -121,6 +121,7 @@ borrow_rates:
   period: 
     binance: daily # yearly, daily or interval
     okx: yearly # yearly, daily or interval
+    bybit: daily # yearly, daily or interval
 
   codes: *symbols_1
 
@@ -150,7 +151,7 @@ funding_rates:
     bybit_usdt: *symbols_3
     bybit_usd: *symbols_5
 
-exchanges: ["bybit", "binance", "okx", ] # 
+exchanges: ["binance", "okx", "bybit", ] # 
 
 clients:
   rundmc:
@@ -205,6 +206,14 @@ clients:
       apikey: zyx
       apisecret: xyz
       margin_mode: non_portfolio
+    bybit_sub1: &bybit_sub1
+      margin_mode: non_portfolio
+      apikey: zyx
+      apisecret: xyz
+    bybit_sub4: &bybit_sub4
+      margin_mode: non_portfolio
+      apikey: zyx
+      apisecret: xyz
 
     funding_payments:
       okx:
@@ -212,6 +221,11 @@ clients:
         helper: okxhelper.py
         sub1ap: *okx_sub1ap
         sub2aa: *okx_sub1aa
+      bybit:
+        <<: *funding_payments
+        helper: helper.py
+        sub1: *bybit_sub1
+        sub4: *bybit_sub4
 
     balances:
       function: balance.py
