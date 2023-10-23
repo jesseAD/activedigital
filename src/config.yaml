@@ -106,6 +106,7 @@ fills:
   symbols:
     binance: *symbols_2 # ['BTCUSDT',]
     okx: *symbols_2 # ['BTC-USDT-SWAP',]
+    bybit: *symbols_2
 
 mark_prices:
   store_type: timeseries

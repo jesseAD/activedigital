@@ -78,3 +78,9 @@ okx:
     ts: timestamp
     posSide: positionSide
     fillPnl: realizedPnl
+
+bybit:
+  transaction:
+    transactionTime: timestamp
+    createdTime: timestamp
+    borrowAmount: qty

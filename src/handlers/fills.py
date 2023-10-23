@@ -10,6 +10,7 @@ from src.lib.exchange import Exchange
 from src.config import read_config_file
 from src.handlers.helpers import Helper
 from src.handlers.helpers import OKXHelper
+from src.handlers.helpers import BybitHelper
 from src.lib.mapping import Mapping
 from src.handlers.database_connector import database_connector
 
@@ -91,7 +92,8 @@ class Fills:
             symbols = []
             for position in position_values:
                 for item in position['position_value']:
-                    symbols.append(item['symbol'])
+                    symbols.append(item['info']['symbol'])
+            print(symbols)
             # if config['clients'][client]['funding_payments'][exchange][sub_account]['margin_mode'] == 'portfolio':
             #     symbols = [item.replace("/", "") for item in config["fills"]["symbols"][exchange]]
             #     symbols += [item[: -1] for item in symbols]
@@ -142,6 +144,8 @@ class Fills:
                             #         },
                             #     ),
                             # )
+                        elif exchange == "bybit":
+                            fillsValue[symbol] = BybitHelper().get_fills(exch=exch, symbol=symbol)
                         elif exchange == "binance":
                             if config['clients'][client]['funding_payments'][exchange][sub_account]['margin_mode'] == 'portfolio':
                                 fills = Helper().get_pm_fills(exch=exch, symbol=symbol, params={'limit': 100})
@@ -178,6 +182,8 @@ class Fills:
                                 #         },
                                 #     ),
                                 # )
+                            if exchange == "bybit":
+                                fillsValue[symbol] = BybitHelper().get_fills(exch=exch, symbol=symbol, since=last_time)
                             elif exchange == "binance":
                                 if config['clients'][client]['funding_payments'][exchange][sub_account]['margin_mode'] == 'portfolio':
                                     fills = Helper().get_pm_fills(exch=exch, symbol=symbol, params={'limit': 100, 'startTime': last_time})
@@ -251,7 +257,7 @@ class Fills:
                 except Exception as e:
                     print("An error occurred in Fills:", e)
                     pass
-                            
+               
         back_off[client + "_" + exchange + "_" + sub_account] = config['dask']['back_off']
         
         fills = []
