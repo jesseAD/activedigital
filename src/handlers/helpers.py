@@ -297,6 +297,12 @@ class BybitHelper(Helper):
     def get_positions(self, exch, params={}):
         return exch.fetch_positions(params=params)
     
+    def get_commissions(self, exch, params={}):
+        return exch.private_get_v5_account_transaction_log(params=params)['result']['list']
+    
+    def get_borrow_history(self, exch, params={}):
+        return exch.private_get_v5_account_borrow_history(params=params)['result']['list']
+    
     def get_mark_prices(self, exch, symbol):
         params = {
             'symbol': symbol,

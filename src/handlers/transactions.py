@@ -11,6 +11,7 @@ from src.lib.mapping import Mapping
 from src.config import read_config_file
 from src.handlers.helpers import Helper
 from src.handlers.helpers import OKXHelper
+from src.handlers.helpers import BybitHelper
 from src.handlers.database_connector import database_connector
 
 load_dotenv()
@@ -100,6 +101,17 @@ class Transactions:
                             item['info'] = {**item}
 
                         transaction_value = Mapping().mapping_transactions(
+                            exchange=exchange, transactions=transactions
+                        )
+
+                    elif exchange == "bybit":
+                        transactions = BybitHelper().get_transactions(
+                            exch=exch, params={'limit': 100}
+                        )
+                        for item in transactions:
+                            item['info'] = {**item}
+
+                        transactions_value = Mapping().mapping_transactions(
                             exchange=exchange, transactions=transactions
                         )
 
@@ -385,7 +397,86 @@ class Transactions:
                                     exchange=exchange, transactions=spot_trades
                                 )
                                 transaction_value["spot"] = spot_trades
-            
+
+                    elif exchange == "bybit":
+                        transaction_value = {}
+                        query = {}
+                        if client:
+                            query["client"] = client
+                        if exchange:
+                            query["venue"] = exchange
+                        if sub_account:
+                            query["account"] = sub_account
+                        query['trade_type'] = "commission"
+
+                        transactions_values = (
+                            self.transactions_db.find(query)
+                            .sort("transaction_value.timestamp", -1)
+                            .limit(1)
+                        )
+
+                        current_value = None
+                        for item in transactions_values:
+                            current_value = item["transaction_value"]
+
+                        if current_value is None:
+                            transactions = BybitHelper().get_commissions(exch=exch, params={'limit': 50})
+                            for item in transactions:
+                                item['info'] = {**item}
+
+                            transaction_value['commission'] = Mapping().mapping_transactions(
+                                exchange=exchange, transactions=transactions
+                            )
+                        else:
+                            last_time = int(current_value['timestamp']) + 1 + config['transactions']['time_slack']
+                            transactions = BybitHelper().get_commissions(
+                                exch=exch,
+                                params={'startTime': last_time, 'limit': 50}
+                            )
+
+                            for item in transactions:
+                                item['info'] = {**item}
+
+                            transaction_value['commission'] = Mapping().mapping_transactions(
+                                exchange=exchange, transactions=transactions
+                            )
+
+                        query['trade_type'] = "borrow"
+
+                        transactions_values = (
+                            self.transactions_db.find(query)
+                            .sort("transaction_value.timestamp", -1)
+                            .limit(1)
+                        )
+
+                        current_value = None
+                        for item in transactions_values:
+                            current_value = item["transaction_value"]
+
+                        if current_value is None:
+                            transactions = BybitHelper().get_borrow_history(exch=exch, params={'limit': 50})
+                            for item in transactions:
+                                item['info'] = {**item}
+                                item['funding'] = 0
+
+                            transaction_value['borrow'] = Mapping().mapping_transactions(
+                                exchange=exchange, transactions=transactions
+                            )
+                        else:
+                            last_time = int(current_value['timestamp']) + 1 + config['transactions']['time_slack']
+                            transactions = BybitHelper().get_borrow_history(
+                                exch=exch,
+                                params={'startTime': last_time, 'limit': 50}
+                            )
+
+                            for item in transactions:
+                                item['info'] = {**item}
+                                item['funding'] = 0
+
+                            transaction_value['borrow'] = Mapping().mapping_transactions(
+                                exchange=exchange, transactions=transactions
+                            )
+
             except ccxt.InvalidNonce as e:
                 print("Hit rate limit", e)
                 time.sleep(back_off[client + "_" + exchange + "_" + sub_account] / 1000.0)
@@ -395,7 +486,7 @@ class Transactions:
             except Exception as e:
                 print("An error occurred in Transactions:", e)
                 return False
-            
+        print("fetched")
         back_off[client + "_" + exchange + "_" + sub_account] = config['dask']['back_off']
 
         tickers = list(self.tickers_db.find({"venue": exchange}).sort("_id", -1).limit(1))[0]['ticker_value']
@@ -490,7 +581,7 @@ class Transactions:
 
                     transaction.append(new_value)
 
-            if exchange == "binance":
+            elif exchange == "binance":
                 # if len(transaction_value["future"]) > 0:
                 for _type in transaction_value:
                     for item in transaction_value[_type]:
@@ -524,10 +615,56 @@ class Transactions:
                         if perp:
                             new_value["perpMarket"] = perp
 
-                        transaction.append(new_value)                
+                        transaction.append(new_value)   
 
-                if len(transaction) == 0:
-                    return False
+            elif exchange == "bybit":
+                for _type in transaction_value:
+                    for item in transaction_value[_type]:
+                        item['timestamp'] = int(item["timestamp"]) - config['transactions']['time_slack']
+                        if item['qty'] != '':
+                            item['qty'] = (
+                                float(item["qty"]) * 
+                                Helper().calc_cross_ccy_ratio(
+                                    item['currency'],
+                                    config["clients"][client]["funding_payments"][exchange]["base_ccy"], 
+                                    tickers
+                                )
+                            )
+                        if item['funding'] != '':
+                            item['funding'] = (
+                                float(item["funding"]) * 
+                                Helper().calc_cross_ccy_ratio(
+                                    item['currency'],
+                                    config["clients"][client]["funding_payments"][exchange]["base_ccy"], 
+                                    tickers
+                                )
+                            )
+                        new_value = {
+                            "client": client,
+                            "venue": exchange,
+                            "account": "Main Account",
+                            "transaction_value": item,
+                            "trade_type": _type,
+                            "runid": latest_run_id,
+                            "active": True,
+                            "entry": False,
+                            "exit": False,
+                            "timestamp": current_time,
+                        }
+                        
+                        if sub_account:
+                            new_value["account"] = sub_account
+                        if spot:
+                            new_value["spotMarket"] = spot
+                        if future:
+                            new_value["futureMarket"] = future
+                        if perp:
+                            new_value["perpMarket"] = perp
+
+                        transaction.append(new_value)     
+
+            if len(transaction) == 0:
+                return False
         
         del transaction_value
 

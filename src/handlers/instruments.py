@@ -135,6 +135,16 @@ class Instruments:
                             'perp': perp_value,
                             'spread': spot_value['mid_point'] - perp_value['mid_point'],
                         }   
+                    
+                    elif exchange == "bybit":
+                        spot_value = Helper().get_bid_ask(exch=exch, symbol=config['bid_ask']['spot'][i])
+                        perp_value = Helper().get_bid_ask(exch=exch, symbol=config['bid_ask']['perp'][i])
+
+                        bid_ask_value[config['bid_ask']['spot'][i]] = {
+                            'spot': spot_value,
+                            'perp': perp_value,
+                            'spread': spot_value['mid_point'] - perp_value['mid_point'],
+                        } 
 
                 except ccxt.InvalidNonce as e:
                     print("Hit rate limit", e)
