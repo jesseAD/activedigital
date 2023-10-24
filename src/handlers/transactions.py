@@ -486,7 +486,7 @@ class Transactions:
             except Exception as e:
                 print("An error occurred in Transactions:", e)
                 return False
-        print("fetched")
+        
         back_off[client + "_" + exchange + "_" + sub_account] = config['dask']['back_off']
 
         tickers = list(self.tickers_db.find({"venue": exchange}).sort("_id", -1).limit(1))[0]['ticker_value']
@@ -621,9 +621,9 @@ class Transactions:
                 for _type in transaction_value:
                     for item in transaction_value[_type]:
                         item['timestamp'] = int(item["timestamp"]) - config['transactions']['time_slack']
-                        if item['qty'] != '':
-                            item['qty'] = (
-                                float(item["qty"]) * 
+                        if item['fee'] != '':
+                            item['fee'] = (
+                                float(item["fee"]) * 
                                 Helper().calc_cross_ccy_ratio(
                                     item['currency'],
                                     config["clients"][client]["funding_payments"][exchange]["base_ccy"], 
