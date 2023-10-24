@@ -83,4 +83,4 @@ bybit:
   transaction:
     transactionTime: timestamp
     createdTime: timestamp
-    borrowAmount: qty
+    borrowCost: qty

@@ -76,12 +76,14 @@ class Helper:
 
         try:
             position_value += exch.papi_get_um_positionrisk(params={"type": "future"})
-        except:
+        except Exception as e:
+            print("An error occurred in Positions:", e)
             pass
 
         try:
             position_value += exch.papi_get_cm_positionrisk(params={"type": "future"})
-        except:
+        except Exception as e:
+            print("An error occurred in Positions:", e)
             pass
 
         return position_value
