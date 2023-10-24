@@ -93,7 +93,7 @@ class Fills:
             for position in position_values:
                 for item in position['position_value']:
                     symbols.append(item['info']['symbol'])
-            print(symbols)
+            
             # if config['clients'][client]['funding_payments'][exchange][sub_account]['margin_mode'] == 'portfolio':
             #     symbols = [item.replace("/", "") for item in config["fills"]["symbols"][exchange]]
             #     symbols += [item[: -1] for item in symbols]
