@@ -297,7 +297,21 @@ class OKXHelper(Helper):
 
 class BybitHelper(Helper):
     def get_positions(self, exch, params={}):
-        return exch.fetch_positions(params=params)
+        positions = []
+
+        for coin in config['positions']['bybit_coins']:
+            res = exch.private_get_v5_position_list(params={'category': 'linear', 'settleCoin': coin})['result']['list']
+            
+            for item in res:
+                item['info'] = {**item}
+                item['marginMode'] = "cross"
+                item['side'] = "long" if item['side'] == "Buy" else "short"
+                item['quote'] = coin
+                item['base'] = item['symbol'].split(coin)[0] if coin != "USDC" else item['symbol'].split("PERP")[0]
+
+            positions += res
+
+        return positions
     
     def get_commissions(self, exch, params={}):
         return exch.private_get_v5_account_transaction_log(params=params)['result']['list']
@@ -347,6 +361,9 @@ class BybitHelper(Helper):
             'info': res,
             'timestamp': int(datetime.now(timezone.utc).timestamp() * 1000)
         }
+    
+    def get_cross_margin_ratio(self, exch):
+        return exch.private_get_v5_account_wallet_balance(params={'accountType': "UNIFIED"})['result']["list"][0]["accountMMRate"]
 
 
 class CoinbaseHelper:

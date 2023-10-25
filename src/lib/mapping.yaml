@@ -84,3 +84,12 @@ bybit:
     transactionTime: timestamp
     createdTime: timestamp
     borrowCost: fee
+
+  position:
+    liqPrice: liquidationPrice
+    positionValue: notional
+    unrealisedPnl: unrealizedPnl
+    size: contracts
+    updatedTime: timestamp
+    positionIM: initialMargin
+    positionMM: maintenanceMargin
