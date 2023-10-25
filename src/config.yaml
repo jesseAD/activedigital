@@ -8,8 +8,8 @@ dask:
 
 liquidation:
   threshold: 
-    binance: 1.2
-    binance_pm: 1.2
+    binance: 1.7
+    binance_pm: 1.7
     okx: 0.95
   scalar:
     binance: 1
