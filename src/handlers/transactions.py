@@ -458,6 +458,7 @@ class Transactions:
                             for item in transactions:
                                 item['info'] = {**item}
                                 item['funding'] = 0
+                                item['borrowCost'] = -float(item['borrowCost'])
 
                             transaction_value['borrow'] = Mapping().mapping_transactions(
                                 exchange=exchange, transactions=transactions
@@ -472,6 +473,7 @@ class Transactions:
                             for item in transactions:
                                 item['info'] = {**item}
                                 item['funding'] = 0
+                                item['borrowCost'] = -float(item['borrowCost'])
 
                             transaction_value['borrow'] = Mapping().mapping_transactions(
                                 exchange=exchange, transactions=transactions

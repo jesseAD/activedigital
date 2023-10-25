@@ -8,13 +8,15 @@ dask:
 
 liquidation:
   threshold: 
-    binance: 1.2
-    binance_pm: 1.2
+    binance: 1.7
+    binance_pm: 1.7
     okx: 0.95
+    bybit: 1.7
   scalar:
     binance: 1
     binance_pm: 1
     okx: 0.125
+    bybit: 1
 
 funding_payments: &funding_payments
   function: funding_payments.py
@@ -76,6 +78,7 @@ instruments:
 positions:
   store_type: timeseries
   margin_mode: non_portfolio
+  bybit_coins: ["BTC", "ETH", "XRP", "ADA", "DOT", "LTC", "EOS", "MANA", "USDT", "USDC", ]
   cross_margin_ratio_threshold:
     binance: 1.05
     okx: 300

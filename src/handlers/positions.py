@@ -96,13 +96,11 @@ class Positions:
                 exch = Exchange(
                     exchange, sub_account, API_KEY, API_SECRET, PASSPHRASE
                 ).exch()
-            # print(exch.private_get_v5_account_fee_rate(params={'symbol': "BTCUSDT"}))
-            # print(exch.fetch_positions(params={}))
-            # print(exch.private_get_v5_position_list())
 
             try:
                 if exchange == "okx":
                     position_value = OKXHelper().get_positions(exch=exch)
+
                 elif exchange == "binance":
                     if config['clients'][client]['funding_payments'][exchange][sub_account]['margin_mode'] == 'portfolio':
                         position_value = Helper().get_pm_positions(exch=exch)
@@ -111,8 +109,9 @@ class Positions:
                             item['marginMode'] = "cross"
                     else:
                         position_value = Helper().get_positions(exch=exch)
+
                 elif exchange == "bybit":
-                    position_value = BybitHelper().get_positions(exch=exch, params={})
+                    position_value = BybitHelper().get_positions(exch=exch)
 
                 position_value = Mapping().mapping_positions(exchange=exchange, positions=position_value)
 
@@ -139,6 +138,27 @@ class Positions:
                         OKXHelper().get_cross_margin_ratio(exch=exch)
                     )
                     liquidation_buffer = OKXHelper().calc_liquidation_buffer(
+                        exchange=exchange, mgnRatio=cross_margin_ratio
+                    )
+
+                except ccxt.InvalidNonce as e:
+                    print("Hit rate limit", e)
+                    time.sleep(
+                        back_off[client + "_" + exchange + "_" + sub_account] / 1000.0
+                    )
+                    back_off[client + "_" + exchange + "_" + sub_account] *= 2
+                    return False
+
+                except Exception as e:
+                    print("An error occurred in Positions:", e)
+                    pass
+
+            elif exchange == "bybit":
+                try:
+                    cross_margin_ratio = float(
+                        BybitHelper().get_cross_margin_ratio(exch=exch)
+                    )
+                    liquidation_buffer = BybitHelper().calc_liquidation_buffer(
                         exchange=exchange, mgnRatio=cross_margin_ratio
                     )
 
@@ -199,8 +219,8 @@ class Positions:
                         pass
 
             for value in position_value:
-                if config['clients'][client]['funding_payments'][exchange][sub_account]['margin_mode'] == 'non_portfolio':
-                    if float(value["initialMargin"]) > 0:
+                if float(value["initialMargin"]) > 0:
+                    if config['clients'][client]['funding_payments'][exchange][sub_account]['margin_mode'] == 'non_portfolio':
                         # portfolio = None
                         # if exchange == "binance":
                         #     try:
@@ -241,11 +261,48 @@ class Positions:
                         #         pass
 
                         # value["margin"] = portfolio
-                        value["base"] = value["symbol"].split("/")[0]
-                        value["quote"] = (
-                            value["symbol"].split("-")[0].split("/")[1].split(":")[0]
-                        )
+                        if exchange == "bybit":
+                            value['symbol'] = value['base'] + value['quote'] + "-PERP"
+                            value["liquidationBuffer"] = liquidation_buffer
+                        else:
+                            value["base"] = value["symbol"].split("/")[0]
+                            value["quote"] = (
+                                value["symbol"].split("-")[0].split("/")[1].split(":")[0]
+                            )
+                            value['symbol'] = value['base'] + value['quote'] + "-PERP"
+                            value["liquidationBuffer"] = liquidation_buffer
+
+                            if value["quote"] == "USD":
+                                tickers = list(
+                                    self.tickers_db.find({"venue": exchange})
+                                    .sort("_id", -1)
+                                    .limit(1)
+                                )[0]["ticker_value"]
+
+                                value["notional"] = float(
+                                    value["notional"]
+                                ) * Helper().calc_cross_ccy_ratio(
+                                    value["base"],
+                                    config["clients"][client]["funding_payments"][exchange][
+                                        "base_ccy"
+                                    ],
+                                    tickers,
+                                )
+                                value["unrealizedPnl"] = float(
+                                    value["unrealizedPnl"]
+                                ) * Helper().calc_cross_ccy_ratio(
+                                    value["base"],
+                                    config["clients"][client]["funding_payments"][exchange][
+                                        "base_ccy"
+                                    ],
+                                    tickers,
+                                )
+                    else:
+                        value["base"] = value["symbol"].split("_")[0].split("USD")[0]
+                        value["quote"] = "USD" + value["symbol"].split("_")[0].split("USD")[1]
                         value['symbol'] = value['base'] + value['quote'] + "-PERP"
+                        value['side'] = "long" if float(value['positionAmt']) > 0 else "short"
+                        
                         value["liquidationBuffer"] = liquidation_buffer
 
                         if value["quote"] == "USD":
@@ -274,41 +331,6 @@ class Positions:
                                 tickers,
                             )
 
-                        position_info.append(value)                
-                else:
-                    value["base"] = value["symbol"].split("_")[0].split("USD")[0]
-                    value["quote"] = "USD" + value["symbol"].split("_")[0].split("USD")[1]
-                    value['symbol'] = value['base'] + value['quote'] + "-PERP"
-                    value['side'] = "long" if float(value['positionAmt']) > 0 else "short"
-                    
-                    value["liquidationBuffer"] = liquidation_buffer
-
-                    if value["quote"] == "USD":
-                        tickers = list(
-                            self.tickers_db.find({"venue": exchange})
-                            .sort("_id", -1)
-                            .limit(1)
-                        )[0]["ticker_value"]
-
-                        value["notional"] = float(
-                            value["notional"]
-                        ) * Helper().calc_cross_ccy_ratio(
-                            value["base"],
-                            config["clients"][client]["funding_payments"][exchange][
-                                "base_ccy"
-                            ],
-                            tickers,
-                        )
-                        value["unrealizedPnl"] = float(
-                            value["unrealizedPnl"]
-                        ) * Helper().calc_cross_ccy_ratio(
-                            value["base"],
-                            config["clients"][client]["funding_payments"][exchange][
-                                "base_ccy"
-                            ],
-                            tickers,
-                        )
-
                     position_info.append(value)
             
             if exchange == "binance":
@@ -333,9 +355,7 @@ class Positions:
 
         del position_value
         
-        back_off[client + "_" + exchange + "_" + sub_account] = config["dask"][
-            "back_off"
-        ]
+        back_off[client + "_" + exchange + "_" + sub_account] = config["dask"]["back_off"]
 
         current_time = datetime.now(timezone.utc)
         position = {
