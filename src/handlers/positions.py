@@ -8,6 +8,7 @@ from src.lib.db import MongoDB
 from src.lib.log import Log
 from src.lib.exchange import Exchange
 from src.lib.mapping import Mapping
+from src.lib.unhedged import get_unhedged
 from src.config import read_config_file
 from src.handlers.helpers import Helper
 from src.handlers.helpers import OKXHelper
@@ -356,6 +357,8 @@ class Positions:
         del position_value
         
         back_off[client + "_" + exchange + "_" + sub_account] = config["dask"]["back_off"]
+
+        print(get_unhedged(position_info))
 
         current_time = datetime.now(timezone.utc)
         position = {
