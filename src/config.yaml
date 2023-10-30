@@ -202,6 +202,7 @@ clients:
         subaccount1: *okx_subaccount1
 
   besttrader:
+    split_positions: True
     okx_sub1ap: &okx_sub1ap
       apikey: zyx
       apisecret: xyz
