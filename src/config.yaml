@@ -159,6 +159,7 @@ exchanges: ["binance", "okx", "bybit", ] #
 
 clients:
   rundmc:
+    split_positions: True
     binance_subaccount4: &binance_subaccount4
       apikey: xyz
       apisecret: xyz
@@ -242,6 +243,7 @@ clients:
         sub2aa: *okx_sub1aa
 
   wizardly:
+    split_positions: True
     okx_submn: &okx_submn
       apikey: zyx
       apisecret: xyz
@@ -262,6 +264,7 @@ clients:
         helper: okxhelper.py
         submn: *okx_submn
   jess:
+    split_positions: True
     okx_subandyactivedigital: &okx_subandyactivedigital
       apikey: zyx
       apisecret: xyz
