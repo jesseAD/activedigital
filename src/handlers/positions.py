@@ -25,10 +25,14 @@ class Positions:
         if os.getenv("mode") == "testing":
             self.runs_db = MongoDB(config["mongo_db"], "runs")
             self.tickers_db = MongoDB(config["mongo_db"], "tickers")
+            self.balances_db = MongoDB(config["mongo_db"], "balances")
+            self.split_positions_db = MongoDB(config["mongo_db"], "split_positions")
             self.positions_db = MongoDB(config["mongo_db"], db)
         else:
             self.runs_db = database_connector("runs")
             self.tickers_db = database_connector("tickers")
+            self.balances_db = database_connector("balances")
+            self.split_positions_db = database_connector("split_positions")
             self.positions_db = database_connector(db)
 
     def get(
@@ -358,7 +362,85 @@ class Positions:
         
         back_off[client + "_" + exchange + "_" + sub_account] = config["dask"]["back_off"]
 
-        print(get_unhedged(position_info))
+        # print(get_unhedged(position_info))
+        if config['clients'][client]['split_positions'] == True:
+            query = {}
+
+            if exchange:
+                query["venue"] = exchange
+
+            ticker_values = self.tickers_db.find(query).sort("_id", -1).limit(1)
+
+            ticker = None
+            for item in ticker_values:
+                ticker = item["ticker_value"]
+
+            if client:
+                query["client"] = client            
+            if sub_account:
+                query["account"] = sub_account
+
+            balance_values = self.balances_db.find(query).sort("_id", -1).limit(1)
+
+            balance = None
+            for item in balance_values:
+                timestamp = item['timestamp']
+                balance = item["balance_value"]
+
+            spot_positions = []
+
+            for _key, _val in balance.items():
+                if _key != "base":
+                    spot_position = {}
+                    spot_position['base'] = _key
+                    spot_position['quote'] = _key
+                    spot_position['symbol'] = _key
+                    spot_position['contracts'] = _val
+                    spot_position['avgPrice'] = 0
+                    spot_position['leverage'] = 0
+                    spot_position['unrealizedPnl'] = 0
+                    spot_position['marginMode'] = None
+                    spot_position['timestamp'] = int(timestamp.timestamp() * 1000)
+                    spot_position['side'] = "long" if _val > 0 else "short"
+                    spot_position['markPrice'] = 1 if _key == "USDT" else ticker[_key + "/USDT"]['last']
+                    spot_position['notional'] = spot_position['markPrice'] * spot_position['contracts']
+
+                    spot_positions.append(spot_position)
+
+            current_time = datetime.now(timezone.utc)
+            split_position = {
+                "client": client,
+                "venue": exchange,
+                "account": "Main Account",
+                "position_value": get_unhedged(position_info, spot_positions),
+                "active": True,
+                "entry": False,
+                "exit": False,
+                "timestamp": current_time,
+            }
+            if sub_account:
+                split_position["account"] = sub_account
+            if spot:
+                split_position["spotMarket"] = spot
+            if future:
+                split_position["futureMarket"] = future
+            if perp:
+                split_position["perpMarket"] = perp
+            run_ids = self.runs_db.find({}).sort("_id", -1).limit(1)
+            latest_run_id = 0
+            for item in run_ids:
+                try:
+                    latest_run_id = item["runid"] + 1
+                except:
+                    pass
+            split_position["runid"] = latest_run_id
+
+            try:
+                self.split_positions_db.insert_one(split_position)
+            except Exception as e:
+                log.error(e)
+                return False
+            
 
         current_time = datetime.now(timezone.utc)
         position = {

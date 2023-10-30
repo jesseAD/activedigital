@@ -19,9 +19,10 @@ class TestUnhedged(unittest.TestCase):
         mock_create.return_value = {'data': self.data}
 
         # Call mock create function using existing json data
-        positions = self.data['testSingleSidedSpotPositionAggregatesToOnePosition']
+        spot = self.data['testSingleSidedSpotPositionAggregatesToOnePosition']['spot']
+        # perp = self.data['testSingleSidedSpotPositionAggregatesToOnePosition']['perp']
 
-        res = get_unhedged(positions)
+        res = get_unhedged(spot=spot)
 
         self.assertEqual(1, len(res))
 
@@ -31,11 +32,11 @@ class TestUnhedged(unittest.TestCase):
         mock_create.return_value = {'data': self.data}
 
         # Call mock create function using existing json data
-        positions = self.data['testMultipleSidedSpotPositionAggregatesToTwoPositions']
+        positions = self.data['testMultipleSidedSpotPositionAggregatesToTwoPositions']['spot']
 
-        res = get_unhedged(positions)
+        res = get_unhedged(spot=positions)
 
-        self.assertEqual(4, len(res))
+        self.assertEqual(2, len(res))
 
     @mock.patch('src.lib.unhedged.get_unhedged', autospec=True)
     def test_MultipleSidedSpotAndPerpPositionAggregatesToTwoPositions(self, mock_unhedged):
@@ -43,11 +44,12 @@ class TestUnhedged(unittest.TestCase):
         mock_create.return_value = {'data': self.data}
 
         # Call mock create function using existing json data
-        positions = self.data['testMultipleSidedSpotAndPerpPositionAggregatesToTwoPositions']
+        spot = self.data['testMultipleSidedSpotAndPerpPositionAggregatesToTwoPositions']['spot']
+        perp = self.data['testMultipleSidedSpotAndPerpPositionAggregatesToTwoPositions']['perp']
 
-        res = get_unhedged(positions)
+        res = get_unhedged(perp, spot)
 
-        self.assertEqual(4, len(res))
+        self.assertEqual(2, len(res))
 
     @mock.patch('src.lib.unhedged.get_unhedged', autospec=True)
     def test_MultipleSidedSpotAndPerpPositionAggregatesToTwoPositions1(self, mock_unhedged):
@@ -55,9 +57,10 @@ class TestUnhedged(unittest.TestCase):
         mock_create.return_value = {'data': self.data}
 
         # Call mock create function using existing json data
-        positions = self.data['testMultipleDoubleSidedSpotAndPerpPositionAggregatesTo16Positions1']
+        perp = self.data['testMultipleDoubleSidedSpotAndPerpPositionAggregatesTo16Positions1']['perp']
+        spot = self.data['testMultipleDoubleSidedSpotAndPerpPositionAggregatesTo16Positions1']['spot']
 
-        res = get_unhedged(positions)
+        res = get_unhedged(perp, spot)
 
         self.assertEqual(10, len(res))
 
@@ -67,9 +70,10 @@ class TestUnhedged(unittest.TestCase):
         mock_create.return_value = {'data': self.data}
 
         # Call mock create function using existing json data
-        positions = self.data['testMultipleDoubleSidedSpotAndPerpPositionAggregatesTo16Positions2']
+        spot = self.data['testMultipleDoubleSidedSpotAndPerpPositionAggregatesTo16Positions2']['spot']
+        perp = self.data['testMultipleDoubleSidedSpotAndPerpPositionAggregatesTo16Positions2']['perp']
 
-        res = get_unhedged(positions)
+        res = get_unhedged(perp, spot)
 
         self.assertEqual(10, len(res))
 
@@ -79,9 +83,10 @@ class TestUnhedged(unittest.TestCase):
         mock_create.return_value = {'data': self.data}
 
         # Call mock create function using existing json data
-        positions = self.data['testMultipleDoubleSidedSpotAndPerpPositionAggregatesTo3UnbalancedPositionsDueToRounding1']
+        perp = self.data['testMultipleDoubleSidedSpotAndPerpPositionAggregatesTo3UnbalancedPositionsDueToRounding1']['perp']
+        spot = self.data['testMultipleDoubleSidedSpotAndPerpPositionAggregatesTo3UnbalancedPositionsDueToRounding1']['spot']
 
-        res = get_unhedged(positions)
+        res = get_unhedged(perp, spot)
 
         self.assertEqual(2, len(res))
 
@@ -91,9 +96,10 @@ class TestUnhedged(unittest.TestCase):
         mock_create.return_value = {'data': self.data}
 
         # Call mock create function using existing json data
-        positions = self.data['testMultipleDoubleSidedSpotAndPerpPositionAggregatesTo3UnbalancedPositionsDueToRounding2']
+        perp = self.data['testMultipleDoubleSidedSpotAndPerpPositionAggregatesTo3UnbalancedPositionsDueToRounding2']['perp']
+        spot = self.data['testMultipleDoubleSidedSpotAndPerpPositionAggregatesTo3UnbalancedPositionsDueToRounding2']['spot']
 
-        res = get_unhedged(positions)
+        res = get_unhedged(perp, spot)
 
         self.assertEqual(2, len(res))
 
