@@ -206,93 +206,94 @@ def get_unhedged(perp=[], spot=[]):
                         else:
                             break
 
-        merged = {}
-        precise = max(item['position_decimal'] for item in leasts)
-        
-        merged = leasts[0]
-        merged['timestamp'] = max([item['timestamp'] for item in leasts])
-        merged['avgPrice'] = round(sum([(item['avgPrice'] * item['notional']) for item in leasts]) / sum([item['notional'] for item in leasts]), precise)
-        merged['leverage'] = round(sum([(item['leverage'] * item['notional']) for item in leasts]) / sum([item['notional'] for item in leasts]), precise)
-        merged['marginMode'] = "mixed" if any([item['marginMode'] != "cross" for item in leasts]) else "cross"
-        merged['markPrice'] = leasts[0]['markPrice']
-        merged['notional'] = sum([item['notional'] for item in leasts])
-        merged['position'] = sum([item['position'] for item in leasts])
-        merged['side'] = least
-        merged['symbol'] = leasts[0]['symbol']
-        merged['unrealizedPnl'] = sum([item['unrealizedPnl'] for item in leasts])
+        if len(leasts) > 0:
+            merged = {}
+            precise = max(item['position_decimal'] for item in leasts)
+            
+            merged = leasts[0]
+            merged['timestamp'] = max([item['timestamp'] for item in leasts])
+            merged['avgPrice'] = round(sum([(item['avgPrice'] * item['notional']) for item in leasts]) / sum([item['notional'] for item in leasts]), precise)
+            merged['leverage'] = round(sum([(item['leverage'] * item['notional']) for item in leasts]) / sum([item['notional'] for item in leasts]), precise)
+            merged['marginMode'] = "mixed" if any([item['marginMode'] != "cross" for item in leasts]) else "cross"
+            merged['markPrice'] = leasts[0]['markPrice']
+            merged['notional'] = sum([item['notional'] for item in leasts])
+            merged['position'] = sum([item['position'] for item in leasts])
+            merged['side'] = least
+            merged['symbol'] = leasts[0]['symbol']
+            merged['unrealizedPnl'] = sum([item['unrealizedPnl'] for item in leasts])
 
-        for item in mosts:
-            sign = 1 if least == "long" else -1
-            unhedged = 0
-            notional = 0
-            unrealized = 0
-            position = 0
-            if merged['notional'] == 0.0:
-                if item == mosts[-1]:
-                    pairs.append([{
+            for item in mosts:
+                sign = 1 if least == "long" else -1
+                unhedged = 0
+                notional = 0
+                unrealized = 0
+                position = 0
+                if merged['notional'] == 0.0:
+                    if item == mosts[-1]:
+                        pairs.append([{
+                            **item,
+                            'id': id,
+                            'notional': notional + item['notional'],
+                            'position': position + item['position'],
+                            'unrealizedPnl': unrealized + item['unrealizedPnl'],
+                            'unhedgedAmount': -item['notional'] * sign + unhedged
+                        }])
+                    else:
+                        notional += item['notional']
+                        unrealized += item['unrealizedPnl']
+                        position += item['position']
+                        unhedged -= (item['notional'] * sign)
+                        
+                elif merged['notional'] >= item['notional']:
+                    if item == mosts[-1]:
+                        pairs.append([
+                            {
+                                **merged,
+                                'id': id,
+                                'unhedgedAmount': round((merged['notional'] - item['notional']) * sign, 5)
+                            },
+                            {
+                                **item,
+                                'id': id,
+                                'unhedgedAmount': round((merged['notional'] - item['notional']) * sign, 5)
+                            }
+                        ])
+                    else:
+                        ratio = round(merged['position'] * item['notional'] / merged['notional'], precise) / merged['position']
+                        pairs.append([
+                            {
+                                **merged,
+                                'notional': round(merged['notional'] * ratio, 5),
+                                'position': round(merged['position'] * ratio, 5),
+                                'unrealizedPnl': round(merged['unrealizedPnl'] * ratio, 5),
+                                'id': id,
+                                'unhedgedAmount': round(sign * (merged['notional'] * ratio - item['notional']), 5)
+                            },
+                            {
+                                **item,
+                                'id': id,
+                                'unhedgedAmount': round(sign * (merged['notional'] * ratio - item['notional']), 5)
+                            }
+                        ])
+                        merged['notional'] = round((1 - ratio) * merged['notional'], 5)
+                        merged['position'] = round((1 - ratio) * merged['position'], 5)
+                        merged['unrealizedPnl'] = round((1 - ratio) * merged['unrealizedPnl'], 5)
+                else:
+                    pairs.append([
+                        {
+                        **merged,
+                        'id': id,
+                        'unhedgedAmount': round((merged['notional'] - item['notional']) * sign, 5)
+                        },
+                        {
                         **item,
                         'id': id,
-                        'notional': notional + item['notional'],
-                        'position': position + item['position'],
-                        'unrealizedPnl': unrealized + item['unrealizedPnl'],
-                        'unhedgedAmount': -item['notional'] * sign + unhedged
-                    }])
-                else:
-                    notional += item['notional']
-                    unrealized += item['unrealizedPnl']
-                    position += item['position']
-                    unhedged -= (item['notional'] * sign)
-                    
-            elif merged['notional'] >= item['notional']:
-                if item == mosts[-1]:
-                    pairs.append([
-                        {
-                            **merged,
-                            'id': id,
-                            'unhedgedAmount': round((merged['notional'] - item['notional']) * sign, 5)
-                        },
-                        {
-                            **item,
-                            'id': id,
-                            'unhedgedAmount': round((merged['notional'] - item['notional']) * sign, 5)
+                        'unhedgedAmount': round((merged['notional'] - item['notional']) * sign, 5)
                         }
                     ])
-                else:
-                    ratio = round(merged['position'] * item['notional'] / merged['notional'], precise) / merged['position']
-                    pairs.append([
-                        {
-                            **merged,
-                            'notional': round(merged['notional'] * ratio, 5),
-                            'position': round(merged['position'] * ratio, 5),
-                            'unrealizedPnl': round(merged['unrealizedPnl'] * ratio, 5),
-                            'id': id,
-                            'unhedgedAmount': round(sign * (merged['notional'] * ratio - item['notional']), 5)
-                        },
-                        {
-                            **item,
-                            'id': id,
-                            'unhedgedAmount': round(sign * (merged['notional'] * ratio - item['notional']), 5)
-                        }
-                    ])
-                    merged['notional'] = round((1 - ratio) * merged['notional'], 5)
-                    merged['position'] = round((1 - ratio) * merged['position'], 5)
-                    merged['unrealizedPnl'] = round((1 - ratio) * merged['unrealizedPnl'], 5)
-            else:
-                pairs.append([
-                    {
-                    **merged,
-                    'id': id,
-                    'unhedgedAmount': round((merged['notional'] - item['notional']) * sign, 5)
-                    },
-                    {
-                    **item,
-                    'id': id,
-                    'unhedgedAmount': round((merged['notional'] - item['notional']) * sign, 5)
-                    }
-                ])
-                merged['notional'] = 0.0
-            
-            id += 1    
+                    merged['notional'] = 0.0
+                
+                id += 1    
 
     for _key, _group in groups1.items():
         if _key not in groups:
