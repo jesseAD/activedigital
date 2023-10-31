@@ -167,12 +167,12 @@ for client in config['clients']:
 
     for data_collector in data_collectors:
         print(client + " " + data_collector.exchange + " " + data_collector.account)
+        collect_balances(client, data_collector)
+        print("collected balances")
         collect_positions(client, data_collector)
         print("collected position")        
         collect_fills(client, data_collector)
-        print("collected fills")
-        collect_balances(client, data_collector)
-        print("collected balances")
+        print("collected fills")        
         collect_transactions(client, data_collector)
         print("collected transactions")
 
