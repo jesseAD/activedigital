@@ -183,7 +183,10 @@ class Fills:
                                 #     ),
                                 # )
                             if exchange == "bybit":
-                                fillsValue[symbol] = BybitHelper().get_fills(exch=exch, symbol=symbol, since=last_time)
+                                fillsValue[symbol] = BybitHelper().get_fills(
+                                    exch=exch, symbol=symbol, since=last_time,
+                                    params={'endTime': datetime.now(timezone.utc).timestamp() * 1000}
+                                )
                             elif exchange == "binance":
                                 if config['clients'][client]['funding_payments'][exchange][sub_account]['margin_mode'] == 'portfolio':
                                     fills = Helper().get_pm_fills(exch=exch, symbol=symbol, params={'limit': 100, 'startTime': last_time})

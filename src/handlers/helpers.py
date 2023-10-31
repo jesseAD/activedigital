@@ -313,6 +313,15 @@ class BybitHelper(Helper):
 
         return positions
     
+    def get_balances(self, exch):
+        balances = exch.fetch_balance()['info']['result']['list'][0]['coin']
+        result = dict()
+        for balance in balances:
+            if float(balance['equity']) != 0.0:
+                result[balance['coin']] = float(balance['equity'])
+
+        return result
+    
     def get_commissions(self, exch, params={}):
         return exch.private_get_v5_account_transaction_log(params=params)['result']['list']
     
