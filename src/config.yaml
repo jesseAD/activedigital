@@ -164,18 +164,22 @@ clients:
       apikey: xyz
       apisecret: xyz
       margin_mode: non_portfolio
+      hedged_exclusions: {}
     binance_subaccount6: &binance_subaccount6
       apikey: xyz
       apisecret: xyz
       margin_mode: non_portfolio
+      hedged_exclusions: {}
     binance_subaccountpm1: &binance_subaccountpm1
       apikey: xyz
       apisecret: xyz
       margin_mode: portfolio
+      hedged_exclusions: {}
     okx_subaccount1: &okx_subaccount1
       apikey: zyx
       apisecret: xyz
       margin_mode: non_portfolio
+      hedged_exclusions: {}
 
     funding_payments:
       binance:
@@ -208,18 +212,22 @@ clients:
       apikey: zyx
       apisecret: xyz
       margin_mode: non_portfolio
+      hedged_exclusions: {'USDT': 0}
     okx_sub1aa: &okx_sub1aa
       apikey: zyx
       apisecret: xyz
       margin_mode: non_portfolio
+      hedged_exclusions: {}
     bybit_sub1: &bybit_sub1
       margin_mode: non_portfolio
       apikey: zyx
       apisecret: xyz
+      hedged_exclusions: {}
     bybit_sub4: &bybit_sub4
       margin_mode: non_portfolio
       apikey: zyx
       apisecret: xyz
+      hedged_exclusions: {'USDT': 0}
 
     funding_payments:
       okx:
@@ -248,6 +256,7 @@ clients:
       apikey: zyx
       apisecret: xyz
       margin_mode: non_portfolio
+      hedged_exclusions: {'USDT': 0}
 
     funding_payments:
       okx:
@@ -269,18 +278,22 @@ clients:
       apikey: zyx
       apisecret: xyz
       margin_mode: non_portfolio
+      hedged_exclusions: {'USDT': 100}
     okx_subandypants: &okx_subandypants
       apikey: zyx
       apisecret: xyz
       margin_mode: non_portfolio
+      hedged_exclusions: {'USDT': 35}
     okx_subjessetf: &okx_subjessetf
       apikey: zyx
       apisecret: xyz
       margin_mode: non_portfolio
+      hedged_exclusions: {}
     okx_subadtest2: &okx_subadtest2
       apikey: zyx
       apisecret: xyz
       margin_mode: non_portfolio
+      hedged_exclusions: {}
 
     funding_payments:
       okx:

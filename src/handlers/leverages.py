@@ -15,13 +15,15 @@ class Leverages:
     def __init__(self, db):
         if os.getenv("mode") == "testing":
             self.leverages_db = MongoDB(config['mongo_db'], db)
-            self.positions_db = MongoDB(config['mongo_db'], 'positions')
+            # self.positions_db = MongoDB(config['mongo_db'], 'positions')
+            self.split_positions_db = MongoDB(config['mongo_db'], 'split_positions')
             self.balances_db = MongoDB(config['mongo_db'], 'balances')
             self.tickers_db = MongoDB(config['mongo_db'], 'tickers')
             self.runs_db = MongoDB(config['mongo_db'], 'runs')
         else: 
-            self.leverages_db = database_connector('leverages')
-            self.positions_db = database_connector('positions')
+            self.leverages_db = database_connector(db)
+            self.split_positions_db = database_connector('split_positions')
+            # self.positions_db = database_connector('positions')
             self.balances_db = database_connector('balances')
             self.tickers_db = database_connector('tickers')
             self.runs_db = database_connector('runs')
@@ -59,7 +61,7 @@ class Leverages:
             if account:
                 query["account"] = account
 
-            position_value = self.positions_db.find(query).sort('runid', -1).limit(1)
+            position_value = self.split_positions_db.find(query).sort('runid', -1).limit(1)
             for item in position_value:
                 try:
                     latest_position = item['position_value']
@@ -76,7 +78,10 @@ class Leverages:
                     return False
 
             try:
-                max_notional = abs(float(max(latest_position, key=lambda x: abs(float(x['notional'])))['notional']))
+                # max_notional = abs(float(max(latest_position, key=lambda x: abs(float(x['notional'])))['notional']))
+                max_notional = 0
+                for pair in latest_position:
+                    max_notional += max([abs(item['notional']) for item in pair])
             except Exception as e:
                 print("An error occurred in Leverages:", e)
                 return False
