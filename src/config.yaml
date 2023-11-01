@@ -335,4 +335,4 @@ clients:
       binance:
         <<: *balances
         helper: helper.py
-        submn: *submn
+        submn1: *submn1
