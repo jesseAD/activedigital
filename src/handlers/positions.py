@@ -407,12 +407,26 @@ class Positions:
 
                     spot_positions.append(spot_position)
 
+            split_positions = get_unhedged(position_info, spot_positions)
+
+            hedged_exclusions = config['clients'][client]['funding_payments'][exchange][sub_account]['hedged_exclusions']
+            for position in split_positions:
+                if len(position) == 1:
+                    if position[0]['position'] > 0 and position[0]['base'] in hedged_exclusions:
+                        if hedged_exclusions[position[0]['base']] == 0:
+                            split_positions.remove(position)
+                        else:
+                            position[0]['notional'] *= (1 - hedged_exclusions[position[0]['base']] / position[0]['position'])
+                            position[0]['unrealizedPnl'] *= (1 - hedged_exclusions[position[0]['base']] / position[0]['position'])
+                            position[0]['unhedgedAmount'] *= (1 - hedged_exclusions[position[0]['base']] / position[0]['position'])
+                            position[0]['position'] -= hedged_exclusions[position[0]['base']]
+            
             current_time = datetime.now(timezone.utc)
             split_position = {
                 "client": client,
                 "venue": exchange,
                 "account": "Main Account",
-                "position_value": get_unhedged(position_info, spot_positions),
+                "position_value": split_positions,
                 "active": True,
                 "entry": False,
                 "exit": False,
