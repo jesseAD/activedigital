@@ -389,37 +389,42 @@ class Positions:
 
             spot_positions = []
 
-            for _key, _val in balance.items():
-                if _key != "base":
-                    spot_position = {}
-                    spot_position['base'] = _key
-                    spot_position['quote'] = _key
-                    spot_position['symbol'] = _key
-                    spot_position['contracts'] = _val
-                    spot_position['avgPrice'] = 0
-                    spot_position['leverage'] = 0
-                    spot_position['unrealizedPnl'] = 0
-                    spot_position['marginMode'] = None
-                    spot_position['timestamp'] = int(timestamp.timestamp() * 1000)
-                    spot_position['side'] = "long" if _val > 0 else "short"
-                    spot_position['markPrice'] = 1 if _key == "USDT" else ticker[_key + "/USDT"]['last']
-                    spot_position['notional'] = spot_position['markPrice'] * spot_position['contracts']
+            if balance != None:
+                for _key, _val in balance.items():
+                    if _key != "base":
+                        spot_position = {}
+                        spot_position['base'] = _key
+                        spot_position['quote'] = _key
+                        spot_position['symbol'] = _key
+                        spot_position['contracts'] = _val
+                        spot_position['avgPrice'] = 0
+                        spot_position['leverage'] = 0
+                        spot_position['unrealizedPnl'] = 0
+                        spot_position['marginMode'] = None
+                        spot_position['timestamp'] = int(timestamp.timestamp() * 1000)
+                        spot_position['side'] = "long" if _val > 0 else "short"
+                        spot_position['markPrice'] = 1 if _key == "USDT" else ticker[_key + "/USDT"]['last']
+                        spot_position['notional'] = spot_position['markPrice'] * spot_position['contracts']
 
-                    spot_positions.append(spot_position)
+                        spot_positions.append(spot_position)
 
             split_positions = get_unhedged(position_info, spot_positions)
 
             hedged_exclusions = config['clients'][client]['funding_payments'][exchange][sub_account]['hedged_exclusions']
-            for position in split_positions:
-                if len(position) == 1:
-                    if position[0]['position'] > 0 and position[0]['base'] in hedged_exclusions:
-                        if hedged_exclusions[position[0]['base']] == 0:
-                            split_positions.remove(position)
+            i = 0
+            while i < len(split_positions):
+                if len(split_positions[i]) == 1:
+                    if split_positions[i][0]['position'] > 0 and split_positions[i][0]['base'] in hedged_exclusions:
+                        if hedged_exclusions[split_positions[i][0]['base']] == 0:
+                            split_positions.pop(i)
+                            i -= 1
                         else:
-                            position[0]['notional'] *= (1 - hedged_exclusions[position[0]['base']] / position[0]['position'])
-                            position[0]['unrealizedPnl'] *= (1 - hedged_exclusions[position[0]['base']] / position[0]['position'])
-                            position[0]['unhedgedAmount'] *= (1 - hedged_exclusions[position[0]['base']] / position[0]['position'])
-                            position[0]['position'] -= hedged_exclusions[position[0]['base']]
+                            split_positions[i][0]['notional'] *= (1 - hedged_exclusions[split_positions[i][0]['base']] / split_positions[i][0]['position'])
+                            split_positions[i][0]['unrealizedPnl'] *= (1 - hedged_exclusions[split_positions[i][0]['base']] / split_positions[i][0]['position'])
+                            split_positions[i][0]['unhedgedAmount'] *= (1 - hedged_exclusions[split_positions[i][0]['base']] / split_positions[i][0]['position'])
+                            split_positions[i][0]['position'] -= hedged_exclusions[split_positions[i][0]['base']]
+
+                i += 1
             
             current_time = datetime.now(timezone.utc)
             split_position = {

@@ -41,7 +41,6 @@ def get_unhedged(perp=[], spot=[]):
         new_position['symbol'] = position['symbol']
         new_position['timestamp'] = position['timestamp']
         new_position['marginMode'] = position['marginMode']
-        new_position['markPrice'] = position['markPrice']
 
         new_positions.append(new_position)
 
@@ -78,7 +77,6 @@ def get_unhedged(perp=[], spot=[]):
         new_position['symbol'] = position['symbol']
         new_position['timestamp'] = position['timestamp']
         new_position['marginMode'] = position['marginMode']
-        new_position['markPrice'] = position['markPrice']
 
         new_positions.append(new_position)
 

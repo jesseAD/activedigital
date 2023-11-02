@@ -164,22 +164,22 @@ clients:
       apikey: xyz
       apisecret: xyz
       margin_mode: non_portfolio
-      hedged_exclusions: {}
+      hedged_exclusions: {'USDT': 0}
     binance_subaccount6: &binance_subaccount6
       apikey: xyz
       apisecret: xyz
       margin_mode: non_portfolio
-      hedged_exclusions: {}
+      hedged_exclusions: {'USDT': 0}
     binance_subaccountpm1: &binance_subaccountpm1
       apikey: xyz
       apisecret: xyz
       margin_mode: portfolio
-      hedged_exclusions: {}
+      hedged_exclusions: {'USDT': 0}
     okx_subaccount1: &okx_subaccount1
       apikey: zyx
       apisecret: xyz
       margin_mode: non_portfolio
-      hedged_exclusions: {}
+      hedged_exclusions: {'USDT': 0}
 
     funding_payments:
       binance:
@@ -201,6 +201,7 @@ clients:
         helper: helper.py
         subaccount4: *binance_subaccount4
         subaccount6: *binance_subaccount6
+        subbinancepm1: *binance_subaccountpm1
       okx:
         <<: *balances
         helper: okxhelper.py
@@ -217,12 +218,12 @@ clients:
       apikey: zyx
       apisecret: xyz
       margin_mode: non_portfolio
-      hedged_exclusions: {}
+      hedged_exclusions: {'USDT': 0}
     bybit_sub1: &bybit_sub1
       margin_mode: non_portfolio
       apikey: zyx
       apisecret: xyz
-      hedged_exclusions: {}
+      hedged_exclusions: {'USDT': 0}
     bybit_sub4: &bybit_sub4
       margin_mode: non_portfolio
       apikey: zyx
@@ -278,22 +279,22 @@ clients:
       apikey: zyx
       apisecret: xyz
       margin_mode: non_portfolio
-      hedged_exclusions: {'USDT': 100}
+      hedged_exclusions: {'USDT': 0}
     okx_subandypants: &okx_subandypants
       apikey: zyx
       apisecret: xyz
       margin_mode: non_portfolio
-      hedged_exclusions: {'USDT': 35}
+      hedged_exclusions: {'USDT': 0}
     okx_subjessetf: &okx_subjessetf
       apikey: zyx
       apisecret: xyz
       margin_mode: non_portfolio
-      hedged_exclusions: {}
+      hedged_exclusions: {'USDT': 0}
     okx_subadtest2: &okx_subadtest2
       apikey: zyx
       apisecret: xyz
       margin_mode: non_portfolio
-      hedged_exclusions: {}
+      hedged_exclusions: {'USDT': 0}
 
     funding_payments:
       okx:
@@ -314,3 +315,25 @@ clients:
         subandypants: *okx_subandypants
         subjessetf: *okx_subjessetf
         subadtest2: *okx_subadtest2
+
+blackburn:
+    split_positions: True
+    binance_submn1: &binance_submn1
+      apikey: xyz
+      apisecret: xyz
+      margin_mode: portfolio
+      hedged_exclusions: {'USDT': 0}
+
+    funding_payments:
+      binance:
+        <<: *funding_payments
+        helper: helper.py
+        submn1: *binance_submn1
+
+    balances:
+      function: balance.py
+      scheduler: [continuous,external,5 4 * * * ]
+      binance:
+        <<: *balances
+        helper: helper.py
+        submn1: *binance_submn1
