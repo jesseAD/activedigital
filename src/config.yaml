@@ -11,12 +11,12 @@ liquidation:
     binance: 1.7
     binance_pm: 1.7
     okx: 0.95
-    bybit: 1.7
+    bybit: 0.75
   scalar:
     binance: 1
     binance_pm: 1
     okx: 0.125
-    bybit: 1
+    bybit: -1
 
 funding_payments: &funding_payments
   function: funding_payments.py
@@ -323,7 +323,7 @@ clients:
       apisecret: xyz
       margin_mode: portfolio
       hedged_exclusions: {'USDT': 0}
-
+      
     funding_payments:
       binance:
         <<: *funding_payments

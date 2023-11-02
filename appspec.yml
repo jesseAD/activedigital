@@ -3,4 +3,19 @@ os: linux
 files:
  - source: .
    destination: /data/datacollector
+permissions:
+#  group = wheel and mode = 564 (dr-xrw-r--).
+ - object: /data/datacollector/getdata.sh
+   group: root
+   mode: 777
+   type:
+     - file
+ - object: /data/datacollector/install_dependencies.sh
+   group: root
+   mode: 564
+   type:
+     - file
 hooks:
+ AfterInstall:
+   - location: install_dependencies.sh
+     runas: root
