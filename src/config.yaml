@@ -316,7 +316,7 @@ clients:
         subjessetf: *okx_subjessetf
         subadtest2: *okx_subadtest2
 
-blackburn:
+  blackburn:
     split_positions: True
     binance_submn1: &binance_submn1
       apikey: xyz
