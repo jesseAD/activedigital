@@ -410,19 +410,30 @@ class Positions:
 
             split_positions = get_unhedged(position_info, spot_positions)
 
-            hedged_exclusions = config['clients'][client]['funding_payments'][exchange][sub_account]['hedged_exclusions']
+            hedged_exclusion_positive = config['clients'][client]['funding_payments'][exchange][sub_account]['hedged_exclusion_positive']
+            hedged_exclusion_negative = config['clients'][client]['funding_payments'][exchange][sub_account]['hedged_exclusion_negative']
             i = 0
             while i < len(split_positions):
                 if len(split_positions[i]) == 1:
-                    if split_positions[i][0]['position'] > 0 and split_positions[i][0]['base'] in hedged_exclusions:
-                        if hedged_exclusions[split_positions[i][0]['base']] == 0:
+                    if split_positions[i][0]['position'] > 0 and split_positions[i][0]['base'] in hedged_exclusion_positive:
+                        if hedged_exclusion_positive[split_positions[i][0]['base']] == 0:
                             split_positions.pop(i)
                             i -= 1
                         else:
-                            split_positions[i][0]['notional'] *= (1 - hedged_exclusions[split_positions[i][0]['base']] / split_positions[i][0]['position'])
-                            split_positions[i][0]['unrealizedPnl'] *= (1 - hedged_exclusions[split_positions[i][0]['base']] / split_positions[i][0]['position'])
-                            split_positions[i][0]['unhedgedAmount'] *= (1 - hedged_exclusions[split_positions[i][0]['base']] / split_positions[i][0]['position'])
-                            split_positions[i][0]['position'] -= hedged_exclusions[split_positions[i][0]['base']]
+                            split_positions[i][0]['notional'] *= (1 - hedged_exclusion_positive[split_positions[i][0]['base']] / split_positions[i][0]['position'])
+                            split_positions[i][0]['unrealizedPnl'] *= (1 - hedged_exclusion_positive[split_positions[i][0]['base']] / split_positions[i][0]['position'])
+                            split_positions[i][0]['unhedgedAmount'] *= (1 - hedged_exclusion_positive[split_positions[i][0]['base']] / split_positions[i][0]['position'])
+                            split_positions[i][0]['position'] -= hedged_exclusion_positive[split_positions[i][0]['base']]
+
+                    elif split_positions[i][0]['position'] < 0 and split_positions[i][0]['base'] in hedged_exclusion_negative:
+                        if hedged_exclusion_negative[split_positions[i][0]['base']] == 0:
+                            split_positions.pop(i)
+                            i -= 1
+                        else:
+                            split_positions[i][0]['notional'] *= (1 + hedged_exclusion_negative[split_positions[i][0]['base']] / split_positions[i][0]['position'])
+                            split_positions[i][0]['unrealizedPnl'] *= (1 + hedged_exclusion_negative[split_positions[i][0]['base']] / split_positions[i][0]['position'])
+                            split_positions[i][0]['unhedgedAmount'] *= (1 + hedged_exclusion_negative[split_positions[i][0]['base']] / split_positions[i][0]['position'])
+                            split_positions[i][0]['position'] += hedged_exclusion_negative[split_positions[i][0]['base']]
 
                 i += 1
             
