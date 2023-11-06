@@ -302,6 +302,8 @@ class Positions:
                                     ],
                                     tickers,
                                 )
+                        position_info.append(value)
+
                 else:
                     value["base"] = value["symbol"].split("_")[0].split("USD")[0]
                     value["quote"] = "USD" + value["symbol"].split("_")[0].split("USD")[1]
