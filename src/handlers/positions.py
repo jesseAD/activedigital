@@ -224,8 +224,8 @@ class Positions:
                         pass
 
             for value in position_value:
-                if float(value["initialMargin"]) > 0:
-                    if config['clients'][client]['funding_payments'][exchange][sub_account]['margin_mode'] == 'non_portfolio':
+                if config['clients'][client]['funding_payments'][exchange][sub_account]['margin_mode'] == 'non_portfolio':
+                    if float(value["initialMargin"]) > 0:
                         # portfolio = None
                         # if exchange == "binance":
                         #     try:
@@ -302,39 +302,39 @@ class Positions:
                                     ],
                                     tickers,
                                 )
-                    else:
-                        value["base"] = value["symbol"].split("_")[0].split("USD")[0]
-                        value["quote"] = "USD" + value["symbol"].split("_")[0].split("USD")[1]
-                        value['symbol'] = value['base'] + value['quote'] + "-PERP"
-                        value['side'] = "long" if float(value['positionAmt']) > 0 else "short"
-                        
-                        value["liquidationBuffer"] = liquidation_buffer
+                else:
+                    value["base"] = value["symbol"].split("_")[0].split("USD")[0]
+                    value["quote"] = "USD" + value["symbol"].split("_")[0].split("USD")[1]
+                    value['symbol'] = value['base'] + value['quote'] + "-PERP"
+                    value['side'] = "long" if float(value['contracts']) > 0 else "short"
+                    
+                    value["liquidationBuffer"] = liquidation_buffer
 
-                        if value["quote"] == "USD":
-                            tickers = list(
-                                self.tickers_db.find({"venue": exchange})
-                                .sort("_id", -1)
-                                .limit(1)
-                            )[0]["ticker_value"]
+                    if value["quote"] == "USD":
+                        tickers = list(
+                            self.tickers_db.find({"venue": exchange})
+                            .sort("_id", -1)
+                            .limit(1)
+                        )[0]["ticker_value"]
 
-                            value["notional"] = float(
-                                value["notional"]
-                            ) * Helper().calc_cross_ccy_ratio(
-                                value["base"],
-                                config["clients"][client]["funding_payments"][exchange][
-                                    "base_ccy"
-                                ],
-                                tickers,
-                            )
-                            value["unrealizedPnl"] = float(
-                                value["unrealizedPnl"]
-                            ) * Helper().calc_cross_ccy_ratio(
-                                value["base"],
-                                config["clients"][client]["funding_payments"][exchange][
-                                    "base_ccy"
-                                ],
-                                tickers,
-                            )
+                        value["notional"] = float(
+                            value["notional"]
+                        ) * Helper().calc_cross_ccy_ratio(
+                            value["base"],
+                            config["clients"][client]["funding_payments"][exchange][
+                                "base_ccy"
+                            ],
+                            tickers,
+                        )
+                        value["unrealizedPnl"] = float(
+                            value["unrealizedPnl"]
+                        ) * Helper().calc_cross_ccy_ratio(
+                            value["base"],
+                            config["clients"][client]["funding_payments"][exchange][
+                                "base_ccy"
+                            ],
+                            tickers,
+                        )
 
                     position_info.append(value)
             
