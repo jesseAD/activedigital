@@ -140,10 +140,10 @@ class FundingRates:
                         last_time = int(current_values['timestamp']) + 1
                         if exchange == "okx":
                             fundingRatesValue[symbol] = OKXHelper().get_funding_rates(
-                                exch=exch, limit=100, symbol=symbol, since=last_time
+                                exch=exch, limit=100, symbol=symbol, since=last_time + 28800000
                             )
 
-                            if len(fundingRatesValue[symbol]) > 0:
+                            if len(fundingRatesValue[symbol]) > 0 or datetime.now(timezone.utc).timestamp() > (last_time + 28800000):
                                 funding_rate = OKXHelper().get_funding_rate(
                                     exch=exch,
                                     symbol=symbol

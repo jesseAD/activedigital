@@ -41,6 +41,7 @@ def get_unhedged(perp=[], spot=[]):
         new_position['symbol'] = position['symbol']
         new_position['timestamp'] = position['timestamp']
         new_position['marginMode'] = position['marginMode']
+        new_position['lifetime_funding_rates'] = position['lifetime_funding_rates']
 
         new_positions.append(new_position)
 
@@ -53,6 +54,7 @@ def get_unhedged(perp=[], spot=[]):
         new_position['position_decimal'] = get_decimal_places(position['contracts'])
         new_position['position'] = float(position['contracts'])
         new_position['markPrice'] = float(position['markPrice'])
+        new_position['lifetime_funding_rates'] = position['lifetime_funding_rates']
 
         if 'avgPrice' in position:
             if position['avgPrice'] != None:
@@ -121,6 +123,7 @@ def get_unhedged(perp=[], spot=[]):
                 'position': sum(item['position'] for item in mosts),
                 'notional': sum(item['notional'] for item in mosts),
                 'unrealizedPnl': sum(item['unrealizedPnl'] for item in mosts),
+                'lifetime_funding_rates': sum(item['lifetime_funding_rates'] for item in mosts),
                 'unhedgedAmount': sign * sum(item['notional'] for item in mosts),
             }])
             id += 1
@@ -219,6 +222,7 @@ def get_unhedged(perp=[], spot=[]):
             merged['side'] = least
             merged['symbol'] = leasts[0]['symbol']
             merged['unrealizedPnl'] = sum([item['unrealizedPnl'] for item in leasts])
+            merged['lifetime_funding_rates'] = sum([item['lifetime_funding_rates'] for item in leasts])
 
             for item in mosts:
                 sign = 1 if least == "long" else -1
@@ -226,6 +230,7 @@ def get_unhedged(perp=[], spot=[]):
                 notional = 0
                 unrealized = 0
                 position = 0
+                lifetime_funding_rates = 0
                 if merged['notional'] == 0.0:
                     if item == mosts[-1]:
                         pairs.append([{
@@ -234,11 +239,13 @@ def get_unhedged(perp=[], spot=[]):
                             'notional': notional + item['notional'],
                             'position': position + item['position'],
                             'unrealizedPnl': unrealized + item['unrealizedPnl'],
+                            'lifetime_funding_rates': lifetime_funding_rates + item['lifetime_funding_rates'],
                             'unhedgedAmount': -item['notional'] * sign + unhedged
                         }])
                     else:
                         notional += item['notional']
                         unrealized += item['unrealizedPnl']
+                        lifetime_funding_rates += item['lifetime_funding_rates']
                         position += item['position']
                         unhedged -= (item['notional'] * sign)
                         
@@ -264,6 +271,7 @@ def get_unhedged(perp=[], spot=[]):
                                 'notional': round(merged['notional'] * ratio, 5),
                                 'position': round(merged['position'] * ratio, 5),
                                 'unrealizedPnl': round(merged['unrealizedPnl'] * ratio, 5),
+                                'lifetime_funding_rates': round(merged['lifetime_funding_rates'] * ratio, 5),
                                 'id': id,
                                 'unhedgedAmount': round(sign * (merged['notional'] * ratio - item['notional']), 5)
                             },
@@ -276,6 +284,7 @@ def get_unhedged(perp=[], spot=[]):
                         merged['notional'] = round((1 - ratio) * merged['notional'], 5)
                         merged['position'] = round((1 - ratio) * merged['position'], 5)
                         merged['unrealizedPnl'] = round((1 - ratio) * merged['unrealizedPnl'], 5)
+                        merged['lifetime_funding_rates'] = round((1 - ratio) * merged['lifetime_funding_rates'], 5)
                 else:
                     pairs.append([
                         {
