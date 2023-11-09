@@ -514,7 +514,7 @@ class Positions:
                         'base': position_info[i]['base'],
                         'quote': position_info[i]['quote']
                     })
-                    position_info['lifetime_funding_rates'] = 0.0
+                    position_info[i]['lifetime_funding_rates'] = 0.0
                     i += 1
 
                 elif position_info[i]['symbol'] > lifetime_funding_values[j]['symbol']:
