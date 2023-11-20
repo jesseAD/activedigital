@@ -6,7 +6,8 @@ cat /dev/null > nohup.out
 PRGCOU=`ps -eaf | grep -i data_getter | grep -v grep | wc -l`
 if [ $PRGCOU -eq 0 ]
 then
-python3.11 /data/datacollector/src/data_getter.py
+source /home/ec2-user/datacollector/bin/activate
+python /data/datacollector/src/data_getter.py
 fi
 sleep 5
 exit
