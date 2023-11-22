@@ -1,6 +1,7 @@
 import os
 import sys
 import time
+import gc
 from dask.distributed import as_completed
 from dask.distributed import wait
 from dask.distributed import LocalCluster, Client
@@ -33,172 +34,200 @@ back_off = {}
 parallelization = 0
 
 # Start a local Dask cluster
-# cluster = LocalCluster(n_workers=config['dask']['parallelization'], memory_limit='80MB', processes=False)
+cluster = LocalCluster(n_workers=config['dask']['parallelization'], processes=False)
 
 # Scale the cluster to 3 workers
 # cluster.scale(config['dask']['parallelization'])
 
 # Connect a client to the local cluster
-# dask = Client(cluster)
+dask = Client(cluster)
 
 #   Insert new run
 insert_runs()
 print("inserted a new run")
 
 #   Public Data
-# futures1 = []
-# for exchange in config['exchanges']:
-#     back_off[exchange] = config['dask']['back_off']
-#     exch = Exchange(exchange).exch()
-
-#     future = dask.submit(collect_instruments, exch, exchange, back_off)
-#     futures1.append(future)
-#     time.sleep(1)
-#     parallelization += 1
-#     if parallelization == config['dask']['parallelization']:
-#         wait(futures1)
-#         parallelization = 0
-
-#     future = dask.submit(collect_mark_prices, exch, exchange, back_off)
-#     futures1.append(future)
-#     time.sleep(1)
-#     parallelization += 1
-#     if parallelization == config['dask']['parallelization']:
-#         wait(futures1)
-#         parallelization = 0
-
-#     future = dask.submit(collect_tickers, exch, exchange, back_off)
-#     futures1.append(future)
-#     time.sleep(1)
-#     parallelization += 1
-#     if parallelization == config['dask']['parallelization']:
-#         wait(futures1)
-#         parallelization = 0
-
-#     future = dask.submit(collect_index_prices, exch, exchange, back_off)
-#     futures1.append(future)
-#     time.sleep(1)
-#     parallelization += 1
-#     if parallelization == config['dask']['parallelization']:
-#         wait(futures1)
-#         parallelization = 0
-
-#     future = dask.submit(collect_funding_rates, exch, exchange, back_off)
-#     futures1.append(future)
-#     time.sleep(1)
-#     parallelization += 1
-#     if parallelization == config['dask']['parallelization']:
-#         wait(futures1)
-#         parallelization = 0
-
-#     future = dask.submit(collect_borrow_rates, exch, exchange, back_off)
-#     futures1.append(future)
-#     time.sleep(1)
-#     parallelization += 1
-#     if parallelization == config['dask']['parallelization']:
-#         wait(futures1)
-#         parallelization = 0
-
-# wait(futures1)
-# parallelization = 0
-
+futures1 = []
 for exchange in config['exchanges']:
+    back_off[exchange] = config['dask']['back_off']
     exch = Exchange(exchange).exch()
 
-    print(exchange)
-    collect_instruments(exch, exchange)
-    print("collected instruments")
-    collect_mark_prices(exch, exchange)
-    print("collected mark price")
-    collect_tickers(exch, exchange)
-    print("collected tickers")
-    collect_index_prices(exch, exchange)
-    print("collected index prices")
-    collect_funding_rates(exch, exchange)
-    print("collected funding rates")    
-    collect_borrow_rates(exch, exchange)
-    print("collected borrow rates")  
+    future = dask.submit(collect_instruments, exch, exchange, back_off)
+    futures1.append(future)
+    time.sleep(1)
+    parallelization += 1
+    if parallelization == config['dask']['parallelization']:
+        for done_work in as_completed(futures1, with_results=False):
+            done_work.release()
+        parallelization = 0
+
+    future = dask.submit(collect_mark_prices, exch, exchange, back_off)
+    futures1.append(future)
+    time.sleep(1)
+    parallelization += 1
+    if parallelization == config['dask']['parallelization']:
+        for done_work in as_completed(futures1, with_results=False):
+            done_work.release()
+        parallelization = 0
+
+    future = dask.submit(collect_tickers, exch, exchange, back_off)
+    futures1.append(future)
+    time.sleep(1)
+    parallelization += 1
+    if parallelization == config['dask']['parallelization']:
+        for done_work in as_completed(futures1, with_results=False):
+            done_work.release()
+        parallelization = 0
+
+    future = dask.submit(collect_index_prices, exch, exchange, back_off)
+    futures1.append(future)
+    time.sleep(1)
+    parallelization += 1
+    if parallelization == config['dask']['parallelization']:
+        for done_work in as_completed(futures1, with_results=False):
+            done_work.release()
+        parallelization = 0
+
+    future = dask.submit(collect_funding_rates, exch, exchange, back_off)
+    futures1.append(future)
+    time.sleep(1)
+    parallelization += 1
+    if parallelization == config['dask']['parallelization']:
+        for done_work in as_completed(futures1, with_results=False):
+            done_work.release()
+        parallelization = 0
+
+    future = dask.submit(collect_borrow_rates, exch, exchange, back_off)
+    futures1.append(future)
+    time.sleep(1)
+    parallelization += 1
+    if parallelization == config['dask']['parallelization']:
+        for done_work in as_completed(futures1, with_results=False):
+            done_work.release()
+        parallelization = 0
+
+for done_work in as_completed(futures1, with_results=False):
+    done_work.release()
+del futures1
+parallelization = 0
+
+# for exchange in config['exchanges']:
+#     exch = Exchange(exchange).exch()
+
+#     print(exchange)
+#     collect_instruments(exch, exchange)
+#     print("collected instruments")
+#     collect_mark_prices(exch, exchange)
+#     print("collected mark price")
+#     collect_tickers(exch, exchange)
+#     print("collected tickers")
+#     collect_index_prices(exch, exchange)
+#     print("collected index prices")
+#     collect_funding_rates(exch, exchange)
+#     print("collected funding rates")    
+#     collect_borrow_rates(exch, exchange)
+#     print("collected borrow rates")  
 
 #   Private Data
-# futures2 = []
-# for client in config['clients']:
-#     data_collectors = get_data_collectors(client)
-
-#     for data_collector in data_collectors:
-#         back_off[client + "_" + data_collector.exchange + "_" + data_collector.account] = config['dask']['back_off']
-        
-#         future = dask.submit(collect_positions, client, data_collector, back_off)
-#         futures2.append(future)
-#         time.sleep(1)
-#         parallelization += 1
-#         if parallelization == config['dask']['parallelization']:
-#             wait(futures2)
-#             parallelization = 0
-
-#         future = dask.submit(collect_fills, client, data_collector, back_off)
-#         futures2.append(future)
-#         time.sleep(1)
-#         parallelization += 1
-#         if parallelization == config['dask']['parallelization']:
-#             wait(futures2)
-#             parallelization = 0
-
-#         future = dask.submit(collect_balances, client, data_collector, back_off)
-#         futures2.append(future)
-#         time.sleep(1)
-#         parallelization += 1
-#         if parallelization == config['dask']['parallelization']:
-#             wait(futures2)
-#             parallelization = 0
-
-#         future = dask.submit(collect_transactions, client, data_collector, back_off)
-#         futures2.append(future)
-#         time.sleep(1)
-#         parallelization += 1
-#         if parallelization == config['dask']['parallelization']:
-#             wait(futures2)
-#             parallelization = 0
-
-# wait(futures2)
-# parallelization = 0
-
+futures2 = []
 for client in config['clients']:
     data_collectors = get_data_collectors(client)
 
     for data_collector in data_collectors:
-        print(client + " " + data_collector.exchange + " " + data_collector.account)
-        collect_balances(client, data_collector)
-        print("collected balances")
-        collect_positions(client, data_collector)
-        print("collected position")        
-        collect_fills(client, data_collector)
-        print("collected fills")        
-        collect_transactions(client, data_collector)
-        print("collected transactions")
+        back_off[client + "_" + data_collector.exchange + "_" + data_collector.account] = config['dask']['back_off']
+        
+        future = dask.submit(collect_positions, client, data_collector, back_off)
+        futures2.append(future)
+        time.sleep(1)
+        parallelization += 1
+        if parallelization == config['dask']['parallelization']:
+            wait(futures2)
+            
+            for done_work in as_completed(futures2, with_results=False):
+                done_work.release()
+            futures2 = []
+            parallelization = 0
 
+        future = dask.submit(collect_fills, client, data_collector, back_off)
+        futures2.append(future)
+        time.sleep(1)
+        parallelization += 1
+        if parallelization == config['dask']['parallelization']:
+            wait(futures2)
+            for done_work in as_completed(futures2, with_results=False):
+                done_work.release()
+            futures2 = []
+            parallelization = 0
 
-# futures3 = []
+        future = dask.submit(collect_balances, client, data_collector, back_off)
+        futures2.append(future)
+        time.sleep(1)
+        parallelization += 1
+        if parallelization == config['dask']['parallelization']:
+            wait(futures2)
+            for done_work in as_completed(futures2, with_results=False):
+                done_work.release()
+            futures2 = []
+            parallelization = 0
+
+        future = dask.submit(collect_transactions, client, data_collector, back_off)
+        futures2.append(future)
+        time.sleep(1)
+        parallelization += 1
+        if parallelization == config['dask']['parallelization']:
+            wait(futures2)
+            for done_work in as_completed(futures2, with_results=False):
+                done_work.release()
+            futures2 = []
+            parallelization = 0
+
+for done_work in as_completed(futures2, with_results=False):
+    done_work.release()
+del futures2
+parallelization = 0
+
 # for client in config['clients']:
 #     data_collectors = get_data_collectors(client)
 
 #     for data_collector in data_collectors:
-#         future = dask.submit(collect_leverages, client, data_collector)
-#         futures3.append(future)
-#         time.sleep(1)
-#         parallelization += 1
-#         if parallelization == config['dask']['parallelization']:
-#             wait(futures3)
-#             parallelization = 0
-        
-# wait(futures3)
+#         print(client + " " + data_collector.exchange + " " + data_collector.account)
+#         collect_balances(client, data_collector)
+#         print("collected balances")
+#         collect_positions(client, data_collector)
+#         print("collected position")        
+#         collect_fills(client, data_collector)
+#         print("collected fills")        
+#         collect_transactions(client, data_collector)
+#         print("collected transactions")
 
+
+futures3 = []
 for client in config['clients']:
     data_collectors = get_data_collectors(client)
 
     for data_collector in data_collectors:
-        print(client + " " + data_collector.exchange + " " + data_collector.account)
-        collect_leverages(client, data_collector)
-        print("collected leverages")
+        future = dask.submit(collect_leverages, client, data_collector)
+        futures3.append(future)
+        time.sleep(1)
+        parallelization += 1
+        if parallelization == config['dask']['parallelization']:
+            wait(futures3)
+            for item in futures3:
+                item.cancel()
+            futures3 = []
+            parallelization = 0
+        
+wait(futures3)
+for item in futures3:
+    item.cancel()
+
+# for client in config['clients']:
+#     data_collectors = get_data_collectors(client)
+
+#     for data_collector in data_collectors:
+#         print(client + " " + data_collector.exchange + " " + data_collector.account)
+#         collect_leverages(client, data_collector)
+#         print("collected leverages")
 
 # dask.close()
 
