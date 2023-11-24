@@ -8,9 +8,7 @@ from src.lib.db import MongoDB
 from src.lib.log import Log
 from src.lib.exchange import Exchange
 from src.config import read_config_file
-from src.handlers.helpers import Helper
-from src.handlers.helpers import OKXHelper
-from src.handlers.helpers import BybitHelper
+from src.handlers.helpers import Helper, OKXHelper, BybitHelper
 from src.handlers.database_connector import database_connector
 
 load_dotenv()
@@ -156,7 +154,7 @@ class MarkPrices:
 
         if latest_value == mark_price["mark_price_value"]:
             print("same mark price")
-            return False
+            return True
 
         try:
             if config["mark_prices"]["store_type"] == "timeseries":
@@ -180,6 +178,8 @@ class MarkPrices:
                 )
 
             del mark_price
+
+            return True
 
             # return mark_price
         except Exception as e:

@@ -4,7 +4,7 @@ mongo_port: 27017
 
 dask:
   back_off: 100
-  parallelization: 4
+  parallelization: 10
 
 liquidation:
   threshold: 
@@ -155,7 +155,7 @@ funding_rates:
     bybit_usdt: *symbols_3
     bybit_usd: *symbols_5
 
-exchanges: ["binance", "okx", "bybit", ] # 
+exchanges: ["binance", "okx", "bybit", ]
 
 clients:
   rundmc:

@@ -99,13 +99,24 @@ class Helper:
     
     def get_pm_balances(self, exch):
         balances = exch.papi_get_balance()
-        balances = [item for item in balances if item['totalWalletBalance'] != 0.0]
+        # print(balances)
+        balances = [item for item in balances if item['totalWalletBalance'] != "0.0"]
 
         balance_value = {}
         for item in balances:
             balance_value[item['asset']] = float(item['totalWalletBalance'])
 
+        _balances = self.get_balances(exch)
+        for item in _balances:
+            if item in balances:
+                balance_value[item] += _balances[item]
+            else:
+                balance_value[item] = _balances[item]
+
         return balance_value
+
+    def get_wallet_balances(self, exch):
+        return exch.sapi_get_asset_wallet_balance()
 
     def get_instruments(self, exch):
         # return exch.fetch_markets({'symbol': "BTCUSDT"})[0]['info']
@@ -262,6 +273,15 @@ class Helper:
 class OKXHelper(Helper):
     def get_positions(self, exch):
         return exch.fetch_positions(params={"type": "swap"})
+    
+    def get_balances(self, exch):
+        all_balances = exch.fetch_balance()["total"]
+        result = dict()
+        for currency, balance in all_balances.items():
+            if float(balance) != 0:
+                result[currency] = balance
+
+        return result
 
     def get_mark_prices(self, exch, symbol):
         params = {

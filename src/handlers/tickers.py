@@ -8,10 +8,7 @@ from src.lib.db import MongoDB
 from src.lib.log import Log
 from src.lib.exchange import Exchange
 from src.config import read_config_file
-from src.handlers.helpers import Helper
-from src.handlers.helpers import OKXHelper
-from src.handlers.helpers import BybitHelper
-from src.handlers.helpers import CoinbaseHelper
+from src.handlers.helpers import Helper, OKXHelper, BybitHelper, CoinbaseHelper
 from src.handlers.database_connector import database_connector
 
 load_dotenv()
@@ -145,7 +142,7 @@ class Tickers:
         
         if latest_value == ticker['ticker_value']:
             print('same ticker')
-            return False
+            return True
         
         try:
             if config['tickers']['store_type'] == "timeseries":
@@ -167,6 +164,8 @@ class Tickers:
                 )
 
             del ticker
+
+            return True
                 
             # return ticker
         except Exception as e:

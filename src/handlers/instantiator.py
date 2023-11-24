@@ -69,104 +69,154 @@ def get_data_collectors(client):
 
 #   Private data
 def collect_positions(client_alias, data_collector, back_off={}):
-    positions = Positions('positions')
-    positions.create(
-        client=client_alias,
-        exch=data_collector.exch,
-        exchange=data_collector.exchange,
-        sub_account=data_collector.account,
-        back_off=back_off
-    )
-    del positions
+    res = False
+    try:
+        positions = Positions('positions')
+        res = positions.create(
+            client=client_alias,
+            exch=data_collector.exch,
+            exchange=data_collector.exchange,
+            sub_account=data_collector.account,
+            back_off=back_off
+        )
+        del positions
+    finally:
+        print("Collected positions for " + client_alias + " " + data_collector.exchange + " " + data_collector.account)
+        return res
 
 def collect_balances(client_alias, data_collector, back_off={}):
-    balances = Balances('balances')
-    balances.create(
-        client=client_alias,
-        exch=data_collector.exch,
-        exchange=data_collector.exchange,
-        sub_account=data_collector.account,
-        back_off=back_off
-    )
-    del balances
+    res = False
+    try:
+        balances = Balances('balances')
+        res = balances.create(
+            client=client_alias,
+            exch=data_collector.exch,
+            exchange=data_collector.exchange,
+            sub_account=data_collector.account,
+            back_off=back_off
+        )
+        del balances
+    finally:
+        print("Collected balances for " + client_alias + " " + data_collector.exchange + " " + data_collector.account)
+        return res
 
 def collect_transactions(client_alias, data_collector, back_off={}):
-    transactions = Transactions('transactions')
-    transactions.create(
-        client=client_alias,
-        exch=data_collector.exch,
-        exchange=data_collector.exchange,
-        sub_account=data_collector.account,
-        symbol='BTCUSDT',
-        back_off=back_off
-    )
-    del transactions
+    res = False
+    try:
+        transactions = Transactions('transactions')
+        res = transactions.create(
+            client=client_alias,
+            exch=data_collector.exch,
+            exchange=data_collector.exchange,
+            sub_account=data_collector.account,
+            symbol='BTCUSDT',
+            back_off=back_off
+        )
+        del transactions
+    finally:
+        print("Collected transactions for " + client_alias + " " + data_collector.exchange + " " + data_collector.account)
+        return res
 
 def collect_fills(client_alias, data_collector, back_off={}):
-    fills = Fills('fills')
-    fills.create(
-        client=client_alias,
-        exch=data_collector.exch,
-        exchange=data_collector.exchange,
-        sub_account=data_collector.account,
-        back_off=back_off
-    )
-    del fills
+    res = False
+    try:
+        fills = Fills('fills')
+        res = fills.create(
+            client=client_alias,
+            exch=data_collector.exch,
+            exchange=data_collector.exchange,
+            sub_account=data_collector.account,
+            back_off=back_off
+        )
+        del fills
+    finally:
+        print("Collected fills for " + client_alias + " " + data_collector.exchange + " " + data_collector.account)
+        return res
 
 #   Public data
 def collect_instruments(exch, exchange, back_off={}):
-    instruments = Instruments('instruments')
-    instruments.create(
-        exch=exch,
-        exchange=exchange,
-        back_off=back_off
-    )
-    del instruments
+    res = False
+    try:
+        instruments = Instruments('instruments')
+        res = instruments.create(
+            exch=exch,
+            exchange=exchange,
+            back_off=back_off
+        )
+        del instruments
+    finally:
+        print("Collected instruments for " + exchange)
+        return res
 
 def collect_tickers(exch, exchange, back_off={}):
-    ticker = Tickers('tickers')
-    ticker.create(
-        exch=exch,
-        exchange=exchange,
-        back_off=back_off
-    )
-    del ticker
+    res = False
+    try:
+        ticker = Tickers('tickers')
+        res = ticker.create(
+            exch=exch,
+            exchange=exchange,
+            back_off=back_off
+        )
+        del ticker
+    finally:
+        print("Collected tickers for " + exchange)
+        return res
 
 def collect_index_prices(exch, exchange, back_off={}):
-    index_prices = IndexPrices('index_prices')
-    index_prices.create(
-        exch=exch,
-        exchange=exchange,
-        back_off=back_off
-    )
-    del index_prices
+    res = False
+    try:
+        index_prices = IndexPrices('index_prices')
+        res = index_prices.create(
+            exch=exch,
+            exchange=exchange,
+            back_off=back_off
+        )
+        del index_prices
+    finally:
+        print("Collected index prices for " + exchange)
+        return res
 
 def collect_borrow_rates(exch, exchange, back_off={}):
-    borrow_rates = BorrowRates('borrow_rates')
-    borrow_rates.create(
-        exch=exch,
-        exchange=exchange,
-        back_off=back_off
-    )
-    del borrow_rates
+    res = False
+    try:
+        borrow_rates = BorrowRates('borrow_rates')
+        res = borrow_rates.create(
+            exch=exch,
+            exchange=exchange,
+            back_off=back_off
+        )
+        del borrow_rates
+    finally:
+        print("Collected borrow rates for " + exchange)
+        return res
 
 def collect_funding_rates(exch, exchange, back_off={}):
-    funding_rates = FundingRates('funding_rates')
-    funding_rates.create(
-        exch=exch,
-        exchange=exchange,
-        back_off=back_off
-    )
-    del funding_rates
+    res = False
+    try:
+        funding_rates = FundingRates('funding_rates')
+        res = funding_rates.create(
+            exch=exch,
+            exchange=exchange,
+            back_off=back_off
+        )
+        del funding_rates
+    finally:
+        print("Collected funding rates for " + exchange)
+        return res
 
 def collect_mark_prices(exch, exchange, back_off={}):
-    mark_prices = MarkPrices('mark_prices')
-    mark_prices.create(
-        exch=exch,
-        exchange=exchange,
-        back_off=back_off
-    )
-    del mark_prices
+    res = False
+    try:
+        mark_prices = MarkPrices('mark_prices')
+        res = mark_prices.create(
+            exch=exch,
+            exchange=exchange,
+            back_off=back_off
+        )
+        del mark_prices
+    finally:
+        print("Collected mark prices for " + exchange)
+        return res
 
 def insert_runs():
     Runs('runs').start()
@@ -175,8 +225,13 @@ def enclose_runs():
     Runs('runs').end()
 
 def collect_leverages(client_alias, data_collector):
-    Leverages('leverages').get(
-        client=client_alias,
-        exchange=data_collector.exchange,
-        account=data_collector.account
-    )
+    res = False
+    try:
+        res = Leverages('leverages').get(
+            client=client_alias,
+            exchange=data_collector.exchange,
+            account=data_collector.account
+        )
+    finally:
+        print("Collected leverage for " + client_alias + " " + data_collector.exchange + " " + data_collector.account)
+        return res

@@ -8,9 +8,7 @@ from src.lib.db import MongoDB
 from src.lib.log import Log
 from src.lib.exchange import Exchange
 from src.config import read_config_file
-from src.handlers.helpers import Helper
-from src.handlers.helpers import OKXHelper
-from src.handlers.helpers import BybitHelper
+from src.handlers.helpers import Helper, OKXHelper, BybitHelper
 from src.lib.mapping import Mapping
 from src.handlers.database_connector import database_connector
 
@@ -304,12 +302,14 @@ class Fills:
         del fillsValue
 
         if len(fills) <= 0:
-            return False
+            return True
 
         try:
             self.fills_db.insert_many(fills)
 
             del fills
+
+            return True
 
             # return fills
         except Exception as e:

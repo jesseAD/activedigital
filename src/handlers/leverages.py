@@ -142,7 +142,7 @@ class Leverages:
                     upsert=True
                 )
 
-            return leverage_value
+            return True
         
         except Exception as e:
             log.error(e)

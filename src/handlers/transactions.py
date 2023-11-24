@@ -9,9 +9,7 @@ from src.lib.log import Log
 from src.lib.exchange import Exchange
 from src.lib.mapping import Mapping
 from src.config import read_config_file
-from src.handlers.helpers import Helper
-from src.handlers.helpers import OKXHelper
-from src.handlers.helpers import BybitHelper
+from src.handlers.helpers import Helper, OKXHelper, BybitHelper
 from src.handlers.database_connector import database_connector
 
 load_dotenv()
@@ -529,7 +527,7 @@ class Transactions:
 
             if exchange == "okx":
                 if len(transaction_value) == 0:
-                    return False
+                    return True
 
                 for item in transaction_value:
                     item['timestamp'] = int(item["timestamp"]) - config['transactions']['time_slack']
@@ -666,7 +664,7 @@ class Transactions:
                         transaction.append(new_value)     
 
             if len(transaction) == 0:
-                return False
+                return True
         
         del transaction_value
 
@@ -696,6 +694,8 @@ class Transactions:
 
             # log.debug(f"transaction created: {transaction}")
             del transaction
+
+            return True
 
             # return transaction
         except Exception as e:

@@ -9,9 +9,7 @@ from src.lib.db import MongoDB
 from src.lib.log import Log
 from src.lib.exchange import Exchange
 from src.config import read_config_file
-from src.handlers.helpers import Helper
-from src.handlers.helpers import OKXHelper
-from src.handlers.helpers import BybitHelper
+from src.handlers.helpers import Helper, OKXHelper, BybitHelper
 from src.handlers.database_connector import database_connector
 
 load_dotenv()
@@ -273,7 +271,7 @@ class BorrowRates:
                     break
 
         if flag == False:
-            return []
+            return True
 
         borrow_rates = []
 
@@ -315,6 +313,8 @@ class BorrowRates:
             self.borrow_rates_db.insert_many(borrow_rates)
 
             del borrow_rates
+
+            return True
 
             # return borrow_rates
 

@@ -11,9 +11,7 @@ from src.lib.log import Log
 from src.lib.exchange import Exchange
 from src.lib.mapping import Mapping
 from src.config import read_config_file
-from src.handlers.helpers import Helper
-from src.handlers.helpers import OKXHelper
-from src.handlers.helpers import BybitHelper
+from src.handlers.helpers import Helper, OKXHelper, BybitHelper
 from src.handlers.database_connector import database_connector
 
 load_dotenv()
@@ -235,7 +233,7 @@ class Instruments:
         
         if latest_value == instrument['instrument_value']:
             print('same instrument')
-            return False
+            return True
         
         try:
             if config["instruments"]["store_type"] == "snapshot":
@@ -256,6 +254,8 @@ class Instruments:
                 self.insturments_db.insert_one(instrument)
 
             del instrument
+
+            return True
 
             # return instrument
         except Exception as e:
