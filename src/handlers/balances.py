@@ -8,9 +8,7 @@ from src.lib.db import MongoDB
 from src.lib.log import Log
 from src.lib.exchange import Exchange
 from src.config import read_config_file
-from src.handlers.helpers import Helper
-from src.handlers.helpers import OKXHelper
-from src.handlers.helpers import BybitHelper
+from src.handlers.helpers import Helper, OKXHelper, BybitHelper
 from src.handlers.database_connector import database_connector
 
 load_dotenv()
@@ -133,12 +131,23 @@ class Balances:
             ticker_value = item["ticker_value"]
 
         base_balance = 0
-        for _key, _value in balanceValue.items():
-            base_balance += _value * Helper().calc_cross_ccy_ratio(
-                _key,
-                config["clients"][client]["funding_payments"][exchange]["base_ccy"],
-                ticker_value,
-            )
+        if exchange == "binance":
+            try:
+                wallet_balances = Helper().get_wallet_balances(exch=exch)
+                for item in wallet_balances:
+                    base_balance += float(item['balance']) * Helper().calc_cross_ccy_ratio(
+                        "BTC", "USD", ticker_value
+                    )
+            except Exception as e:
+                print("An error occurred in Balances:", e)
+                pass
+        else:
+            for _key, _value in balanceValue.items():
+                base_balance += _value * Helper().calc_cross_ccy_ratio(
+                    _key,
+                    config["clients"][client]["funding_payments"][exchange]["base_ccy"],
+                    ticker_value,
+                )
 
         balanceValue["base"] = base_balance
 
@@ -192,7 +201,7 @@ class Balances:
 
         if latest_value == balance["balance_value"]:
             print("same balance")
-            return False
+            return True
 
         try:
             if config["balances"]["store_type"] == "timeseries":
@@ -217,7 +226,8 @@ class Balances:
                     upsert=True,
                 )
 
-            return balance
+            return True
+        
         except Exception as e:
             log.error(e)
             return False

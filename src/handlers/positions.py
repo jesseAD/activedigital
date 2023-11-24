@@ -10,9 +10,7 @@ from src.lib.exchange import Exchange
 from src.lib.mapping import Mapping
 from src.lib.unhedged import get_unhedged
 from src.config import read_config_file
-from src.handlers.helpers import Helper
-from src.handlers.helpers import OKXHelper
-from src.handlers.helpers import BybitHelper
+from src.handlers.helpers import Helper, OKXHelper, BybitHelper
 from src.handlers.database_connector import database_connector
 
 load_dotenv()
@@ -730,7 +728,7 @@ class Positions:
 
         if latest_value == position["position_value"]:
             print("same position")
-            return False
+            return True
 
         run_ids = self.runs_db.find({}).sort("_id", -1).limit(1)
         latest_run_id = 0
@@ -768,6 +766,8 @@ class Positions:
             # log.debug(f"Position created: {position}")
 
             del position
+
+            return True
 
             # return position
         except Exception as e:

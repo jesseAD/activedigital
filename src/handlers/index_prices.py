@@ -8,10 +8,7 @@ from src.lib.db import MongoDB
 from src.lib.log import Log
 from src.lib.exchange import Exchange
 from src.config import read_config_file
-from src.handlers.helpers import Helper
-from src.handlers.helpers import OKXHelper
-from src.handlers.helpers import BybitHelper
-from src.handlers.helpers import CoinbaseHelper
+from src.handlers.helpers import Helper, OKXHelper, BybitHelper
 from src.handlers.database_connector import database_connector
 
 load_dotenv()
@@ -132,6 +129,8 @@ class IndexPrices:
             self.index_prices_db.insert_one(index_price)
 
             del index_price
+
+            return True
                 
             # return index_price
         except Exception as e:

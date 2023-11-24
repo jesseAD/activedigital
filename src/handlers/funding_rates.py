@@ -9,9 +9,7 @@ from src.lib.db import MongoDB
 from src.lib.log import Log
 from src.lib.exchange import Exchange
 from src.config import read_config_file
-from src.handlers.helpers import Helper
-from src.handlers.helpers import OKXHelper
-from src.handlers.helpers import BybitHelper
+from src.handlers.helpers import Helper, OKXHelper, BybitHelper
 from src.handlers.database_connector import database_connector
 
 load_dotenv()
@@ -514,7 +512,7 @@ class FundingRates:
                     break
 
         if flag == False:
-            return []
+            return True
 
         funding_rates = []
 
@@ -554,12 +552,14 @@ class FundingRates:
         del fundingRatesValue
 
         if len(funding_rates) <= 0:
-            return False
+            return True
 
         try:
             self.funding_rates_db.insert_many(funding_rates)
 
             del funding_rates
+
+            return True
 
             # return funding_rates
 
