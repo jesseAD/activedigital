@@ -329,6 +329,8 @@ class Transactions:
                                 borrow_trades = Mapping().mapping_transactions(
                                     exchange=exchange, transactions=borrow_trades
                                 )
+                                for item in borrow_trades:
+                                    item['income'] = -float(item['income'])
 
                                 transaction_value['borrow'] = borrow_trades
 
