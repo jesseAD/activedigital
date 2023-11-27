@@ -90,7 +90,7 @@ class Transactions:
                     PASSPHRASE = os.getenv(spec + "PASSPHRASE")
 
                 exch = Exchange(exchange, sub_account, API_KEY, API_SECRET, PASSPHRASE).exch()
-
+            
             try:
                 if config["transactions"]["store_type"] == "snapshot":
                     if exchange == "okx":
@@ -290,6 +290,47 @@ class Transactions:
                                 )
 
                                 transaction_value['um'] = um_trades
+
+                            query["trade_type"] = "borrow"
+
+                            transactions_values = (
+                                self.transactions_db.find(query)
+                                .sort("transaction_value.timestamp", -1)
+                                .limit(1)
+                            )
+
+                            current_value = None
+                            for item in transactions_values:
+                                current_value = item["transaction_value"]
+
+                            if current_value is None:
+                                borrow_trades = Helper().get_pm_borrow_transactions(
+                                    exch=exch, params={"size": 100}
+                                )
+                                for item in borrow_trades:
+                                    item['info'] = {**item}
+                                borrow_trades = Mapping().mapping_transactions(
+                                    exchange=exchange, transactions=borrow_trades
+                                )
+
+                                transaction_value['borrow'] = borrow_trades
+                            else:
+                                last_time = current_value["timestamp"] + 1000 + config['transactions']['time_slack']
+                                borrow_trades = Helper().get_pm_borrow_transactions(
+                                    exch=exch,
+                                    params={
+                                        "startTime": last_time,
+                                        "size": 100,
+                                    },
+                                )
+                                for item in borrow_trades:
+                                    item['info'] = {**item}
+
+                                borrow_trades = Mapping().mapping_transactions(
+                                    exchange=exchange, transactions=borrow_trades
+                                )
+
+                                transaction_value['borrow'] = borrow_trades
 
                         else:
                             query = {}
