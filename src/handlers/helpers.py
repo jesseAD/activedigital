@@ -195,6 +195,9 @@ class Helper:
 
     def get_cm_transactions(self, exch, params={}):
         return exch.papi_get_cm_income(params=params)
+    
+    def get_pm_borrow_transactions(self, exch, params={}):
+        return exch.papi_get_margin_margininteresthistory(params=params)['rows']
 
     def get_fills(self, exch, symbol=None, since=None, limit=None, params={}):
         return exch.fetch_my_trades(symbol=symbol, since=since, limit=limit, params=params)

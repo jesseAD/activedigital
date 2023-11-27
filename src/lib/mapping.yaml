@@ -15,9 +15,12 @@ binance:
     baseAsset: baseCcy
 
   transaction:
+    interestAccuredTime: timestamp
     time: timestamp
     quoteQty: income
+    interest: income
     id: tradeId
+    type: incomeType
     commissionAsset: asset
     values:
       INTERNAL_TRANSFER: TRANSFER
