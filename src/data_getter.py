@@ -92,7 +92,7 @@ private_data_collectors = [
     collect_fills, collect_transactions
 ]
 
-cluster = LocalCluster(n_workers=config['dask']['workers'], processes=False)
+cluster = LocalCluster(n_workers=config['dask']['workers'], memory_limit=config['dask']['memory'], processes=False)
 dask = Client(cluster)
 futures = []
 
