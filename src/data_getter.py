@@ -47,6 +47,8 @@ def public_pool(data_collectors, exchanges):
     
     for thread in concurrent.futures.as_completed(threads):
         print(thread.result())
+        thread.cancel()
+    gc.collect()
     return True
 
 def private_pool(data_collectors, accounts_group):
@@ -60,6 +62,8 @@ def private_pool(data_collectors, accounts_group):
     
     for thread in concurrent.futures.as_completed(threads):
         print(thread.result())
+        thread.cancel()
+    gc.collect()   
     return True
 
 def leverage_pool(leverage_collector, accounts_group):
@@ -72,6 +76,8 @@ def leverage_pool(leverage_collector, accounts_group):
     
     for thread in concurrent.futures.as_completed(threads):
         print(thread.result())
+        thread.cancel()
+    gc.collect()
     return True
 
 
