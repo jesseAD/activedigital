@@ -107,6 +107,8 @@ for i in range(config['dask']['workers']):
     ))
 
 wait(futures)
+for done_work in as_completed(futures, with_results=False):
+    dask.cancel(done_work) 
 del futures
 futures = []
 
@@ -125,6 +127,8 @@ for i in range(config['dask']['workers']):
     ))
 
 wait(futures)
+for done_work in as_completed(futures, with_results=False):
+    dask.cancel(done_work) 
 del futures
 futures = []
 
@@ -135,6 +139,8 @@ for i in range(config['dask']['workers']):
     ))
 
 wait(futures)
+for done_work in as_completed(futures, with_results=False):
+    dask.cancel(done_work) 
 del futures
 
 
