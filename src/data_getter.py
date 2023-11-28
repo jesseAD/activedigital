@@ -106,6 +106,7 @@ for i in range(config['dask']['workers']):
         config['exchanges'][int(len(config['exchanges']) / config['dask']['workers'] * i) : int(len(config['exchanges']) / config['dask']['workers'] * (i+1))]
     ))
 
+
 wait(futures)
 for done_work in as_completed(futures, with_results=False):
     dask.cancel(done_work) 
