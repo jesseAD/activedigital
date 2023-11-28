@@ -4,7 +4,9 @@ mongo_port: 27017
 
 dask:
   back_off: 100
-  parallelization: 10
+  workers: 1
+  threadPoolsPerWorker: 3
+  threadsPerPool: 4
 
 liquidation:
   threshold: 

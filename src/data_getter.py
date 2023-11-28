@@ -2,9 +2,9 @@ import os
 import sys
 import time
 import gc
-# from dask.distributed import as_completed
-# from dask.distributed import wait
-# from dask.distributed import LocalCluster, Client
+from dask.distributed import as_completed
+from dask.distributed import wait
+from dask.distributed import LocalCluster, Client
 import concurrent.futures
 
 current_file = os.path.abspath(__file__)
@@ -31,23 +31,119 @@ from src.handlers.instantiator import get_data_collectors
 from src.config import read_config_file
 
 config = read_config_file()
+
 back_off = {}
-parallelization = 0
+exchs = {}
 
-# # Start a local Dask cluster
-# cluster = LocalCluster(n_workers=config['dask']['parallelization'], memory_limit='500MB', processes=False)
+def public_pool(data_collectors, exchanges):
+    executors = [concurrent.futures.ThreadPoolExecutor(config['dask']['threadsPerPool']) for i in range(config['dask']['threadPoolsPerWorker'])]
+    
+    threads = []
+    for i in range(config['dask']['threadPoolsPerWorker']):
+        for j in range(int(i * len(data_collectors) / config['dask']['threadPoolsPerWorker']), int((i+1) * len(data_collectors) / config['dask']['threadPoolsPerWorker'])):
+            for exchange in exchanges:
+                threads.append(executors[i].submit(data_collectors[j], exchs[exchange], exchange, back_off))
+            pass
+    
+    for thread in concurrent.futures.as_completed(threads):
+        print(thread.result())
+    return True
 
-# # Scale the cluster to 3 workers
-# # cluster.scale(config['dask']['parallelization'])
+def private_pool(data_collectors, accounts_group):
+    executors = [concurrent.futures.ThreadPoolExecutor(config['dask']['threadsPerPool']) for i in range(config['dask']['threadPoolsPerWorker'])]
+    
+    threads = []
+    for i in range(config['dask']['threadPoolsPerWorker']):
+        for j in range(int(i * len(accounts_group) / config['dask']['threadPoolsPerWorker']), int((i+1) * len(accounts_group) / config['dask']['threadPoolsPerWorker'])):
+            for collector in data_collectors:
+                threads.append(executors[i].submit(collector, accounts_group[j].client, accounts_group[j], back_off))
+    
+    for thread in concurrent.futures.as_completed(threads):
+        print(thread.result())
+    return True
 
-# # Connect a client to the local cluster
-# dask = Client(cluster)
+def leverage_pool(leverage_collector, accounts_group):
+    executors = [concurrent.futures.ThreadPoolExecutor(config['dask']['threadsPerPool']) for i in range(config['dask']['threadPoolsPerWorker'])]
+    
+    threads = []
+    for i in range(config['dask']['threadPoolsPerWorker']):
+        for j in range(int(i * len(accounts_group) / config['dask']['threadPoolsPerWorker']), int((i+1) * len(accounts_group) / config['dask']['threadPoolsPerWorker'])):
+            threads.append(executors[i].submit(leverage_collector, accounts_group[j].client, accounts_group[j]))
+    
+    for thread in concurrent.futures.as_completed(threads):
+        print(thread.result())
+    return True
+
 
 #   Insert new run
 insert_runs()
 print("inserted a new run")
 
-# parallelization with concurrent
+#  ------------  Dask + Concurrent  ----------------
+
+public_data_collectors = [
+    collect_instruments, collect_mark_prices,
+    collect_tickers, collect_index_prices,
+    collect_funding_rates, collect_borrow_rates
+]
+
+private_data_collectors = [
+    collect_balances, collect_positions,
+    collect_fills, collect_transactions
+]
+
+cluster = LocalCluster(n_workers=config['dask']['workers'], processes=False)
+dask = Client(cluster)
+futures = []
+
+for exchange in config['exchanges']:
+    exchs[exchange] = Exchange(exchange).exch()
+    back_off[exchange] = config['dask']['back_off']
+
+for i in range(config['dask']['workers']):
+    futures.append(dask.submit(
+        public_pool, public_data_collectors, 
+        config['exchanges'][int(len(config['exchanges']) / config['dask']['workers'] * i) : int(len(config['exchanges']) / config['dask']['workers'] * (i+1))]
+    ))
+
+wait(futures)
+del futures
+futures = []
+
+accounts = []
+for client in config['clients']:
+    data_collectors = get_data_collectors(client)
+    accounts += data_collectors
+
+    for data_collector in data_collectors:
+        back_off[client + "_" + data_collector.exchange + "_" + data_collector.account] = config['dask']['back_off']
+
+for i in range(config['dask']['workers']):
+    futures.append(dask.submit(
+        private_pool, private_data_collectors, 
+        accounts[int(len(accounts) / config['dask']['workers'] * i) : int(len(accounts) / config['dask']['workers'] * (i+1))]
+    ))
+
+wait(futures)
+del futures
+futures = []
+
+for i in range(config['dask']['workers']):
+    futures.append(dask.submit(
+        leverage_pool, collect_leverages, 
+        accounts[int(len(accounts) / config['dask']['workers'] * i) : int(len(accounts) / config['dask']['workers'] * (i+1))]
+    ))
+
+wait(futures)
+del futures
+
+
+dask.close()
+
+
+
+
+#  ------------   parallelization with concurrent  -------------
 
 # executors = { exchange: concurrent.futures.ThreadPoolExecutor(config['dask']['parallelization']) for exchange in config['exchanges']}
 
@@ -108,6 +204,25 @@ print("inserted a new run")
 #         print(future.result())
 #     del futures[exchange]
 #     futures[exchange] = []
+
+
+
+
+
+
+
+
+
+# --------------  Dask Parallelization  ----------------
+
+# # Start a local Dask cluster
+# cluster = LocalCluster(n_workers=config['dask']['parallelization'], memory_limit='500MB', processes=False)
+
+# # Scale the cluster to 3 workers
+# # cluster.scale(config['dask']['parallelization'])
+
+# # Connect a client to the local cluster
+# dask = Client(cluster)
 
 #   Public Data
 # futures1 = []
@@ -188,15 +303,6 @@ print("inserted a new run")
 # del futures1
 # parallelization = 0
 
-for exchange in config['exchanges']:
-    exch = Exchange(exchange).exch()
-
-    collect_instruments(exch, exchange)
-    collect_mark_prices(exch, exchange)
-    collect_tickers(exch, exchange)
-    collect_index_prices(exch, exchange)
-    collect_funding_rates(exch, exchange)
-    collect_borrow_rates(exch, exchange)
 
 #   Private Data
 # futures2 = []
@@ -266,15 +372,6 @@ for exchange in config['exchanges']:
 # del futures2
 # parallelization = 0
 
-for client in config['clients']:
-    data_collectors = get_data_collectors(client)
-
-    for data_collector in data_collectors:
-        collect_balances(client, data_collector)
-        collect_positions(client, data_collector)
-        collect_fills(client, data_collector)
-        collect_transactions(client, data_collector)
-
 
 # futures3 = []
 # for client in config['clients']:
@@ -296,13 +393,44 @@ for client in config['clients']:
 # for item in futures3:
 #     item.cancel()
 
-for client in config['clients']:
-    data_collectors = get_data_collectors(client)
-
-    for data_collector in data_collectors:
-        collect_leverages(client, data_collector)
-
 # dask.close()
+
+
+
+
+
+
+
+# ---------      Procedural     ------------
+
+# Public Data
+# for exchange in config['exchanges']:
+#     exch = Exchange(exchange).exch()
+
+#     collect_instruments(exch, exchange)
+#     collect_mark_prices(exch, exchange)
+#     collect_tickers(exch, exchange)
+#     collect_index_prices(exch, exchange)
+#     collect_funding_rates(exch, exchange)
+#     collect_borrow_rates(exch, exchange)
+
+# # Private Data
+# for client in config['clients']:
+#     data_collectors = get_data_collectors(client)
+
+#     for data_collector in data_collectors:
+#         collect_balances(client, data_collector)
+#         collect_positions(client, data_collector)
+#         collect_fills(client, data_collector)
+#         collect_transactions(client, data_collector)
+
+# # Leverage
+# for client in config['clients']:
+#     data_collectors = get_data_collectors(client)
+
+#     for data_collector in data_collectors:
+#         collect_leverages(client, data_collector)
+
 
 enclose_runs()
 print("enclosed run")
