@@ -1,5 +1,8 @@
 import ccxt
 from dotenv import load_dotenv
+from src.config import read_config_file
+
+config = read_config_file()
 load_dotenv()
 
 # Create an echange class instance
@@ -17,7 +20,10 @@ class Exchange:
             'apiKey': self.key,
             'secret': self.secret,
             'enableRateLimit': True,
+            'rateLimit': config['ccxt'][self.exchange]['rateLimit'],
+            'timeout': config['ccxt'][self.exchange]['timeout'],
             'requests_trust_env':True,
+            'verbose': False,
             'options': {
                 'adjustForTimeDifference':True,
             }

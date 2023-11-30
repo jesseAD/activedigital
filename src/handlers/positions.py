@@ -128,11 +128,11 @@ class Positions:
                     back_off[client + "_" + exchange + "_" + sub_account] / 1000.0
                 )
                 back_off[client + "_" + exchange + "_" + sub_account] *= 2
-                return False
+                return True
 
-            except Exception as e:
-                print("An error occurred in Positions:", e)
-                return False
+            # except Exception as e:
+            #     print("An error occurred in Positions:", e)
+            #     return False
                 
 
         try:
@@ -154,9 +154,9 @@ class Positions:
                         back_off[client + "_" + exchange + "_" + sub_account] / 1000.0
                     )
                     back_off[client + "_" + exchange + "_" + sub_account] *= 2
-                    return False
+                    return True
 
-                except Exception as e:
+                except ccxt.ExchangeError as e:
                     print("An error occurred in Positions:", e)
                     pass
 
@@ -175,9 +175,9 @@ class Positions:
                         back_off[client + "_" + exchange + "_" + sub_account] / 1000.0
                     )
                     back_off[client + "_" + exchange + "_" + sub_account] *= 2
-                    return False
+                    return True
 
-                except Exception as e:
+                except ccxt.ExchangeError as e:
                     print("An error occurred in Positions:", e)
                     pass
 
@@ -197,9 +197,9 @@ class Positions:
                             back_off[client + "_" + exchange + "_" + sub_account] / 1000.0
                         )
                         back_off[client + "_" + exchange + "_" + sub_account] *= 2
-                        return False
+                        return True
 
-                    except Exception as e:
+                    except ccxt.ExchangeError as e:
                         print("An error occurred in Positions:", e)
                         pass
                 else:
@@ -219,9 +219,9 @@ class Positions:
                             back_off[client + "_" + exchange + "_" + sub_account] / 1000.0
                         )
                         back_off[client + "_" + exchange + "_" + sub_account] *= 2
-                        return False
+                        return True
 
-                    except Exception as e:
+                    except ccxt.ExchangeError as e:
                         print("An error occurred in Positions:", e)
                         pass
 
@@ -348,7 +348,7 @@ class Positions:
                         position["markPrice"] = Helper().get_mark_prices(
                             exch=exch, symbol=position['base'] + position['quote']
                         )["markPrice"]
-                    except Exception as e:
+                    except ccxt.ExchangeError as e:
                         print("An error occurred in Positions:", e)
                         pass
 
@@ -356,9 +356,9 @@ class Positions:
             print("Hit rate limit", e)
             time.sleep(back_off[client + "_" + exchange + "_" + sub_account] / 1000.0)
             back_off[client + "_" + exchange + "_" + sub_account] *= 2
-            return False
+            return True
 
-        except Exception as e:
+        except ccxt.ExchangeError as e:
             print("An error occurred in Positions:", e)
             pass
 
@@ -681,7 +681,7 @@ class Positions:
                 self.split_positions_db.insert_one(split_position)
             except Exception as e:
                 log.error(e)
-                return False
+                return True
             
 
         current_time = datetime.now(timezone.utc)
@@ -772,7 +772,7 @@ class Positions:
             # return position
         except Exception as e:
             log.error(e)
-            return False
+            return True
 
     def entry(self, account: str = None, status: bool = True):
         # get all positions with account

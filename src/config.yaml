@@ -4,10 +4,27 @@ mongo_port: 27017
 
 dask:
   back_off: 100
-  workers: 1
   memory: '1GB'
+  workers: 1
   threadPoolsPerWorker: 1
   threadsPerPool: 4
+
+ccxt:
+  binance:
+    rateLimit: 2000
+    timeout: 10000
+    retry: 3
+  okx:
+    rateLimit: 2000
+    timeout: 10000
+    retry: 3
+  bybit:
+    rateLimit: 2000
+    timeout: 10000
+  coinbase:
+    rateLimit: 2000
+    timeout: 10000
+    retry: 3
 
 liquidation:
   threshold: 

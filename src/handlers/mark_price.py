@@ -103,9 +103,9 @@ class MarkPrices:
                     print("Hit rate limit", e)
                     time.sleep(back_off[exchange] / 1000.0)
                     back_off[exchange] *= 2
-                    return False
+                    return True
                 
-                except Exception as e:
+                except ccxt.ExchangeError as e:
                     print("An error occurred in Mark Prices:", e)
                     pass
 
@@ -184,4 +184,4 @@ class MarkPrices:
             # return mark_price
         except Exception as e:
             log.error(e)
-            return False
+            return True

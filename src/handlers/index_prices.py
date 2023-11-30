@@ -90,9 +90,9 @@ class IndexPrices:
                     print("Hit rate limit", e)
                     time.sleep(back_off[exchange] / 1000.0)
                     back_off[exchange] *= 2
-                    return False
+                    return True
                 
-                except Exception as e:
+                except ccxt.ExchangeError as e:
                     print("An error occurred in Index Prices:", e)
                     pass
         
@@ -135,4 +135,4 @@ class IndexPrices:
             # return index_price
         except Exception as e:
             log.error(e)
-            return False
+            return True
