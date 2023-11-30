@@ -91,11 +91,11 @@ class Tickers:
                 print("Hit rate limit", e)
                 time.sleep(back_off[exchange] / 1000.0)
                 back_off[exchange] *= 2
-                return False
+                return True
         
-            except Exception as e:
-                print("An error occurred in Tickers:", e)
-                return False
+            # except Exception as e:
+            #     print("An error occurred in Tickers:", e)
+            #     return False
         
         back_off[exchange] = config['dask']['back_off']        
         
@@ -170,4 +170,4 @@ class Tickers:
             # return ticker
         except Exception as e:
             log.error(e)
-            return False
+            return True

@@ -171,7 +171,7 @@ class BorrowRates:
                 print("Hit rate limit", e)
                 time.sleep(back_off[exchange] / 1000.0)
                 back_off[exchange] *= 2
-                return False
+                return True
         
             except ccxt.AuthenticationError as e:
                 print("An error occurred in Borrow Rates:", e)
@@ -248,7 +248,7 @@ class BorrowRates:
                                                 for item in borrowRatesValue[code]:
                                                     item["nextBorrowRate"] = float(borrow_rate) * 24 * 365 / scalar
                                                     item['scalar'] = scalar  
-                                    except Exception as e:
+                                    except ccxt.ExchangeError as e:
                                         print("An error occurred in Borrow Rates:", e)
                                         pass  
                                 break
@@ -257,7 +257,7 @@ class BorrowRates:
 
                 pass
 
-            except Exception as e:
+            except ccxt.ExchangeError as e:
                 print("An error occurred in Borrow Rates:", e)
                 pass
         
@@ -320,4 +320,4 @@ class BorrowRates:
 
         except Exception as e:
             log.error(e)
-            return False
+            return True

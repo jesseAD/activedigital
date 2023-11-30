@@ -103,9 +103,9 @@ class Instruments:
                 print("Hit rate limit", e)
                 time.sleep(back_off[exchange] / 1000.0)
                 back_off[exchange] *= 2
-                return False
+                return True
             
-            except Exception as e:
+            except ccxt.ExchangeError as e:
                 print("An error occurred in Instruments:", e)
                 pass
 
@@ -148,9 +148,9 @@ class Instruments:
                     print("Hit rate limit", e)
                     time.sleep(back_off[exchange] / 1000.0)
                     back_off[exchange] *= 2
-                    return False
+                    return True
             
-                except Exception as e:
+                except ccxt.ExchangeError as e:
                     print("An error occurred in Bids and Asks:", e)
                     pass
 
@@ -260,7 +260,7 @@ class Instruments:
             # return instrument
         except Exception as e:
             log.error(e)
-            return False
+            return True
 
     # def entry(self, account: str = None, status: bool = True):
     #     # get all positions with account

@@ -110,11 +110,11 @@ class Balances:
                     back_off[client + "_" + exchange + "_" + sub_account] / 1000.0
                 )
                 back_off[client + "_" + exchange + "_" + sub_account] *= 2
-                return False
+                return True
 
-            except Exception as e:
-                print("An error occurred in Balances:", e)
-                return False
+            # except Exception as e:
+            #     print("An error occurred in Balances:", e)
+            #     return False
 
         back_off[client + "_" + exchange + "_" + sub_account] = config["dask"][
             "back_off"
@@ -138,7 +138,7 @@ class Balances:
                     base_balance += float(item['balance']) * Helper().calc_cross_ccy_ratio(
                         "BTC", "USD", ticker_value
                     )
-            except Exception as e:
+            except ccxt.ExchangeError as e:
                 print("An error occurred in Balances:", e)
                 pass
         else:
@@ -230,7 +230,7 @@ class Balances:
         
         except Exception as e:
             log.error(e)
-            return False
+            return True
 
     # def entry(self, account: str = None, status: bool = True):
     #     # get all positions with account

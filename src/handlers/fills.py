@@ -255,7 +255,7 @@ class Fills:
                     back_off[client + "_" + exchange + "_" + sub_account] *= 2
                     return False
             
-                except Exception as e:
+                except ccxt.ExchangeError as e:
                     print("An error occurred in Fills:", e)
                     pass
                
@@ -314,4 +314,4 @@ class Fills:
             # return fills
         except Exception as e:
             log.error(e)
-            return False
+            return True

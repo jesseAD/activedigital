@@ -525,11 +525,11 @@ class Transactions:
                 print("Hit rate limit", e)
                 time.sleep(back_off[client + "_" + exchange + "_" + sub_account] / 1000.0)
                 back_off[client + "_" + exchange + "_" + sub_account] *= 2
-                return False
+                return True
     
-            except Exception as e:
-                print("An error occurred in Transactions:", e)
-                return False
+            # except Exception as e:
+            #     print("An error occurred in Transactions:", e)
+            #     return False
         
         back_off[client + "_" + exchange + "_" + sub_account] = config['dask']['back_off']
 
@@ -744,4 +744,4 @@ class Transactions:
             # return transaction
         except Exception as e:
             log.error(e)
-            return False
+            return True

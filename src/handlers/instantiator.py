@@ -1,4 +1,4 @@
-import os
+import os, time
 
 from src.lib.exchange import Exchange
 from src.lib.data_collector import DataCollector
@@ -18,6 +18,7 @@ from src.config import read_config_file
 from dotenv import load_dotenv
 
 load_dotenv()
+config = read_config_file()
 
 def instantiate(client, collection, exchange, account=None):
     config = read_config_file()
@@ -71,40 +72,89 @@ def get_data_collectors(client):
 def collect_positions(client_alias, data_collector, back_off={}):
     res = False
     try:
-        positions = Positions('positions')
-        res = positions.create(
+        res = Positions('positions').create(
             client=client_alias,
             exch=data_collector.exch,
             exchange=data_collector.exchange,
             sub_account=data_collector.account,
             back_off=back_off
         )
-        del positions
+
+    except Exception as e:
+        print("An error occurred in Positions:", e)
+
     finally:
+        attempt = 1
+        timeout = config['ccxt'][data_collector.exchange]['timeout']
+
+        while(not res):
+            time.sleep(timeout / 1000)
+            print("Retrying Positions " + str(attempt))
+            timeout *= 2
+
+            try:
+                res = Positions('positions').create(
+                    client=client_alias,
+                    exch=data_collector.exch,
+                    exchange=data_collector.exchange,
+                    sub_account=data_collector.account,
+                    back_off=back_off
+                )
+            except:
+                pass
+
+            if attempt == config['ccxt'][data_collector.exchange]['retry']:
+                break
+            attempt += 1
+
         print("Collected positions for " + client_alias + " " + data_collector.exchange + " " + data_collector.account)
         return res
 
 def collect_balances(client_alias, data_collector, back_off={}):
     res = False
     try:
-        balances = Balances('balances')
-        res = balances.create(
+        res = Balances('balances').create(
             client=client_alias,
             exch=data_collector.exch,
             exchange=data_collector.exchange,
             sub_account=data_collector.account,
             back_off=back_off
         )
-        del balances
+
+    except Exception as e:
+        print("An error occurred in Balances:", e)
+
     finally:
+        attempt = 1
+        timeout = config['ccxt'][data_collector.exchange]['timeout']
+
+        while(not res):
+            time.sleep(timeout / 1000)
+            print("Retrying Balances " + str(attempt))
+            timeout *= 2
+
+            try:
+                res = Balances('balances').create(
+                    client=client_alias,
+                    exch=data_collector.exch,
+                    exchange=data_collector.exchange,
+                    sub_account=data_collector.account,
+                    back_off=back_off
+                )
+            except:
+                pass
+
+            if attempt == config['ccxt'][data_collector.exchange]['retry']:
+                break
+            attempt += 1
+
         print("Collected balances for " + client_alias + " " + data_collector.exchange + " " + data_collector.account)
         return res
 
 def collect_transactions(client_alias, data_collector, back_off={}):
     res = False
     try:
-        transactions = Transactions('transactions')
-        res = transactions.create(
+        res = Transactions('transactions').create(
             client=client_alias,
             exch=data_collector.exch,
             exchange=data_collector.exchange,
@@ -112,24 +162,75 @@ def collect_transactions(client_alias, data_collector, back_off={}):
             symbol='BTCUSDT',
             back_off=back_off
         )
-        del transactions
+
+    except Exception as e:
+        print("An error occurred in Transactions:", e)
+
     finally:
+        attempt = 1
+        timeout = config['ccxt'][data_collector.exchange]['timeout']
+
+        while(not res):
+            time.sleep(timeout / 1000)
+            print("Retrying Transactions " + str(attempt))
+            timeout *= 2
+
+            try:
+                res = Transactions('transactions').create(
+                    client=client_alias,
+                    exch=data_collector.exch,
+                    exchange=data_collector.exchange,
+                    sub_account=data_collector.account,
+                    back_off=back_off
+                )
+            except:
+                pass
+
+            if attempt == config['ccxt'][data_collector.exchange]['retry']:
+                break
+            attempt += 1
+
         print("Collected transactions for " + client_alias + " " + data_collector.exchange + " " + data_collector.account)
         return res
 
 def collect_fills(client_alias, data_collector, back_off={}):
     res = False
     try:
-        fills = Fills('fills')
-        res = fills.create(
+        res = Fills('fills').create(
             client=client_alias,
             exch=data_collector.exch,
             exchange=data_collector.exchange,
             sub_account=data_collector.account,
             back_off=back_off
         )
-        del fills
+
+    except Exception as e:
+        print("An error occurred in Fills:", e)
+
     finally:
+        attempt = 1
+        timeout = config['ccxt'][data_collector.exchange]['timeout']
+
+        while(not res):
+            time.sleep(timeout / 1000)
+            print("Retrying Fills " + str(attempt))
+            timeout *= 2
+
+            try:
+                res = Fills('fills').create(
+                    client=client_alias,
+                    exch=data_collector.exch,
+                    exchange=data_collector.exchange,
+                    sub_account=data_collector.account,
+                    back_off=back_off
+                )
+            except:
+                pass
+
+            if attempt == config['ccxt'][data_collector.exchange]['retry']:
+                break
+            attempt += 1
+
         print("Collected fills for " + client_alias + " " + data_collector.exchange + " " + data_collector.account)
         return res
 
@@ -137,84 +238,222 @@ def collect_fills(client_alias, data_collector, back_off={}):
 def collect_instruments(exch, exchange, back_off={}):
     res = False
     try:
-        instruments = Instruments('instruments')
-        res = instruments.create(
+        res = Instruments('instruments').create(
             exch=exch,
             exchange=exchange,
             back_off=back_off
         )
-        del instruments
+
+    except Exception as e:
+        print("An error occurred in Instruments:", e)
+
     finally:
+        attempt = 1
+        timeout = config['ccxt'][exchange]['timeout']
+
+        while(not res):
+            time.sleep(timeout / 1000)
+            print("Retrying Instruments " + str(attempt))
+            timeout *= 2
+
+            try:
+                res = Instruments('instruments').create(
+                    exch=exch,
+                    exchange=exchange,
+                    back_off=back_off
+                )
+            except:
+                pass
+
+            if attempt == config['ccxt'][exchange]['retry']:
+                break
+            attempt += 1
+
         print("Collected instruments for " + exchange)
         return res
 
 def collect_tickers(exch, exchange, back_off={}):
     res = False
     try:
-        ticker = Tickers('tickers')
-        res = ticker.create(
+        res = Tickers('tickers').create(
             exch=exch,
             exchange=exchange,
             back_off=back_off
         )
-        del ticker
+
+    except Exception as e:
+        print("An error occurred in Tickers:", e)
+
     finally:
+        attempt = 1
+        timeout = config['ccxt'][exchange]['timeout']
+
+        while(not res):
+            time.sleep(timeout / 1000)
+            print("Retrying Tickers " + str(attempt))
+            timeout *= 2
+
+            try:
+                res = Tickers('tickers').create(
+                    exch=exch,
+                    exchange=exchange,
+                    back_off=back_off
+                )
+            except:
+                pass
+
+            if attempt == config['ccxt'][exchange]['retry']:
+                break
+            attempt += 1
+        
         print("Collected tickers for " + exchange)
         return res
 
 def collect_index_prices(exch, exchange, back_off={}):
     res = False
     try:
-        index_prices = IndexPrices('index_prices')
-        res = index_prices.create(
+        res = IndexPrices('index_prices').create(
             exch=exch,
             exchange=exchange,
             back_off=back_off
         )
-        del index_prices
+
+    except Exception as e:
+        print("An error occurred in Index Prices:", e)
+
     finally:
+        attempt = 1
+        timeout = config['ccxt'][exchange]['timeout']
+
+        while(not res):
+            time.sleep(timeout / 1000)
+            print("Retrying Index Prices " + str(attempt))
+            timeout *= 2
+
+            try:
+                res = IndexPrices('index_prices').create(
+                    exch=exch,
+                    exchange=exchange,
+                    back_off=back_off
+                )
+            except:
+                pass
+
+            if attempt == config['ccxt'][exchange]['retry']:
+                break
+            attempt += 1
+
         print("Collected index prices for " + exchange)
         return res
 
 def collect_borrow_rates(exch, exchange, back_off={}):
     res = False
     try:
-        borrow_rates = BorrowRates('borrow_rates')
-        res = borrow_rates.create(
+        res = BorrowRates('borrow_rates').create(
             exch=exch,
             exchange=exchange,
             back_off=back_off
         )
-        del borrow_rates
+
+    except Exception as e:
+        print("An error occurred in Borrow Rates:", e)
+
     finally:
+        attempt = 1
+        timeout = config['ccxt'][exchange]['timeout']
+
+        while(not res):
+            time.sleep(timeout / 1000)
+            print("Retrying Borrow Rates " + str(attempt))
+            timeout *= 2
+
+            try:
+                res = BorrowRates('borrow_rates').create(
+                    exch=exch,
+                    exchange=exchange,
+                    back_off=back_off
+                )
+            except:
+                pass
+
+            if attempt == config['ccxt'][exchange]['retry']:
+                break
+            attempt += 1
+
         print("Collected borrow rates for " + exchange)
         return res
 
 def collect_funding_rates(exch, exchange, back_off={}):
     res = False
     try:
-        funding_rates = FundingRates('funding_rates')
-        res = funding_rates.create(
+        res = FundingRates('funding_rates').create(
             exch=exch,
             exchange=exchange,
             back_off=back_off
         )
-        del funding_rates
+
+    except Exception as e:
+        print("An error occurred in Funding Rates:", e)
+
     finally:
+        attempt = 1
+        timeout = config['ccxt'][exchange]['timeout']
+
+        while(not res):
+            time.sleep(timeout / 1000)
+            print("Retrying Funding Rates " + str(attempt))
+            timeout *= 2
+
+            try:
+                res = FundingRates('funding_rates').create(
+                    exch=exch,
+                    exchange=exchange,
+                    back_off=back_off
+                )
+            except:
+                pass
+
+            if attempt == config['ccxt'][exchange]['retry']:
+                break
+            attempt += 1
+
         print("Collected funding rates for " + exchange)
         return res
 
 def collect_mark_prices(exch, exchange, back_off={}):
     res = False
     try:
-        mark_prices = MarkPrices('mark_prices')
-        res = mark_prices.create(
+        res = MarkPrices('mark_prices').create(
             exch=exch,
             exchange=exchange,
             back_off=back_off
         )
-        del mark_prices
+
+    except Exception as e:
+        print("An error occurred in Mark Prices:", e)
+
     finally:
+        attempt = 1
+        timeout = config['ccxt'][exchange]['timeout']
+
+        while(not res):
+            time.sleep(timeout / 1000)
+            print("Retrying Mark Prices " + str(attempt))
+            timeout *= 2
+
+            try:
+                res = MarkPrices('mark_prices').create(
+                    exch=exch,
+                    exchange=exchange,
+                    back_off=back_off
+                )
+            except:
+                pass
+
+            if attempt == config['ccxt'][exchange]['retry']:
+                break
+            attempt += 1
+
         print("Collected mark prices for " + exchange)
         return res
 
