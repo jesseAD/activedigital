@@ -167,11 +167,11 @@ class BorrowRates:
                         print("An error occurred in Borrow Rates:", e)
                         pass
 
-            except ccxt.InvalidNonce as e:
-                print("Hit rate limit", e)
-                time.sleep(back_off[exchange] / 1000.0)
-                back_off[exchange] *= 2
-                return True
+            # except ccxt.InvalidNonce as e:
+            #     print("Hit rate limit", e)
+            #     time.sleep(back_off[exchange] / 1000.0)
+            #     back_off[exchange] *= 2
+            #     return True
         
             except ccxt.AuthenticationError as e:
                 print("An error occurred in Borrow Rates:", e)
@@ -261,7 +261,7 @@ class BorrowRates:
                 print("An error occurred in Borrow Rates:", e)
                 pass
         
-        back_off[exchange] = config['dask']['back_off']
+        # back_off[exchange] = config['dask']['back_off']
         
         flag = False
         for code in codes:

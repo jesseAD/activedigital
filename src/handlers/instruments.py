@@ -99,11 +99,11 @@ class Instruments:
                 elif exchange == "bybit":
                     instrumentValue = BybitHelper().get_instruments(exch=exch)
 
-            except ccxt.InvalidNonce as e:
-                print("Hit rate limit", e)
-                time.sleep(back_off[exchange] / 1000.0)
-                back_off[exchange] *= 2
-                return True
+            # except ccxt.InvalidNonce as e:
+            #     print("Hit rate limit", e)
+            #     time.sleep(back_off[exchange] / 1000.0)
+            #     back_off[exchange] *= 2
+            #     return True
             
             except ccxt.ExchangeError as e:
                 print("An error occurred in Instruments:", e)
@@ -144,17 +144,17 @@ class Instruments:
                             'spread': spot_value['mid_point'] - perp_value['mid_point'],
                         } 
 
-                except ccxt.InvalidNonce as e:
-                    print("Hit rate limit", e)
-                    time.sleep(back_off[exchange] / 1000.0)
-                    back_off[exchange] *= 2
-                    return True
+                # except ccxt.InvalidNonce as e:
+                #     print("Hit rate limit", e)
+                #     time.sleep(back_off[exchange] / 1000.0)
+                #     back_off[exchange] *= 2
+                #     return True
             
                 except ccxt.ExchangeError as e:
                     print("An error occurred in Bids and Asks:", e)
                     pass
 
-        back_off[exchange] = config['dask']['back_off']
+        # back_off[exchange] = config['dask']['back_off']
 
         instrument = {
             "venue": exchange,

@@ -249,17 +249,17 @@ class Fills:
                                 #     ),
                                 # )
                 
-                except ccxt.InvalidNonce as e:
-                    print("Hit rate limit", e)
-                    time.sleep(back_off[client + "_" + exchange + "_" + sub_account] / 1000.0)
-                    back_off[client + "_" + exchange + "_" + sub_account] *= 2
-                    return False
+                # except ccxt.InvalidNonce as e:
+                #     print("Hit rate limit", e)
+                #     time.sleep(back_off[client + "_" + exchange + "_" + sub_account] / 1000.0)
+                #     back_off[client + "_" + exchange + "_" + sub_account] *= 2
+                #     return False
             
                 except ccxt.ExchangeError as e:
                     print("An error occurred in Fills:", e)
                     pass
                
-        back_off[client + "_" + exchange + "_" + sub_account] = config['dask']['back_off']
+        # back_off[client + "_" + exchange + "_" + sub_account] = config['dask']['back_off']
         
         fills = []
 

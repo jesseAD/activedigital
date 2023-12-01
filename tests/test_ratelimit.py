@@ -32,18 +32,18 @@ from src.config import read_config_file
 
 config = read_config_file()
 
-back_off = {"binance": config['dask']['back_off']}
-exch = Exchange("binance").exch()
+# back_off = {"binance": config['dask']['back_off']}
+# exch = Exchange("binance").exch()
 
-# back_off = {"blackburn_binance_submn1": config['dask']['back_off']}
-# data_collectors = get_data_collectors("blackburn")
+back_off = {"blackburn_binance_submn1": config['dask']['back_off']}
+data_collectors = get_data_collectors("blackburn")
 
 executor = concurrent.futures.ThreadPoolExecutor(256)
 
 threads = []
 for i in range(150):
-    # threads.append(executor.submit(collect_positions, "blackburn", data_collectors[0], back_off))
-    threads.append(executor.submit(collect_funding_rates, exch, "binance", back_off))
+    threads.append(executor.submit(collect_positions, "blackburn", data_collectors[0], back_off))
+    # threads.append(executor.submit(collect_funding_rates, exch, "binance", back_off))
 
 for thread in concurrent.futures.as_completed(threads):
     print(thread.result())

@@ -299,11 +299,11 @@ class FundingRates:
                             )
                         pass
 
-                except ccxt.InvalidNonce as e:
-                    print("Hit rate limit", e)
-                    time.sleep(back_off[exchange] / 1000.0)
-                    back_off[exchange] *= 2
-                    return True
+                # except ccxt.InvalidNonce as e:
+                #     print("Hit rate limit", e)
+                #     time.sleep(back_off[exchange] / 1000.0)
+                #     back_off[exchange] *= 2
+                #     return True
                 
                 except ccxt.ExchangeError as e:
                     print("An error occurred in Funding Rates:", e)
@@ -499,7 +499,7 @@ class FundingRates:
             #             print("An error occurred in Funding Rates:", e)
             #             pass
 
-        back_off[exchange] = config['dask']['back_off']
+        # back_off[exchange] = config['dask']['back_off']
         
         # if 'symbols_d' in globals() or 'symbols_d' in locals():
         #     symbols = symbols + symbols_d
