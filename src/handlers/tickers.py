@@ -87,17 +87,17 @@ class Tickers:
                 tickerValue = {symbol: tickerValue[symbol] for symbol in tickerValue if symbol.endswith("USDT")}
                 tickerValue['USDT/USD'] = CoinbaseHelper().get_usdt2usd_ticker(exch=Exchange(exchange='coinbase').exch())
 
-            except ccxt.InvalidNonce as e:
-                print("Hit rate limit", e)
-                time.sleep(back_off[exchange] / 1000.0)
-                back_off[exchange] *= 2
+            # except ccxt.InvalidNonce as e:
+            #     print("Hit rate limit", e)
+            #     time.sleep(back_off[exchange] / 1000.0)
+            #     back_off[exchange] *= 2
+            #     return True
+        
+            except ccxt.ExchangeError as e:
+                print("An error occurred in Tickers:", e)
                 return True
         
-            # except Exception as e:
-            #     print("An error occurred in Tickers:", e)
-            #     return False
-        
-        back_off[exchange] = config['dask']['back_off']        
+        # back_off[exchange] = config['dask']['back_off']        
         
         ticker = {
             "venue": exchange,

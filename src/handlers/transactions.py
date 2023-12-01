@@ -521,17 +521,17 @@ class Transactions:
                                 exchange=exchange, transactions=transactions
                             )
 
-            except ccxt.InvalidNonce as e:
-                print("Hit rate limit", e)
-                time.sleep(back_off[client + "_" + exchange + "_" + sub_account] / 1000.0)
-                back_off[client + "_" + exchange + "_" + sub_account] *= 2
-                return True
+            # except ccxt.InvalidNonce as e:
+            #     print("Hit rate limit", e)
+            #     time.sleep(back_off[client + "_" + exchange + "_" + sub_account] / 1000.0)
+            #     back_off[client + "_" + exchange + "_" + sub_account] *= 2
+            #     return True
     
-            # except Exception as e:
-            #     print("An error occurred in Transactions:", e)
-            #     return False
+            except ccxt.ExchangeError as e:
+                print("An error occurred in Transactions:", e)
+                return True
         
-        back_off[client + "_" + exchange + "_" + sub_account] = config['dask']['back_off']
+        # back_off[client + "_" + exchange + "_" + sub_account] = config['dask']['back_off']
 
         tickers = list(self.tickers_db.find({"venue": exchange}).sort("_id", -1).limit(1))[0]['ticker_value']
         

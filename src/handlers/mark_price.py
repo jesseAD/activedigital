@@ -99,17 +99,17 @@ class MarkPrices:
                             exch=exch, symbol=symbol+"USDT"
                         )
 
-                except ccxt.InvalidNonce as e:
-                    print("Hit rate limit", e)
-                    time.sleep(back_off[exchange] / 1000.0)
-                    back_off[exchange] *= 2
-                    return True
+                # except ccxt.InvalidNonce as e:
+                #     print("Hit rate limit", e)
+                #     time.sleep(back_off[exchange] / 1000.0)
+                #     back_off[exchange] *= 2
+                #     return True
                 
                 except ccxt.ExchangeError as e:
                     print("An error occurred in Mark Prices:", e)
                     pass
 
-        back_off[exchange] = config['dask']['back_off']
+        # back_off[exchange] = config['dask']['back_off']
         
         mark_price = {
             "venue": exchange,

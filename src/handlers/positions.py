@@ -122,17 +122,17 @@ class Positions:
 
                 position_value = Mapping().mapping_positions(exchange=exchange, positions=position_value)
 
-            except ccxt.InvalidNonce as e:
-                print("Hit rate limit", e)
-                time.sleep(
-                    back_off[client + "_" + exchange + "_" + sub_account] / 1000.0
-                )
-                back_off[client + "_" + exchange + "_" + sub_account] *= 2
-                return True
+            # except ccxt.InvalidNonce as e:
+            #     print("Hit rate limit", e)
+            #     time.sleep(
+            #         back_off[client + "_" + exchange + "_" + sub_account] / 1000.0
+            #     )
+            #     back_off[client + "_" + exchange + "_" + sub_account] *= 2
+            #     return True
 
-            # except Exception as e:
-            #     print("An error occurred in Positions:", e)
-            #     return False
+            except ccxt.ExchangeError as e:
+                print("An error occurred in Positions:", e)
+                return True
                 
 
         try:
@@ -148,13 +148,13 @@ class Positions:
                         exchange=exchange, mgnRatio=cross_margin_ratio
                     )
 
-                except ccxt.InvalidNonce as e:
-                    print("Hit rate limit", e)
-                    time.sleep(
-                        back_off[client + "_" + exchange + "_" + sub_account] / 1000.0
-                    )
-                    back_off[client + "_" + exchange + "_" + sub_account] *= 2
-                    return True
+                # except ccxt.InvalidNonce as e:
+                #     print("Hit rate limit", e)
+                #     time.sleep(
+                #         back_off[client + "_" + exchange + "_" + sub_account] / 1000.0
+                #     )
+                #     back_off[client + "_" + exchange + "_" + sub_account] *= 2
+                #     return True
 
                 except ccxt.ExchangeError as e:
                     print("An error occurred in Positions:", e)
@@ -169,13 +169,13 @@ class Positions:
                         exchange=exchange, mgnRatio=cross_margin_ratio
                     )
 
-                except ccxt.InvalidNonce as e:
-                    print("Hit rate limit", e)
-                    time.sleep(
-                        back_off[client + "_" + exchange + "_" + sub_account] / 1000.0
-                    )
-                    back_off[client + "_" + exchange + "_" + sub_account] *= 2
-                    return True
+                # except ccxt.InvalidNonce as e:
+                #     print("Hit rate limit", e)
+                #     time.sleep(
+                #         back_off[client + "_" + exchange + "_" + sub_account] / 1000.0
+                #     )
+                #     back_off[client + "_" + exchange + "_" + sub_account] *= 2
+                #     return True
 
                 except ccxt.ExchangeError as e:
                     print("An error occurred in Positions:", e)
@@ -191,13 +191,13 @@ class Positions:
                             exchange=exchange, mgnRatio=cross_margin_ratio
                         )
 
-                    except ccxt.InvalidNonce as e:
-                        print("Hit rate limit", e)
-                        time.sleep(
-                            back_off[client + "_" + exchange + "_" + sub_account] / 1000.0
-                        )
-                        back_off[client + "_" + exchange + "_" + sub_account] *= 2
-                        return True
+                    # except ccxt.InvalidNonce as e:
+                    #     print("Hit rate limit", e)
+                    #     time.sleep(
+                    #         back_off[client + "_" + exchange + "_" + sub_account] / 1000.0
+                    #     )
+                    #     back_off[client + "_" + exchange + "_" + sub_account] *= 2
+                    #     return True
 
                     except ccxt.ExchangeError as e:
                         print("An error occurred in Positions:", e)
@@ -213,13 +213,13 @@ class Positions:
                             exchange=exchange, mgnRatio=cross_margin_ratio
                         )
 
-                    except ccxt.InvalidNonce as e:
-                        print("Hit rate limit", e)
-                        time.sleep(
-                            back_off[client + "_" + exchange + "_" + sub_account] / 1000.0
-                        )
-                        back_off[client + "_" + exchange + "_" + sub_account] *= 2
-                        return True
+                    # except ccxt.InvalidNonce as e:
+                    #     print("Hit rate limit", e)
+                    #     time.sleep(
+                    #         back_off[client + "_" + exchange + "_" + sub_account] / 1000.0
+                    #     )
+                    #     back_off[client + "_" + exchange + "_" + sub_account] *= 2
+                    #     return True
 
                     except ccxt.ExchangeError as e:
                         print("An error occurred in Positions:", e)
@@ -352,11 +352,11 @@ class Positions:
                         print("An error occurred in Positions:", e)
                         pass
 
-        except ccxt.InvalidNonce as e:
-            print("Hit rate limit", e)
-            time.sleep(back_off[client + "_" + exchange + "_" + sub_account] / 1000.0)
-            back_off[client + "_" + exchange + "_" + sub_account] *= 2
-            return True
+        # except ccxt.InvalidNonce as e:
+        #     print("Hit rate limit", e)
+        #     time.sleep(back_off[client + "_" + exchange + "_" + sub_account] / 1000.0)
+        #     back_off[client + "_" + exchange + "_" + sub_account] *= 2
+        #     return True
 
         except ccxt.ExchangeError as e:
             print("An error occurred in Positions:", e)
@@ -364,7 +364,7 @@ class Positions:
 
         del position_value
         
-        back_off[client + "_" + exchange + "_" + sub_account] = config["dask"]["back_off"]
+        # back_off[client + "_" + exchange + "_" + sub_account] = config["dask"]["back_off"]
 
         # life time funding rates
 

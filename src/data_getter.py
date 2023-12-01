@@ -114,12 +114,11 @@ for i in range(config['dask']['workers']):
 
 
 wait(futures)
-for done_work in as_completed(futures, with_results=False):
-    dask.cancel(done_work) 
+# for done_work in as_completed(futures, with_results=False):
+#     dask.cancel(done_work) 
 del futures
 futures = []
 exchs = {}
-gc.collect()
 
 accounts = []
 for client in config['clients']:
@@ -136,11 +135,10 @@ for i in range(config['dask']['workers']):
     ))
 
 wait(futures)
-for done_work in as_completed(futures, with_results=False):
-    dask.cancel(done_work) 
+# for done_work in as_completed(futures, with_results=False):
+#     dask.cancel(done_work) 
 del futures
 futures = []
-gc.collect()
 
 for i in range(config['dask']['workers']):
     futures.append(dask.submit(
@@ -149,8 +147,8 @@ for i in range(config['dask']['workers']):
     ))
 
 wait(futures)
-for done_work in as_completed(futures, with_results=False):
-    dask.cancel(done_work) 
+# for done_work in as_completed(futures, with_results=False):
+#     dask.cancel(done_work) 
 del futures
 del accounts
 
