@@ -7,7 +7,7 @@ dask:
   memory: '1GB'
   workers: 1
   threadPoolsPerWorker: 1
-  threadsPerPool: 4
+  threadsPerPool: 1
 
 ccxt:
   binance:
