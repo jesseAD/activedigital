@@ -11,19 +11,19 @@ dask:
 
 ccxt:
   binance:
-    rateLimit: 2000
-    timeout: 10000
+    rateLimit: 30
+    timeout: 1000
     retry: 3
   okx:
-    rateLimit: 2000
-    timeout: 10000
+    rateLimit: 30
+    timeout: 1000
     retry: 3
   bybit:
-    rateLimit: 2000
-    timeout: 10000
+    rateLimit: 30
+    timeout: 1000
   coinbase:
-    rateLimit: 2000
-    timeout: 10000
+    rateLimit: 30
+    timeout: 1000
     retry: 3
 
 liquidation:
