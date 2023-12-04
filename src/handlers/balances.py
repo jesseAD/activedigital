@@ -79,6 +79,7 @@ class Balances:
         perp: str = None,
         balanceValue: str = None,
         back_off={},
+        logger=None
     ):
         if balanceValue is None:
             if exch == None:
@@ -113,7 +114,8 @@ class Balances:
             #     return True
 
             except ccxt.ExchangeError as e:
-                print("An error occurred in Balances:", e)
+                logger.warning(client + " " + exchange + " " + sub_account + " balances " + str(e))
+                # print("An error occurred in Balances:", e)
                 return True
 
         # back_off[client + "_" + exchange + "_" + sub_account] = config["dask"]["back_off"]
@@ -137,7 +139,8 @@ class Balances:
                         "BTC", "USD", ticker_value
                     )
             except ccxt.ExchangeError as e:
-                print("An error occurred in Balances:", e)
+                logger.warning(client + " " + exchange + " " + sub_account + " balances " + str(e))
+                # print("An error occurred in Balances:", e)
                 pass
         else:
             for _key, _value in balanceValue.items():
@@ -198,7 +201,8 @@ class Balances:
                 latest_value = item["balance_value"]
 
         if latest_value == balance["balance_value"]:
-            print("same balance")
+            logger.info(client + " " + exchange + " " + sub_account + " " + "same balance")
+            # print("same balance")
             return True
 
         try:
@@ -227,7 +231,8 @@ class Balances:
             return True
         
         except Exception as e:
-            log.error(e)
+            # print("An error occurred in Balances:", e)
+            logger.error(client + " " + exchange + " " + sub_account + " balances " + str(e))
             return True
 
     # def entry(self, account: str = None, status: bool = True):

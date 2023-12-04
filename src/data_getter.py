@@ -6,6 +6,7 @@ from dask.distributed import as_completed
 from dask.distributed import wait
 from dask.distributed import LocalCluster, Client
 import concurrent.futures
+import warnings
 
 current_file = os.path.abspath(__file__)
 current_directory = os.path.dirname(current_file)
@@ -29,8 +30,11 @@ from src.handlers.instantiator import insert_runs
 from src.handlers.instantiator import enclose_runs
 from src.handlers.instantiator import get_data_collectors
 from src.config import read_config_file
+from lib.log import Log
 
 config = read_config_file()
+logger = Log()
+warnings.showwarning = logger.warning
 
 back_off = {}
 exchs = {}
@@ -42,7 +46,7 @@ def public_pool(data_collectors, exchanges):
     for i in range(config['dask']['threadPoolsPerWorker']):
         for j in range(int(i * len(data_collectors) / config['dask']['threadPoolsPerWorker']), int((i+1) * len(data_collectors) / config['dask']['threadPoolsPerWorker'])):
             for exchange in exchanges:
-                threads.append(executors[i].submit(data_collectors[j], exchs[exchange], exchange, back_off))
+                threads.append(executors[i].submit(data_collectors[j], exchs[exchange], exchange, logger))
             pass
     
     for thread in concurrent.futures.as_completed(threads):
@@ -58,7 +62,7 @@ def private_pool(data_collectors, accounts_group):
     for i in range(config['dask']['threadPoolsPerWorker']):
         for j in range(int(i * len(accounts_group) / config['dask']['threadPoolsPerWorker']), int((i+1) * len(accounts_group) / config['dask']['threadPoolsPerWorker'])):
             for collector in data_collectors:
-                threads.append(executors[i].submit(collector, accounts_group[j].client, accounts_group[j], back_off))
+                threads.append(executors[i].submit(collector, accounts_group[j].client, accounts_group[j], logger))
     
     for thread in concurrent.futures.as_completed(threads):
         print(thread.result())
@@ -72,7 +76,7 @@ def leverage_pool(leverage_collector, accounts_group):
     threads = []
     for i in range(config['dask']['threadPoolsPerWorker']):
         for j in range(int(i * len(accounts_group) / config['dask']['threadPoolsPerWorker']), int((i+1) * len(accounts_group) / config['dask']['threadPoolsPerWorker'])):
-            threads.append(executors[i].submit(leverage_collector, accounts_group[j].client, accounts_group[j]))
+            threads.append(executors[i].submit(leverage_collector, accounts_group[j].client, accounts_group[j], logger))
     
     for thread in concurrent.futures.as_completed(threads):
         print(thread.result())
@@ -82,7 +86,9 @@ def leverage_pool(leverage_collector, accounts_group):
 
 
 #   Insert new run
-insert_runs()
+logger.zip_and_delete()
+logger.info("Application started")
+insert_runs(logger)
 print("inserted a new run")
 
 #  ------------  Dask + Concurrent  ----------------
@@ -448,5 +454,7 @@ gc.collect()
 #         collect_leverages(client, data_collector)
 
 
-enclose_runs()
+enclose_runs(logger)
 print("enclosed run")
+logger.info("Application finished")
+logger.zip_and_delete()

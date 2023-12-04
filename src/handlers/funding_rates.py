@@ -73,6 +73,7 @@ class FundingRates:
         fundingRatesValue: str = None,
         symbols: str = None,
         back_off = {},
+        logger=None
     ):
         if symbols is None:
             if exchange == "binance":
@@ -306,7 +307,8 @@ class FundingRates:
                 #     return True
                 
                 except ccxt.ExchangeError as e:
-                    print("An error occurred in Funding Rates:", e)
+                    logger.warning(exchange + " funding rates " + str(e))
+                    # print("An error occurred in Funding Rates:", e)
                     pass
 
             # for symbol in symbols_d:
@@ -564,5 +566,5 @@ class FundingRates:
             # return funding_rates
 
         except Exception as e:
-            log.error(e)
+            logger.error(exchange + " funding rates " + str(e))
             return True

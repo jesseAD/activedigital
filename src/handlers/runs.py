@@ -38,7 +38,7 @@ class Runs:
         except Exception as e:
             log.error(e)
 
-    def start(self):
+    def start(self, logger=None):
         current_time = datetime.now(timezone.utc)
 
         run_ids = self.runs_db.find({}).sort("_id", -1).limit(1)
@@ -58,10 +58,10 @@ class Runs:
             return latest_run_id
 
         except Exception as e:
-            log.error(e)
+            logger.error(e)
             return False
 
-    def end(self):
+    def end(self, logger=None):
         current_time = datetime.now(timezone.utc)
 
         run_ids = self.runs_db.find({}).sort("_id", -1).limit(1)
@@ -82,5 +82,5 @@ class Runs:
             return latest_run_id
 
         except Exception as e:
-            log.error(e)
+            logger.error(e)
             return False

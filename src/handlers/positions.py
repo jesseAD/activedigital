@@ -90,6 +90,7 @@ class Positions:
         perp: str = None,
         position_value: str = None,
         back_off={},
+        logger=None
     ):
         if position_value is None:
             if exch == None:
@@ -131,7 +132,8 @@ class Positions:
             #     return True
 
             except ccxt.ExchangeError as e:
-                print("An error occurred in Positions:", e)
+                logger.warning(client + " " + exchange + " " + sub_account + " positions " + str(e))
+                # print("An error occurred in Positions:", e)
                 return True
                 
 
@@ -157,7 +159,8 @@ class Positions:
                 #     return True
 
                 except ccxt.ExchangeError as e:
-                    print("An error occurred in Positions:", e)
+                    logger.warning(client + " " + exchange + " " + sub_account + " positions " + str(e))
+                    # print("An error occurred in Positions:", e)
                     pass
 
             elif exchange == "bybit":
@@ -178,7 +181,8 @@ class Positions:
                 #     return True
 
                 except ccxt.ExchangeError as e:
-                    print("An error occurred in Positions:", e)
+                    logger.warning(client + " " + exchange + " " + sub_account + " positions " + str(e))
+                    # print("An error occurred in Positions:", e)
                     pass
 
             elif exchange == "binance":
@@ -200,7 +204,8 @@ class Positions:
                     #     return True
 
                     except ccxt.ExchangeError as e:
-                        print("An error occurred in Positions:", e)
+                        logger.warning(client + " " + exchange + " " + sub_account + " positions " + str(e))
+                        # print("An error occurred in Positions:", e)
                         pass
                 else:
                     try:
@@ -222,7 +227,8 @@ class Positions:
                     #     return True
 
                     except ccxt.ExchangeError as e:
-                        print("An error occurred in Positions:", e)
+                        logger.warning(client + " " + exchange + " " + sub_account + " positions " + str(e))
+                        # print("An error occurred in Positions:", e)
                         pass
 
             for value in position_value:
@@ -349,7 +355,8 @@ class Positions:
                             exch=exch, symbol=position['base'] + position['quote']
                         )["markPrice"]
                     except ccxt.ExchangeError as e:
-                        print("An error occurred in Positions:", e)
+                        logger.warning(client + " " + exchange + " " + sub_account + " positions " + str(e))
+                        # print("An error occurred in Positions:", e)
                         pass
 
         # except ccxt.InvalidNonce as e:
@@ -359,7 +366,8 @@ class Positions:
         #     return True
 
         except ccxt.ExchangeError as e:
-            print("An error occurred in Positions:", e)
+            logger.warning(client + " " + exchange + " " + sub_account + " positions " + str(e))
+            # print("An error occurred in Positions:", e)
             pass
 
         del position_value
@@ -570,7 +578,8 @@ class Positions:
                     upsert=True
                 )
             except Exception as e:
-                print("An error occurred in Lifetime Funding:", e)
+                logger.error(client + " " + exchange + " " + sub_account + " positions " + str(e))
+                # print("An error occurred in Lifetime Funding:", e)
 
         # calculate unhedged
 
@@ -680,7 +689,7 @@ class Positions:
             try:
                 self.split_positions_db.insert_one(split_position)
             except Exception as e:
-                log.error(e)
+                logger.error(client + " " + exchange + " " + sub_account + " positions " + str(e))
                 return True
             
 
@@ -727,7 +736,8 @@ class Positions:
                 latest_value = item["position_value"]
 
         if latest_value == position["position_value"]:
-            print("same position")
+            logger.info(client + " " + exchange + " " + sub_account + " positions " + "same position")
+            # print("same position")
             return True
 
         run_ids = self.runs_db.find({}).sort("_id", -1).limit(1)
@@ -771,65 +781,65 @@ class Positions:
 
             # return position
         except Exception as e:
-            log.error(e)
+            logger.error(client + " " + exchange + " " + sub_account + " positions " + str(e))
             return True
 
-    def entry(self, account: str = None, status: bool = True):
-        # get all positions with account
-        positions = Positions.get(active=True, account=account)
+    # def entry(self, account: str = None, status: bool = True):
+    #     # get all positions with account
+    #     positions = Positions.get(active=True, account=account)
 
-        for position in positions:
-            try:
-                self.positions_db.update(
-                    {"_id": position["_id"]},
-                    {"$set": {"entry": status}},
-                )
-                log.debug(
-                    f"position in account entry {account} has been set to {status}"
-                )
-            except Exception as e:
-                log.error(e)
-                return False
+    #     for position in positions:
+    #         try:
+    #             self.positions_db.update(
+    #                 {"_id": position["_id"]},
+    #                 {"$set": {"entry": status}},
+    #             )
+    #             log.debug(
+    #                 f"position in account entry {account} has been set to {status}"
+    #             )
+    #         except Exception as e:
+    #             log.error(e)
+    #             return False
 
-        return True
+    #     return True
 
-    def exit(self, account: str = None, status: bool = False):
-        # get all positions with account
-        positions = Positions.get(active=True, account=account)
+    # def exit(self, account: str = None, status: bool = False):
+    #     # get all positions with account
+    #     positions = Positions.get(active=True, account=account)
 
-        for position in positions:
-            if position["entry"] is False:
-                log.debug(
-                    f"position in account {account} has not been entered, skipping"
-                )
-                continue
-            try:
-                self.positions_db.update(
-                    {"_id": position["_id"]},
-                    {"$set": {"exit": status}},
-                )
-                log.debug(
-                    f"Position in account exit {account} has been set to {status}"
-                )
-            except Exception as e:
-                log.error(e)
-                return False
+    #     for position in positions:
+    #         if position["entry"] is False:
+    #             log.debug(
+    #                 f"position in account {account} has not been entered, skipping"
+    #             )
+    #             continue
+    #         try:
+    #             self.positions_db.update(
+    #                 {"_id": position["_id"]},
+    #                 {"$set": {"exit": status}},
+    #             )
+    #             log.debug(
+    #                 f"Position in account exit {account} has been set to {status}"
+    #             )
+    #         except Exception as e:
+    #             log.error(e)
+    #             return False
 
-        return True
+    #     return True
 
-    def update(self, account: str = None, **kwargs: dict):
-        # get all positions with account
-        positions = Positions.get(account=account)
+    # def update(self, account: str = None, **kwargs: dict):
+    #     # get all positions with account
+    #     positions = Positions.get(account=account)
 
-        for position in positions:
-            try:
-                self.positions_db.update_one(
-                    {"_id": position["_id"]},
-                    {"$set": kwargs},
-                )
-                log.debug(f"Position in account {account} has been updated")
-            except Exception as e:
-                log.error(e)
-                return False
+    #     for position in positions:
+    #         try:
+    #             self.positions_db.update_one(
+    #                 {"_id": position["_id"]},
+    #                 {"$set": kwargs},
+    #             )
+    #             log.debug(f"Position in account {account} has been updated")
+    #         except Exception as e:
+    #             log.error(e)
+    #             return False
 
-        return True
+    #     return True

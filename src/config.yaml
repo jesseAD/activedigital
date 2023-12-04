@@ -9,6 +9,10 @@ dask:
   threadPoolsPerWorker: 1
   threadsPerPool: 1
 
+logging:
+  max_size: 100 # in KB
+  max_date: 30 # in days
+
 ccxt:
   binance:
     rateLimit: 30

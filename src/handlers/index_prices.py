@@ -67,6 +67,7 @@ class IndexPrices:
         perp: str = None,
         indexPriceValue: str = None,
         back_off = {},
+        logger=None
     ):
         if indexPriceValue is None:
             if exch == None:
@@ -93,7 +94,8 @@ class IndexPrices:
                 #     return True
                 
                 except ccxt.ExchangeError as e:
-                    print("An error occurred in Index Prices:", e)
+                    logger.warning(exchange +" index prices " + str(e))
+                    # print("An error occurred in Index Prices:", e)
                     pass
         
         # back_off[exchange] = config['dask']['back_off']
@@ -134,5 +136,5 @@ class IndexPrices:
                 
             # return index_price
         except Exception as e:
-            log.error(e)
+            logger.error(exchange +" index prices " + str(e))
             return True
