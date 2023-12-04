@@ -79,6 +79,7 @@ class Transactions:
         transaction_value: str = None,
         symbol: str = None,
         back_off = {},
+        logger=None
     ):
         if transaction_value is None:
             if exch == None:
@@ -528,7 +529,8 @@ class Transactions:
             #     return True
     
             except ccxt.ExchangeError as e:
-                print("An error occurred in Transactions:", e)
+                logger.warning(client + " " + exchange + " " + sub_account + " transactions " + str(e))
+                # print("An error occurred in Transactions:", e)
                 return True
         
         # back_off[client + "_" + exchange + "_" + sub_account] = config['dask']['back_off']
@@ -743,5 +745,5 @@ class Transactions:
 
             # return transaction
         except Exception as e:
-            log.error(e)
+            logger.error(client + " " + exchange + " " + sub_account + " positions " + str(e))
             return True

@@ -76,6 +76,7 @@ class BorrowRates:
         borrowRatesValue: str = None,
         codes: str = None,
         back_off = {},
+        logger=None
     ):
         if codes is None:
             codes = config["borrow_rates"]["codes"]
@@ -164,7 +165,8 @@ class BorrowRates:
                                 for item in borrowRatesValue[code]:
                                     item['scalar'] = scalar 
                     except ccxt.BadSymbol as e:
-                        print("An error occurred in Borrow Rates:", e)
+                        logger.warning(exchange +  " borrow rates " + str(e))
+                        # print("An error occurred in Borrow Rates:", e)
                         pass
 
             # except ccxt.InvalidNonce as e:
@@ -174,7 +176,8 @@ class BorrowRates:
             #     return True
         
             except ccxt.AuthenticationError as e:
-                print("An error occurred in Borrow Rates:", e)
+                logger.warning(exchange + " borrow rates " + str(e))
+                # print("An error occurred in Borrow Rates:", e)
 
                 for _client in config['clients']:
                     if exchange in config['clients'][_client]['funding_payments']:
@@ -249,7 +252,8 @@ class BorrowRates:
                                                     item["nextBorrowRate"] = float(borrow_rate) * 24 * 365 / scalar
                                                     item['scalar'] = scalar  
                                     except ccxt.ExchangeError as e:
-                                        print("An error occurred in Borrow Rates:", e)
+                                        logger.warning(exchange + " borrow rates " + str(e))
+                                        # print("An error occurred in Borrow Rates:", e)
                                         pass  
                                 break
                                                       
@@ -258,7 +262,8 @@ class BorrowRates:
                 pass
 
             except ccxt.ExchangeError as e:
-                print("An error occurred in Borrow Rates:", e)
+                logger.warning(exchange + " borrow rates " + str(e))
+                # print("An error occurred in Borrow Rates:", e)
                 pass
         
         # back_off[exchange] = config['dask']['back_off']
@@ -319,5 +324,5 @@ class BorrowRates:
             # return borrow_rates
 
         except Exception as e:
-            log.error(e)
+            logger.error(exchange +" borrow rates " + str(e))
             return True

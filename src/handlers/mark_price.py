@@ -76,6 +76,7 @@ class MarkPrices:
         perp: str = None,
         markPriceValue: str = None,
         back_off = {},
+        logger=None
     ):
         if markPriceValue is None:
             if exch == None:
@@ -106,7 +107,8 @@ class MarkPrices:
                 #     return True
                 
                 except ccxt.ExchangeError as e:
-                    print("An error occurred in Mark Prices:", e)
+                    logger.warning(exchange +" mark prices " + str(e))
+                    # print("An error occurred in Mark Prices:", e)
                     pass
 
         # back_off[exchange] = config['dask']['back_off']
@@ -183,5 +185,5 @@ class MarkPrices:
 
             # return mark_price
         except Exception as e:
-            log.error(e)
+            logger.error(exchange +" mark prices " + str(e))
             return True

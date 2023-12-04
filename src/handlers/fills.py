@@ -75,6 +75,7 @@ class Fills:
         fillsValue: str = None,
         symbols: str = None,
         back_off = {},
+        logger=None
     ):
         if symbols is None:
             # get latest positions data
@@ -256,7 +257,8 @@ class Fills:
                 #     return False
             
                 except ccxt.ExchangeError as e:
-                    print("An error occurred in Fills:", e)
+                    logger.warning(client + " " + exchange + " " + sub_account + " fills " + str(e))
+                    # print("An error occurred in Fills:", e)
                     pass
                
         # back_off[client + "_" + exchange + "_" + sub_account] = config['dask']['back_off']
@@ -313,5 +315,5 @@ class Fills:
 
             # return fills
         except Exception as e:
-            log.error(e)
+            logger.error(client + " " + exchange + " " + sub_account + " fills " + str(e))
             return True

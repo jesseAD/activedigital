@@ -33,6 +33,7 @@ class Leverages:
         client,
         exchange: str = None,
         account: str = None,
+        logger=None
     ):        
         run_ids = self.runs_db.find({}).sort('_id', -1).limit(1)
         latest_run_id = 0
@@ -53,7 +54,8 @@ class Leverages:
                 try: 
                     latest_ticker = item['ticker_value']
                 except Exception as e:
-                    print("An error occurred in Leverages:", e)
+                    logger.error(client + " " + exchange + " " + account + " leverages " + str(e))
+                    # print("An error occurred in Leverages:", e)
                     return True  
                 
             if client:
@@ -66,7 +68,8 @@ class Leverages:
                 try:
                     latest_position = item['position_value']
                 except Exception as e:
-                    print("An error occurred in Leverages:", e)
+                    logger.error(client + " " + exchange + " " + account + " leverages " + str(e))
+                    # print("An error occurred in Leverages:", e)
                     return True
             
             balance_valule = self.balances_db.find(query).sort('runid', -1).limit(1)
@@ -74,7 +77,8 @@ class Leverages:
                 try: 
                     latest_balance = item['balance_value']
                 except Exception as e:
-                    print("An error occurred in Leverages:", e)
+                    logger.error(client + " " + exchange + " " + account + " leverages " + str(e))
+                    # print("An error occurred in Leverages:", e)
                     return True
 
             try:
@@ -83,7 +87,8 @@ class Leverages:
                 for pair in latest_position:
                     max_notional += max([abs(item['notional']) for item in pair])
             except Exception as e:
-                print("An error occurred in Leverages:", e)
+                logger.error(client + " " + exchange + " " + account + " leverages " + str(e))
+                # print("An error occurred in Leverages:", e)
                 return True
             
             base_currency = config["clients"][client]["funding_payments"][exchange]["base_ccy"]
@@ -97,7 +102,8 @@ class Leverages:
                 else:
                     balance_in_base_currency = latest_balance['base'] / (latest_ticker['USDT/USD']['last'] * latest_ticker[base_currency + '/USDT']['last'])
             except Exception as e:
-                print("An error occurred in Leverages:", e)
+                logger.error(client + " " + exchange + " " + account + " leverages " + str(e))
+                # print("An error occurred in Leverages:", e)
                 return True
 
             # try:
@@ -120,7 +126,8 @@ class Leverages:
             try:
                 leverage_value['leverage'] = max_notional / balance_in_base_currency
             except Exception as e:
-                print("An error occurred in Leverages:", e)
+                logger.error(client + " " + exchange + " " + account + " leverages " + str(e))
+                # print("An error occurred in Leverages:", e)
                 return True
             
             leverage_value["runid"] = latest_run_id
@@ -145,5 +152,5 @@ class Leverages:
             return True
         
         except Exception as e:
-            log.error(e)
+            logger.error(client + " " + exchange + " " + account + " leverages " + str(e))
             return True

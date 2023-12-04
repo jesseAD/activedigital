@@ -85,6 +85,7 @@ class Instruments:
         instrumentValue: str = None,
         bid_ask_value: str = None,
         back_off = {},
+        logger=None
     ):
         if exch == None:
             exch = Exchange(exchange).exch()
@@ -106,7 +107,8 @@ class Instruments:
             #     return True
             
             except ccxt.ExchangeError as e:
-                print("An error occurred in Instruments:", e)
+                logger.warning(exchange +" instruments " + str(e))
+                # print("An error occurred in Instruments:", e)
                 pass
 
         if bid_ask_value is None:
@@ -151,7 +153,8 @@ class Instruments:
                 #     return True
             
                 except ccxt.ExchangeError as e:
-                    print("An error occurred in Bids and Asks:", e)
+                    logger.warning(exchange +" bids and asks " + str(e))
+                    # print("An error occurred in Bids and Asks:", e)
                     pass
 
         # back_off[exchange] = config['dask']['back_off']
@@ -259,7 +262,7 @@ class Instruments:
 
             # return instrument
         except Exception as e:
-            log.error(e)
+            logger.error(exchange +" instruments " + str(e))
             return True
 
     # def entry(self, account: str = None, status: bool = True):

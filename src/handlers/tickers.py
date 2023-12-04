@@ -67,6 +67,7 @@ class Tickers:
         perp: str = None,
         tickerValue: str = None,
         back_off = {},
+        logger=None
     ):
         if tickerValue is None:
             if exch == None:
@@ -94,7 +95,8 @@ class Tickers:
             #     return True
         
             except ccxt.ExchangeError as e:
-                print("An error occurred in Tickers:", e)
+                logger.warning(exchange +" tickers " + str(e))
+                # print("An error occurred in Tickers:", e)
                 return True
         
         # back_off[exchange] = config['dask']['back_off']        
@@ -169,5 +171,5 @@ class Tickers:
                 
             # return ticker
         except Exception as e:
-            log.error(e)
+            logger.error(exchange +" tickers " + str(e))
             return True
