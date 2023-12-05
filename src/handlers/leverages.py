@@ -28,6 +28,20 @@ class Leverages:
             self.tickers_db = database_connector('tickers')
             self.runs_db = database_connector('runs')
 
+    def close_db(self):
+        if os.getenv("mode") == "testing":
+            self.leverages_db.close()
+            self.split_positions_db.close()
+            self.balances_db.close()
+            self.tickers_db.close()
+            self.runs_db.close()
+        else: 
+            self.leverages_db.database.client.close()
+            self.split_positions_db.database.client.close()
+            self.balances_db.database.client.close()
+            self.tickers_db.database.client.close()
+            self.runs_db.database.client.close()
+
     def get(
         self,
         client,

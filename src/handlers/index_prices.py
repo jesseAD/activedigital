@@ -24,6 +24,14 @@ class IndexPrices:
             self.runs_db = database_connector('runs')
             self.index_prices_db = database_connector(db)
 
+    def close_db(self):
+        if os.getenv("mode") == "testing":
+            self.runs_db.close()
+            self.index_prices_db.close()
+        else:
+            self.runs_db.database.client.close()
+            self.index_prices_db.database.client.close()
+
     def get(
         self,
         active: bool = None,

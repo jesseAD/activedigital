@@ -26,6 +26,14 @@ class BorrowRates:
             self.borrow_rates_db = database_connector(db)
             self.runs_db = database_connector("runs")
 
+    def close_db(self):
+        if os.getenv("mode") == "testing":
+            self.runs_db.close()
+            self.borrow_rates_db.close()
+        else:
+            self.borrow_rates_db.database.client.close()
+            self.runs_db.database.client.close()
+
     def get(
         self,
         active: bool = None,

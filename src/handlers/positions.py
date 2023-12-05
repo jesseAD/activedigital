@@ -37,6 +37,24 @@ class Positions:
             self.split_positions_db = database_connector("split_positions")
             self.positions_db = database_connector(db)
 
+    def close_db(self):
+        if os.getenv("mode") == "testing":
+            self.runs_db.close()
+            self.tickers_db.close()
+            self.balances_db.close()
+            self.lifetime_funding_db.close()
+            self.funding_rates_db.close()
+            self.split_positions_db.close()
+            self.positions_db.close()
+        else:
+            self.runs_db.database.client.close()
+            self.tickers_db.database.client.close()
+            self.balances_db.database.client.close()
+            self.funding_rates_db.database.client.close()
+            self.lifetime_funding_db.database.client.close()
+            self.split_positions_db.database.client.close()
+            self.positions_db.database.client.close()
+
     def get(
         self,
         client,

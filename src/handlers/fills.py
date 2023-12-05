@@ -28,6 +28,16 @@ class Fills:
             self.runs_db = database_connector("runs")
             self.positions_db = database_connector("positions")
 
+    def close_db(self):
+        if os.getenv("mode") == "testing":
+            self.runs_db.close()
+            self.positions_db.close()
+            self.fills_db.close()
+        else:
+            self.fills_db.database.client.close()
+            self.runs_db.database.client.close()
+            self.positions_db.database.client.close()
+
     def get(
         self,
         active: bool = None,
