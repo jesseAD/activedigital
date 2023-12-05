@@ -24,6 +24,14 @@ class Tickers:
             self.runs_db = database_connector('runs')
             self.tickers_db = database_connector('tickers')
 
+    def close_db(self):
+        if os.getenv("mode") == "testing":
+            self.runs_db.close()
+            self.tickers_db.close()
+        else:
+            self.runs_db.database.client.close()
+            self.tickers_db.database.client.close()
+
     def get(
         self,
         active: bool = None,

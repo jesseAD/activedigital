@@ -27,6 +27,16 @@ class Balances:
             self.tickers_db = database_connector("tickers")
             self.runs_db = database_connector("runs")
 
+    def close_db(self):
+        if os.getenv("mode") == "testing":
+            self.runs_db.close()
+            self.tickers_db.close()
+            self.balances_db.close()
+        else:
+            self.balances_db.database.client.close()
+            self.tickers_db.database.client.close()
+            self.runs_db.database.client.close()
+
     def get(
         self,
         active: bool = None,

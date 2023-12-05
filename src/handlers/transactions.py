@@ -28,6 +28,16 @@ class Transactions:
             self.tickers_db = database_connector("tickers")
             self.transactions_db = database_connector(db)
 
+    def close_db(self):
+        if os.getenv("mode") == "testing":
+            self.runs_db.close()
+            self.tickers_db.close()
+            self.transactions_db.close()
+        else:
+            self.runs_db.database.client.close()
+            self.tickers_db.database.client.close()
+            self.transactions_db.database.client.close()
+
     def get(
         self,
         client,

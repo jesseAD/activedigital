@@ -26,6 +26,7 @@ from src.handlers.instantiator import collect_borrow_rates
 from src.handlers.instantiator import collect_funding_rates
 from src.handlers.instantiator import collect_mark_prices
 from src.handlers.instantiator import collect_fills
+from src.handlers.instantiator import collect_bids_asks
 from src.handlers.instantiator import insert_runs
 from src.handlers.instantiator import enclose_runs
 from src.handlers.instantiator import get_data_collectors
@@ -93,9 +94,9 @@ print("inserted a new run")
 #  ------------  Dask + Concurrent  ----------------
 
 public_data_collectors = [
-    collect_instruments, collect_mark_prices,
+    collect_instruments, collect_mark_prices, collect_bids_asks,
     collect_tickers, collect_index_prices,
-    collect_funding_rates, collect_borrow_rates
+    collect_funding_rates, collect_borrow_rates    
 ]
 
 private_data_collectors = [

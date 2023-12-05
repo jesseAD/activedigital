@@ -27,6 +27,16 @@ class MarkPrices:
             self.positions_db = database_connector("positions")
             self.mark_prices_db = database_connector(db)
 
+    def close_db(self):
+        if os.getenv("mode") == "testing":
+            self.runs_db.close()
+            self.positions_db.close()
+            self.mark_prices_db.close()
+        else:
+            self.runs_db.database.client.close()
+            self.positions_db.database.client.close()
+            self.mark_prices_db.database.client.close()
+
     def get(
         self,
         active: bool = None,

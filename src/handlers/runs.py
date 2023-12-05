@@ -23,6 +23,12 @@ class Runs:
         else:
             self.runs_db = database_connector(db)
 
+    def close_db(self):
+        if os.getenv("mode") == "testing":
+            self.runs_db.close()
+        else:
+            self.runs_db.database.client.close()
+
     def get(self):
         try:
             run_ids = self.runs_db.find({}).sort("_id", -1).limit(1)

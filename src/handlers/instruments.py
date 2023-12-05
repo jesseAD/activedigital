@@ -36,6 +36,16 @@ class Instruments:
             self.bid_asks_db = database_connector("bid_asks")
             self.insturments_db = database_connector(db)
 
+    def close_db(self):
+        if os.getenv("mode") == "testing":
+            self.runs_db.close()
+            self.bid_asks_db.close()
+            self.insturments_db.close()
+        else:
+            self.runs_db.database.client.close()
+            self.bid_asks_db.database.client.close()
+            self.insturments_db.database.client.close()
+
     def get(
         self,
         active: bool = None,
@@ -111,54 +121,6 @@ class Instruments:
                 # print("An error occurred in Instruments:", e)
                 pass
 
-        if bid_ask_value is None:
-            bid_ask_value = {}
-
-            for i in range(len(config['bid_ask']['spot'])):
-                try:
-                    if exchange == "okx":
-                        spot_value = OKXHelper().get_bid_ask(exch=exch, symbol=config['bid_ask']['spot'][i])
-                        perp_value = OKXHelper().get_bid_ask(exch=exch, symbol=config['bid_ask']['perp'][i])
-
-                        bid_ask_value[config['bid_ask']['spot'][i]] = {
-                            'spot': spot_value,
-                            'perp': perp_value,
-                            'spread': spot_value['mid_point'] - perp_value['mid_point'],
-                        }
-
-                    elif exchange == "binance":
-                        spot_value = Helper().get_bid_ask(exch=exch, symbol=config['bid_ask']['spot'][i])
-                        perp_value = Helper().get_bid_ask(exch=exch, symbol=config['bid_ask']['perp'][i])
-
-                        bid_ask_value[config['bid_ask']['spot'][i]] = {
-                            'spot': spot_value,
-                            'perp': perp_value,
-                            'spread': spot_value['mid_point'] - perp_value['mid_point'],
-                        }   
-                    
-                    elif exchange == "bybit":
-                        spot_value = Helper().get_bid_ask(exch=exch, symbol=config['bid_ask']['spot'][i])
-                        perp_value = Helper().get_bid_ask(exch=exch, symbol=config['bid_ask']['perp'][i])
-
-                        bid_ask_value[config['bid_ask']['spot'][i]] = {
-                            'spot': spot_value,
-                            'perp': perp_value,
-                            'spread': spot_value['mid_point'] - perp_value['mid_point'],
-                        } 
-
-                # except ccxt.InvalidNonce as e:
-                #     print("Hit rate limit", e)
-                #     time.sleep(back_off[exchange] / 1000.0)
-                #     back_off[exchange] *= 2
-                #     return True
-            
-                except ccxt.ExchangeError as e:
-                    logger.warning(exchange +" bids and asks " + str(e))
-                    # print("An error occurred in Bids and Asks:", e)
-                    pass
-
-        # back_off[exchange] = config['dask']['back_off']
-
         instrument = {
             "venue": exchange,
             "instrument_value": instrumentValue,#Mapping().mapping_instruments(exchange=exchange, instrument=instrumentValue),
@@ -185,36 +147,6 @@ class Instruments:
             except:
                 pass
         instrument["runid"] = latest_run_id
-
-        # store best bid, ask, mid point
-        bid_ask = []
-
-        for _key, _value in bid_ask_value.items():
-            new_value = {
-                "venue": exchange,
-                "bid_ask_value": _value, 
-                "symbol": _key,
-                "active": True,
-                "entry": False,
-                "exit": False,
-                "timestamp": datetime.now(timezone.utc),
-                "runid": latest_run_id,
-            }
-            if spot:
-                new_value["spotMarket"] = spot
-            if future:
-                new_value["futureMarket"] = future
-            if perp:
-                new_value["perpMarket"] = perp
-
-            bid_ask.append(new_value)
-
-        try:
-            self.bid_asks_db.insert_many(bid_ask)
-        except:
-            pass
-
-        del bid_ask, bid_ask_value
 
         # get latest instruments data
         query = {}
