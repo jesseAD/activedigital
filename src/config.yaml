@@ -6,7 +6,7 @@ dask:
   back_off: 100
   memory: '1GB'
   workers: 1
-  threadPoolsPerWorker: 2
+  threadPoolsPerWorker: 1
   threadsPerPool: 10
 
 logging:
