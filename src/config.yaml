@@ -4,7 +4,7 @@ mongo_port: 27017
 
 dask:
   back_off: 100
-  memory: '400MB'
+  memory: '250MB'
   workers: 1
   threadPoolsPerWorker: 1
   threadsPerPool: 1
