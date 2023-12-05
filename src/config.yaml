@@ -6,8 +6,8 @@ dask:
   back_off: 100
   memory: '250MB'
   workers: 1
-  threadPoolsPerWorker: 1
-  threadsPerPool: 1
+  threadPoolsPerWorker: 2
+  threadsPerPool: 10
 
 logging:
   max_size: 100 # in KB
