@@ -7,7 +7,7 @@ dask:
   memory: '1GB'
   workers: 1
   threadPoolsPerWorker: 1
-  threadsPerPool: 10
+  threadsPerPool: 5
 
 logging:
   max_size: 100 # in KB
