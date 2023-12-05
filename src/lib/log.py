@@ -39,14 +39,14 @@ class Log:
 
     def zip_and_delete(self):
         os.chdir('/data/log/')
-        file_size = os.path.getsize('output.log')
+        file_size = os.path.getsize('logfile.log')
         
         if file_size > (config['logging']['max_size'] * 1000):
             zip_filename = datetime.now(timezone.utc).strftime("%Y-%m-%d-%H-%M-%S.zip")
             with zipfile.ZipFile(zip_filename, 'w', zipfile.ZIP_LZMA) as zipf:
-                zipf.write('output.log')
+                zipf.write('logfile.log')
             
-            os.remove('output.log')
+            os.remove('logfile.log')
 
         zip_files = os.listdir(os.getcwd())
         for zip_file in zip_files:
