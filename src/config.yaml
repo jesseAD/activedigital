@@ -11,7 +11,7 @@ dask:
 
 logging:
   max_size: 100 # in KB
-  max_date: 30 # in days
+  max_date: 5 # in days
 
 ccxt:
   binance:
