@@ -86,7 +86,6 @@ def leverage_pool(leverage_collector, accounts_group):
 
 
 #   Insert new run
-logger.zip_and_delete()
 logger.info("Application started")
 insert_runs(logger)
 print("inserted a new run")

@@ -38,15 +38,15 @@ class Log:
         self.logger.critical(str(message))
 
     def zip_and_delete(self):
-        os.chdir(os.path.expanduser('~/Documents/ActiveDigital'))
-        file_size = os.path.getsize('logfile.log')
+        os.chdir('/data/log/')
+        file_size = os.path.getsize('output.log')
         
         if file_size > (config['logging']['max_size'] * 1000):
             zip_filename = datetime.now(timezone.utc).strftime("%Y-%m-%d-%H-%M-%S.zip")
             with zipfile.ZipFile(zip_filename, 'w', zipfile.ZIP_LZMA) as zipf:
-                zipf.write('logfile.log')
+                zipf.write('output.log')
             
-            os.remove('logfile.log')
+            os.remove('output.log')
 
         zip_files = os.listdir(os.getcwd())
         for zip_file in zip_files:
