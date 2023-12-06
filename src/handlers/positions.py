@@ -4,14 +4,14 @@ from datetime import datetime, timezone
 import time
 import ccxt
 import pdb
-from src.lib.db import MongoDB
+# from src.lib.db import MongoDB
 from src.lib.log import Log
 from src.lib.exchange import Exchange
 from src.lib.mapping import Mapping
 from src.lib.unhedged import get_unhedged
 from src.config import read_config_file
 from src.handlers.helpers import Helper, OKXHelper, BybitHelper
-from src.handlers.database_connector import database_connector
+# from src.handlers.database_connector import database_connector
 
 load_dotenv()
 log = Log()
@@ -19,23 +19,31 @@ config = read_config_file()
 
 
 class Positions:
-    def __init__(self, db):
-        if os.getenv("mode") == "testing":
-            self.runs_db = MongoDB(config["mongo_db"], "runs")
-            self.tickers_db = MongoDB(config["mongo_db"], "tickers")
-            self.balances_db = MongoDB(config["mongo_db"], "balances")
-            self.lifetime_funding_db = MongoDB(config["mongo_db"], "lifetime_funding")
-            self.funding_rates_db = MongoDB(config["mongo_db"], "funding_rates")
-            self.split_positions_db = MongoDB(config["mongo_db"], "split_positions")
-            self.positions_db = MongoDB(config["mongo_db"], db)
-        else:
-            self.runs_db = database_connector("runs")
-            self.tickers_db = database_connector("tickers")
-            self.balances_db = database_connector("balances")
-            self.funding_rates_db = database_connector("funding_rates")
-            self.lifetime_funding_db = database_connector("lifetime_funding")
-            self.split_positions_db = database_connector("split_positions")
-            self.positions_db = database_connector(db)
+    def __init__(self, db, collection):
+        # if os.getenv("mode") == "testing":
+        #     self.runs_db = MongoDB(config["mongo_db"], "runs")
+        #     self.tickers_db = MongoDB(config["mongo_db"], "tickers")
+        #     self.balances_db = MongoDB(config["mongo_db"], "balances")
+        #     self.lifetime_funding_db = MongoDB(config["mongo_db"], "lifetime_funding")
+        #     self.funding_rates_db = MongoDB(config["mongo_db"], "funding_rates")
+        #     self.split_positions_db = MongoDB(config["mongo_db"], "split_positions")
+        #     self.positions_db = MongoDB(config["mongo_db"], db)
+        # else:
+        #     self.runs_db = database_connector("runs")
+        #     self.tickers_db = database_connector("tickers")
+        #     self.balances_db = database_connector("balances")
+        #     self.funding_rates_db = database_connector("funding_rates")
+        #     self.lifetime_funding_db = database_connector("lifetime_funding")
+        #     self.split_positions_db = database_connector("split_positions")
+        #     self.positions_db = database_connector(db)
+
+        self.runs_db = db['runs']
+        self.tickers_db = db['tickers']
+        self.balances_db = db['balances']
+        self.funding_rates_db = db['funding_rates']
+        self.lifetime_funding_db = db['lifetime_funding']
+        self.split_positions_db = db['split_positions']
+        self.positions_db = db['positions']
 
     def close_db(self):
         if os.getenv("mode") == "testing":
@@ -154,7 +162,6 @@ class Positions:
                 # print("An error occurred in Positions:", e)
                 return True
                 
-
         try:
             position_info = []
             liquidation_buffer = None
@@ -179,6 +186,9 @@ class Positions:
                 except ccxt.ExchangeError as e:
                     logger.warning(client + " " + exchange + " " + sub_account + " positions " + str(e))
                     # print("An error occurred in Positions:", e)
+                    pass
+                except Exception as e:
+                    logger.warning(client + " " + exchange + " " + sub_account + " positions " + str(e))
                     pass
 
             elif exchange == "bybit":

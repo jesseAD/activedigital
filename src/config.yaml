@@ -7,10 +7,10 @@ dask:
   memory: '1GB'
   workers: 1
   threadPoolsPerWorker: 1
-  threadsPerPool: 1
+  threadsPerPool: 2
 
 logging:
-  max_size: 100 # in KB
+  max_size: 300 # in KB
   max_date: 5 # in days
 
 ccxt:
@@ -25,6 +25,7 @@ ccxt:
   bybit:
     rateLimit: 30
     timeout: 1000
+    retry: 3
   coinbase:
     rateLimit: 30
     timeout: 1000

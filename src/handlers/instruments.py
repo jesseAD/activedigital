@@ -6,13 +6,13 @@ import pickle
 import ccxt 
 import time
 
-from src.lib.db import MongoDB
+# from src.lib.db import MongoDB
 from src.lib.log import Log
 from src.lib.exchange import Exchange
-from src.lib.mapping import Mapping
+# from src.lib.mapping import Mapping
 from src.config import read_config_file
 from src.handlers.helpers import Helper, OKXHelper, BybitHelper
-from src.handlers.database_connector import database_connector
+# from src.handlers.database_connector import database_connector
 
 load_dotenv()
 log = Log()
@@ -26,25 +26,26 @@ def compress_list(data):
 
 
 class Instruments:
-    def __init__(self, db):
-        if os.getenv("mode") == "testing":
-            self.runs_db = MongoDB(config["mongo_db"], "runs")
-            self.bid_asks_db = MongoDB(config["mongo_db"], "bid_asks")
-            self.insturments_db = MongoDB(config["mongo_db"], db)
-        else:
-            self.runs_db = database_connector("runs")
-            self.bid_asks_db = database_connector("bid_asks")
-            self.insturments_db = database_connector(db)
+    def __init__(self, db, collection):
+        # if os.getenv("mode") == "testing":
+        #     self.runs_db = MongoDB(config["mongo_db"], "runs")
+        #     self.instruments_db = MongoDB(config["mongo_db"], db)
+        # else:
+        #     self.runs_db = database_connector("runs")
+        #     self.instruments_db = database_connector(db)
+
+        self.runs_db = db['runs']
+        self.instruments_db = db['instruments']
 
     def close_db(self):
         if os.getenv("mode") == "testing":
             self.runs_db.close()
             self.bid_asks_db.close()
-            self.insturments_db.close()
+            self.instruments_db.close()
         else:
             self.runs_db.database.client.close()
             self.bid_asks_db.database.client.close()
-            self.insturments_db.database.client.close()
+            self.instruments_db.database.client.close()
 
     def get(
         self,
@@ -76,7 +77,7 @@ class Instruments:
             pipeline.append({"$match": {"venue": exchange}})
 
         try:
-            results = self.insturments_db.aggregate(pipeline)
+            results = self.instruments_db.aggregate(pipeline)
             return results
 
         except Exception as e:
@@ -157,7 +158,7 @@ class Instruments:
         if sub_account:
             query["account"] = sub_account
 
-        instrument_values = self.insturments_db.find(query).sort('runid', -1).limit(1)
+        instrument_values = self.instruments_db.find(query).sort('runid', -1).limit(1)
 
         latest_run_id = -1
         latest_value = None
@@ -172,7 +173,7 @@ class Instruments:
         
         try:
             if config["instruments"]["store_type"] == "snapshot":
-                self.insturments_db.update_one(
+                self.instruments_db.update_one(
                     {
                         "venue": instrument["venue"],
                     },
@@ -186,7 +187,7 @@ class Instruments:
                 
                 
             elif config["instruments"]["store_type"] == "timeseries":
-                self.insturments_db.insert_one(instrument)
+                self.instruments_db.insert_one(instrument)
 
             del instrument
 

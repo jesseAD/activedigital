@@ -4,12 +4,12 @@ from datetime import datetime, timezone
 import ccxt 
 import time
 
-from src.lib.db import MongoDB
+# from src.lib.db import MongoDB
 from src.lib.log import Log
 from src.lib.exchange import Exchange
 from src.config import read_config_file
 from src.handlers.helpers import Helper, OKXHelper, BybitHelper
-from src.handlers.database_connector import database_connector
+# from src.handlers.database_connector import database_connector
 
 load_dotenv()
 log = Log()
@@ -17,15 +17,19 @@ config = read_config_file()
 
 
 class MarkPrices:
-    def __init__(self, db):
-        if os.getenv("mode") == "testing":
-            self.runs_db = MongoDB(config["mongo_db"], "runs")
-            self.positions_db = MongoDB(config["mongo_db"], "positions")
-            self.mark_prices_db = MongoDB(config["mongo_db"], db)
-        else:
-            self.runs_db = database_connector("runs")
-            self.positions_db = database_connector("positions")
-            self.mark_prices_db = database_connector(db)
+    def __init__(self, db, collection):
+        # if os.getenv("mode") == "testing":
+        #     self.runs_db = MongoDB(config["mongo_db"], "runs")
+        #     self.positions_db = MongoDB(config["mongo_db"], "positions")
+        #     self.mark_prices_db = MongoDB(config["mongo_db"], db)
+        # else:
+        #     self.runs_db = database_connector("runs")
+        #     self.positions_db = database_connector("positions")
+        #     self.mark_prices_db = database_connector(db)
+
+        self.runs_db = db['runs']
+        self.positions_db = db['positions']
+        self.mark_prices_db = db['mark_prices']
 
     def close_db(self):
         if os.getenv("mode") == "testing":
