@@ -4,13 +4,13 @@ from datetime import datetime, timezone, timedelta
 import ccxt 
 import time
 
-from src.lib.db import MongoDB
+# from src.lib.db import MongoDB
 from src.lib.log import Log
 from src.lib.exchange import Exchange
 from src.lib.mapping import Mapping
 from src.config import read_config_file
 from src.handlers.helpers import Helper, OKXHelper, BybitHelper
-from src.handlers.database_connector import database_connector
+# from src.handlers.database_connector import database_connector
 
 load_dotenv()
 log = Log()
@@ -18,15 +18,19 @@ config = read_config_file()
 
 
 class Transactions:
-    def __init__(self, db):
-        if os.getenv("mode") == "testing":
-            self.runs_db = MongoDB(config["mongo_db"], "runs")
-            self.tickers_db = MongoDB(config["mongo_db"], "tickers")
-            self.transactions_db = MongoDB(config["mongo_db"], db)
-        else:
-            self.runs_db = database_connector("runs")
-            self.tickers_db = database_connector("tickers")
-            self.transactions_db = database_connector(db)
+    def __init__(self, db, collection):
+        # if os.getenv("mode") == "testing":
+        #     self.runs_db = MongoDB(config["mongo_db"], "runs")
+        #     self.tickers_db = MongoDB(config["mongo_db"], "tickers")
+        #     self.transactions_db = MongoDB(config["mongo_db"], db)
+        # else:
+        #     self.runs_db = database_connector("runs")
+        #     self.tickers_db = database_connector("tickers")
+        #     self.transactions_db = database_connector(db)
+
+        self.runs_db = db['runs']
+        self.tickers_db = db['tickers']
+        self.transactions_db = db['transactions']
 
     def close_db(self):
         if os.getenv("mode") == "testing":

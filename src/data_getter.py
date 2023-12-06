@@ -6,7 +6,9 @@ from dask.distributed import as_completed
 from dask.distributed import wait
 from dask.distributed import LocalCluster, Client
 import concurrent.futures
-import warnings
+import pymongo
+from dotenv import load_dotenv
+# import warnings
 
 current_file = os.path.abspath(__file__)
 current_directory = os.path.dirname(current_file)
@@ -32,63 +34,81 @@ from src.handlers.instantiator import enclose_runs
 from src.handlers.instantiator import get_data_collectors
 from src.config import read_config_file
 from lib.log import Log
+from lib.db import MongoDB
 
 config = read_config_file()
+load_dotenv()
 logger = Log()
-warnings.showwarning = logger.warning
+# warnings.showwarning = logger.warning
+
+mongo_uri = None
+if os.getenv("mode") == "prod":
+    mongo_uri = 'mongodb+srv://activedigital:'+os.getenv("CLOUD_MONGO_PASSWORD")+'@mongodbcluster.nzphth1.mongodb.net/?retryWrites=true&w=majority'
+
+db = pymongo.MongoClient(mongo_uri)[config['mongo_db']]
+# db = MongoDB(db_name=config['mongo_db'], uri=mongo_uri)
 
 back_off = {}
 exchs = {}
 
 def public_pool(data_collectors, exchanges):
+    db1 = pymongo.MongoClient(mongo_uri)[config['mongo_db']]
     executors = [concurrent.futures.ThreadPoolExecutor(config['dask']['threadsPerPool']) for i in range(config['dask']['threadPoolsPerWorker'])]
     
     threads = []
     for i in range(config['dask']['threadPoolsPerWorker']):
         for j in range(int(i * len(data_collectors) / config['dask']['threadPoolsPerWorker']), int((i+1) * len(data_collectors) / config['dask']['threadPoolsPerWorker'])):
             for exchange in exchanges:
-                threads.append(executors[i].submit(data_collectors[j], exchs[exchange], exchange, logger))
+                threads.append(executors[i].submit(data_collectors[j], exchs[exchange], exchange, logger, db1))
             pass
     
     for thread in concurrent.futures.as_completed(threads):
         print(thread.result())
         thread.cancel()
+
+    db1.client.close()
     gc.collect()
-    return True
+    return "Finished Public"
 
 def private_pool(data_collectors, accounts_group):
+    db2 = pymongo.MongoClient(mongo_uri)[config['mongo_db']]
     executors = [concurrent.futures.ThreadPoolExecutor(config['dask']['threadsPerPool']) for i in range(config['dask']['threadPoolsPerWorker'])]
     
     threads = []
     for i in range(config['dask']['threadPoolsPerWorker']):
         for j in range(int(i * len(accounts_group) / config['dask']['threadPoolsPerWorker']), int((i+1) * len(accounts_group) / config['dask']['threadPoolsPerWorker'])):
             for collector in data_collectors:
-                threads.append(executors[i].submit(collector, accounts_group[j].client, accounts_group[j], logger))
+                threads.append(executors[i].submit(collector, accounts_group[j].client, accounts_group[j], logger, db2))
     
     for thread in concurrent.futures.as_completed(threads):
         print(thread.result())
         thread.cancel()
+    
+    db2.client.close()
     gc.collect()   
-    return True
+    return "Finished Private"
 
 def leverage_pool(leverage_collector, accounts_group):
+    db3 = pymongo.MongoClient(mongo_uri)[config['mongo_db']]
     executors = [concurrent.futures.ThreadPoolExecutor(config['dask']['threadsPerPool']) for i in range(config['dask']['threadPoolsPerWorker'])]
     
     threads = []
     for i in range(config['dask']['threadPoolsPerWorker']):
         for j in range(int(i * len(accounts_group) / config['dask']['threadPoolsPerWorker']), int((i+1) * len(accounts_group) / config['dask']['threadPoolsPerWorker'])):
-            threads.append(executors[i].submit(leverage_collector, accounts_group[j].client, accounts_group[j], logger))
+            threads.append(executors[i].submit(leverage_collector, accounts_group[j].client, accounts_group[j], logger, db3))
     
     for thread in concurrent.futures.as_completed(threads):
         print(thread.result())
         thread.cancel()
+    
+    db3.client.close()
     gc.collect()
-    return True
+    return "Finished Leverage"
 
 
 #   Insert new run
 logger.info("Application started")
-insert_runs(logger)
+insert_runs(logger, db)
 print("inserted a new run")
 
 #  ------------  Dask + Concurrent  ----------------
@@ -96,7 +116,7 @@ print("inserted a new run")
 public_data_collectors = [
     collect_instruments, collect_mark_prices, collect_bids_asks,
     collect_tickers, collect_index_prices,
-    collect_funding_rates, collect_borrow_rates    
+    collect_funding_rates, collect_borrow_rates
 ]
 
 private_data_collectors = [
@@ -110,18 +130,23 @@ futures = []
 
 for exchange in config['exchanges']:
     exchs[exchange] = Exchange(exchange).exch()
-    back_off[exchange] = config['dask']['back_off']
+#     back_off[exchange] = config['dask']['back_off']
 
 for i in range(config['dask']['workers']):
-    futures.append(dask.submit(
-        public_pool, public_data_collectors, 
-        config['exchanges'][int(len(config['exchanges']) / config['dask']['workers'] * i) : int(len(config['exchanges']) / config['dask']['workers'] * (i+1))]
-    ))
+    try:
+        futures.append(dask.submit(
+            public_pool, public_data_collectors, 
+            config['exchanges'][int(len(config['exchanges']) / config['dask']['workers'] * i) : int(len(config['exchanges']) / config['dask']['workers'] * (i+1))]
+        ))
+    except Exception as e:
+        print("Error in dask: ", e)
 
 
-wait(futures)
-# for done_work in as_completed(futures, with_results=False):
-#     dask.cancel(done_work) 
+# wait(futures)
+for done_work, result in as_completed(futures, with_results=True):
+    print(result)
+    dask.cancel(done_work) 
+
 del futures
 futures = []
 exchs = {}
@@ -131,36 +156,43 @@ for client in config['clients']:
     data_collectors = get_data_collectors(client)
     accounts += data_collectors
 
-    for data_collector in data_collectors:
-        back_off[client + "_" + data_collector.exchange + "_" + data_collector.account] = config['dask']['back_off']
+    # for data_collector in data_collectors:
+    #     back_off[client + "_" + data_collector.exchange + "_" + data_collector.account] = config['dask']['back_off']
 
 for i in range(config['dask']['workers']):
-    futures.append(dask.submit(
-        private_pool, private_data_collectors, 
-        accounts[int(len(accounts) / config['dask']['workers'] * i) : int(len(accounts) / config['dask']['workers'] * (i+1))]
-    ))
+    try:
+        futures.append(dask.submit(
+            private_pool, private_data_collectors, 
+            accounts[int(len(accounts) / config['dask']['workers'] * i) : int(len(accounts) / config['dask']['workers'] * (i+1))]
+        ))
+    except Exception as e:
+        print("Error in dask: ", e)
 
-wait(futures)
-# for done_work in as_completed(futures, with_results=False):
-#     dask.cancel(done_work) 
+# wait(futures)
+for done_work, result in as_completed(futures, with_results=True):
+    print(result)
+    dask.cancel(done_work) 
 del futures
 futures = []
 
 for i in range(config['dask']['workers']):
-    futures.append(dask.submit(
-        leverage_pool, collect_leverages, 
-        accounts[int(len(accounts) / config['dask']['workers'] * i) : int(len(accounts) / config['dask']['workers'] * (i+1))]
-    ))
+    try:
+        futures.append(dask.submit(
+            leverage_pool, collect_leverages, 
+            accounts[int(len(accounts) / config['dask']['workers'] * i) : int(len(accounts) / config['dask']['workers'] * (i+1))]
+        ))
+    except Exception as e:
+        print("Error in dask: ", e)
 
-wait(futures)
-# for done_work in as_completed(futures, with_results=False):
-#     dask.cancel(done_work) 
+# wait(futures)
+for done_work, result in as_completed(futures, with_results=True):
+    print(result)
+    dask.cancel(done_work) 
 del futures
 del accounts
 
 
 dask.close()
-gc.collect()
 
 
 
@@ -454,7 +486,11 @@ gc.collect()
 #         collect_leverages(client, data_collector)
 
 
-enclose_runs(logger)
+enclose_runs(logger, db)
 print("enclosed run")
-logger.info("Application finished")
+
+logger.info("Application finished\n\n\n")
 logger.zip_and_delete()
+
+db.client.close()
+gc.collect()

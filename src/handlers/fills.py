@@ -4,13 +4,13 @@ from datetime import datetime, timezone
 import ccxt 
 import time
 
-from src.lib.db import MongoDB
+# from src.lib.db import MongoDB
 from src.lib.log import Log
 from src.lib.exchange import Exchange
 from src.config import read_config_file
 from src.handlers.helpers import Helper, OKXHelper, BybitHelper
 from src.lib.mapping import Mapping
-from src.handlers.database_connector import database_connector
+# from src.handlers.database_connector import database_connector
 
 load_dotenv()
 log = Log()
@@ -18,15 +18,19 @@ config = read_config_file()
 
 
 class Fills:
-    def __init__(self, db):
-        if os.getenv("mode") == "testing":
-            self.runs_db = MongoDB(config["mongo_db"], "runs")
-            self.positions_db = MongoDB(config["mongo_db"], "positions")
-            self.fills_db = MongoDB(config["mongo_db"], db)
-        else:
-            self.fills_db = database_connector(db)
-            self.runs_db = database_connector("runs")
-            self.positions_db = database_connector("positions")
+    def __init__(self, db, collection):
+        # if os.getenv("mode") == "testing":
+        #     self.runs_db = MongoDB(config["mongo_db"], "runs")
+        #     self.positions_db = MongoDB(config["mongo_db"], "positions")
+        #     self.fills_db = MongoDB(config["mongo_db"], db)
+        # else:
+        #     self.fills_db = database_connector(db)
+        #     self.runs_db = database_connector("runs")
+        #     self.positions_db = database_connector("positions")
+
+        self.runs_db = db['runs']
+        self.positions_db = db['positions']
+        self.fills_db = db['fills']
 
     def close_db(self):
         if os.getenv("mode") == "testing":

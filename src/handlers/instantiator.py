@@ -70,9 +70,9 @@ def get_data_collectors(client):
     return data_collectors
 
 #   Private data
-def collect_positions(client_alias, data_collector, logger=None, back_off={}):
+def collect_positions(client_alias, data_collector, logger, db, back_off={}):
     res = False
-    positions = Positions('positions')
+    positions = Positions(db, 'positions')
     try:
         res = positions.create(
             client=client_alias,
@@ -84,7 +84,7 @@ def collect_positions(client_alias, data_collector, logger=None, back_off={}):
         )
 
     except Exception as e:
-        logger.warn(client_alias + " " + data_collector.exchange + " " + data_collector.account + " Positions " + str(e))
+        logger.warning(client_alias + " " + data_collector.exchange + " " + data_collector.account + " Positions " + str(e))
         # print("An error occurred in Positions:", e)
 
     finally:
@@ -113,16 +113,16 @@ def collect_positions(client_alias, data_collector, logger=None, back_off={}):
                 break
             attempt += 1
 
-        positions.close_db()
+        # positions.close_db()
         del positions
 
         logger.info("Collected positions for " + client_alias + " " + data_collector.exchange + " " + data_collector.account)
         # print("Collected positions for " + client_alias + " " + data_collector.exchange + " " + data_collector.account)
         return res
 
-def collect_balances(client_alias, data_collector, logger=None, back_off={}):
+def collect_balances(client_alias, data_collector, logger, db, back_off={}):
     res = False
-    balances = Balances('balances')
+    balances = Balances(db, 'balances')
     try:
         res = balances.create(
             client=client_alias,
@@ -134,7 +134,7 @@ def collect_balances(client_alias, data_collector, logger=None, back_off={}):
         )
 
     except Exception as e:
-        logger.warn(client_alias + " " + data_collector.exchange + " " + data_collector.account + " Balances " + str(e))
+        logger.warning(client_alias + " " + data_collector.exchange + " " + data_collector.account + " Balances " + str(e))
         # print("An error occurred in Balances:", e)
 
     finally:
@@ -163,16 +163,16 @@ def collect_balances(client_alias, data_collector, logger=None, back_off={}):
                 break
             attempt += 1
 
-        balances.close_db()
+        # balances.close_db()
         del balances
 
         logger.info("Collected balances for " + client_alias + " " + data_collector.exchange + " " + data_collector.account)
         # print("Collected balances for " + client_alias + " " + data_collector.exchange + " " + data_collector.account)
         return res
 
-def collect_transactions(client_alias, data_collector, logger=None, back_off={}):
+def collect_transactions(client_alias, data_collector, logger, db, back_off={}):
     res = False
-    transactions = Transactions('transactions')
+    transactions = Transactions(db, 'transactions')
     try:
         res = transactions.create(
             client=client_alias,
@@ -185,7 +185,7 @@ def collect_transactions(client_alias, data_collector, logger=None, back_off={})
         )
 
     except Exception as e:
-        logger.warn(client_alias + " " + data_collector.exchange + " " + data_collector.account + " Transactions " + str(e))
+        logger.warning(client_alias + " " + data_collector.exchange + " " + data_collector.account + " Transactions " + str(e))
         # print("An error occurred in Transactions:", e)
 
     finally:
@@ -214,16 +214,16 @@ def collect_transactions(client_alias, data_collector, logger=None, back_off={})
                 break
             attempt += 1
 
-        transactions.close_db()
+        # transactions.close_db()
         del transactions
 
         # print("Collected transactions for " + client_alias + " " + data_collector.exchange + " " + data_collector.account)
         logger.info("Collected transactions for " + client_alias + " " + data_collector.exchange + " " + data_collector.account)
         return res
 
-def collect_fills(client_alias, data_collector, logger=None, back_off={}):
+def collect_fills(client_alias, data_collector, logger, db, back_off={}):
     res = False
-    fills = Fills('fills')
+    fills = Fills(db, 'fills')
     try:
         res = fills.create(
             client=client_alias,
@@ -235,7 +235,7 @@ def collect_fills(client_alias, data_collector, logger=None, back_off={}):
         )
 
     except Exception as e:
-        logger.warn(client_alias + " " + data_collector.exchange + " " + data_collector.account + " Fills " + str(e))
+        logger.warning(client_alias + " " + data_collector.exchange + " " + data_collector.account + " Fills " + str(e))
         # print("An error occurred in Fills:", e)
 
     finally:
@@ -264,7 +264,7 @@ def collect_fills(client_alias, data_collector, logger=None, back_off={}):
                 break
             attempt += 1
 
-        fills.close_db()
+        # fills.close_db()
         del fills
 
         # print("Collected fills for " + client_alias + " " + data_collector.exchange + " " + data_collector.account)
@@ -272,9 +272,9 @@ def collect_fills(client_alias, data_collector, logger=None, back_off={}):
         return res
 
 #   Public data
-def collect_instruments(exch, exchange, logger=None, back_off={}):
+def collect_instruments(exch, exchange, logger, db, back_off={}):
     res = False
-    instruments = Instruments('instruments')
+    instruments = Instruments(db, 'instruments')
     try:
         res = instruments.create(
             exch=exch,
@@ -284,7 +284,7 @@ def collect_instruments(exch, exchange, logger=None, back_off={}):
         )
 
     except Exception as e:
-        logger.warn(exchange + " Instruments " + str(e))
+        logger.warning(exchange + " Instruments " + str(e))
         # print("An error occurred in Instruments:", e)
 
     finally:
@@ -311,16 +311,16 @@ def collect_instruments(exch, exchange, logger=None, back_off={}):
                 break
             attempt += 1
 
-        instruments.close_db()
+        # instruments.close_db()
         del instruments
 
         # print("Collected instruments for " + exchange)
         logger.info("Collected instruments for " + exchange)
         return res
 
-def collect_tickers(exch, exchange, logger=None, back_off={}):
+def collect_tickers(exch, exchange, logger, db, back_off={}):
     res = False
-    tickers = Tickers('tickers')
+    tickers = Tickers(db, 'tickers')
     try:
         res = tickers.create(
             exch=exch,
@@ -330,7 +330,7 @@ def collect_tickers(exch, exchange, logger=None, back_off={}):
         )
 
     except Exception as e:
-        logger.warn(exchange + " Tickers " + str(e))
+        logger.warning(exchange + " Tickers " + str(e))
         # print("An error occurred in Tickers:", e)
 
     finally:
@@ -357,16 +357,16 @@ def collect_tickers(exch, exchange, logger=None, back_off={}):
                 break
             attempt += 1
         
-        tickers.close_db()
+        # tickers.close_db()
         del tickers
 
         # print("Collected tickers for " + exchange)
         logger.info("Collected tickers for " + exchange)
         return res
 
-def collect_index_prices(exch, exchange, logger=None, back_off={}):
+def collect_index_prices(exch, exchange, logger, db, back_off={}):
     res = False
-    index_prices = IndexPrices('index_prices')
+    index_prices = IndexPrices(db, 'index_prices')
     try:
         res = index_prices.create(
             exch=exch,
@@ -376,7 +376,7 @@ def collect_index_prices(exch, exchange, logger=None, back_off={}):
         )
 
     except Exception as e:
-        logger.warn(exchange + " Index Prices " + str(e))
+        logger.warning(exchange + " Index Prices " + str(e))
         # print("An error occurred in Index Prices:", e)
 
     finally:
@@ -403,16 +403,16 @@ def collect_index_prices(exch, exchange, logger=None, back_off={}):
                 break
             attempt += 1
 
-        index_prices.close_db()
+        # index_prices.close_db()
         del index_prices
 
         # print("Collected index prices for " + exchange)
         logger.info("Collected index prices for " + exchange)
         return res
 
-def collect_borrow_rates(exch, exchange, logger=None, back_off={}):
+def collect_borrow_rates(exch, exchange, logger, db, back_off={}):
     res = False
-    borrow_rates = BorrowRates('borrow_rates')
+    borrow_rates = BorrowRates(db, 'borrow_rates')
     try:
         res = borrow_rates.create(
             exch=exch,
@@ -422,7 +422,7 @@ def collect_borrow_rates(exch, exchange, logger=None, back_off={}):
         )
 
     except Exception as e:
-        logger.warn(exchange + " Borrow Rates " + str(e))
+        logger.warning(exchange + " Borrow Rates " + str(e))
         # print("An error occurred in Borrow Rates:", e)
 
     finally:
@@ -449,16 +449,16 @@ def collect_borrow_rates(exch, exchange, logger=None, back_off={}):
                 break
             attempt += 1
 
-        borrow_rates.close_db()
+        # borrow_rates.close_db()
         del borrow_rates
 
         # print("Collected borrow rates for " + exchange)
         logger.info("Collected borrow rates for " + exchange)
         return res
 
-def collect_funding_rates(exch, exchange, logger=None, back_off={}):
+def collect_funding_rates(exch, exchange, logger, db, back_off={}):
     res = False
-    funding_rates = FundingRates('funding_rates')
+    funding_rates = FundingRates(db, 'funding_rates')
     try:
         res = funding_rates.create(
             exch=exch,
@@ -468,7 +468,7 @@ def collect_funding_rates(exch, exchange, logger=None, back_off={}):
         )
 
     except Exception as e:
-        logger.warn(exchange + " Funding Rates " + str(e))
+        logger.warning(exchange + " Funding Rates " + str(e))
         # print("An error occurred in Funding Rates:", e)
 
     finally:
@@ -495,16 +495,16 @@ def collect_funding_rates(exch, exchange, logger=None, back_off={}):
                 break
             attempt += 1
 
-        funding_rates.close_db()
+        # funding_rates.close_db()
         del funding_rates
 
         # print("Collected funding rates for " + exchange)
         logger.info("Collected funding rates for " + exchange)
         return res
     
-def collect_bids_asks(exch, exchange, logger=None, back_off={}):
+def collect_bids_asks(exch, exchange, logger, db, back_off={}):
     res = False
-    bid_asks = Bids_Asks('bid_asks')
+    bid_asks = Bids_Asks(db, 'bid_asks')
     try:
         res = bid_asks.create(
             exch=exch,
@@ -514,7 +514,7 @@ def collect_bids_asks(exch, exchange, logger=None, back_off={}):
         )
 
     except Exception as e:
-        logger.warn(exchange + " bids and asks " + str(e))
+        logger.warning(exchange + " bids and asks " + str(e))
         # print("An error occurred in Mark Prices:", e)
 
     finally:
@@ -541,16 +541,16 @@ def collect_bids_asks(exch, exchange, logger=None, back_off={}):
                 break
             attempt += 1
 
-        bid_asks.close_db()
+        # bid_asks.close_db()
         del bid_asks
 
         # print("Collected mark prices for " + exchange)
         logger.info("Collected bids and asks for " + exchange)
         return res
 
-def collect_mark_prices(exch, exchange, logger=None, back_off={}):
+def collect_mark_prices(exch, exchange, logger, db, back_off={}):
     res = False
-    mark_prices = MarkPrices('mark_prices')
+    mark_prices = MarkPrices(db, 'mark_prices')
     try:
         res = mark_prices.create(
             exch=exch,
@@ -560,7 +560,7 @@ def collect_mark_prices(exch, exchange, logger=None, back_off={}):
         )
 
     except Exception as e:
-        logger.warn(exchange + " mark prices " + str(e))
+        logger.warning(exchange + " mark prices " + str(e))
         # print("An error occurred in Mark Prices:", e)
 
     finally:
@@ -587,22 +587,22 @@ def collect_mark_prices(exch, exchange, logger=None, back_off={}):
                 break
             attempt += 1
 
-        mark_prices.close_db()
+        # mark_prices.close_db()
         del mark_prices
 
         # print("Collected mark prices for " + exchange)
         logger.info("Collected mark prices for " + exchange)
         return res
 
-def insert_runs(logger=None):
-    Runs('runs').start(logger)
+def insert_runs(logger, db):
+    Runs(db, 'runs').start(logger)
 
-def enclose_runs(logger=None):
-    Runs('runs').end(logger)
+def enclose_runs(logger, db):
+    Runs(db, 'runs').end(logger)
 
-def collect_leverages(client_alias, data_collector, logger=None):
+def collect_leverages(client_alias, data_collector, logger, db):
     res = False
-    leverages = Leverages('leverages')
+    leverages = Leverages(db, 'leverages')
     try:
         res = leverages.get(
             client=client_alias,
@@ -611,7 +611,7 @@ def collect_leverages(client_alias, data_collector, logger=None):
             logger=logger
         )
     finally:
-        leverages.close_db()
+        # leverages.close_db()
         del leverages
         
         logger.info("Collected leverage for " + client_alias + " " + data_collector.exchange + " " + data_collector.account)
