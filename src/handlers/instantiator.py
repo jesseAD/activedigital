@@ -35,8 +35,8 @@ def instantiate(client, collection, exchange, account=None):
     exch = Exchange(exchange, account, API_KEY, API_SECRET, PASSPHRASE).exch()
 
     data_collector = DataCollector(
-        mongo_host = config['mongo_host'],
-        mongo_port = config['mongo_port'],
+        mongo_host = config['mongodb']['host'],
+        mongo_port = config['mongodb']['port'],
         client = client,
         exch = exch,
         exchange = exchange, 

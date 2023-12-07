@@ -45,14 +45,14 @@ mongo_uri = None
 if os.getenv("mode") == "prod":
     mongo_uri = 'mongodb+srv://activedigital:'+os.getenv("CLOUD_MONGO_PASSWORD")+'@mongodbcluster.nzphth1.mongodb.net/?retryWrites=true&w=majority'
 
-db = pymongo.MongoClient(mongo_uri)[config['mongo_db']]
-# db = MongoDB(db_name=config['mongo_db'], uri=mongo_uri)
+db = pymongo.MongoClient(mongo_uri, maxPoolsize=config['mongodb']['max_pool'])[config['mongodb']['database']]
+# db = MongoDB(db_name=config['mongodb']['database'], uri=mongo_uri)
 
 back_off = {}
 exchs = {}
 
 def public_pool(data_collectors, exchanges):
-    db1 = pymongo.MongoClient(mongo_uri)[config['mongo_db']]
+    db1 = pymongo.MongoClient(mongo_uri, maxPoolsize=config['mongodb']['max_pool'])[config['mongodb']['database']]
     executors = [concurrent.futures.ThreadPoolExecutor(config['dask']['threadsPerPool']) for i in range(config['dask']['threadPoolsPerWorker'])]
     
     threads = []
@@ -71,7 +71,7 @@ def public_pool(data_collectors, exchanges):
     return "Finished Public"
 
 def private_pool(data_collectors, accounts_group):
-    db2 = pymongo.MongoClient(mongo_uri)[config['mongo_db']]
+    db2 = pymongo.MongoClient(mongo_uri, maxPoolsize=config['mongodb']['max_pool'])[config['mongodb']['database']]
     executors = [concurrent.futures.ThreadPoolExecutor(config['dask']['threadsPerPool']) for i in range(config['dask']['threadPoolsPerWorker'])]
     
     threads = []
@@ -89,7 +89,7 @@ def private_pool(data_collectors, accounts_group):
     return "Finished Private"
 
 def leverage_pool(leverage_collector, accounts_group):
-    db3 = pymongo.MongoClient(mongo_uri)[config['mongo_db']]
+    db3 = pymongo.MongoClient(mongo_uri, maxPoolsize=config['mongodb']['max_pool'])[config['mongodb']['database']]
     executors = [concurrent.futures.ThreadPoolExecutor(config['dask']['threadsPerPool']) for i in range(config['dask']['threadPoolsPerWorker'])]
     
     threads = []
