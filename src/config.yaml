@@ -1,13 +1,15 @@
-mongo_host: 127.0.0.1
-mongo_db: 'active_digital'
-mongo_port: 27017
+mongodb:
+  host: 127.0.0.1
+  database: 'active_digital'
+  port: 27017
+  max_pool: 1
 
 dask:
   back_off: 100
-  memory: '1GB'
+  memory: '1000MB'
   workers: 1
   threadPoolsPerWorker: 1
-  threadsPerPool: 1
+  threadsPerPool: 2
 
 logging:
   max_size: 300 # in KB
@@ -16,19 +18,19 @@ logging:
 ccxt:
   binance:
     rateLimit: 30
-    timeout: 1000
+    timeout: 2000
     retry: 3
   okx:
     rateLimit: 30
-    timeout: 1000
+    timeout: 2000
     retry: 3
   bybit:
     rateLimit: 30
-    timeout: 1000
+    timeout: 2000
     retry: 3
   coinbase:
     rateLimit: 30
-    timeout: 1000
+    timeout: 2000
     retry: 3
 
 liquidation:
