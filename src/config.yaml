@@ -6,7 +6,7 @@ mongodb:
 
 dask:
   back_off: 100
-  memory: '1000MB'
+  memory: '1GB'
   workers: 1
   threadPoolsPerWorker: 1
   threadsPerPool: 1
