@@ -294,6 +294,12 @@ clients:
       margin_mode: non_portfolio
       hedged_exclusion_positive: {'USDT': 0}
       hedged_exclusion_negative: {'USDT': 0}
+    okx_submn1: &okx_submn1
+      apikey: zyx
+      apisecret: xyz
+      margin_mode: non_portfolio
+      hedged_exclusion_positive: {'USDT': 0}
+      hedged_exclusion_negative: {'USDT': 0}
     binance_submn: &binance_submn
       apikey: xyz
       apisecret: xyz
@@ -307,6 +313,7 @@ clients:
         base_ccy: USDT
         helper: okxhelper.py
         submn: *okx_submn
+        submn1: *okx_submn1
       binance:
         <<: *funding_payments
         base_ccy: USDT
@@ -320,6 +327,7 @@ clients:
         <<: *balances
         helper: okxhelper.py
         submn: *okx_submn
+        submn1: *okx_submn1
       binance:
         <<: *balances
         helper: helper.py
