@@ -416,7 +416,7 @@ clients:
       binance:
         <<: *funding_payments
         helper: helper.py
-        submn1: *binance_subls1
+        subls1: *binance_subls1
 
     balances:
       function: balance.py
@@ -424,4 +424,4 @@ clients:
       binance:
         <<: *balances
         helper: helper.py
-        submn1: *binance_subls1        
+        subls1: *binance_subls1        
