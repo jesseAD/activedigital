@@ -9,7 +9,7 @@ dask:
   memory: '1GB'
   workers: 1
   threadPoolsPerWorker: 1
-  threadsPerPool: 5
+  threadsPerPool: 1
 
 logging:
   max_size: 300 # in KB
@@ -425,24 +425,26 @@ clients:
         <<: *balances
         helper: helper.py
         subls: *binance_subls
-        
+
   lucid:
     split_positions: True
-    binance_subls1: &binance_subls1
+    binance_subls: &binance_subls
       apikey: xyz
       apisecret: xyz
       margin_mode: non_portfolio
       hedged_exclusion_positive: {'USDT': 0}
-      hedged_exclusion_negative: {'USDT': 0}      
+      hedged_exclusion_negative: {'USDT': 0}
+      
     funding_payments:
       binance:
         <<: *funding_payments
         helper: helper.py
-        subls1: *binance_subls1
+        subls: *binance_subls
+
     balances:
       function: balance.py
       scheduler: [continuous,external,5 4 * * * ]
       binance:
         <<: *balances
         helper: helper.py
-        subls1: *binance_subls1          
+        subls: *binance_subls
