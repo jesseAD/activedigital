@@ -6,14 +6,14 @@ import gc
 # import pymongo
 # import json
 # from datetime import datetime, timezone
-# import memory_profiler
+import memory_profiler
 # import ccxt
 
 num_workers = 1
 num_pools = 1
 num_threads = 1
 memory_limit = "1000MB"
-num_repeat = 500
+num_repeat = 50000
 
 # @memory_profiler.profile
 def persist_to_db(mongo_client, exchange):
@@ -41,7 +41,8 @@ def persist_to_db(mongo_client, exchange):
 
         # del ticker
         # del tickers
-        temp = i * i
+        for j in range(i):
+            temp = j * i
 
         # gc.collect()
     
