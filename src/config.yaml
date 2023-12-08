@@ -402,3 +402,26 @@ clients:
         <<: *balances
         helper: helper.py
         submn1: *binance_submn1
+        
+  quizzical:
+    split_positions: True
+    binance_subls1: &binance_subls1
+      apikey: xyz
+      apisecret: xyz
+      margin_mode: non_portfolio
+      hedged_exclusion_positive: {'USDT': 0}
+      hedged_exclusion_negative: {'USDT': 0}
+      
+    funding_payments:
+      binance:
+        <<: *funding_payments
+        helper: helper.py
+        submn1: *binance_subls1
+
+    balances:
+      function: balance.py
+      scheduler: [continuous,external,5 4 * * * ]
+      binance:
+        <<: *balances
+        helper: helper.py
+        submn1: *binance_subls1        
