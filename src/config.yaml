@@ -405,7 +405,7 @@ clients:
         
   quizzical:
     split_positions: True
-    binance_subls1: &binance_subls1
+    binance_subls: &binance_subls
       apikey: xyz
       apisecret: xyz
       margin_mode: non_portfolio
@@ -416,7 +416,7 @@ clients:
       binance:
         <<: *funding_payments
         helper: helper.py
-        subls1: *binance_subls1
+        subls: *binance_subls
 
     balances:
       function: balance.py
@@ -424,7 +424,8 @@ clients:
       binance:
         <<: *balances
         helper: helper.py
-        subls1: *binance_subls1
+        subls: *binance_subls
+        
   lucid:
     split_positions: True
     binance_subls1: &binance_subls1
