@@ -11,7 +11,7 @@ import memory_profiler
 
 num_workers = 5
 num_pools = 1
-num_threads = 1
+num_threads = 2
 memory_limit = "1000MB"
 num_repeat = 50000
 
