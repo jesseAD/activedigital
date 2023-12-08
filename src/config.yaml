@@ -432,14 +432,12 @@ clients:
       apisecret: xyz
       margin_mode: non_portfolio
       hedged_exclusion_positive: {'USDT': 0}
-      hedged_exclusion_negative: {'USDT': 0}
-      
+      hedged_exclusion_negative: {'USDT': 0}      
     funding_payments:
       binance:
         <<: *funding_payments
         helper: helper.py
         subls1: *binance_subls1
-
     balances:
       function: balance.py
       scheduler: [continuous,external,5 4 * * * ]
