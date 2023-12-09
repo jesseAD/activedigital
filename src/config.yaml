@@ -407,7 +407,7 @@ clients:
     binance_subls: &binance_subls
       apikey: xyz
       apisecret: xyz
-      margin_mode: portfolio
+      margin_mode: non_portfolio
       hedged_exclusion_positive: {'USDT': 0}
       hedged_exclusion_negative: {'USDT': 0}
       
