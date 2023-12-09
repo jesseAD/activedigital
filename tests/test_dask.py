@@ -3,55 +3,55 @@ from dask.distributed import as_completed
 from dask.distributed import LocalCluster, Client
 import concurrent.futures
 import gc
-# import pymongo
-# import json
-# from datetime import datetime, timezone
+import pymongo
+import json
+from datetime import datetime, timezone
 import memory_profiler
 # import ccxt
 
-num_workers = 5
-num_pools = 2
-num_threads = 4
+num_workers = 1
+num_pools = 1
+num_threads = 1
 memory_limit = "1000MB"
-num_repeat = 50000
+num_repeat = 100
 
 # @memory_profiler.profile
 def persist_to_db(mongo_client, exchange):
     for i in range(num_repeat):
-        # db = mongo_client['active_digital']['tickers']
+        db = mongo_client['active_digital']['test_tickers']
 
-        # with open('tests/sesa.json') as sesa:
-        #     tickers = json.load(sesa)['tickers']
+        with open('tests/sesa.json') as sesa:
+            tickers = json.load(sesa)['tickers']
 
         # tickers = exchange.fetch_tickers()
 
-        # ticker = {
-        #     "client": "client",
-        #     "venue": "exchange",
-        #     "account": "Main Account",
-        #     "ticker_value": tickers,
-        #     "active": True,
-        #     "entry": False,
-        #     "exit": False,
-        #     "timestamp": datetime.now(timezone.utc),
-        #     "runid": 9999
-        # }
+        ticker = {
+            "client": "client",
+            "venue": "exchange",
+            "account": "Main Account",
+            "ticker_value": tickers,
+            "active": True,
+            "entry": False,
+            "exit": False,
+            "timestamp": datetime.now(timezone.utc),
+            "runid": 9999
+        }
 
-        # db.insert_one(ticker)
+        db.insert_one(ticker)
 
-        # del ticker
-        # del tickers
-        for j in range(i):
-            temp = j * i
+        del ticker
+        del tickers
+        # for j in range(i):
+        #     temp = j * i
 
-        # gc.collect()
+        gc.collect()
     
     return "Finished Thread"
 
 # @memory_profiler.profile
 def thread_pool(mongo_uri, maxPoolSize, exchange, i):
-    # mongo_client = pymongo.MongoClient(mongo_uri, maxPoolsize=maxPoolSize)
-    mongo_client = None
+    mongo_client = pymongo.MongoClient(mongo_uri, maxPoolsize=maxPoolSize)
+    # mongo_client = None
 
     executors = [concurrent.futures.ThreadPoolExecutor(num_threads) for i in range(num_pools)]
 
@@ -64,7 +64,7 @@ def thread_pool(mongo_uri, maxPoolSize, exchange, i):
         print(thread.result())
         thread.cancel()
 
-    # mongo_client.close()
+    mongo_client.close()
     gc.collect()
     
     return "Finished ThreadPool"
