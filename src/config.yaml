@@ -402,13 +402,12 @@ clients:
         <<: *balances
         helper: helper.py
         submn1: *binance_submn1
-        
   quizzical:
     split_positions: True
     binance_subls: &binance_subls
       apikey: xyz
       apisecret: xyz
-      margin_mode: non_portfolio
+      margin_mode: portfolio
       hedged_exclusion_positive: {'USDT': 0}
       hedged_exclusion_negative: {'USDT': 0}
       
@@ -425,7 +424,7 @@ clients:
         <<: *balances
         helper: helper.py
         subls: *binance_subls
-
+        
   lucid:
     split_positions: True
     binance_subls: &binance_subls
