@@ -14,6 +14,7 @@ num_pools = 1
 num_threads = 1
 memory_limit = "1000MB"
 num_repeat = 100
+mongo_uri = 'mongodb+srv://activedigital:8EnNmGsai9pD0gxq@mongodbcluster.nzphth1.mongodb.net/?retryWrites=true&w=majority'
 
 # @memory_profiler.profile
 def persist_to_db(mongo_client, exchange):
@@ -87,7 +88,7 @@ def run_dask():
 
     for i in range(num_workers):
         try:
-            futures.append(dask.submit(thread_pool, None, 1, exchange, i))
+            futures.append(dask.submit(thread_pool, mongo_uri, 1, exchange, i))
         except Exception as e:
             print("Error in submitting dask futures: ", e)
 
