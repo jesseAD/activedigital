@@ -9,7 +9,7 @@ from datetime import datetime, timezone
 import memory_profiler
 import ccxt
 
-num_workers = 1
+num_workers = 4
 num_pools = 1
 num_threads = 1
 memory_limit = "1000MB"
