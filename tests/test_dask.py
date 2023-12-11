@@ -7,13 +7,13 @@ import pymongo
 import json
 from datetime import datetime, timezone
 import memory_profiler
-# import ccxt
+import ccxt
 
-num_workers = 4
-num_pools = 2
-num_threads = 4
+num_workers = 1
+num_pools = 1
+num_threads = 1
 memory_limit = "1000MB"
-num_repeat = 100
+num_repeat = 10
 mongo_uri = 'mongodb+srv://activedigital:8EnNmGsai9pD0gxq@mongodbcluster.nzphth1.mongodb.net/?retryWrites=true&w=majority'
 
 # @memory_profiler.profile
@@ -21,10 +21,10 @@ def persist_to_db(mongo_client, exchange):
     for i in range(num_repeat):
         db = mongo_client['active_digital']['test_tickers']
 
-        with open('tests/sesa.json') as sesa:
-            tickers = json.load(sesa)['tickers']
+        # with open('tests/sesa.json') as sesa:
+        #     tickers = json.load(sesa)['tickers']
 
-        # tickers = exchange.fetch_tickers()
+        tickers = exchange.fetch_tickers()
 
         ticker = {
             "client": "client",
