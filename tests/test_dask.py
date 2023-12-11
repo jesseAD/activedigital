@@ -9,7 +9,7 @@ from datetime import datetime, timezone
 import memory_profiler
 import ccxt
 
-num_workers = 3
+num_workers = 2
 num_pools = 2
 num_threads = 4
 num_repeat = 5
