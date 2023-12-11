@@ -72,15 +72,15 @@ def thread_pool(mongo_uri, maxPoolSize, exchange, i):
 
 # @memory_profiler.profile
 def run_dask():
-    # exchange = ccxt.binance({
-    #     'enableRateLimit': True,
-    #     'requests_trust_env':True,
-    #     'verbose': False,
-    #     'options': {
-    #         'adjustForTimeDifference':True,
-    #     }
-    # })
-    exchange = None
+    exchange = ccxt.binance({
+        'enableRateLimit': True,
+        'requests_trust_env':True,
+        'verbose': False,
+        'options': {
+            'adjustForTimeDifference':True,
+        }
+    })
+    # exchange = None
 
     cluster = LocalCluster(n_workers=num_workers, memory_limit=memory_limit, processes=False)
     dask = Client(cluster)
