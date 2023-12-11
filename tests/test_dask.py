@@ -9,11 +9,11 @@ from datetime import datetime, timezone
 import memory_profiler
 import ccxt
 
-num_workers = 2
+num_workers = 4
 num_pools = 1
 num_threads = 1
 num_repeat = 4
-memory_limit = "1000MB"
+memory_limit = "200MB"
 mongo_uri = 'mongodb+srv://activedigital:8EnNmGsai9pD0gxq@mongodbcluster.nzphth1.mongodb.net/?retryWrites=true&w=majority'
 
 # @memory_profiler.profile
