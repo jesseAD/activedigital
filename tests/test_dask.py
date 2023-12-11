@@ -12,8 +12,8 @@ import ccxt
 num_workers = 4
 num_pools = 1
 num_threads = 1
-num_repeat = 4
-memory_limit = "200MB"
+num_repeat = 2
+memory_limit = "250MB"
 mongo_uri = 'mongodb+srv://activedigital:8EnNmGsai9pD0gxq@mongodbcluster.nzphth1.mongodb.net/?retryWrites=true&w=majority'
 
 # @memory_profiler.profile
@@ -24,7 +24,7 @@ def persist_to_db(mongo_client, exchange):
         # with open('tests/sesa.json') as sesa:
         #     tickers = json.load(sesa)['tickers']
 
-        tickers = exchange.fetch_ticker("BTC/USDT")
+        tickers = exchange.fetch_tickers()
 
         ticker = {
             "client": "client",
