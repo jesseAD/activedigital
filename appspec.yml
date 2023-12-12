@@ -10,6 +10,11 @@ permissions:
    mode: 777
    type:
      - file
+ - object: /data/datacollector/getdata_test.sh
+   group: root
+   mode: 777
+   type:
+     - file     
  - object: /data/datacollector/install_dependencies.sh
    group: root
    mode: 564
