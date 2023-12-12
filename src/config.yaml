@@ -7,9 +7,9 @@ mongodb:
 dask:
   back_off: 100
   memory: '1GB'
-  workers: 1
-  threadPoolsPerWorker: 1
-  threadsPerPool: 1
+  workers: 0
+  threadPoolsPerWorker: 3
+  threadsPerPool: 10
 
 logging:
   max_size: 300 # in KB
@@ -18,19 +18,19 @@ logging:
 ccxt:
   binance:
     rateLimit: 30
-    timeout: 2000
+    timeout: 3000
     retry: 3
   okx:
     rateLimit: 30
-    timeout: 2000
+    timeout: 3000
     retry: 3
   bybit:
     rateLimit: 30
-    timeout: 2000
+    timeout: 3000
     retry: 3
   coinbase:
     rateLimit: 30
-    timeout: 2000
+    timeout: 3000
     retry: 3
 
 liquidation:
