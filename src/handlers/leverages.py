@@ -111,7 +111,7 @@ class Leverages:
                 # print("An error occurred in Leverages:", e)
                 return True
             
-            base_currency = config["clients"][client]["funding_payments"][exchange]["base_ccy"]
+            base_currency = config["clients"][client]["subaccounts"][exchange]["base_ccy"]
 
             balance_in_base_currency = 0
             try:

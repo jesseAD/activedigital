@@ -107,7 +107,7 @@ class Fills:
                 for item in position['position_value']:
                     symbols.append(item['info']['symbol'])
             
-            # if config['clients'][client]['funding_payments'][exchange][sub_account]['margin_mode'] == 'portfolio':
+            # if config['clients'][client]['subaccounts'][exchange][sub_account]['margin_mode'] == 'portfolio':
             #     symbols = [item.replace("/", "") for item in config["fills"]["symbols"][exchange]]
             #     symbols += [item[: -1] for item in symbols]
             # else:
@@ -160,7 +160,7 @@ class Fills:
                         elif exchange == "bybit":
                             fillsValue[symbol] = BybitHelper().get_fills(exch=exch, symbol=symbol)
                         elif exchange == "binance":
-                            if config['clients'][client]['funding_payments'][exchange][sub_account]['margin_mode'] == 'portfolio':
+                            if config['clients'][client]['subaccounts'][exchange][sub_account]['margin_mode'] == 'portfolio':
                                 fills = Helper().get_pm_fills(exch=exch, symbol=symbol, params={'limit': 100})
                                 for item in fills:
                                     item['info'] = {**item}
@@ -201,7 +201,7 @@ class Fills:
                                     params={'endTime': datetime.now(timezone.utc).timestamp() * 1000}
                                 )
                             elif exchange == "binance":
-                                if config['clients'][client]['funding_payments'][exchange][sub_account]['margin_mode'] == 'portfolio':
+                                if config['clients'][client]['subaccounts'][exchange][sub_account]['margin_mode'] == 'portfolio':
                                     fills = Helper().get_pm_fills(exch=exch, symbol=symbol, params={'limit': 100, 'startTime': last_time})
                                     for item in fills:
                                         item['info'] = {**item}
@@ -241,7 +241,7 @@ class Fills:
                                 #     ),
                                 # )
                             elif exchange == "binance":
-                                if config['clients'][client]['funding_payments'][exchange][sub_account]['margin_mode'] == 'portfolio':
+                                if config['clients'][client]['subaccounts'][exchange][sub_account]['margin_mode'] == 'portfolio':
                                     fills = Helper().get_pm_fills(exch=exch, symbol=symbol, params={'limit': 100, 'fromId': last_id})
                                     for item in fills: 
                                         item['info'] = {**item}

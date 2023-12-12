@@ -1,13 +1,6 @@
 class DataCollector:
-    def __init__(self, mongo_host, mongo_port, client, exch=None, exchange='', collection='', account='', helper='', apikey='', apisecret='', script=''):
-        self.mongo_host = mongo_host
-        self.mongo_port = mongo_port
+    def __init__(self, client, exch=None, exchange='', account=''):
         self.client = client
         self.exchange = exchange
-        self.collection = collection
         self.account = account
-        self.helper = helper
-        self.apikey = apikey
-        self.apisecret = apisecret
-        self.script = script
         self.exch = exch
