@@ -112,7 +112,7 @@ class Balances:
                 if exchange == "okx":
                     balanceValue = OKXHelper().get_balances(exch=exch)
                 elif exchange == "binance":
-                    if config['clients'][client]['funding_payments'][exchange][sub_account]['margin_mode'] == 'portfolio':
+                    if config['clients'][client]['subaccounts'][exchange][sub_account]['margin_mode'] == 'portfolio':
                         balanceValue = Helper().get_pm_balances(exch=exch)
                     else:
                         balanceValue = Helper().get_balances(exch=exch)
@@ -160,7 +160,7 @@ class Balances:
             for _key, _value in balanceValue.items():
                 base_balance += _value * Helper().calc_cross_ccy_ratio(
                     _key,
-                    config["clients"][client]["funding_payments"][exchange]["base_ccy"],
+                    config["clients"][client]["subaccounts"][exchange]["base_ccy"],
                     ticker_value,
                 )
 
@@ -171,7 +171,7 @@ class Balances:
             "venue": exchange,
             "account": "Main Account",
             "balance_value": balanceValue,
-            "base_ccy": config["clients"][client]["funding_payments"][exchange]["base_ccy"],
+            "base_ccy": config["clients"][client]["subaccounts"][exchange]["base_ccy"],
             "active": True,
             "entry": False,
             "exit": False,

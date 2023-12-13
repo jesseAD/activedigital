@@ -136,7 +136,7 @@ class Positions:
                     position_value = OKXHelper().get_positions(exch=exch)
 
                 elif exchange == "binance":
-                    if config['clients'][client]['funding_payments'][exchange][sub_account]['margin_mode'] == 'portfolio':
+                    if config['clients'][client]['subaccounts'][exchange][sub_account]['margin_mode'] == 'portfolio':
                         position_value = Helper().get_pm_positions(exch=exch)
                         for item in position_value:
                             item['info'] = {**item}
@@ -214,7 +214,7 @@ class Positions:
                     pass
 
             elif exchange == "binance":
-                if config['clients'][client]['funding_payments'][exchange][sub_account]['margin_mode'] == 'portfolio':
+                if config['clients'][client]['subaccounts'][exchange][sub_account]['margin_mode'] == 'portfolio':
                     try:
                         cross_margin_ratio = float(
                             Helper().get_pm_cross_margin_ratio(exch=exch)
@@ -260,13 +260,13 @@ class Positions:
                         pass
 
             for value in position_value:
-                if config['clients'][client]['funding_payments'][exchange][sub_account]['margin_mode'] == 'non_portfolio':
+                if config['clients'][client]['subaccounts'][exchange][sub_account]['margin_mode'] == 'non_portfolio':
                     if float(value["initialMargin"]) > 0:
                         # portfolio = None
                         # if exchange == "binance":
                         #     try:
                         #         if (
-                        #             config["clients"][client]["funding_payments"][exchange][
+                        #             config["clients"][client]["subaccounts"][exchange][
                         #                 sub_account
                         #             ]["margin_mode"] == "non_portfolio"
                         #         ):
@@ -275,7 +275,7 @@ class Positions:
                         #                 params={"symbol": value["info"]["symbol"]},
                         #             )
                         #         elif (
-                        #             config["clients"][client]["funding_payments"][exchange][
+                        #             config["clients"][client]["subaccounts"][exchange][
                         #                 sub_account
                         #             ]["margin_mode"] == "portfolio"
                         #         ):
@@ -324,7 +324,7 @@ class Positions:
                                     value["notional"]
                                 ) * Helper().calc_cross_ccy_ratio(
                                     value["base"],
-                                    config["clients"][client]["funding_payments"][exchange][
+                                    config["clients"][client]["subaccounts"][exchange][
                                         "base_ccy"
                                     ],
                                     tickers,
@@ -333,7 +333,7 @@ class Positions:
                                     value["unrealizedPnl"]
                                 ) * Helper().calc_cross_ccy_ratio(
                                     value["base"],
-                                    config["clients"][client]["funding_payments"][exchange][
+                                    config["clients"][client]["subaccounts"][exchange][
                                         "base_ccy"
                                     ],
                                     tickers,
@@ -359,7 +359,7 @@ class Positions:
                             value["notional"]
                         ) * Helper().calc_cross_ccy_ratio(
                             value["base"],
-                            config["clients"][client]["funding_payments"][exchange][
+                            config["clients"][client]["subaccounts"][exchange][
                                 "base_ccy"
                             ],
                             tickers,
@@ -368,7 +368,7 @@ class Positions:
                             value["unrealizedPnl"]
                         ) * Helper().calc_cross_ccy_ratio(
                             value["base"],
-                            config["clients"][client]["funding_payments"][exchange][
+                            config["clients"][client]["subaccounts"][exchange][
                                 "base_ccy"
                             ],
                             tickers,
@@ -659,8 +659,8 @@ class Positions:
 
             split_positions = get_unhedged(position_info, spot_positions)
 
-            hedged_exclusion_positive = config['clients'][client]['funding_payments'][exchange][sub_account]['hedged_exclusion_positive']
-            hedged_exclusion_negative = config['clients'][client]['funding_payments'][exchange][sub_account]['hedged_exclusion_negative']
+            hedged_exclusion_positive = config['clients'][client]['subaccounts'][exchange][sub_account]['hedged_exclusion_positive']
+            hedged_exclusion_negative = config['clients'][client]['subaccounts'][exchange][sub_account]['hedged_exclusion_negative']
             i = 0
             while i < len(split_positions):
                 if len(split_positions[i]) == 1:

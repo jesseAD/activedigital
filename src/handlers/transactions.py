@@ -129,7 +129,7 @@ class Transactions:
                         )
 
                     elif exchange == "binance":
-                        if config['clients'][client]['funding_payments'][exchange][sub_account]['margin_mode'] == 'portfolio':
+                        if config['clients'][client]['subaccounts'][exchange][sub_account]['margin_mode'] == 'portfolio':
                             cm_trades = Helper().get_cm_transactions(exch=exch, params={'limit': 100})
                             for item in futures_trades:
                                 item['info'] = {**item}
@@ -216,7 +216,7 @@ class Transactions:
                                 )
                     elif exchange == "binance":
                         transaction_value = {}
-                        if config['clients'][client]['funding_payments'][exchange][sub_account]['margin_mode'] == 'portfolio':
+                        if config['clients'][client]['subaccounts'][exchange][sub_account]['margin_mode'] == 'portfolio':
                             query = {}
                             if client:
                                 query["client"] = client
@@ -596,7 +596,7 @@ class Transactions:
                             float(item["fee"]) * 
                             Helper().calc_cross_ccy_ratio(
                                 item['ccy'],
-                                config["clients"][client]["funding_payments"][exchange]["base_ccy"], 
+                                config["clients"][client]["subaccounts"][exchange]["base_ccy"], 
                                 tickers
                             )
                         )
@@ -605,7 +605,7 @@ class Transactions:
                             float(item["sz"]) * 
                             Helper().calc_cross_ccy_ratio(
                                 item['ccy'],
-                                config["clients"][client]["funding_payments"][exchange]["base_ccy"], 
+                                config["clients"][client]["subaccounts"][exchange]["base_ccy"], 
                                 tickers
                             )
                         )
@@ -614,7 +614,7 @@ class Transactions:
                             float(item["pnl"]) * 
                             Helper().calc_cross_ccy_ratio(
                                 item['ccy'],
-                                config["clients"][client]["funding_payments"][exchange]["base_ccy"], 
+                                config["clients"][client]["subaccounts"][exchange]["base_ccy"], 
                                 tickers
                             )
                         )
@@ -650,7 +650,7 @@ class Transactions:
                             float(item["income"]) * 
                             Helper().calc_cross_ccy_ratio(
                                 item['asset'],
-                                config["clients"][client]["funding_payments"][exchange]["base_ccy"], 
+                                config["clients"][client]["subaccounts"][exchange]["base_ccy"], 
                                 tickers
                             )
                         )
@@ -686,7 +686,7 @@ class Transactions:
                                 float(item["fee"]) * 
                                 Helper().calc_cross_ccy_ratio(
                                     item['currency'],
-                                    config["clients"][client]["funding_payments"][exchange]["base_ccy"], 
+                                    config["clients"][client]["subaccounts"][exchange]["base_ccy"], 
                                     tickers
                                 )
                             )
@@ -695,7 +695,7 @@ class Transactions:
                                 float(item["funding"]) * 
                                 Helper().calc_cross_ccy_ratio(
                                     item['currency'],
-                                    config["clients"][client]["funding_payments"][exchange]["base_ccy"], 
+                                    config["clients"][client]["subaccounts"][exchange]["base_ccy"], 
                                     tickers
                                 )
                             )

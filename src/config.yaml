@@ -7,9 +7,9 @@ mongodb:
 dask:
   back_off: 100
   memory: '1GB'
-  workers: 1
-  threadPoolsPerWorker: 1
-  threadsPerPool: 1
+  workers: 0
+  threadPoolsPerWorker: 3
+  threadsPerPool: 5
 
 logging:
   max_size: 300 # in KB
@@ -18,19 +18,19 @@ logging:
 ccxt:
   binance:
     rateLimit: 30
-    timeout: 2000
+    timeout: 3000
     retry: 3
   okx:
     rateLimit: 30
-    timeout: 2000
+    timeout: 3000
     retry: 3
   bybit:
     rateLimit: 30
-    timeout: 2000
+    timeout: 3000
     retry: 3
   coinbase:
     rateLimit: 30
-    timeout: 2000
+    timeout: 3000
     retry: 3
 
 liquidation:
@@ -187,263 +187,148 @@ exchanges: ["binance", "okx", "bybit", ]
 clients:
   rundmc:
     split_positions: True
-    binance_subaccount4: &binance_subaccount4
-      apikey: xyz
-      apisecret: xyz
-      margin_mode: non_portfolio
-      hedged_exclusion_positive: {'USDT': 0}
-      hedged_exclusion_negative: {'USDT': 0}
-    binance_subaccount6: &binance_subaccount6
-      apikey: xyz
-      apisecret: xyz
-      margin_mode: non_portfolio
-      hedged_exclusion_positive: {'USDT': 0}
-      hedged_exclusion_negative: {'USDT': 0}
-    binance_subaccountpm1: &binance_subaccountpm1
-      apikey: xyz
-      apisecret: xyz
-      margin_mode: portfolio
-      hedged_exclusion_negative: {'USDT': 0}
-      hedged_exclusion_positive: {'USDT': 0}
-    okx_subaccount1: &okx_subaccount1
-      apikey: zyx
-      apisecret: xyz
-      margin_mode: non_portfolio
-      hedged_exclusion_positive: {'USDT': 0}
-      hedged_exclusion_negative: {'USDT': 0}
 
-    funding_payments:
+    subaccounts:
       binance:
-        <<: *funding_payments
-        helper: helper.py
-        subaccount4: *binance_subaccount4
-        subaccount6: *binance_subaccount6
-        subbinancepm1: *binance_subaccountpm1
-      okx:
-        <<: *funding_payments
-        helper: okxhelper.py
-        subaccount1: *okx_subaccount1
+        base_ccy: USD
 
-    balances:
-      function: balance.py
-      scheduler: [continuous,external,5 4 * * * ]
-      binance:
-        <<: *balances
-        helper: helper.py
-        subaccount4: *binance_subaccount4
-        subaccount6: *binance_subaccount6
-        subbinancepm1: *binance_subaccountpm1
+        subaccount4:
+          margin_mode: non_portfolio
+          hedged_exclusion_positive: {'USDT': 0}
+          hedged_exclusion_negative: {'USDT': 0}
+        
+        subaccount6:
+          margin_mode: non_portfolio
+          hedged_exclusion_positive: {'USDT': 0}
+          hedged_exclusion_negative: {'USDT': 0}
+        
+        subbinancepm1:
+          margin_mode: portfolio
+          hedged_exclusion_negative: {'USDT': 0}
+          hedged_exclusion_positive: {'USDT': 0}
+
       okx:
-        <<: *balances
-        helper: okxhelper.py
-        subaccount1: *okx_subaccount1
+        base_ccy: USD
+        
+        subaccount1:
+          margin_mode: non_portfolio
+          hedged_exclusion_positive: {'USDT': 0}
+          hedged_exclusion_negative: {'USDT': 0}
 
   besttrader:
     split_positions: True
-    okx_sub1ap: &okx_sub1ap
-      apikey: zyx
-      apisecret: xyz
-      margin_mode: non_portfolio
-      hedged_exclusion_positive: {'USDT': 0}
-      hedged_exclusion_negative: {'USDT': 0}
-    okx_sub1aa: &okx_sub1aa
-      apikey: zyx
-      apisecret: xyz
-      margin_mode: non_portfolio
-      hedged_exclusion_positive: {'USDT': 0}
-      hedged_exclusion_negative: {'USDT': 0}
-    bybit_sub1: &bybit_sub1
-      margin_mode: non_portfolio
-      apikey: zyx
-      apisecret: xyz
-      hedged_exclusion_positive: {'USDT': 0}
-      hedged_exclusion_negative: {'USDT': 0}
-    bybit_sub4: &bybit_sub4
-      margin_mode: non_portfolio
-      apikey: zyx
-      apisecret: xyz
-      hedged_exclusion_positive: {'USDT': 0}
-      hedged_exclusion_negative: {'USDT': 0}
 
-    funding_payments:
+    subaccounts:
       okx:
-        <<: *funding_payments
-        helper: okxhelper.py
-        sub1ap: *okx_sub1ap
-        sub2aa: *okx_sub1aa
+        base_ccy: USD
+
+        sub1ap:
+          margin_mode: non_portfolio
+          hedged_exclusion_positive: {'USDT': 0}
+          hedged_exclusion_negative: {'USDT': 0}
+        
+        sub2aa:
+          margin_mode: non_portfolio
+          hedged_exclusion_positive: {'USDT': 0}
+          hedged_exclusion_negative: {'USDT': 0}
+
       bybit:
-        <<: *funding_payments
-        helper: helper.py
-        sub1: *bybit_sub1
-        sub4: *bybit_sub4
+        base_ccy: USD
 
-    balances:
-      function: balance.py
-      scheduler: [continuous,external,5 4 * * * ]
-      okx:
-        <<: *balances
-        helper: okxhelper.py
-        sub1ap: *okx_sub1ap
-        sub2aa: *okx_sub1aa
+        sub1:
+          margin_mode: non_portfolio
+          hedged_exclusion_positive: {'USDT': 0}
+          hedged_exclusion_negative: {'USDT': 0}
+
+        sub4:
+          margin_mode: non_portfolio
+          hedged_exclusion_positive: {'USDT': 0}
+          hedged_exclusion_negative: {'USDT': 0}
 
   wizardly:
     split_positions: True
-    okx_submn: &okx_submn
-      apikey: zyx
-      apisecret: xyz
-      margin_mode: non_portfolio
-      hedged_exclusion_positive: {'USDT': 0}
-      hedged_exclusion_negative: {'USDT': 0}
-    okx_submn1: &okx_submn1
-      apikey: zyx
-      apisecret: xyz
-      margin_mode: non_portfolio
-      hedged_exclusion_positive: {'USDT': 0}
-      hedged_exclusion_negative: {'USDT': 0}
-    binance_submn: &binance_submn
-      apikey: xyz
-      apisecret: xyz
-      margin_mode: portfolio
-      hedged_exclusion_positive: {'USDT': 0}
-      hedged_exclusion_negative: {'USDT': 0}  
 
-    funding_payments:
+    subaccounts:
       okx:
-        <<: *funding_payments
         base_ccy: USDT
-        helper: okxhelper.py
-        submn: *okx_submn
-        submn1: *okx_submn1
-      binance:
-        <<: *funding_payments
-        base_ccy: USDT
-        helper: helper.py
-        submn: *binance_submn        
 
-    balances:
-      function: balance.py
-      scheduler: [continuous,external,5 4 * * * ]
-      okx:
-        <<: *balances
-        helper: okxhelper.py
-        submn: *okx_submn
-        submn1: *okx_submn1
+        submn:
+          margin_mode: non_portfolio
+          hedged_exclusion_positive: {'USDT': 0}
+          hedged_exclusion_negative: {'USDT': 0}
+
+        submn1:
+          margin_mode: non_portfolio
+          hedged_exclusion_positive: {'USDT': 0}
+          hedged_exclusion_negative: {'USDT': 0}
+      
       binance:
-        <<: *balances
-        helper: helper.py
-        submn: *binance_submn
+        base_ccy: USDT
+
+        submn:
+          margin_mode: portfolio
+          hedged_exclusion_positive: {'USDT': 0}
+          hedged_exclusion_negative: {'USDT': 0}       
         
   jess:
     split_positions: True
-    okx_subandyactivedigital: &okx_subandyactivedigital
-      apikey: zyx
-      apisecret: xyz
-      margin_mode: non_portfolio
-      hedged_exclusion_positive: {'USDT': 0}
-      hedged_exclusion_negative: {'USDT': 0}
-    okx_subandypants: &okx_subandypants
-      apikey: zyx
-      apisecret: xyz
-      margin_mode: non_portfolio
-      hedged_exclusion_positive: {'USDT': 0}
-      hedged_exclusion_negative: {'USDT': 0}
-    okx_subjessetf: &okx_subjessetf
-      apikey: zyx
-      apisecret: xyz
-      margin_mode: non_portfolio
-      hedged_exclusion_positive: {'USDT': 0}
-      hedged_exclusion_negative: {'USDT': 0}
-    okx_subadtest2: &okx_subadtest2
-      apikey: zyx
-      apisecret: xyz
-      margin_mode: non_portfolio
-      hedged_exclusion_positive: {'USDT': 0}
-      hedged_exclusion_negative: {'USDT': 0}
 
-    funding_payments:
+    subaccounts:
       okx:
-        <<: *funding_payments
-        helper: okxhelper.py
-        subandyactivedigital: *okx_subandyactivedigital
-        subandypants: *okx_subandypants
-        subjessetf: *okx_subjessetf
-        subadtest2: *okx_subadtest2
+        base_ccy: USD
 
-    balances:
-      function: balance.py
-      scheduler: [continuous,external,5 4 * * * ]
-      okx:
-        <<: *balances
-        helper: okxhelper.py
-        subandyactivedigital: *okx_subandyactivedigital
-        subandypants: *okx_subandypants
-        subjessetf: *okx_subjessetf
-        subadtest2: *okx_subadtest2
+        subandyactivedigital:
+          margin_mode: non_portfolio
+          hedged_exclusion_positive: {'USDT': 0}
+          hedged_exclusion_negative: {'USDT': 0}
+        
+        subandypants:
+          margin_mode: non_portfolio
+          hedged_exclusion_positive: {'USDT': 0}
+          hedged_exclusion_negative: {'USDT': 0}
+        
+        subjessetf:
+          margin_mode: non_portfolio
+          hedged_exclusion_positive: {'USDT': 0}
+          hedged_exclusion_negative: {'USDT': 0}
+        
+        subadtest2:
+          margin_mode: non_portfolio
+          hedged_exclusion_positive: {'USDT': 0}
+          hedged_exclusion_negative: {'USDT': 0}
 
   blackburn:
     split_positions: True
-    binance_submn1: &binance_submn1
-      apikey: xyz
-      apisecret: xyz
-      margin_mode: portfolio
-      hedged_exclusion_positive: {'USDT': 0}
-      hedged_exclusion_negative: {'USDT': 0}
       
-    funding_payments:
+    subaccounts:
       binance:
-        <<: *funding_payments
-        helper: helper.py
-        submn1: *binance_submn1
+        base_ccy: USD
 
-    balances:
-      function: balance.py
-      scheduler: [continuous,external,5 4 * * * ]
-      binance:
-        <<: *balances
-        helper: helper.py
-        submn1: *binance_submn1
+        submn1:
+          margin_mode: portfolio
+          hedged_exclusion_positive: {'USDT': 0}
+          hedged_exclusion_negative: {'USDT': 0}
+
   quizzical:
     split_positions: True
-    binance_subls: &binance_subls
-      apikey: xyz
-      apisecret: xyz
-      margin_mode: non_portfolio
-      hedged_exclusion_positive: {'USDT': 0}
-      hedged_exclusion_negative: {'USDT': 0}
       
-    funding_payments:
+    subaccounts:
       binance:
-        <<: *funding_payments
-        helper: helper.py
-        subls: *binance_subls
+        base_ccy: USD
 
-    balances:
-      function: balance.py
-      scheduler: [continuous,external,5 4 * * * ]
-      binance:
-        <<: *balances
-        helper: helper.py
-        subls: *binance_subls
+        subls:
+          margin_mode: non_portfolio
+          hedged_exclusion_positive: {'USDT': 0}
+          hedged_exclusion_negative: {'USDT': 0}
 
   lucid:
     split_positions: True
-    binance_subls1: &binance_subls1
-      apikey: xyz
-      apisecret: xyz
-      margin_mode: portfolio
-      hedged_exclusion_positive: {'USDT': 0}
-      hedged_exclusion_negative: {'USDT': 0}
 
-    funding_payments:
+    subaccounts:
       binance:
-        <<: *funding_payments
-        helper: helper.py
-        subls1: *binance_subls1
+        base_ccy: USD
 
-    balances:
-      function: balance.py
-      scheduler: [continuous,external,5 4 * * * ]
-      binance:
-        <<: *balances
-        helper: helper.py
-        subls1: *binance_subls1
+        subls1:
+          margin_mode: portfolio
+          hedged_exclusion_positive: {'USDT': 0}
+          hedged_exclusion_negative: {'USDT': 0}

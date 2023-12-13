@@ -28,14 +28,9 @@ class FundingRates:
 
         self.runs_db = db['runs']
         self.funding_rates_db = db['funding_rates']
-
-    def close_db(self):
-        if os.getenv("mode") == "testing":
-            self.runs_db.close()
-            self.funding_rates_db.close()
-        else:
-            self.funding_rates_db.database.client.close()
-            self.runs_db.database.client.close()
+        self.borrow_rates_db = db['borrow_rates']
+        self.long_funding_db = db['long_funding']
+        self.short_funding_db = db['short_funding']
 
     def get(
         self,
@@ -119,6 +114,7 @@ class FundingRates:
                     for item in funding_rate_values:
                         current_values = item["funding_rates_value"]
 
+                    last_time = 0
                     if current_values is None:
                         if exchange == "okx":
                             fundingRatesValue[symbol] = OKXHelper().get_funding_rates(
@@ -153,7 +149,7 @@ class FundingRates:
                                 exch=exch, limit=100, symbol=symbol, since=last_time + 28800000
                             )
 
-                            if len(fundingRatesValue[symbol]) > 0 or datetime.now(timezone.utc).timestamp() > (last_time + 28800000):
+                            if len(fundingRatesValue[symbol]) > 0 or (datetime.now(timezone.utc).timestamp() * 1000) > (last_time + 28800000):
                                 funding_rate = OKXHelper().get_funding_rate(
                                     exch=exch,
                                     symbol=symbol
@@ -255,6 +251,81 @@ class FundingRates:
                                 item["base"] = symbol.split("/")[0]
                                 item["quote"] = symbol.split("/")[1].split(":")[0]
                                 item["scalar"] = scalar
+
+                        try:
+                            run_ids = self.runs_db.find({}).sort("_id", -1).limit(1)
+
+                            latest_run_id = 0
+                            for item in run_ids:
+                                try:
+                                    latest_run_id = item["runid"]
+                                except:
+                                    pass
+                            
+                            pipeline = []
+                            pipeline.append({"$match": {"venue": exchange}})
+                            pipeline.append({"$match": {"code": "USDT"}})
+                            pipeline.append({"$match": {"borrow_rates_value.timestamp": {"$gte": max(last_time - 1, fundingRatesValue[symbol][-1]["timestamp"] - 28800000), "$lt": fundingRatesValue[symbol][-1]["timestamp"]}}})
+
+                            borrow_rates = list(self.borrow_rates_db.aggregate(pipeline))
+                            borrow_rate = 0
+                            try:
+                                borrow_rate = sum([item['borrow_rates_value']['rate'] for item in borrow_rates]) / len(borrow_rates)
+                            except:
+                                pass
+                            
+                            long_fundings = []
+
+                            for i in range(1, 7):
+                                long_fundings.append({
+                                    'venue': exchange,
+                                    'base': fundingRatesValue[symbol][-1]['base'],
+                                    'quote': fundingRatesValue[symbol][-1]['quote'],
+                                    'n': i,
+                                    'long_funding_value': {
+                                        'symbol': symbol,
+                                        'funding': i * fundingRatesValue[symbol][-1]["fundingRate"] - (i-1) * borrow_rate,
+                                        'timestamp': fundingRatesValue[symbol][-1]["timestamp"]
+                                    },
+                                    'runid': latest_run_id,
+                                    'timestamp': datetime.now(timezone.utc)
+                                })
+
+                            self.long_funding_db.insert_many(long_fundings)
+
+                            pipeline = []
+                            pipeline.append({"$match": {"venue": exchange}})
+                            pipeline.append({"$match": {"code": symbol.split("/")[0]}})
+                            pipeline.append({"$match": {"borrow_rates_value.timestamp": {"$gte": max(last_time - 1, fundingRatesValue[symbol][-1]["timestamp"] - 28800000), "$lt": fundingRatesValue[symbol][-1]["timestamp"]}}})
+
+                            borrow_rates = list(self.borrow_rates_db.aggregate(pipeline))
+                            borrow_rate = 0
+                            try:
+                                borrow_rate = sum([item['borrow_rates_value']['rate'] for item in borrow_rates]) / len(borrow_rates)
+                            except:
+                                pass
+
+                            short_fundings = []
+
+                            for i in range(1, 7):
+                                short_fundings.append({
+                                    'venue': exchange,
+                                    'base': fundingRatesValue[symbol][-1]['base'],
+                                    'quote': fundingRatesValue[symbol][-1]['quote'],
+                                    'n': i,
+                                    'long_funding_value': {
+                                        'symbol': fundingRatesValue[symbol][-1]['base'] + "/" + fundingRatesValue[symbol][-1]['quote'],
+                                        'funding': -i * fundingRatesValue[symbol][-1]["fundingRate"] - (i-1) * borrow_rate,
+                                        'timestamp': fundingRatesValue[symbol][-1]["timestamp"]
+                                    },
+                                    'runid': latest_run_id,
+                                    'timestamp': datetime.now(timezone.utc)
+                                })
+
+                            self.short_funding_db.insert_many(short_fundings)
+
+                        except Exception as e:
+                            logger.warning(exchange + " spot funding " + str(e))
 
                     else:
                         if exchange == "binance":

@@ -99,7 +99,6 @@ class Helper:
     
     def get_pm_balances(self, exch):
         balances = exch.papi_get_balance()
-        # print(balances)
         balances = [item for item in balances if item['totalWalletBalance'] != "0.0"]
 
         balance_value = {}

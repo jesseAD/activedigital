@@ -124,75 +124,95 @@ private_data_collectors = [
     collect_fills, collect_transactions
 ]
 
-cluster = LocalCluster(n_workers=config['dask']['workers'], memory_limit=config['dask']['memory'], processes=False)
-dask = Client(cluster)
-futures = []
+if config['dask']['workers'] > 0:
+    cluster = LocalCluster(n_workers=config['dask']['workers'], memory_limit=config['dask']['memory'], processes=False)
+    dask = Client(cluster)
+    futures = []
 
-for exchange in config['exchanges']:
-    exchs[exchange] = Exchange(exchange).exch()
-#     back_off[exchange] = config['dask']['back_off']
+    for exchange in config['exchanges']:
+        exchs[exchange] = Exchange(exchange).exch()
+    #     back_off[exchange] = config['dask']['back_off']
 
-for i in range(config['dask']['workers']):
-    try:
-        futures.append(dask.submit(
-            public_pool, public_data_collectors, 
-            config['exchanges'][int(len(config['exchanges']) / config['dask']['workers'] * i) : int(len(config['exchanges']) / config['dask']['workers'] * (i+1))]
-        ))
-    except Exception as e:
-        print("Error in dask: ", e)
-
-
-# wait(futures)
-for done_work, result in as_completed(futures, with_results=True):
-    print(result)
-    dask.cancel(done_work) 
-
-del futures
-futures = []
-exchs = {}
-
-accounts = []
-for client in config['clients']:
-    data_collectors = get_data_collectors(client)
-    accounts += data_collectors
-
-    # for data_collector in data_collectors:
-    #     back_off[client + "_" + data_collector.exchange + "_" + data_collector.account] = config['dask']['back_off']
-
-for i in range(config['dask']['workers']):
-    try:
-        futures.append(dask.submit(
-            private_pool, private_data_collectors, 
-            accounts[int(len(accounts) / config['dask']['workers'] * i) : int(len(accounts) / config['dask']['workers'] * (i+1))]
-        ))
-    except Exception as e:
-        print("Error in dask: ", e)
-
-# wait(futures)
-for done_work, result in as_completed(futures, with_results=True):
-    print(result)
-    dask.cancel(done_work) 
-del futures
-futures = []
-
-for i in range(config['dask']['workers']):
-    try:
-        futures.append(dask.submit(
-            leverage_pool, collect_leverages, 
-            accounts[int(len(accounts) / config['dask']['workers'] * i) : int(len(accounts) / config['dask']['workers'] * (i+1))]
-        ))
-    except Exception as e:
-        print("Error in dask: ", e)
-
-# wait(futures)
-for done_work, result in as_completed(futures, with_results=True):
-    print(result)
-    dask.cancel(done_work) 
-del futures
-del accounts
+    for i in range(config['dask']['workers']):
+        try:
+            futures.append(dask.submit(
+                public_pool, public_data_collectors, 
+                config['exchanges'][int(len(config['exchanges']) / config['dask']['workers'] * i) : int(len(config['exchanges']) / config['dask']['workers'] * (i+1))]
+            ))
+        except Exception as e:
+            print("Error in dask: ", e)
 
 
-dask.close()
+    # wait(futures)
+    for done_work, result in as_completed(futures, with_results=True):
+        print(result)
+        dask.cancel(done_work) 
+
+    del futures
+    futures = []
+    exchs = {}
+
+    accounts = []
+    for client in config['clients']:
+        data_collectors = get_data_collectors(client)
+        accounts += data_collectors
+
+        # for data_collector in data_collectors:
+        #     back_off[client + "_" + data_collector.exchange + "_" + data_collector.account] = config['dask']['back_off']
+
+    for i in range(config['dask']['workers']):
+        try:
+            futures.append(dask.submit(
+                private_pool, private_data_collectors, 
+                accounts[int(len(accounts) / config['dask']['workers'] * i) : int(len(accounts) / config['dask']['workers'] * (i+1))]
+            ))
+        except Exception as e:
+            print("Error in dask: ", e)
+
+    # wait(futures)
+    for done_work, result in as_completed(futures, with_results=True):
+        print(result)
+        dask.cancel(done_work) 
+    del futures
+    futures = []
+
+    for i in range(config['dask']['workers']):
+        try:
+            futures.append(dask.submit(
+                leverage_pool, collect_leverages, 
+                accounts[int(len(accounts) / config['dask']['workers'] * i) : int(len(accounts) / config['dask']['workers'] * (i+1))]
+            ))
+        except Exception as e:
+            print("Error in dask: ", e)
+
+    # wait(futures)
+    for done_work, result in as_completed(futures, with_results=True):
+        print(result)
+        dask.cancel(done_work) 
+    del futures
+    del accounts
+
+
+    dask.close()
+
+else:
+    for exchange in config['exchanges']:
+        exchs[exchange] = Exchange(exchange).exch()
+
+    public_pool(public_data_collectors, config['exchanges'])
+    exchs = {}
+
+    accounts = []
+    for client in config['clients']:
+        data_collectors = get_data_collectors(client)
+        accounts += data_collectors
+
+    private_pool(private_data_collectors, accounts)
+
+    leverage_pool(collect_leverages, accounts)
+
+    del accounts
+    pass
 
 
 
