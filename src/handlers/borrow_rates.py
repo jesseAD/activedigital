@@ -191,8 +191,8 @@ class BorrowRates:
                 # print("An error occurred in Borrow Rates:", e)
 
                 for _client in config['clients']:
-                    if exchange in config['clients'][_client]['funding_payments']:
-                        for _account in config['clients'][_client]['funding_payments'][exchange]:
+                    if exchange in config['clients'][_client]['subaccounts']:
+                        for _account in config['clients'][_client]['subaccounts'][exchange]:
                             print(_client + exchange + _account)
                             
                             if _account.startswith('sub'):
