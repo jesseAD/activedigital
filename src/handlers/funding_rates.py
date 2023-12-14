@@ -283,7 +283,7 @@ class FundingRates:
                                     'quote': fundingRatesValue[symbol][-1]['quote'],
                                     'n': i,
                                     'long_funding_value': {
-                                        'symbol': symbol,
+                                        'symbol': fundingRatesValue[symbol][-1]['base'] + "/" + fundingRatesValue[symbol][-1]['quote'],
                                         'funding': i * fundingRatesValue[symbol][-1]["fundingRate"] - (i-1) * borrow_rate,
                                         'timestamp': fundingRatesValue[symbol][-1]["timestamp"]
                                     },
@@ -313,7 +313,7 @@ class FundingRates:
                                     'base': fundingRatesValue[symbol][-1]['base'],
                                     'quote': fundingRatesValue[symbol][-1]['quote'],
                                     'n': i,
-                                    'long_funding_value': {
+                                    'short_funding_value': {
                                         'symbol': fundingRatesValue[symbol][-1]['base'] + "/" + fundingRatesValue[symbol][-1]['quote'],
                                         'funding': -i * fundingRatesValue[symbol][-1]["fundingRate"] - (i-1) * borrow_rate,
                                         'timestamp': fundingRatesValue[symbol][-1]["timestamp"]
