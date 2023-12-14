@@ -256,11 +256,6 @@ clients:
           margin_mode: non_portfolio
           hedged_exclusion_positive: {'USDT': 0}
           hedged_exclusion_negative: {'USDT': 0}
-
-        submn1:
-          margin_mode: non_portfolio
-          hedged_exclusion_positive: {'USDT': 0}
-          hedged_exclusion_negative: {'USDT': 0}
       
       binance:
         base_ccy: USDT
