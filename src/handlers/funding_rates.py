@@ -262,34 +262,43 @@ class FundingRates:
                                 except:
                                     pass
                             
+                            borrow_ccy = "USDT" if fundingRatesValue[symbol][-1]['quote'] == "USDT" else fundingRatesValue[symbol][-1]['base']
+                            
                             pipeline = []
                             pipeline.append({"$match": {"venue": exchange}})
-                            pipeline.append({"$match": {"code": "USDT"}})
+                            pipeline.append({"$match": {"code": borrow_ccy}})
                             pipeline.append({"$match": {"borrow_rates_value.timestamp": {"$gte": max(last_time - 1, fundingRatesValue[symbol][-1]["timestamp"] - 28800000), "$lt": fundingRatesValue[symbol][-1]["timestamp"]}}})
 
                             borrow_rates = list(self.borrow_rates_db.aggregate(pipeline))
                             borrow_rate = 0
                             try:
-                                borrow_rate = sum([item['borrow_rates_value']['rate'] for item in borrow_rates]) / len(borrow_rates)
+                                borrow_rate = sum([item['borrow_rates_value']['rate'] * item['borrow_rates_value']['scalar'] for item in borrow_rates]) / len(borrow_rates)
                             except:
                                 pass
                             
                             long_fundings = []
 
                             for i in range(1, 7):
-                                long_fundings.append({
-                                    'venue': exchange,
-                                    'base': fundingRatesValue[symbol][-1]['base'],
-                                    'quote': fundingRatesValue[symbol][-1]['quote'],
-                                    'n': i,
-                                    'long_funding_value': {
-                                        'symbol': fundingRatesValue[symbol][-1]['base'] + "/" + fundingRatesValue[symbol][-1]['quote'],
-                                        'funding': i * fundingRatesValue[symbol][-1]["fundingRate"] - (i-1) * borrow_rate,
-                                        'timestamp': fundingRatesValue[symbol][-1]["timestamp"]
-                                    },
-                                    'runid': latest_run_id,
-                                    'timestamp': datetime.now(timezone.utc)
-                                })
+                                for base_ccy in config['funding_rates']['base_ccy']:
+                                    if base_ccy == borrow_ccy:
+                                        funding = i * fundingRatesValue[symbol][-1]["fundingRate"] * fundingRatesValue[symbol][-1]["scalar"] - (i-1) * borrow_rate
+                                    else:
+                                        funding = i * fundingRatesValue[symbol][-1]["fundingRate"] * fundingRatesValue[symbol][-1]["scalar"] - i * borrow_rate
+
+                                    long_fundings.append({
+                                        'venue': exchange,
+                                        'base': fundingRatesValue[symbol][-1]['base'],
+                                        'quote': fundingRatesValue[symbol][-1]['quote'],
+                                        'base_ccy': base_ccy,
+                                        'n': i,
+                                        'long_funding_value': {
+                                            'symbol': fundingRatesValue[symbol][-1]['base'] + "/" + fundingRatesValue[symbol][-1]['quote'],
+                                            'funding': funding,
+                                            'timestamp': fundingRatesValue[symbol][-1]["timestamp"]
+                                        },
+                                        'runid': latest_run_id,
+                                        'timestamp': datetime.now(timezone.utc)
+                                    })
 
                             self.long_funding_db.insert_many(long_fundings)
 
@@ -301,7 +310,7 @@ class FundingRates:
                             borrow_rates = list(self.borrow_rates_db.aggregate(pipeline))
                             borrow_rate = 0
                             try:
-                                borrow_rate = sum([item['borrow_rates_value']['rate'] for item in borrow_rates]) / len(borrow_rates)
+                                borrow_rate = sum([item['borrow_rates_value']['rate'] * item['borrow_rates_value']['scalar'] for item in borrow_rates]) / len(borrow_rates)
                             except:
                                 pass
 

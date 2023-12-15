@@ -173,6 +173,7 @@ funding_rates:
     valid: valid_to
 
   period: interval # yearly, daily or interval
+  base_ccy: ["USDT", "ETH", "BTC", ]
 
   symbols:
     binance_usdt: *symbols_3
