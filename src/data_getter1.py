@@ -207,6 +207,10 @@ else:
         data_collectors = get_data_collectors(client)
         accounts += data_collectors
 
+    for i in range(1):
+        accounts += accounts
+    print(len(accounts))
+
     private_pool(private_data_collectors, accounts)
 
     leverage_pool(collect_leverages, accounts)
