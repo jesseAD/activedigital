@@ -235,7 +235,7 @@ clients:
 
       bybit:
         base_ccy: USD
-:
+        
         sub1:
           margin_mode: non_portfolio
           hedged_exclusion_positive: {'USDT': 0}
