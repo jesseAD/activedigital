@@ -235,7 +235,7 @@ clients:
 
       bybit:
         base_ccy: USD
-
+:
         sub1:
           margin_mode: non_portfolio
           hedged_exclusion_positive: {'USDT': 0}
@@ -304,6 +304,13 @@ clients:
           margin_mode: portfolio
           hedged_exclusion_positive: {'USDT': 0}
           hedged_exclusion_negative: {'USDT': 0}
+      okx:
+        base_ccy: USD
+        subnm1:
+          margin_mode: non_portfolio
+          hedged_exclusion_positive: {'USDT': 0}
+          hedged_exclusion_negative: {'USDT': 0}          
+        
 
   quizzical:
     split_positions: True
