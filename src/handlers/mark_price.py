@@ -81,10 +81,9 @@ class MarkPrices:
 
     def create(
         self,
-        client: str = None,
         exch = None,
         exchange: str = None,
-        sub_account: str = None,
+        symbol: str = None,
         spot: str = None,
         future: str = None,
         perp: str = None,
