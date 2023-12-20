@@ -312,7 +312,7 @@ class FundingRates:
                                 'n': i,
                                 'short_funding_value': {
                                     'symbol': fundingRatesValue[-1]['base'] + "/" + fundingRatesValue[-1]['quote'],
-                                    'funding': -i * fundingRatesValue[-1]["fundingRate"] - (i-1) * borrow_rate,
+                                    'funding': -i * (fundingRatesValue[-1]["fundingRate"] + borrow_rate),
                                     'timestamp': fundingRatesValue[-1]["timestamp"]
                                 },
                                 'runid': latest_run_id,

@@ -69,10 +69,9 @@ class IndexPrices:
 
     def create(
         self,
-        client: str = None,
         exch = None,
         exchange: str = None,
-        sub_account: str = None,
+        symbol: str = None,
         spot: str = None,
         future: str = None,
         perp: str = None,
@@ -84,43 +83,43 @@ class IndexPrices:
             if exch == None:
                 exch = Exchange(exchange).exch()
 
-            symbols = config['symbols']['symbols_1']
-            indexPriceValue = {}
+            indexPriceValue = None
 
-            for symbol in symbols:
-                try:
-                    if exchange == "okx":
-                        indexPriceValue[symbol+"/USDT"] = OKXHelper().get_index_prices(exch=exch, symbol=symbol+"-USDT")
+            try:
+                if exchange == "okx":
+                    indexPriceValue = OKXHelper().get_index_prices(exch=exch, symbol=symbol+"-USDT")
 
-                    elif exchange == "binance":
-                        indexPriceValue[symbol+"/USDT"] = Helper().get_index_prices(exch=exch, symbol=symbol+"USDT")
+                elif exchange == "binance":
+                    indexPriceValue = Helper().get_index_prices(exch=exch, symbol=symbol+"USDT")
 
-                    elif exchange == "bybit":
-                        indexPriceValue[symbol+"/USDT"] = BybitHelper().get_index_prices(exch=exch, symbol=symbol+"USDT")
+                elif exchange == "bybit":
+                    indexPriceValue = BybitHelper().get_index_prices(exch=exch, symbol=symbol+"USDT")
 
-                # except ccxt.InvalidNonce as e:
-                #     print("Hit rate limit", e)
-                #     time.sleep(back_off[exchange] / 1000.0)
-                #     back_off[exchange] *= 2
-                #     return True
-                
-                except ccxt.ExchangeError as e:
-                    logger.warning(exchange +" index prices " + str(e))
-                    # print("An error occurred in Index Prices:", e)
-                    pass
+            # except ccxt.InvalidNonce as e:
+            #     print("Hit rate limit", e)
+            #     time.sleep(back_off[exchange] / 1000.0)
+            #     back_off[exchange] *= 2
+            #     return True
+            
+            except ccxt.ExchangeError as e:
+                logger.warning(exchange +" index prices " + str(e))
+                # print("An error occurred in Index Prices:", e)
+                return True
+            except ccxt.NetworkError as e:
+                logger.warning(exchange +" index prices " + str(e))
+                return False
         
         # back_off[exchange] = config['dask']['back_off']
 
         index_price = {
             "venue": exchange,
             "index_price_value": indexPriceValue,
+            "symbol": symbol+"/USDT",
             "active": True,
             "entry": False,
             "exit": False,
             "timestamp": datetime.now(timezone.utc),
         }
-
-        del indexPriceValue
 
         if spot:
             index_price["spotMarket"] = spot

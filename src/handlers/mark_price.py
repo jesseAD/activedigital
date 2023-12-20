@@ -95,47 +95,46 @@ class MarkPrices:
             if exch == None:
                 exch = Exchange(exchange).exch()
             
-            symbols = config['symbols']['symbols_1']
-            
-            markPriceValue = {}
-            for symbol in symbols:
-                try:
-                    if exchange == "okx":
-                        markPriceValue[symbol+"/USDT"] = OKXHelper().get_mark_prices(
-                            exch=exch, symbol=symbol+"-USDT-SWAP"
-                        )
-                    elif exchange == "binance":
-                        markPriceValue[symbol+"/USDT"] = Helper().get_mark_prices(
-                            exch=exch, symbol=symbol+"USDT"
-                        )
-                    elif exchange == "bybit":
-                        markPriceValue[symbol+"/USDT"] = BybitHelper().get_mark_prices(
-                            exch=exch, symbol=symbol+"USDT"
-                        )
+            markPriceValue = None
+            try:
+                if exchange == "okx":
+                    markPriceValue = OKXHelper().get_mark_prices(
+                        exch=exch, symbol=symbol+"-USDT-SWAP"
+                    )
+                elif exchange == "binance":
+                    markPriceValue = Helper().get_mark_prices(
+                        exch=exch, symbol=symbol+"USDT"
+                    )
+                elif exchange == "bybit":
+                    markPriceValue = BybitHelper().get_mark_prices(
+                        exch=exch, symbol=symbol+"USDT"
+                    )
 
-                # except ccxt.InvalidNonce as e:
-                #     print("Hit rate limit", e)
-                #     time.sleep(back_off[exchange] / 1000.0)
-                #     back_off[exchange] *= 2
-                #     return True
-                
-                except ccxt.ExchangeError as e:
-                    logger.warning(exchange +" mark prices " + str(e))
-                    # print("An error occurred in Mark Prices:", e)
-                    pass
+            # except ccxt.InvalidNonce as e:
+            #     print("Hit rate limit", e)
+            #     time.sleep(back_off[exchange] / 1000.0)
+            #     back_off[exchange] *= 2
+            #     return True
+            
+            except ccxt.ExchangeError as e:
+                logger.warning(exchange +" mark prices " + str(e))
+                # print("An error occurred in Mark Prices:", e)
+                return True
+            except ccxt.NetworkError as e:
+                logger.warning(exchange +" mark prices " + str(e))
+                return False
 
         # back_off[exchange] = config['dask']['back_off']
         
         mark_price = {
             "venue": exchange,
             "mark_price_value": markPriceValue,
+            "symbol": symbol+"/USDT",
             "active": True,
             "entry": False,
             "exit": False,
             "timestamp": datetime.now(timezone.utc),
         }
-
-        del markPriceValue
 
         if spot:
             mark_price["spotMarket"] = spot
@@ -157,6 +156,7 @@ class MarkPrices:
         query = {}
         if exchange:
             query["venue"] = exchange
+            query['symbol'] = symbol+"/USDT"
 
         mark_price_values = self.mark_prices_db.find(query).sort("runid", -1).limit(1)
 
@@ -178,6 +178,7 @@ class MarkPrices:
                 self.mark_prices_db.update_one(
                     {
                         "venue": mark_price["venue"],
+                        "symbol": mark_price['symbol']
                     },
                     {
                         "$set": {
