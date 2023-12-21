@@ -161,16 +161,13 @@ class Helper:
     def get_non_portfolio_margin(self, exch, params={}):
         return exch.fapiprivatev2_get_positionrisk(params)[0]
 
-    def get_mark_prices(self, exch, symbol):
-        params = {
-            'symbol': symbol
-        }
-        res = exch.fapipublic_get_premiumindex(params)
-        return {
-            'markPrice': res['markPrice'],
-            'timestamp': res['time'],
-            'symbol': res['symbol']
-        }
+    def get_mark_prices(self, exch, symbol=None):
+        res = exch.fapipublic_get_premiumindex()
+        return [{
+            'markPrice': item['markPrice'],
+            'timestamp': item['time'],
+            'symbol': item['symbol']
+        } for item in res]
 
     def get_index_prices(self, exch, symbol):
         params = {
@@ -285,18 +282,17 @@ class OKXHelper(Helper):
 
         return result
 
-    def get_mark_prices(self, exch, symbol):
+    def get_mark_prices(self, exch, symbol=None):
         params = {
-            'instId': symbol,
             'instType': "SWAP"
         }
-        res = exch.public_get_public_mark_price(params)["data"][0]
+        res = exch.public_get_public_mark_price(params)["data"]
 
-        return {
-            'symbol': res['instId'],
-            'timestamp': res['ts'],
-            'markPrice': res['markPx']
-        }
+        return [{
+            'symbol': item['instId'],
+            'timestamp': item['ts'],
+            'markPrice': item['markPx']
+        } for item in res]
 
     def get_transactions(self, exch, params={}):
         return exch.private_get_account_bills_archive(params)["data"]    
