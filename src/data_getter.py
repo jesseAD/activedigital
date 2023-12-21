@@ -17,18 +17,18 @@ target_dir = os.path.abspath(os.path.join(current_directory, os.pardir))
 sys.path.append(target_dir)
 
 from src.lib.exchange import Exchange
-from src.handlers.instantiator import collect_positions
-from src.handlers.instantiator import collect_balances
-from src.handlers.instantiator import collect_instruments
-from src.handlers.instantiator import collect_tickers
-from src.handlers.instantiator import collect_index_prices
-from src.handlers.instantiator import collect_leverages
-from src.handlers.instantiator import collect_transactions
-from src.handlers.instantiator import collect_borrow_rates
-from src.handlers.instantiator import collect_funding_rates
-from src.handlers.instantiator import collect_mark_prices
-from src.handlers.instantiator import collect_fills
-from src.handlers.instantiator import collect_bids_asks
+from src.handlers.instantiator import positions_wrapper
+from src.handlers.instantiator import balances_wrapper
+from src.handlers.instantiator import instruments_wrapper
+from src.handlers.instantiator import tickers_wrapper
+from src.handlers.instantiator import index_prices_wrapper
+from src.handlers.instantiator import leverages_wrapper
+from src.handlers.instantiator import transactions_wrapper
+from src.handlers.instantiator import borrow_rates_wrapper
+from src.handlers.instantiator import funding_rates_wrapper
+from src.handlers.instantiator import mark_prices_wrapper
+from src.handlers.instantiator import fills_wrapper
+from src.handlers.instantiator import bids_asks_wrapper
 from src.handlers.instantiator import insert_runs
 from src.handlers.instantiator import enclose_runs
 from src.handlers.instantiator import get_data_collectors
@@ -59,7 +59,7 @@ def public_pool(data_collectors, exchanges):
     for i in range(config['dask']['threadPoolsPerWorker']):
         for j in range(int(i * len(data_collectors) / config['dask']['threadPoolsPerWorker']), int((i+1) * len(data_collectors) / config['dask']['threadPoolsPerWorker'])):
             for exchange in exchanges:
-                threads.append(executors[i].submit(data_collectors[j], exchs[exchange], exchange, logger, db1))
+                threads += (data_collectors[j](executors[i], exchs[exchange], exchange, logger, db1))
             pass
     
     for thread in concurrent.futures.as_completed(threads):
@@ -68,6 +68,8 @@ def public_pool(data_collectors, exchanges):
 
     db1.client.close()
     gc.collect()
+    logger.info("Finished Public")
+
     return "Finished Public"
 
 def private_pool(data_collectors, accounts_group):
@@ -78,7 +80,7 @@ def private_pool(data_collectors, accounts_group):
     for i in range(config['dask']['threadPoolsPerWorker']):
         for j in range(int(i * len(accounts_group) / config['dask']['threadPoolsPerWorker']), int((i+1) * len(accounts_group) / config['dask']['threadPoolsPerWorker'])):
             for collector in data_collectors:
-                threads.append(executors[i].submit(collector, accounts_group[j].client, accounts_group[j], logger, db2))
+                threads.append(collector(executors[i], accounts_group[j].client, accounts_group[j], logger, db2))
     
     for thread in concurrent.futures.as_completed(threads):
         print(thread.result())
@@ -95,7 +97,7 @@ def leverage_pool(leverage_collector, accounts_group):
     threads = []
     for i in range(config['dask']['threadPoolsPerWorker']):
         for j in range(int(i * len(accounts_group) / config['dask']['threadPoolsPerWorker']), int((i+1) * len(accounts_group) / config['dask']['threadPoolsPerWorker'])):
-            threads.append(executors[i].submit(leverage_collector, accounts_group[j].client, accounts_group[j], logger, db3))
+            threads.append(leverage_collector(executors[i], accounts_group[j].client, accounts_group[j], logger, db3))
     
     for thread in concurrent.futures.as_completed(threads):
         print(thread.result())
@@ -114,83 +116,83 @@ print("inserted a new run")
 #  ------------  Dask + Concurrent  ----------------
 
 public_data_collectors = [
-    collect_instruments, collect_mark_prices, collect_bids_asks,
-    collect_tickers, collect_index_prices,
-    collect_funding_rates, collect_borrow_rates
+    instruments_wrapper, tickers_wrapper, bids_asks_wrapper,
+    funding_rates_wrapper, borrow_rates_wrapper,
+    mark_prices_wrapper, index_prices_wrapper
 ]
 
 private_data_collectors = [
-    collect_balances, collect_positions,
-    collect_fills, collect_transactions
+    balances_wrapper, positions_wrapper,
+    fills_wrapper, transactions_wrapper
 ]
 
 if config['dask']['workers'] > 0:
     cluster = LocalCluster(n_workers=config['dask']['workers'], memory_limit=config['dask']['memory'], processes=False)
     dask = Client(cluster)
-    futures = []
+    # futures = []
 
-    for exchange in config['exchanges']:
-        exchs[exchange] = Exchange(exchange).exch()
-    #     back_off[exchange] = config['dask']['back_off']
+    # for exchange in config['exchanges']:
+    #     exchs[exchange] = Exchange(exchange).exch()
+    # #     back_off[exchange] = config['dask']['back_off']
 
-    for i in range(config['dask']['workers']):
-        try:
-            futures.append(dask.submit(
-                public_pool, public_data_collectors, 
-                config['exchanges'][int(len(config['exchanges']) / config['dask']['workers'] * i) : int(len(config['exchanges']) / config['dask']['workers'] * (i+1))]
-            ))
-        except Exception as e:
-            print("Error in dask: ", e)
+    # for i in range(config['dask']['workers']):
+    #     try:
+    #         futures.append(dask.submit(
+    #             public_pool, public_data_collectors, 
+    #             config['exchanges'][int(len(config['exchanges']) / config['dask']['workers'] * i) : int(len(config['exchanges']) / config['dask']['workers'] * (i+1))]
+    #         ))
+    #     except Exception as e:
+    #         print("Error in dask: ", e)
 
 
-    # wait(futures)
-    for done_work, result in as_completed(futures, with_results=True):
-        print(result)
-        dask.cancel(done_work) 
+    # # wait(futures)
+    # for done_work, result in as_completed(futures, with_results=True):
+    #     print(result)
+    #     dask.cancel(done_work) 
 
-    del futures
-    futures = []
-    exchs = {}
+    # del futures
+    # futures = []
+    # exchs = {}
 
-    accounts = []
-    for client in config['clients']:
-        data_collectors = get_data_collectors(client)
-        accounts += data_collectors
+    # accounts = []
+    # for client in config['clients']:
+    #     data_collectors = get_data_collectors(client)
+    #     accounts += data_collectors
 
-        # for data_collector in data_collectors:
-        #     back_off[client + "_" + data_collector.exchange + "_" + data_collector.account] = config['dask']['back_off']
+    #     # for data_collector in data_collectors:
+    #     #     back_off[client + "_" + data_collector.exchange + "_" + data_collector.account] = config['dask']['back_off']
 
-    for i in range(config['dask']['workers']):
-        try:
-            futures.append(dask.submit(
-                private_pool, private_data_collectors, 
-                accounts[int(len(accounts) / config['dask']['workers'] * i) : int(len(accounts) / config['dask']['workers'] * (i+1))]
-            ))
-        except Exception as e:
-            print("Error in dask: ", e)
+    # for i in range(config['dask']['workers']):
+    #     try:
+    #         futures.append(dask.submit(
+    #             private_pool, private_data_collectors, 
+    #             accounts[int(len(accounts) / config['dask']['workers'] * i) : int(len(accounts) / config['dask']['workers'] * (i+1))]
+    #         ))
+    #     except Exception as e:
+    #         print("Error in dask: ", e)
 
-    # wait(futures)
-    for done_work, result in as_completed(futures, with_results=True):
-        print(result)
-        dask.cancel(done_work) 
-    del futures
-    futures = []
+    # # wait(futures)
+    # for done_work, result in as_completed(futures, with_results=True):
+    #     print(result)
+    #     dask.cancel(done_work) 
+    # del futures
+    # futures = []
 
-    for i in range(config['dask']['workers']):
-        try:
-            futures.append(dask.submit(
-                leverage_pool, collect_leverages, 
-                accounts[int(len(accounts) / config['dask']['workers'] * i) : int(len(accounts) / config['dask']['workers'] * (i+1))]
-            ))
-        except Exception as e:
-            print("Error in dask: ", e)
+    # for i in range(config['dask']['workers']):
+    #     try:
+    #         futures.append(dask.submit(
+    #             leverage_pool, collect_leverages, 
+    #             accounts[int(len(accounts) / config['dask']['workers'] * i) : int(len(accounts) / config['dask']['workers'] * (i+1))]
+    #         ))
+    #     except Exception as e:
+    #         print("Error in dask: ", e)
 
-    # wait(futures)
-    for done_work, result in as_completed(futures, with_results=True):
-        print(result)
-        dask.cancel(done_work) 
-    del futures
-    del accounts
+    # # wait(futures)
+    # for done_work, result in as_completed(futures, with_results=True):
+    #     print(result)
+    #     dask.cancel(done_work) 
+    # del futures
+    # del accounts
 
 
     dask.close()
@@ -209,7 +211,7 @@ else:
 
     private_pool(private_data_collectors, accounts)
 
-    leverage_pool(collect_leverages, accounts)
+    leverage_pool(leverages_wrapper, accounts)
 
     del accounts
     pass

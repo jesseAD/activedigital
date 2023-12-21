@@ -87,6 +87,7 @@ class Bids_Asks:
         self,
         exch = None,
         exchange: str = None,
+        symbol: str = None,
         spot: str = None,
         future: str = None,
         perp: str = None,
@@ -100,48 +101,49 @@ class Bids_Asks:
         if bid_ask_value is None:
             bid_ask_value = {}
 
-            for i in range(len(config['bid_ask']['spot'])):
-                try:
-                    if exchange == "okx":
-                        spot_value = OKXHelper().get_bid_ask(exch=exch, symbol=config['bid_ask']['spot'][i])
-                        perp_value = OKXHelper().get_bid_ask(exch=exch, symbol=config['bid_ask']['perp'][i])
+            try:
+                if exchange == "okx":
+                    spot_value = OKXHelper().get_bid_ask(exch=exch, symbol=symbol+"/USDT")
+                    perp_value = OKXHelper().get_bid_ask(exch=exch, symbol=symbol+"/USDT:USDT")
 
-                        bid_ask_value[config['bid_ask']['spot'][i]] = {
-                            'spot': spot_value,
-                            'perp': perp_value,
-                            'spread': spot_value['mid_point'] - perp_value['mid_point'],
-                        }
+                    bid_ask_value = {
+                        'spot': spot_value,
+                        'perp': perp_value,
+                        'spread': spot_value['mid_point'] - perp_value['mid_point'],
+                    }
 
-                    elif exchange == "binance":
-                        spot_value = Helper().get_bid_ask(exch=exch, symbol=config['bid_ask']['spot'][i])
-                        perp_value = Helper().get_bid_ask(exch=exch, symbol=config['bid_ask']['perp'][i])
+                elif exchange == "binance":
+                    spot_value = Helper().get_bid_ask(exch=exch, symbol=symbol+"/USDT")
+                    perp_value = Helper().get_bid_ask(exch=exch, symbol=symbol+"/USDT:USDT")
 
-                        bid_ask_value[config['bid_ask']['spot'][i]] = {
-                            'spot': spot_value,
-                            'perp': perp_value,
-                            'spread': spot_value['mid_point'] - perp_value['mid_point'],
-                        }   
-                    
-                    elif exchange == "bybit":
-                        spot_value = Helper().get_bid_ask(exch=exch, symbol=config['bid_ask']['spot'][i])
-                        perp_value = Helper().get_bid_ask(exch=exch, symbol=config['bid_ask']['perp'][i])
+                    bid_ask_value = {
+                        'spot': spot_value,
+                        'perp': perp_value,
+                        'spread': spot_value['mid_point'] - perp_value['mid_point'],
+                    }   
+                
+                elif exchange == "bybit":
+                    spot_value = Helper().get_bid_ask(exch=exch, symbol=symbol+"/USDT")
+                    perp_value = Helper().get_bid_ask(exch=exch, symbol=symbol+"/USDT:USDT")
 
-                        bid_ask_value[config['bid_ask']['spot'][i]] = {
-                            'spot': spot_value,
-                            'perp': perp_value,
-                            'spread': spot_value['mid_point'] - perp_value['mid_point'],
-                        } 
+                    bid_ask_value = {
+                        'spot': spot_value,
+                        'perp': perp_value,
+                        'spread': spot_value['mid_point'] - perp_value['mid_point'],
+                    } 
 
-                # except ccxt.InvalidNonce as e:
-                #     print("Hit rate limit", e)
-                #     time.sleep(back_off[exchange] / 1000.0)
-                #     back_off[exchange] *= 2
-                #     return True
-            
-                except ccxt.ExchangeError as e:
-                    logger.warning(exchange +" bids and asks " + str(e))
-                    # print("An error occurred in Bids and Asks:", e)
-                    pass
+            # except ccxt.InvalidNonce as e:
+            #     print("Hit rate limit", e)
+            #     time.sleep(back_off[exchange] / 1000.0)
+            #     back_off[exchange] *= 2
+            #     return True
+        
+            except ccxt.ExchangeError as e:
+                logger.warning(exchange +" bids and asks " + str(e))
+                return True
+            except ccxt.NetworkError as e:
+                logger.warning(exchange +" bids and asks " + str(e))
+                return False
 
         # back_off[exchange] = config['dask']['back_off']
 
@@ -155,33 +157,26 @@ class Bids_Asks:
                 pass
 
         # store best bid, ask, mid point
-        bid_ask = []
 
-        for _key, _value in bid_ask_value.items():
-            new_value = {
-                "venue": exchange,
-                "bid_ask_value": _value, 
-                "symbol": _key,
-                "active": True,
-                "entry": False,
-                "exit": False,
-                "timestamp": datetime.now(timezone.utc),
-                "runid": latest_run_id,
-            }
-            if spot:
-                new_value["spotMarket"] = spot
-            if future:
-                new_value["futureMarket"] = future
-            if perp:
-                new_value["perpMarket"] = perp
-
-            bid_ask.append(new_value)
-
-        del bid_ask_value
+        new_value = {
+            "venue": exchange,
+            "bid_ask_value": bid_ask_value, 
+            "symbol": symbol+"/USDT",
+            "active": True,
+            "entry": False,
+            "exit": False,
+            "timestamp": datetime.now(timezone.utc),
+            "runid": latest_run_id,
+        }
+        if spot:
+            new_value["spotMarket"] = spot
+        if future:
+            new_value["futureMarket"] = future
+        if perp:
+            new_value["perpMarket"] = perp
 
         try:
-            self.bid_asks_db.insert_many(bid_ask)
-            del bid_ask
+            self.bid_asks_db.insert_one(new_value)
 
             return True
         

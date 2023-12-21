@@ -357,13 +357,14 @@ def collect_tickers(exch, exchange, logger, db, back_off={}):
         logger.info("Collected tickers for " + exchange)
         return res
 
-def collect_index_prices(exch, exchange, logger, db, back_off={}):
+def collect_index_prices(exch, exchange, symbol, logger, db, back_off={}):
     res = False
     index_prices = IndexPrices(db, 'index_prices')
     try:
         res = index_prices.create(
             exch=exch,
             exchange=exchange,
+            symbol=symbol,
             back_off=back_off,
             logger=logger
         )
@@ -386,6 +387,7 @@ def collect_index_prices(exch, exchange, logger, db, back_off={}):
                 res = index_prices.create(
                     exch=exch,
                     exchange=exchange,
+                    symbol=symbol,
                     back_off=back_off,
                     logger=logger
                 )
@@ -403,13 +405,14 @@ def collect_index_prices(exch, exchange, logger, db, back_off={}):
         logger.info("Collected index prices for " + exchange)
         return res
 
-def collect_borrow_rates(exch, exchange, logger, db, back_off={}):
+def collect_borrow_rates(exch, exchange, code, logger, db, back_off={}):
     res = False
     borrow_rates = BorrowRates(db, 'borrow_rates')
     try:
         res = borrow_rates.create(
             exch=exch,
             exchange=exchange,
+            code=code,
             back_off=back_off,
             logger=logger
         )
@@ -432,6 +435,7 @@ def collect_borrow_rates(exch, exchange, logger, db, back_off={}):
                 res = borrow_rates.create(
                     exch=exch,
                     exchange=exchange,
+                    code=code,
                     back_off=back_off,
                     logger=logger
                 )
@@ -449,13 +453,14 @@ def collect_borrow_rates(exch, exchange, logger, db, back_off={}):
         logger.info("Collected borrow rates for " + exchange)
         return res
 
-def collect_funding_rates(exch, exchange, logger, db, back_off={}):
+def collect_funding_rates(exch, exchange, symbol, logger, db, back_off={}):
     res = False
     funding_rates = FundingRates(db, 'funding_rates')
     try:
         res = funding_rates.create(
             exch=exch,
             exchange=exchange,
+            symbol=symbol,
             back_off=back_off,
             logger=logger
         )
@@ -478,6 +483,7 @@ def collect_funding_rates(exch, exchange, logger, db, back_off={}):
                 res = funding_rates.create(
                     exch=exch,
                     exchange=exchange,
+                    symbol=symbol,
                     back_off=back_off,
                     logger=logger
                 )
@@ -495,13 +501,14 @@ def collect_funding_rates(exch, exchange, logger, db, back_off={}):
         logger.info("Collected funding rates for " + exchange)
         return res
     
-def collect_bids_asks(exch, exchange, logger, db, back_off={}):
+def collect_bids_asks(exch, exchange, symbol, logger, db, back_off={}):
     res = False
     bid_asks = Bids_Asks(db, 'bid_asks')
     try:
         res = bid_asks.create(
             exch=exch,
             exchange=exchange,
+            symbol=symbol,
             back_off=back_off,
             logger=logger
         )
@@ -524,6 +531,7 @@ def collect_bids_asks(exch, exchange, logger, db, back_off={}):
                 res = bid_asks.create(
                     exch=exch,
                     exchange=exchange,
+                    symbol=symbol,
                     back_off=back_off,
                     logger=logger
                 )
@@ -541,13 +549,14 @@ def collect_bids_asks(exch, exchange, logger, db, back_off={}):
         logger.info("Collected bids and asks for " + exchange)
         return res
 
-def collect_mark_prices(exch, exchange, logger, db, back_off={}):
+def collect_mark_prices(exch, exchange, symbol, logger, db, back_off={}):
     res = False
     mark_prices = MarkPrices(db, 'mark_prices')
     try:
         res = mark_prices.create(
             exch=exch,
             exchange=exchange,
+            symbol=symbol,
             back_off=back_off,
             logger=logger
         )
@@ -570,6 +579,7 @@ def collect_mark_prices(exch, exchange, logger, db, back_off={}):
                 res = mark_prices.create(
                     exch=exch,
                     exchange=exchange,
+                    symbol=symbol,
                     back_off=back_off,
                     logger=logger
                 )
@@ -610,3 +620,74 @@ def collect_leverages(client_alias, data_collector, logger, db):
         logger.info("Collected leverage for " + client_alias + " " + data_collector.exchange + " " + data_collector.account)
         # print("Collected leverage for " + client_alias + " " + data_collector.exchange + " " + data_collector.account)
         return res
+
+def instruments_wrapper(thread_pool, exch, exchange, logger, db):
+    return [thread_pool.submit(collect_instruments, exch, exchange, logger, db)]
+
+def tickers_wrapper(thread_pool, exch, exchange, logger, db):
+    return [thread_pool.submit(collect_tickers, exch, exchange, logger, db)]
+
+def funding_rates_wrapper(thread_pool, exch, exchange, logger, db):
+    if exchange == "binance":
+        symbols = config["funding_rates"]["symbols"]["binance_usdt"] + config["funding_rates"]["symbols"]["binance_usd"]
+    elif exchange == "okx":
+        symbols = config["funding_rates"]["symbols"]["okx_usdt"] + config["funding_rates"]["symbols"]["okx_usd"]
+    elif exchange == "bybit":
+        symbols = config["funding_rates"]["symbols"]["bybit_usdt"] + config["funding_rates"]["symbols"]["bybit_usd"]
+
+    threads = []
+    for symbol in symbols:
+        threads.append(thread_pool.submit(collect_funding_rates, exch, exchange, symbol, logger, db))
+
+    return threads
+
+def borrow_rates_wrapper(thread_pool, exch, exchange, logger, db):
+    codes = config["borrow_rates"]["codes"]
+
+    threads = []
+    for code in codes:
+        threads.append(thread_pool.submit(collect_borrow_rates, exch, exchange, code, logger, db))
+
+    return threads
+
+def mark_prices_wrapper(thread_pool, exch, exchange, logger, db):
+    symbols = config['symbols']['symbols_1']
+
+    threads = []
+    for symbol in symbols:
+        threads.append(thread_pool.submit(collect_mark_prices, exch, exchange, symbol, logger, db))
+
+    return threads
+
+def index_prices_wrapper(thread_pool, exch, exchange, logger, db):
+    symbols = config['symbols']['symbols_1']
+
+    threads = []
+    for symbol in symbols:
+        threads.append(thread_pool.submit(collect_index_prices, exch, exchange, symbol, logger, db))
+
+    return threads
+
+def bids_asks_wrapper(thread_pool, exch, exchange, logger, db):
+    symbols = config['symbols']['symbols_1']
+
+    threads = []
+    for symbol in symbols:
+        threads.append(thread_pool.submit(collect_bids_asks, exch, exchange, symbol, logger, db))
+
+    return threads
+
+def positions_wrapper(thread_pool, client_alias, data_collector, logger, db):
+    return thread_pool.submit(collect_positions, client_alias, data_collector, logger, db)
+
+def balances_wrapper(thread_pool, client_alias, data_collector, logger, db):
+    return thread_pool.submit(collect_balances, client_alias, data_collector, logger, db)
+
+def transactions_wrapper(thread_pool, client_alias, data_collector, logger, db):
+    return thread_pool.submit(collect_transactions, client_alias, data_collector, logger, db)
+
+def fills_wrapper(thread_pool, client_alias, data_collector, logger, db):
+    return thread_pool.submit(collect_fills, client_alias, data_collector, logger, db)
+
+def leverages_wrapper(thread_pool, client_alias, data_collector, logger, db):
+    return thread_pool.submit(collect_leverages, client_alias, data_collector, logger, db)
