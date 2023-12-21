@@ -214,7 +214,6 @@ else:
     leverage_pool(leverages_wrapper, accounts)
 
     del accounts
-    pass
 
 
 

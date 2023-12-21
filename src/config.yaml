@@ -112,7 +112,7 @@ positions:
 
 tickers:
   symbols: *symbols_2
-  store_type: timeseries
+  store_type: snapshot
 
 index_prices:
   symbols: 

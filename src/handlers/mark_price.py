@@ -83,7 +83,7 @@ class MarkPrices:
         self,
         exch = None,
         exchange: str = None,
-        symbol: str = None,
+        symbols: str = None,
         spot: str = None,
         future: str = None,
         perp: str = None,
@@ -95,20 +95,31 @@ class MarkPrices:
             if exch == None:
                 exch = Exchange(exchange).exch()
             
-            markPriceValue = None
+            markPriceValue = {}
             try:
                 if exchange == "okx":
-                    markPriceValue = OKXHelper().get_mark_prices(
-                        exch=exch, symbol=symbol+"-USDT-SWAP"
+                    res = OKXHelper().get_mark_prices(
+                        exch=exch, 
                     )
+                    for symbol in symbols:
+                        for item in res:
+                            if item['symbol'].startswith(symbol):
+                                markPriceValue[symbol] = item
+                                
                 elif exchange == "binance":
-                    markPriceValue = Helper().get_mark_prices(
-                        exch=exch, symbol=symbol+"USDT"
+                    res = Helper().get_mark_prices(
+                        exch=exch, 
                     )
+                    for symbol in symbols:
+                        for item in res:
+                            if item['symbol'].startswith(symbol):
+                                markPriceValue[symbol] = item
+
                 elif exchange == "bybit":
-                    markPriceValue = BybitHelper().get_mark_prices(
-                        exch=exch, symbol=symbol+"USDT"
+                    res = BybitHelper().get_mark_prices(
+                        exch=exch, symbol=symbols+"USDT"
                     )
+                    markPriceValue = {symbols: res}
 
             # except ccxt.InvalidNonce as e:
             #     print("Hit rate limit", e)
@@ -126,23 +137,6 @@ class MarkPrices:
 
         # back_off[exchange] = config['dask']['back_off']
         
-        mark_price = {
-            "venue": exchange,
-            "mark_price_value": markPriceValue,
-            "symbol": symbol+"/USDT",
-            "active": True,
-            "entry": False,
-            "exit": False,
-            "timestamp": datetime.now(timezone.utc),
-        }
-
-        if spot:
-            mark_price["spotMarket"] = spot
-        if future:
-            mark_price["futureMarket"] = future
-        if perp:
-            mark_price["perpMarket"] = perp
-
         run_ids = self.runs_db.find({}).sort("_id", -1).limit(1)
         latest_run_id = 0
         for item in run_ids:
@@ -150,30 +144,33 @@ class MarkPrices:
                 latest_run_id = item["runid"]
             except:
                 pass
-        mark_price["runid"] = latest_run_id
 
-        # get latest mark_prices data
-        query = {}
-        if exchange:
-            query["venue"] = exchange
-            query['symbol'] = symbol+"/USDT"
+        mark_prices = []
+        for _key, _val in markPriceValue.items():
+            mark_price = {
+                "venue": exchange,
+                "mark_price_value": _val,
+                "symbol": _key+"/USDT",
+                "active": True,
+                "entry": False,
+                "exit": False,
+                "timestamp": datetime.now(timezone.utc),
+            }
 
-        mark_price_values = self.mark_prices_db.find(query).sort("runid", -1).limit(1)
+            if spot:
+                mark_price["spotMarket"] = spot
+            if future:
+                mark_price["futureMarket"] = future
+            if perp:
+                mark_price["perpMarket"] = perp
 
-        latest_run_id = -1
-        latest_value = None
-        for item in mark_price_values:
-            if latest_run_id < item["runid"]:
-                latest_run_id = item["runid"]
-                latest_value = item["mark_price_value"]
+            mark_price["runid"] = latest_run_id
 
-        if latest_value == mark_price["mark_price_value"]:
-            print("same mark price")
-            return True
+            mark_prices.append(mark_price)
 
         try:
             if config["mark_prices"]["store_type"] == "timeseries":
-                self.mark_prices_db.insert_one(mark_price)
+                self.mark_prices_db.insert_many(mark_prices)
             elif config["mark_prices"]["store_type"] == "snapshot":
                 self.mark_prices_db.update_one(
                     {

@@ -549,14 +549,14 @@ def collect_bids_asks(exch, exchange, symbol, logger, db, back_off={}):
         logger.info("Collected bids and asks for " + exchange)
         return res
 
-def collect_mark_prices(exch, exchange, symbol, logger, db, back_off={}):
+def collect_mark_prices(exch, exchange, symbols, logger, db, back_off={}):
     res = False
     mark_prices = MarkPrices(db, 'mark_prices')
     try:
         res = mark_prices.create(
             exch=exch,
             exchange=exchange,
-            symbol=symbol,
+            symbols=symbols,
             back_off=back_off,
             logger=logger
         )
@@ -579,7 +579,7 @@ def collect_mark_prices(exch, exchange, symbol, logger, db, back_off={}):
                 res = mark_prices.create(
                     exch=exch,
                     exchange=exchange,
-                    symbol=symbol,
+                    symbols=symbols,
                     back_off=back_off,
                     logger=logger
                 )
@@ -654,8 +654,11 @@ def mark_prices_wrapper(thread_pool, exch, exchange, logger, db):
     symbols = config['symbols']['symbols_1']
 
     threads = []
-    for symbol in symbols:
-        threads.append(thread_pool.submit(collect_mark_prices, exch, exchange, symbol, logger, db))
+    if exchange == "bybit":
+        for symbol in symbols:
+            threads.append(thread_pool.submit(collect_mark_prices, exch, exchange, symbol, logger, db))
+    else:
+        threads.append(thread_pool.submit(collect_mark_prices, exch, exchange, symbols, logger, db))
 
     return threads
 
