@@ -44,6 +44,7 @@ class Positions:
         self.lifetime_funding_db = db['lifetime_funding']
         self.split_positions_db = db['split_positions']
         self.positions_db = db['positions']
+        self.mark_prices_db = db['mark_prices']
 
     def close_db(self):
         if os.getenv("mode") == "testing":
@@ -212,6 +213,9 @@ class Positions:
                     logger.warning(client + " " + exchange + " " + sub_account + " positions " + str(e))
                     # print("An error occurred in Positions:", e)
                     pass
+                except Exception as e:
+                    logger.warning(client + " " + exchange + " " + sub_account + " positions " + str(e))
+                    pass
 
             elif exchange == "binance":
                 if config['clients'][client]['subaccounts'][exchange][sub_account]['margin_mode'] == 'portfolio':
@@ -235,6 +239,9 @@ class Positions:
                         logger.warning(client + " " + exchange + " " + sub_account + " positions " + str(e))
                         # print("An error occurred in Positions:", e)
                         pass
+                    except Exception as e:
+                        logger.warning(client + " " + exchange + " " + sub_account + " positions " + str(e))
+                        pass
                 else:
                     try:
                         cross_margin_ratio = 1e10
@@ -257,6 +264,9 @@ class Positions:
                     except ccxt.ExchangeError as e:
                         logger.warning(client + " " + exchange + " " + sub_account + " positions " + str(e))
                         # print("An error occurred in Positions:", e)
+                        pass
+                    except Exception as e:
+                        logger.warning(client + " " + exchange + " " + sub_account + " positions " + str(e))
                         pass
 
             for value in position_value:
@@ -379,9 +389,14 @@ class Positions:
             if exchange == "binance":
                 for position in position_info:
                     try:
-                        position["markPrice"] = Helper().get_mark_prices(
-                            exch=exch, symbol=position['base'] + position['quote']
-                        )["markPrice"]
+                        mark_prices = self.mark_prices_db.find({'venue': exchange, 'symbol': position['base'] + "/" + position['quote']}).sort('_id', -1).limit(1)
+                        for item in mark_prices:
+                            try:
+                                mark_price = item['mark_price_value']['markPrice']
+                            except:
+                                pass
+                            
+                        position["markPrice"] = mark_price
                     except ccxt.ExchangeError as e:
                         logger.warning(client + " " + exchange + " " + sub_account + " positions " + str(e))
                         # print("An error occurred in Positions:", e)

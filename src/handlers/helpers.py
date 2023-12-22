@@ -169,16 +169,14 @@ class Helper:
             'symbol': item['symbol']
         } for item in res]
 
-    def get_index_prices(self, exch, symbol):
-        params = {
-            'symbol': symbol
-        }
-        res = exch.fapipublic_get_premiumindex(params)
-        return {
-            'indexPrice': res['indexPrice'],
-            'timestamp': res['time'],
-            'symbol': res['symbol']
-        }
+    def get_index_prices(self, exch, symbol=None):
+        res = exch.fapipublic_get_premiumindex()
+        
+        return [{
+            'indexPrice': item['indexPrice'],
+            'timestamp': item['time'],
+            'symbol': item['symbol']
+        } for item in res]
 
     def get_future_transactions(self, exch, params={}):
         return exch.fapiprivate_get_income(params)
@@ -300,14 +298,15 @@ class OKXHelper(Helper):
     def get_borrow_rate(self, exch, params={}):
         return exch.private_get_account_interest_rate(params=params)
 
-    def get_index_prices(self, exch, symbol):
-        params = {'instId': symbol}
-        res = exch.public_get_market_index_tickers(params)['data'][0]
-        return {
-            'indexPrice': res['idxPx'],
-            'timestamp': res['ts'],
-            'symbol': res['instId']
-        }
+    def get_index_prices(self, exch, symbol=None):
+        params = {'quoteCcy': "USDT"}
+        res = exch.public_get_market_index_tickers(params)['data']
+
+        return [{
+            'symbol': item['instId'],
+            'timestamp': item['ts'],
+            'indexPrice': item['idxPx']
+        } for item in res]
 
     def get_cross_margin_ratio(self, exch):
         return exch.private_get_account_balance()["data"][0]["mgnRatio"]

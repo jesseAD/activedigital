@@ -71,7 +71,7 @@ class IndexPrices:
         self,
         exch = None,
         exchange: str = None,
-        symbol: str = None,
+        symbols: str = None,
         spot: str = None,
         future: str = None,
         perp: str = None,
@@ -83,17 +83,29 @@ class IndexPrices:
             if exch == None:
                 exch = Exchange(exchange).exch()
 
-            indexPriceValue = None
+            indexPriceValue = {}
 
             try:
                 if exchange == "okx":
-                    indexPriceValue = OKXHelper().get_index_prices(exch=exch, symbol=symbol+"-USDT")
+                    res = OKXHelper().get_index_prices(exch=exch)
+
+                    for symbol in symbols:
+                        for item in res:
+                            if item['symbol'].startswith(symbol):
+                                indexPriceValue[symbol] = item
 
                 elif exchange == "binance":
-                    indexPriceValue = Helper().get_index_prices(exch=exch, symbol=symbol+"USDT")
+                    res = Helper().get_index_prices(exch=exch)
+
+                    for symbol in symbols:
+                        for item in res:
+                            if item['symbol'].startswith(symbol):
+                                indexPriceValue[symbol] = item
 
                 elif exchange == "bybit":
-                    indexPriceValue = BybitHelper().get_index_prices(exch=exch, symbol=symbol+"USDT")
+                    res = BybitHelper().get_index_prices(exch=exch, symbol=symbols+"USDT")
+
+                    indexPriceValue = {symbols: res}
 
             # except ccxt.InvalidNonce as e:
             #     print("Hit rate limit", e)
@@ -111,23 +123,6 @@ class IndexPrices:
         
         # back_off[exchange] = config['dask']['back_off']
 
-        index_price = {
-            "venue": exchange,
-            "index_price_value": indexPriceValue,
-            "symbol": symbol+"/USDT",
-            "active": True,
-            "entry": False,
-            "exit": False,
-            "timestamp": datetime.now(timezone.utc),
-        }
-
-        if spot:
-            index_price["spotMarket"] = spot
-        if future:
-            index_price["futureMarket"] = future
-        if perp:
-            index_price["perpMarket"] = perp
-
         run_ids = self.runs_db.find({}).sort('_id', -1).limit(1)
         latest_run_id = 0
         for item in run_ids:
@@ -135,10 +130,32 @@ class IndexPrices:
                 latest_run_id = item['runid']
             except:
                 pass
-        index_price["runid"] = latest_run_id
+
+        index_prices = []
+        for _key, _val in indexPriceValue.items():
+            index_price = {
+                "venue": exchange,
+                "index_price_value": _val,
+                "symbol": _key+"/USDT",
+                "active": True,
+                "entry": False,
+                "exit": False,
+                "timestamp": datetime.now(timezone.utc),
+            }
+
+            if spot:
+                index_price["spotMarket"] = spot
+            if future:
+                index_price["futureMarket"] = future
+            if perp:
+                index_price["perpMarket"] = perp
+
+            index_price["runid"] = latest_run_id
+
+            index_prices.append(index_price)
         
         try:
-            self.index_prices_db.insert_one(index_price)
+            self.index_prices_db.insert_many(index_prices)
 
             del index_price
 

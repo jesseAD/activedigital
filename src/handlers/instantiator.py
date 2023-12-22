@@ -99,8 +99,8 @@ def collect_positions(client_alias, data_collector, logger, db, back_off={}):
                     back_off=back_off,
                     logger=logger
                 )
-            except:
-                pass
+            except Exception as e:
+                logger.warning(client_alias + " " + data_collector.exchange + " " + data_collector.account + " Positions " + str(e))
 
             if attempt == config['ccxt'][data_collector.exchange]['retry']:
                 break
@@ -357,14 +357,14 @@ def collect_tickers(exch, exchange, logger, db, back_off={}):
         logger.info("Collected tickers for " + exchange)
         return res
 
-def collect_index_prices(exch, exchange, symbol, logger, db, back_off={}):
+def collect_index_prices(exch, exchange, symbols, logger, db, back_off={}):
     res = False
     index_prices = IndexPrices(db, 'index_prices')
     try:
         res = index_prices.create(
             exch=exch,
             exchange=exchange,
-            symbol=symbol,
+            symbols=symbols,
             back_off=back_off,
             logger=logger
         )
@@ -387,7 +387,7 @@ def collect_index_prices(exch, exchange, symbol, logger, db, back_off={}):
                 res = index_prices.create(
                     exch=exch,
                     exchange=exchange,
-                    symbol=symbol,
+                    symbols=symbols,
                     back_off=back_off,
                     logger=logger
                 )
@@ -666,8 +666,11 @@ def index_prices_wrapper(thread_pool, exch, exchange, logger, db):
     symbols = config['symbols']['symbols_1']
 
     threads = []
-    for symbol in symbols:
-        threads.append(thread_pool.submit(collect_index_prices, exch, exchange, symbol, logger, db))
+    if exchange == "bybit":
+        for symbol in symbols:
+            threads.append(thread_pool.submit(collect_index_prices, exch, exchange, symbol, logger, db))
+    else:
+        threads.append(thread_pool.submit(collect_index_prices, exch, exchange, symbols, logger, db))
 
     return threads
 
