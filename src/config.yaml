@@ -332,7 +332,7 @@ clients:
         base_ccy: USD
 
         subls1:
-        margin_mode: portfolio
+          margin_mode: portfolio
           hedged_exclusion_positive: {'USDT': 0}
           hedged_exclusion_negative: {'USDT': 0}
   edison:
