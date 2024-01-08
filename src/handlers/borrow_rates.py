@@ -19,23 +19,9 @@ config = read_config_file()
 
 class BorrowRates:
     def __init__(self, db, collection):
-        # if os.getenv("mode") == "testing":
-        #     self.runs_db = MongoDB(config["mongo_db"], "runs")
-        #     self.borrow_rates_db = MongoDB(config["mongo_db"], db)
-        # else:
-        #     self.borrow_rates_db = database_connector(db)
-        #     self.runs_db = database_connector("runs")
 
         self.runs_db = db['runs']
         self.borrow_rates_db = db['borrow_rates']
-
-    def close_db(self):
-        if os.getenv("mode") == "testing":
-            self.runs_db.close()
-            self.borrow_rates_db.close()
-        else:
-            self.borrow_rates_db.database.client.close()
-            self.runs_db.database.client.close()
 
     def get(
         self,

@@ -13,40 +13,12 @@ config = read_config_file()
 
 class Leverages:
     def __init__(self, db, collection):
-        # if os.getenv("mode") == "testing":
-        #     self.leverages_db = MongoDB(config['mongo_db'], db)
-        #     # self.positions_db = MongoDB(config['mongo_db'], 'positions')
-        #     self.split_positions_db = MongoDB(config['mongo_db'], 'split_positions')
-        #     self.balances_db = MongoDB(config['mongo_db'], 'balances')
-        #     self.tickers_db = MongoDB(config['mongo_db'], 'tickers')
-        #     self.runs_db = MongoDB(config['mongo_db'], 'runs')
-        # else: 
-        #     self.leverages_db = database_connector(db)
-        #     self.split_positions_db = database_connector('split_positions')
-        #     # self.positions_db = database_connector('positions')
-        #     self.balances_db = database_connector('balances')
-        #     self.tickers_db = database_connector('tickers')
-        #     self.runs_db = database_connector('runs')
 
         self.runs_db = db['runs']
         self.split_positions_db = db['split_positions']
         self.balances_db = db['balances']
         self.tickers_db = db['tickers']
         self.leverages_db = db['leverages']
-
-    def close_db(self):
-        if os.getenv("mode") == "testing":
-            self.leverages_db.close()
-            self.split_positions_db.close()
-            self.balances_db.close()
-            self.tickers_db.close()
-            self.runs_db.close()
-        else: 
-            self.leverages_db.database.client.close()
-            self.split_positions_db.database.client.close()
-            self.balances_db.database.client.close()
-            self.tickers_db.database.client.close()
-            self.runs_db.database.client.close()
 
     def get(
         self,

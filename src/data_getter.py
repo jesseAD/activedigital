@@ -51,7 +51,7 @@ db = pymongo.MongoClient(mongo_uri, maxPoolsize=config['mongodb']['max_pool'])[c
 back_off = {}
 exchs = {}
 
-def public_pool(data_collectors, exchanges):
+def public_pool(data_collectors, exchanges, symbols):
     db1 = pymongo.MongoClient(mongo_uri, maxPoolsize=config['mongodb']['max_pool'])[config['mongodb']['database']]
     executors = [concurrent.futures.ThreadPoolExecutor(config['dask']['threadsPerPool']) for i in range(config['dask']['threadPoolsPerWorker'])]
     
@@ -59,7 +59,7 @@ def public_pool(data_collectors, exchanges):
     for i in range(config['dask']['threadPoolsPerWorker']):
         for j in range(int(i * len(data_collectors) / config['dask']['threadPoolsPerWorker']), int((i+1) * len(data_collectors) / config['dask']['threadPoolsPerWorker'])):
             for exchange in exchanges:
-                threads += (data_collectors[j](executors[i], exchs[exchange], exchange, logger, db1))
+                threads += (data_collectors[j](executors[i], exchs[exchange], exchange, symbols, logger, db1))
             pass
     
     for thread in concurrent.futures.as_completed(threads):
@@ -198,10 +198,28 @@ if config['dask']['workers'] > 0:
     dask.close()
 
 else:
+    latest_positions = list(db['positions'].aggregate([
+        {"$group": {
+            "_id": {"client": "$client", "venue": "$venue", "account": "$account"},
+            "position_value": {"$first": "$position_value"}
+        }},
+        {"$unwind": "$position_value"},
+        {"$project": {
+            "symbol": "$position_value.base", "_id": 0
+        }},
+        {"$group": {
+            "_id": {"symbol": "$symbol"},
+            "symbol": {"$last": "$symbol"}
+        }},
+        {"$project": {"_id": 0}}
+    ]))
+    symbols = [item['symbol'] for item in latest_positions if item['symbol'] != None and item['symbol'] not in config['symbols']['symbols_1']]
+    symbols += config['symbols']['symbols_1']
+
     for exchange in config['exchanges']:
         exchs[exchange] = Exchange(exchange).exch()
 
-    public_pool(public_data_collectors, config['exchanges'])
+    public_pool(public_data_collectors, config['exchanges'], symbols)
     exchs = {}
 
     accounts = []

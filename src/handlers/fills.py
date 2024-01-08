@@ -19,28 +19,10 @@ config = read_config_file()
 
 class Fills:
     def __init__(self, db, collection):
-        # if os.getenv("mode") == "testing":
-        #     self.runs_db = MongoDB(config["mongo_db"], "runs")
-        #     self.positions_db = MongoDB(config["mongo_db"], "positions")
-        #     self.fills_db = MongoDB(config["mongo_db"], db)
-        # else:
-        #     self.fills_db = database_connector(db)
-        #     self.runs_db = database_connector("runs")
-        #     self.positions_db = database_connector("positions")
 
         self.runs_db = db['runs']
         self.positions_db = db['positions']
         self.fills_db = db['fills']
-
-    def close_db(self):
-        if os.getenv("mode") == "testing":
-            self.runs_db.close()
-            self.positions_db.close()
-            self.fills_db.close()
-        else:
-            self.fills_db.database.client.close()
-            self.runs_db.database.client.close()
-            self.positions_db.database.client.close()
 
     def get(
         self,

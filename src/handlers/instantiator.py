@@ -621,19 +621,21 @@ def collect_leverages(client_alias, data_collector, logger, db):
         # print("Collected leverage for " + client_alias + " " + data_collector.exchange + " " + data_collector.account)
         return res
 
-def instruments_wrapper(thread_pool, exch, exchange, logger, db):
+def instruments_wrapper(thread_pool, exch, exchange, symbols, logger, db):
     return [thread_pool.submit(collect_instruments, exch, exchange, logger, db)]
 
-def tickers_wrapper(thread_pool, exch, exchange, logger, db):
+def tickers_wrapper(thread_pool, exch, exchange, symbols, logger, db):
     return [thread_pool.submit(collect_tickers, exch, exchange, logger, db)]
 
-def funding_rates_wrapper(thread_pool, exch, exchange, logger, db):
-    if exchange == "binance":
-        symbols = config["funding_rates"]["symbols"]["binance_usdt"] + config["funding_rates"]["symbols"]["binance_usd"]
-    elif exchange == "okx":
-        symbols = config["funding_rates"]["symbols"]["okx_usdt"] + config["funding_rates"]["symbols"]["okx_usd"]
-    elif exchange == "bybit":
-        symbols = config["funding_rates"]["symbols"]["bybit_usdt"] + config["funding_rates"]["symbols"]["bybit_usd"]
+def funding_rates_wrapper(thread_pool, exch, exchange, symbols, logger, db):
+    # if exchange == "binance":
+    #     symbols = config["funding_rates"]["symbols"]["binance_usdt"] + config["funding_rates"]["symbols"]["binance_usd"]
+    # elif exchange == "okx":
+    #     symbols = config["funding_rates"]["symbols"]["okx_usdt"] + config["funding_rates"]["symbols"]["okx_usd"]
+    # elif exchange == "bybit":
+    #     symbols = config["funding_rates"]["symbols"]["bybit_usdt"] + config["funding_rates"]["symbols"]["bybit_usd"]
+
+    symbols = [symbol + "/USDT:USDT" for symbol in symbols] + [symbol + "/USD:" + symbol for symbol in symbols]
 
     threads = []
     for symbol in symbols:
@@ -641,17 +643,17 @@ def funding_rates_wrapper(thread_pool, exch, exchange, logger, db):
 
     return threads
 
-def borrow_rates_wrapper(thread_pool, exch, exchange, logger, db):
-    codes = config["borrow_rates"]["codes"]
+def borrow_rates_wrapper(thread_pool, exch, exchange, symbols, logger, db):
+    # codes = config["borrow_rates"]["codes"]
 
     threads = []
-    for code in codes:
+    for code in symbols:
         threads.append(thread_pool.submit(collect_borrow_rates, exch, exchange, code, logger, db))
 
     return threads
 
-def mark_prices_wrapper(thread_pool, exch, exchange, logger, db):
-    symbols = config['symbols']['symbols_1']
+def mark_prices_wrapper(thread_pool, exch, exchange, symbols, logger, db):
+    # symbols = config['symbols']['symbols_1']
 
     threads = []
     if exchange == "bybit":
@@ -662,8 +664,8 @@ def mark_prices_wrapper(thread_pool, exch, exchange, logger, db):
 
     return threads
 
-def index_prices_wrapper(thread_pool, exch, exchange, logger, db):
-    symbols = config['symbols']['symbols_1']
+def index_prices_wrapper(thread_pool, exch, exchange, symbols, logger, db):
+    # symbols = config['symbols']['symbols_1']
 
     threads = []
     if exchange == "bybit":
@@ -674,8 +676,8 @@ def index_prices_wrapper(thread_pool, exch, exchange, logger, db):
 
     return threads
 
-def bids_asks_wrapper(thread_pool, exch, exchange, logger, db):
-    symbols = config['symbols']['symbols_1']
+def bids_asks_wrapper(thread_pool, exch, exchange, symbols, logger, db):
+    # symbols = config['symbols']['symbols_1']
 
     threads = []
     for symbol in symbols:
