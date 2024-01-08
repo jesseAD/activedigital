@@ -201,7 +201,7 @@ else:
     latest_positions = list(db['positions'].aggregate([
         {"$group": {
             "_id": {"client": "$client", "venue": "$venue", "account": "$account"},
-            "position_value": {"$first": "$position_value"}
+            "position_value": {"$last": "$position_value"}
         }},
         {"$unwind": "$position_value"},
         {"$project": {
