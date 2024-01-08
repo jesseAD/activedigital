@@ -27,23 +27,9 @@ def compress_list(data):
 
 class Bids_Asks:
     def __init__(self, db, collection):
-        # if os.getenv("mode") == "testing":
-        #     self.runs_db = MongoDB(config["mongo_db"], "runs")
-        #     self.bid_asks_db = MongoDB(config["mongo_db"], db)
-        # else:
-        #     self.runs_db = database_connector("runs")
-        #     self.bid_asks_db = database_connector(db)
 
         self.runs_db = db['runs']
         self.bid_asks_db = db['bid_asks']
-
-    def close_db(self):
-        if os.getenv("mode") == "testing":
-            self.runs_db.close()
-            self.bid_asks_db.close()
-        else:
-            self.runs_db.database.client.close()
-            self.bid_asks_db.database.client.close()
 
     def get(
         self,

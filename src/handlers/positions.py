@@ -20,22 +20,6 @@ config = read_config_file()
 
 class Positions:
     def __init__(self, db, collection):
-        # if os.getenv("mode") == "testing":
-        #     self.runs_db = MongoDB(config["mongo_db"], "runs")
-        #     self.tickers_db = MongoDB(config["mongo_db"], "tickers")
-        #     self.balances_db = MongoDB(config["mongo_db"], "balances")
-        #     self.lifetime_funding_db = MongoDB(config["mongo_db"], "lifetime_funding")
-        #     self.funding_rates_db = MongoDB(config["mongo_db"], "funding_rates")
-        #     self.split_positions_db = MongoDB(config["mongo_db"], "split_positions")
-        #     self.positions_db = MongoDB(config["mongo_db"], db)
-        # else:
-        #     self.runs_db = database_connector("runs")
-        #     self.tickers_db = database_connector("tickers")
-        #     self.balances_db = database_connector("balances")
-        #     self.funding_rates_db = database_connector("funding_rates")
-        #     self.lifetime_funding_db = database_connector("lifetime_funding")
-        #     self.split_positions_db = database_connector("split_positions")
-        #     self.positions_db = database_connector(db)
 
         self.runs_db = db['runs']
         self.tickers_db = db['tickers']
@@ -45,24 +29,6 @@ class Positions:
         self.split_positions_db = db['split_positions']
         self.positions_db = db['positions']
         self.mark_prices_db = db['mark_prices']
-
-    def close_db(self):
-        if os.getenv("mode") == "testing":
-            self.runs_db.close()
-            self.tickers_db.close()
-            self.balances_db.close()
-            self.lifetime_funding_db.close()
-            self.funding_rates_db.close()
-            self.split_positions_db.close()
-            self.positions_db.close()
-        else:
-            self.runs_db.database.client.close()
-            self.tickers_db.database.client.close()
-            self.balances_db.database.client.close()
-            self.funding_rates_db.database.client.close()
-            self.lifetime_funding_db.database.client.close()
-            self.split_positions_db.database.client.close()
-            self.positions_db.database.client.close()
 
     def get(
         self,

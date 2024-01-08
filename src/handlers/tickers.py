@@ -17,23 +17,9 @@ config = read_config_file()
 
 class Tickers:
     def __init__(self, db, collection):
-        # if os.getenv("mode") == "testing":
-        #     self.runs_db = MongoDB(config['mongo_db'], 'runs')
-        #     self.tickers_db = MongoDB(config['mongo_db'], db)
-        # else:
-        #     self.runs_db = database_connector('runs')
-        #     self.tickers_db = database_connector('tickers')
 
         self.runs_db = db['runs']
         self.tickers_db = db['tickers']
-
-    def close_db(self):
-        if os.getenv("mode") == "testing":
-            self.runs_db.close()
-            self.tickers_db.close()
-        else:
-            self.runs_db.database.client.close()
-            self.tickers_db.database.client.close()
 
     def get(
         self,

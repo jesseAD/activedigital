@@ -18,18 +18,8 @@ config = read_config_file()
 
 class Runs:
     def __init__(self, db, collection):
-        # if os.getenv("mode") == "testing":
-        #     self.runs_db = MongoDB(config["mongo_db"], db)
-        # else:
-        #     self.runs_db = database_connector(db)
 
         self.runs_db = db['runs']
-
-    def close_db(self):
-        if os.getenv("mode") == "testing":
-            self.runs_db.close()
-        else:
-            self.runs_db.database.client.close()
 
     def get(self):
         try:

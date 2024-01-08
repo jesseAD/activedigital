@@ -19,28 +19,10 @@ config = read_config_file()
 
 class Transactions:
     def __init__(self, db, collection):
-        # if os.getenv("mode") == "testing":
-        #     self.runs_db = MongoDB(config["mongo_db"], "runs")
-        #     self.tickers_db = MongoDB(config["mongo_db"], "tickers")
-        #     self.transactions_db = MongoDB(config["mongo_db"], db)
-        # else:
-        #     self.runs_db = database_connector("runs")
-        #     self.tickers_db = database_connector("tickers")
-        #     self.transactions_db = database_connector(db)
 
         self.runs_db = db['runs']
         self.tickers_db = db['tickers']
         self.transactions_db = db['transactions']
-
-    def close_db(self):
-        if os.getenv("mode") == "testing":
-            self.runs_db.close()
-            self.tickers_db.close()
-            self.transactions_db.close()
-        else:
-            self.runs_db.database.client.close()
-            self.tickers_db.database.client.close()
-            self.transactions_db.database.client.close()
 
     def get(
         self,
