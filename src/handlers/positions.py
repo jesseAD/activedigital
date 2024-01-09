@@ -29,6 +29,7 @@ class Positions:
         self.split_positions_db = db['split_positions']
         self.positions_db = db['positions']
         self.mark_prices_db = db['mark_prices']
+        self.price_changes_db = db['open_positions_price_change']
 
     def get(
         self,
@@ -132,6 +133,7 @@ class Positions:
         try:
             position_info = []
             liquidation_buffer = None
+            tickers = list(self.tickers_db.find({"venue": exchange}))[0]["ticker_value"]
 
             if exchange == "okx":
                 try:
@@ -290,12 +292,6 @@ class Positions:
                             value["liquidationBuffer"] = liquidation_buffer
 
                             if value["quote"] == "USD":
-                                tickers = list(
-                                    self.tickers_db.find({"venue": exchange})
-                                    .sort("_id", -1)
-                                    .limit(1)
-                                )[0]["ticker_value"]
-
                                 value["notional"] = float(
                                     value["notional"]
                                 ) * Helper().calc_cross_ccy_ratio(
@@ -325,12 +321,6 @@ class Positions:
                     value["liquidationBuffer"] = liquidation_buffer
 
                     if value["quote"] == "USD":
-                        tickers = list(
-                            self.tickers_db.find({"venue": exchange})
-                            .sort("_id", -1)
-                            .limit(1)
-                        )[0]["ticker_value"]
-
                         value["notional"] = float(
                             value["notional"]
                         ) * Helper().calc_cross_ccy_ratio(
@@ -383,9 +373,49 @@ class Positions:
         
         # back_off[client + "_" + exchange + "_" + sub_account] = config["dask"]["back_off"]
 
+        run_ids = self.runs_db.find({}).sort("_id", -1).limit(1)
+        latest_run_id = 0
+        for item in run_ids:
+            try:
+                latest_run_id = item["runid"] + 1
+            except:
+                pass
+
+        # open positions price changes
+
+        price_changes = []
+        for position in position_info:
+            try:
+                ticker = float(tickers[position['base'] + "/USDT"]['last'])
+                mark_klines = exch.fetch_mark_ohlcv(symbol = position['base'] + "/USDT", timeframe = '1h', limit=24)
+
+                price_change = {
+                    'client': client,
+                    'venue': exchange,
+                    'account': sub_account,
+                    'base': position['base'],
+                    'symbol': position['symbol'],
+                    'price_change': (ticker - mark_klines[0][1]) / mark_klines[0][1] * 100,
+                    'runid': latest_run_id,
+                    'timestamp': datetime.now(timezone.utc)
+                }
+                price_changes.append(price_change)
+
+            except Exception as e:
+                logger.warning(client + " " + exchange + " " + sub_account + " price changes " + str(e))
+                pass
+
+        try:
+            self.price_changes_db.insert_many(price_changes)
+
+        except Exception as e:
+            logger.warning(client + " " + exchange + " " + sub_account + " price changes " + str(e))
+            pass
+
+        del price_changes
+
         # life time funding rates
 
-        # for position in position_info:
         query = {}
         query['client'] = client
         query['venue'] = exchange
@@ -595,19 +625,12 @@ class Positions:
         if config['clients'][client]['split_positions'] == True:
             query = {}
 
-            if exchange:
-                query["venue"] = exchange
-
-            ticker_values = self.tickers_db.find(query).sort("_id", -1).limit(1)
-
-            ticker = None
-            for item in ticker_values:
-                ticker = item["ticker_value"]
-
             if client:
                 query["client"] = client            
             if sub_account:
                 query["account"] = sub_account
+            if exchange:
+                query["venue"] = exchange
 
             balance_values = self.balances_db.find(query).sort("_id", -1).limit(1)
 
@@ -633,7 +656,7 @@ class Positions:
                         spot_position['marginMode'] = None
                         spot_position['timestamp'] = int(timestamp.timestamp() * 1000)
                         spot_position['side'] = "long" if _val > 0 else "short"
-                        spot_position['markPrice'] = 1 if _key == "USDT" else ticker[_key + "/USDT"]['last']
+                        spot_position['markPrice'] = 1 if _key == "USDT" else (0 if (_key + "/USDT") not in tickers else tickers[_key + "/USDT"]['last'])
                         spot_position['notional'] = spot_position['markPrice'] * spot_position['contracts']
 
                         spot_positions.append(spot_position)
@@ -686,17 +709,12 @@ class Positions:
                 split_position["futureMarket"] = future
             if perp:
                 split_position["perpMarket"] = perp
-            run_ids = self.runs_db.find({}).sort("_id", -1).limit(1)
-            latest_run_id = 0
-            for item in run_ids:
-                try:
-                    latest_run_id = item["runid"] + 1
-                except:
-                    pass
+            
             split_position["runid"] = latest_run_id
 
             try:
                 self.split_positions_db.insert_one(split_position)
+                
             except Exception as e:
                 logger.error(client + " " + exchange + " " + sub_account + " positions " + str(e))
                 return True

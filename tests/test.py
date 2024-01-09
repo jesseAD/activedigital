@@ -1,5 +1,5 @@
 import ccxt
 
-exchange = ccxt.okex5()
+exchange = ccxt.bybit()
 
-print(exchange.public_get_market_index_tickers({'quoteCcy': "USDT"}))
+print(exchange.fetch_tickers()['BONK/USDT:USDT'])
