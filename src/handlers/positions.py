@@ -387,7 +387,7 @@ class Positions:
         for position in position_info:
             try:
                 ticker = float(tickers[position['base'] + "/USDT"]['last'])
-                mark_klines = exch.fetch_mark_ohlcv(symbol = position['base'] + "/USDT", timeframe = '1h', limit=24)
+                mark_klines = exch.fetch_mark_ohlcv(symbol = position['base'] + "/USDT", timeframe = '2h', limit=1)
 
                 price_change = {
                     'client': client,
