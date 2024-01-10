@@ -213,8 +213,24 @@ else:
         }},
         {"$project": {"_id": 0}}
     ]))
+
+    latest_balances = list(db['balances'].aggregate([
+        {"$group": {
+            "_id": {"client": "$client", "venue": "$venue", "account": "$account"},
+            "balance_value": {"$last": "$balance_value"}
+        }},
+        {"$project": {
+            "_id": 0
+        }},
+    ]))
+    
     symbols = [item['symbol'] for item in latest_positions if item['symbol'] != None and item['symbol'] not in config['symbols']['symbols_1']]
     symbols += config['symbols']['symbols_1']
+
+    for balance in latest_balances:
+        for _key in balance['balance_value']:
+            if _key != "USD" and _key != "base" and _key not in symbols:
+                symbols.append(_key)
 
     for exchange in config['exchanges']:
         exchs[exchange] = Exchange(exchange).exch()
