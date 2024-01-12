@@ -80,27 +80,25 @@ class MarkPrices:
             markPriceValue = {}
             try:
                 if exchange == "okx":
-                    res = OKXHelper().get_mark_prices(
-                        exch=exch, 
-                    )
-                    for symbol in symbols:
-                        for item in res:
-                            if item['symbol'].startswith(symbol):
-                                markPriceValue[symbol] = item
+                    res = OKXHelper().get_mark_prices(exch=exch)
+                    symbols_set = set(symbols)
+                    markPriceValue = {item['symbol'][:-10]: item for item in res if item['symbol'][:-10] in symbols_set}
+                    # for symbol in symbols:
+                    #     for item in res:
+                    #         if item['symbol'].startswith(symbol):
+                    #             markPriceValue[symbol] = item
                                 
                 elif exchange == "binance":
-                    res = Helper().get_mark_prices(
-                        exch=exch, 
-                    )
-                    for symbol in symbols:
-                        for item in res:
-                            if item['symbol'].startswith(symbol):
-                                markPriceValue[symbol] = item
+                    res = Helper().get_mark_prices(exch=exch)
+                    symbols_set = set(symbols)
+                    markPriceValue = {item['symbol'][:-4]: item for item in res if item['symbol'][:-4] in symbols_set}
+                    # for symbol in symbols:
+                    #     for item in res:
+                    #         if item['symbol'].startswith(symbol):
+                    #             markPriceValue[symbol] = item
 
                 elif exchange == "bybit":
-                    res = BybitHelper().get_mark_prices(
-                        exch=exch, symbol=symbols+"USDT"
-                    )
+                    res = BybitHelper().get_mark_prices(exch=exch, symbol=symbols+"USDT")
                     markPriceValue = {symbols: res}
 
             # except ccxt.InvalidNonce as e:

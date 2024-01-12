@@ -75,18 +75,22 @@ class IndexPrices:
                 if exchange == "okx":
                     res = OKXHelper().get_index_prices(exch=exch)
 
-                    for symbol in symbols:
-                        for item in res:
-                            if item['symbol'].startswith(symbol):
-                                indexPriceValue[symbol] = item
+                    symbols_set = set(symbols)
+                    indexPriceValue = {item['symbol'][:-5]: item for item in res if item['symbol'][:-5] in symbols_set}
+                    # for symbol in symbols:
+                    #     for item in res:
+                    #         if item['symbol'].startswith(symbol):
+                    #             indexPriceValue[symbol] = item
 
                 elif exchange == "binance":
                     res = Helper().get_index_prices(exch=exch)
 
-                    for symbol in symbols:
-                        for item in res:
-                            if item['symbol'].startswith(symbol):
-                                indexPriceValue[symbol] = item
+                    symbols_set = set(symbols)
+                    indexPriceValue = {item['symbol'][:-4]: item for item in res if item['symbol'][:-4] in symbols_set}
+                    # for symbol in symbols:
+                    #     for item in res:
+                    #         if item['symbol'].startswith(symbol):
+                    #             indexPriceValue[symbol] = item
 
                 elif exchange == "bybit":
                     res = BybitHelper().get_index_prices(exch=exch, symbol=symbols+"USDT")
