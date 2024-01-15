@@ -90,14 +90,24 @@ class Balances:
                     exchange, sub_account, API_KEY, API_SECRET, PASSPHRASE
                 ).exch()
 
+            repayments = {}
+            loan_pools = {
+                'vip_loan': 0,
+                'market_loan': 0
+            }
+
             try:
                 if exchange == "okx":
-                    balanceValue = OKXHelper().get_balances(exch=exch)
+                    balanceValue, repayments, max_loan = OKXHelper().get_balances(exch=exch)
+                    loan_pools['market_loan'] = max_loan
+                    loan_pools['vip_loan'] = OKXHelper().get_VIP_loan_pool(exch=exch)
+
                 elif exchange == "binance":
                     if config['clients'][client]['subaccounts'][exchange][sub_account]['margin_mode'] == 'portfolio':
                         balanceValue = Helper().get_pm_balances(exch=exch)
                     else:
                         balanceValue = Helper().get_balances(exch=exch)
+                        
                 elif exchange == "bybit":
                     balanceValue = BybitHelper().get_balances(exch=exch)
                 
@@ -153,6 +163,8 @@ class Balances:
             "venue": exchange,
             "account": "Main Account",
             "balance_value": balanceValue,
+            "repayments": repayments,
+            "loan_pools": loan_pools,
             "base_ccy": config["clients"][client]["subaccounts"][exchange]["base_ccy"],
             "active": True,
             "entry": False,
