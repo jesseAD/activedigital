@@ -272,13 +272,38 @@ class OKXHelper(Helper):
         return exch.fetch_positions(params={"type": "swap"})
     
     def get_balances(self, exch):
-        all_balances = exch.fetch_balance()["total"]
-        result = dict()
-        for currency, balance in all_balances.items():
-            if float(balance) != 0:
-                result[currency] = balance
+        response = exch.fetch_balance()
 
-        return result
+        balances = dict()
+        for currency, balance in response['total'].items():
+            if float(balance) != 0:
+                balances[currency] = balance
+
+        repayments = {}
+        max_loan = 0
+        for item in response['info']['data'][0]['details']:
+            if balance[item['ccy']] < 0:
+                repayments[item['ccy']] = int(item['twap'] ) * 20
+            if item['ccy'] == "USDT":
+                max_loan = item['maxLoan']
+
+        return balances, repayments, max_loan
+    
+    def get_VIP_loan_pool(self, exch):
+        try:
+            response = exch.private_get_account_interest_limits(params={'type': "1", 'ccy': "USDT"})
+
+            return min(
+                response['data']['records'][0]['surplusLmtDetails']['curAcctRemainingQuota'], 
+                response['data']['records'][0]['surplusLmtDetails']['platRemainingQuota']
+            )
+
+        except Exception as e:
+            print("An error occurred in Balances:", e)
+
+    def get_market_loan_pool(self, exch):
+        response = exch.private_get_account_interest_limits(params={'type': "2", 'ccy': "USDT"})
+        print(response)
 
     def get_mark_prices(self, exch, symbol=None):
         params = {
