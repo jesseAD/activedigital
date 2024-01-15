@@ -290,16 +290,20 @@ class OKXHelper(Helper):
         return balances, repayments, max_loan
     
     def get_VIP_loan_pool(self, exch):
+        vip_loan = 0
         try:
             response = exch.private_get_account_interest_limits(params={'type': "1", 'ccy': "USDT"})
 
-            return min(
+            vip_loan = min(
                 response['data']['records'][0]['surplusLmtDetails']['curAcctRemainingQuota'], 
                 response['data']['records'][0]['surplusLmtDetails']['platRemainingQuota']
             )
 
         except Exception as e:
             print("An error occurred in Balances:", e)
+
+        finally:
+            return vip_loan
 
     def get_market_loan_pool(self, exch):
         response = exch.private_get_account_interest_limits(params={'type': "2", 'ccy': "USDT"})
