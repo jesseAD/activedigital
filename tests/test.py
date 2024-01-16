@@ -2,8 +2,8 @@ import ccxt
 
 
 params = {
-    'apiKey': "426559af-fae9-4f16-9e55-c36179c5fded",
-    'secret': "1657FB9643F7BD8E6A55C758C6EBF1BD",
+    'apiKey': "28d103d5-04a0-4102-a1ab-5ac12459b089",
+    'secret': "5FA27159C3FD4A3BEE2ECD5E9FA87A79",
     'enableRateLimit': True,
     'requests_trust_env':True,
     'verbose': False,
@@ -11,7 +11,7 @@ params = {
         'adjustForTimeDifference':True,
     },
     'headers': {},
-    'password': "Active2023!"
+    'password': "Jesse123!"
 }
 
 exchange = ccxt.okex5(params)
