@@ -295,8 +295,8 @@ class OKXHelper(Helper):
             response = exch.private_get_account_interest_limits(params={'type': "1", 'ccy': "USDT"})
 
             vip_loan = min(
-                response['data']['records'][0]['surplusLmtDetails']['curAcctRemainingQuota'], 
-                response['data']['records'][0]['surplusLmtDetails']['platRemainingQuota']
+                response['data'][0]['records'][0]['surplusLmtDetails']['allAcctRemainingQuota'], 
+                response['data'][0]['records'][0]['surplusLmtDetails']['platRemainingQuota']
             )
 
         except Exception as e:
