@@ -285,7 +285,7 @@ class OKXHelper(Helper):
             if balances[item['ccy']] < 0:
                 repayments[item['ccy']] = (5 - int(item['twap'] )) * 20
             if item['ccy'] == "USDT":
-                max_loan = item['maxLoan']
+                max_loan = float(item['maxLoan'])
 
         return balances, repayments, max_loan
     
