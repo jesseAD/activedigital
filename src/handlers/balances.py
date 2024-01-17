@@ -99,7 +99,7 @@ class Balances:
             try:
                 if exchange == "okx":
                     balanceValue, repayments, max_loan = OKXHelper().get_balances(exch=exch)
-                    loan_pools['market_loan'] = max_loan
+                    loan_pools['market_loan'] = OKXHelper().get_market_loan_pool(exch=exch)
                     loan_pools['vip_loan'] = OKXHelper().get_VIP_loan_pool(exch=exch)
 
                 elif exchange == "binance":
