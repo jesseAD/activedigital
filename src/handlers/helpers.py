@@ -300,14 +300,25 @@ class OKXHelper(Helper):
             )
 
         except Exception as e:
-            print("An error occurred in Balances:", e)
+            print("An error occurred in VIP Loan:", e)
 
         finally:
             return vip_loan
 
     def get_market_loan_pool(self, exch):
-        response = exch.private_get_account_interest_limits(params={'type': "2", 'ccy': "USDT"})
-        print(response)
+        market_loan = 0
+        try:
+            response = exch.private_get_account_max_loan(params={
+                'mgnMode': "cross",
+                'instId': "BTC-USDT"
+                })
+            market_loan = float(response['data'][0]['maxLoan'])
+
+        except Exception as e:
+            print("An error occurred in Market Loan:", e)
+
+        finally:
+            return market_loan
 
     def get_mark_prices(self, exch, symbol=None):
         params = {

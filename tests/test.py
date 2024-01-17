@@ -2,11 +2,11 @@ import ccxt
 
 
 params = {
-    'apiKey': "28d103d5-04a0-4102-a1ab-5ac12459b089",
-    'secret': "5FA27159C3FD4A3BEE2ECD5E9FA87A79",
+    'apiKey': "bd7dbeeb-d6d1-42e6-9c88-8d7f7b350154",
+    'secret': "3B92EDEDA9AF108941949A938CF98539",
     'enableRateLimit': True,
     'requests_trust_env':True,
-    'verbose': False,
+    'verbose': True,
     'options': {
         'adjustForTimeDifference':True,
     },
@@ -15,5 +15,8 @@ params = {
 }
 
 exchange = ccxt.okex5(params)
-
-print(exchange.private_get_account_interest_limits(params={'type': "1", 'ccy': "USDT"}))
+exchange.private_get_account_max_loan(params={
+    'mgnMode': "cross",
+    'instId': "BTC-USDT"
+    })
+# print(exchange.fetch_balance())
