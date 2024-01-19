@@ -341,13 +341,13 @@ clients:
           hedged_exclusion_positive: {'USDT': 0}
           hedged_exclusion_negative: {'USDT': 0}
   edison:
-    split_positions: True
+    split_positions: False
     subaccounts:
       okx:
         base_ccy: USDT
 
         submn1:
           margin_mode: non_portfolio
-          hedged_exclusion_positive: {'USDT': 0}
+          hedged_exclusion_positive: {'USDT': 0, 'SOL': 347,'ETH': 14 }
           hedged_exclusion_negative: {'USDT': 0}
       
