@@ -153,6 +153,10 @@ bid_ask:
   spot: *symbols_2
   perp: *symbols_3
 
+vip_loan_rates:
+  client: wizardly
+  account: submn
+
 borrow_rates:
   period: 
     binance: daily # yearly, daily or interval

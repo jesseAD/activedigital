@@ -337,6 +337,9 @@ class OKXHelper(Helper):
 
     def get_borrow_rate(self, exch, params={}):
         return exch.private_get_account_interest_rate(params=params)
+    
+    def get_vip_loan_rate(self, exch, params={}):
+        return exch.private_get_account_interest_limits(params=params)
 
     def get_index_prices(self, exch, symbol=None):
         params = {'quoteCcy': "USDT"}

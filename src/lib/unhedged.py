@@ -128,7 +128,7 @@ def get_unhedged(perp=[], spot=[]):
             }])
             id += 1
 
-            for _key in groups1:
+            if _key in groups1:
                 pairs.append([{
                     **groups1[_key][0],
                     'id': id,
@@ -142,6 +142,7 @@ def get_unhedged(perp=[], spot=[]):
             #         'unhedgedAmount': item['notional'] if item['side'] == "long" else -item['notional']
             #     }])
 
+            # print("-------" + __key)
             continue
 
         if _key in groups1:
@@ -300,7 +301,7 @@ def get_unhedged(perp=[], spot=[]):
                     ])
                     merged['notional'] = 0.0
                 
-                id += 1    
+                id += 1
 
     for _key, _group in groups1.items():
         if _key not in groups:
