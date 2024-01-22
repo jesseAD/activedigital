@@ -252,9 +252,13 @@ class FundingRates:
                         pipeline.append({"$match": {"borrow_rates_value.timestamp": {"$gte": max(last_time - 1, fundingRatesValue[-1]["timestamp"] - 28800000), "$lt": fundingRatesValue[-1]["timestamp"]}}})
 
                         borrow_rates = list(self.borrow_rates_db.aggregate(pipeline))
-                        borrow_rate = 0
+                        market_borrow_rate = 0
+                        vip_borrow_rate = 0
                         try:
-                            borrow_rate = sum([item['borrow_rates_value']['rate'] * item['borrow_rates_value']['scalar'] for item in borrow_rates]) / len(borrow_rates)
+                            market_borrow_rates = [item for item in borrow_rates if item['market/vip'] == "market"]
+                            vip_borrow_rates = [item for item in borrow_rates if item['market/vip'] == "vip"]
+                            market_borrow_rate = sum([item['borrow_rates_value']['rate'] * item['borrow_rates_value']['scalar'] for item in market_borrow_rates]) / len(market_borrow_rates)
+                            vip_borrow_rate = sum([item['borrow_rates_value']['rate'] * item['borrow_rates_value']['scalar'] for item in vip_borrow_rates]) / len(vip_borrow_rates)
                         except:
                             pass
                         
@@ -263,9 +267,9 @@ class FundingRates:
                         for i in range(1, 7):
                             for base_ccy in config['funding_rates']['base_ccy']:
                                 if base_ccy == borrow_ccy:
-                                    funding = i * fundingRatesValue[-1]["fundingRate"] * fundingRatesValue[-1]["scalar"] - (i-1) * borrow_rate
+                                    funding = i * fundingRatesValue[-1]["fundingRate"] * fundingRatesValue[-1]["scalar"] - (i-1) * market_borrow_rate
                                 else:
-                                    funding = i * fundingRatesValue[-1]["fundingRate"] * fundingRatesValue[-1]["scalar"] - i * borrow_rate
+                                    funding = i * fundingRatesValue[-1]["fundingRate"] * fundingRatesValue[-1]["scalar"] - i * market_borrow_rate
 
                                 long_fundings.append({
                                     'venue': exchange,
@@ -278,6 +282,30 @@ class FundingRates:
                                         'funding': funding,
                                         'timestamp': fundingRatesValue[-1]["timestamp"]
                                     },
+                                    'market/vip': "market",
+                                    'runid': latest_run_id,
+                                    'timestamp': datetime.now(timezone.utc)
+                                })
+
+                        for i in range(1, 7):
+                            for base_ccy in config['funding_rates']['base_ccy']:
+                                if base_ccy == borrow_ccy:
+                                    funding = i * fundingRatesValue[-1]["fundingRate"] * fundingRatesValue[-1]["scalar"] - (i-1) * vip_borrow_rate
+                                else:
+                                    funding = i * fundingRatesValue[-1]["fundingRate"] * fundingRatesValue[-1]["scalar"] - i * vip_borrow_rate
+
+                                long_fundings.append({
+                                    'venue': exchange,
+                                    'base': fundingRatesValue[-1]['base'],
+                                    'quote': fundingRatesValue[-1]['quote'],
+                                    'base_ccy': base_ccy,
+                                    'n': i,
+                                    'long_funding_value': {
+                                        'symbol': fundingRatesValue[-1]['base'] + "/" + fundingRatesValue[-1]['quote'],
+                                        'funding': funding,
+                                        'timestamp': fundingRatesValue[-1]["timestamp"]
+                                    },
+                                    'market/vip': "vip",
                                     'runid': latest_run_id,
                                     'timestamp': datetime.now(timezone.utc)
                                 })
@@ -291,8 +319,13 @@ class FundingRates:
 
                         borrow_rates = list(self.borrow_rates_db.aggregate(pipeline))
                         borrow_rate = 0
+                        market_borrow_rate = 0
+                        vip_borrow_rate = 0
                         try:
-                            borrow_rate = sum([item['borrow_rates_value']['rate'] * item['borrow_rates_value']['scalar'] for item in borrow_rates]) / len(borrow_rates)
+                            market_borrow_rates = [item for item in borrow_rates if item['market/vip'] == "market"]
+                            vip_borrow_rates = [item for item in borrow_rates if item['market/vip'] == "vip"]
+                            market_borrow_rate = sum([item['borrow_rates_value']['rate'] * item['borrow_rates_value']['scalar'] for item in market_borrow_rates]) / len(market_borrow_rates)
+                            vip_borrow_rate = sum([item['borrow_rates_value']['rate'] * item['borrow_rates_value']['scalar'] for item in vip_borrow_rates]) / len(vip_borrow_rates)
                         except:
                             pass
 
@@ -306,9 +339,26 @@ class FundingRates:
                                 'n': i,
                                 'short_funding_value': {
                                     'symbol': fundingRatesValue[-1]['base'] + "/" + fundingRatesValue[-1]['quote'],
-                                    'funding': -i * (fundingRatesValue[-1]["fundingRate"] + borrow_rate),
+                                    'funding': -i * (fundingRatesValue[-1]["fundingRate"] + market_borrow_rate),
                                     'timestamp': fundingRatesValue[-1]["timestamp"]
                                 },
+                                'market/vip': "market",
+                                'runid': latest_run_id,
+                                'timestamp': datetime.now(timezone.utc)
+                            })
+
+                        for i in range(1, 7):
+                            short_fundings.append({
+                                'venue': exchange,
+                                'base': fundingRatesValue[-1]['base'],
+                                'quote': fundingRatesValue[-1]['quote'],
+                                'n': i,
+                                'short_funding_value': {
+                                    'symbol': fundingRatesValue[-1]['base'] + "/" + fundingRatesValue[-1]['quote'],
+                                    'funding': -i * (fundingRatesValue[-1]["fundingRate"] + vip_borrow_rate),
+                                    'timestamp': fundingRatesValue[-1]["timestamp"]
+                                },
+                                'market/vip': "vip",
                                 'runid': latest_run_id,
                                 'timestamp': datetime.now(timezone.utc)
                             })

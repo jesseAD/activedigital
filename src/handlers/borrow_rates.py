@@ -70,7 +70,7 @@ class BorrowRates:
         future: str = None,
         perp: str = None,
         borrowRatesValue: str = None,
-        codes: str = None,
+        vipLoanRatesValue: str = None,
         back_off = {},
         logger=None
     ):
@@ -266,8 +266,35 @@ class BorrowRates:
                 return False
         
         # back_off[exchange] = config['dask']['back_off']
+            
+        if exchange == "okx" and vipLoanRatesValue is None:
+            try:
+                vipLoanRatesValue = {}
+                spec = config['vip_loan_rates']['client'].upper() + "_" + exchange.upper() + "_" + config['vip_loan_rates']['account'].upper() + "_"
+                API_KEY = os.getenv(spec + "API_KEY")
+                API_SECRET = os.getenv(spec + "API_SECRET")
+                PASSPHRASE = os.getenv(spec + "PASSPHRASE")
 
-        if len(borrowRatesValue) <= 0:
+                _exch = Exchange(exchange, _account, API_KEY, API_SECRET, PASSPHRASE).exch()
+                vipLoanRatesValue['info'] = OKXHelper().get_vip_loan_rate(
+                    exch=_exch,
+                    params={'type': 1, 'ccy': code}
+                )['data'][0]['records'][0]
+                vipLoanRatesValue['rate'] = float(vipLoanRatesValue['info']['rate']) * 365
+                vipLoanRatesValue['currency'] = code
+                vipLoanRatesValue['scalar'] = 1
+                vipLoanRatesValue['timestamp'] = datetime.timestamp(datetime.now(timezone.utc)) * 1000
+
+            except ccxt.NetworkError as e:
+                logger.warning(exchange + " borrow rates " + str(e))
+            
+            except ccxt.ExchangeError as e:
+                logger.warning(exchange + " borrow rates " + str(e))
+            
+            except Exception as e:
+                logger.warning(exchange + " borrow rates " + str(e))
+
+        if len(borrowRatesValue) <= 0 and vipLoanRatesValue == {}:
             return True
 
         borrow_rates = []
@@ -286,6 +313,7 @@ class BorrowRates:
                 "venue": exchange,
                 "borrow_rates_value": item,
                 "code": code,
+                "market/vip": "market",
                 "active": True,
                 "entry": False,
                 "exit": False,
@@ -304,6 +332,29 @@ class BorrowRates:
             borrow_rates.append(new_value)
         
         del borrowRatesValue
+
+        if vipLoanRatesValue != {}:
+            new_value = {
+                "venue": exchange,
+                "borrow_rates_value": vipLoanRatesValue,
+                "code": code,
+                "market/vip": "vip",
+                "active": True,
+                "entry": False,
+                "exit": False,
+                "timestamp": datetime.now(timezone.utc),
+            }
+
+            if spot:
+                new_value["spotMarket"] = spot
+            if future:
+                new_value["futureMarket"] = future
+            if perp:
+                new_value["perpMarket"] = perp
+
+            new_value["runid"] = latest_run_id
+
+            borrow_rates.append(new_value)
 
         try:
             self.borrow_rates_db.insert_many(borrow_rates)
