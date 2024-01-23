@@ -277,15 +277,15 @@ class BorrowRates:
                 API_SECRET = os.getenv(spec + "API_SECRET")
                 PASSPHRASE = os.getenv(spec + "PASSPHRASE")
 
-                _exch = Exchange(exchange, _account, API_KEY, API_SECRET, PASSPHRASE).exch()
+                _exch = Exchange(exchange, config['vip_loan_rates']['account'], API_KEY, API_SECRET, PASSPHRASE).exch()
                 vipLoanRatesValue['info'] = OKXHelper().get_vip_loan_rate(
                     exch=_exch,
                     params={'type': 1, 'ccy': code}
                 )['data'][0]['records'][0]
-                vipLoanRatesValue['rate'] = float(vipLoanRatesValue['info']['rate']) * 365
-                vipLoanRatesValue['currency'] = code
-                vipLoanRatesValue['scalar'] = 1
-                vipLoanRatesValue['timestamp'] = datetime.timestamp(datetime.now(timezone.utc)) * 1000
+                vipLoanRatesValue['rate'] = float(vipLoanRatesValue['info']['rate'])
+                vipLoanRatesValue['code'] = code
+                vipLoanRatesValue['scalar'] = 365
+                vipLoanRatesValue['timestamp'] = int(datetime.timestamp(datetime.now(timezone.utc)) * 1000)
 
             except ccxt.NetworkError as e:
                 logger.warning(exchange + " borrow rates " + str(e))
@@ -296,7 +296,7 @@ class BorrowRates:
             except Exception as e:
                 logger.warning(exchange + " borrow rates " + str(e))
 
-        if len(borrowRatesValue) <= 0 and vipLoanRatesValue == {}:
+        if len(borrowRatesValue) <= 0 and (vipLoanRatesValue == {} or vipLoanRatesValue is None):
             return True
 
         borrow_rates = []
