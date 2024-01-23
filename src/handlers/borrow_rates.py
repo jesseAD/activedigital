@@ -86,6 +86,7 @@ class BorrowRates:
                 if exchange:
                     query["venue"] = exchange
                 query["code"] = code
+                query["market/vip"] = "market"
 
             
                 borrow_rate_values = (
@@ -193,6 +194,7 @@ class BorrowRates:
                                 if exchange:
                                     query["venue"] = exchange
                                 query["code"] = code
+                                query["market/vip"] = "market"
 
                                 try:
                                     borrow_rate_values = (
@@ -333,7 +335,7 @@ class BorrowRates:
         
         del borrowRatesValue
 
-        if vipLoanRatesValue != {}:
+        if vipLoanRatesValue != {} and vipLoanRatesValue is not None:
             new_value = {
                 "venue": exchange,
                 "borrow_rates_value": vipLoanRatesValue,
