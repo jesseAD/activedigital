@@ -282,10 +282,10 @@ class BorrowRates:
                     exch=_exch,
                     params={'type': 1, 'ccy': code}
                 )['data'][0]['records'][0]
-                vipLoanRatesValue['rate'] = float(vipLoanRatesValue['info']['rate']) * 365
-                vipLoanRatesValue['currency'] = code
-                vipLoanRatesValue['scalar'] = 1
-                vipLoanRatesValue['timestamp'] = datetime.timestamp(datetime.now(timezone.utc)) * 1000
+                vipLoanRatesValue['rate'] = float(vipLoanRatesValue['info']['rate'])
+                vipLoanRatesValue['code'] = code
+                vipLoanRatesValue['scalar'] = 365
+                vipLoanRatesValue['timestamp'] = int(datetime.timestamp(datetime.now(timezone.utc)) * 1000)
 
             except ccxt.NetworkError as e:
                 logger.warning(exchange + " borrow rates " + str(e))
