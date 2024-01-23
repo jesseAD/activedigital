@@ -277,7 +277,7 @@ class BorrowRates:
                 API_SECRET = os.getenv(spec + "API_SECRET")
                 PASSPHRASE = os.getenv(spec + "PASSPHRASE")
 
-                _exch = Exchange(exchange, _account, API_KEY, API_SECRET, PASSPHRASE).exch()
+                _exch = Exchange(exchange, config['vip_loan_rates']['account'], API_KEY, API_SECRET, PASSPHRASE).exch()
                 vipLoanRatesValue['info'] = OKXHelper().get_vip_loan_rate(
                     exch=_exch,
                     params={'type': 1, 'ccy': code}
@@ -296,7 +296,7 @@ class BorrowRates:
             except Exception as e:
                 logger.warning(exchange + " borrow rates " + str(e))
 
-        if len(borrowRatesValue) <= 0 and vipLoanRatesValue == {}:
+        if len(borrowRatesValue) <= 0 and (vipLoanRatesValue == {} or vipLoanRatesValue is None):
             return True
 
         borrow_rates = []

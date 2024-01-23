@@ -9,11 +9,12 @@ from datetime import datetime, timezone
 import memory_profiler
 import ccxt
 
-mongo_uri = 'mongodb+srv://activedigital:8EnNmGsai9pD0gxq@mongodbcluster.nzphth1.mongodb.net/?retryWrites=true&w=majority'
+mongo_uri = 'mongodb+srv://activedigital:--pwd--@mongodbcluster.nzphth1.mongodb.net/?retryWrites=true&w=majority'
 
 mongo_client = pymongo.MongoClient(mongo_uri)
-db = mongo_client['active_digital']['leverages']
+db = mongo_client['active_digital']['borrow_rates']
 
-query = {'$and': [{'client': 'blackburn'}, {'venue': 'binance'}, {'account': 'submn'}]}
+query = {'$and': [{'venue': 'okx'}, {'market/vip': "vip"}]}
+# query = {'$and': [{'client': 'lucid'}, {'venue': 'binance'}, {'account': 'subls1'}]}
 
 db.delete_many(query)
