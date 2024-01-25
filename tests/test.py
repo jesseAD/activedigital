@@ -20,7 +20,7 @@ params = {
     'secret': "secret",
     'enableRateLimit': True,
     'requests_trust_env':True,
-    'verbose': False,
+    'verbose': True,
     'options': {
         'adjustForTimeDifference':True,
     },
@@ -30,12 +30,15 @@ params = {
 
 exchange = ccxt.okex5(params)
 
-# Positions(db, 'positions').create(
-#     client="edison",
-#     exch=exchange,
-#     exchange="okx",
-#     sub_account="submn1", 
-#     logger=logger
-# )
+# exchange.sapi_get_margin_tradecoeff()
+# exchange.fapiprivatev2_get_balance()
 
-print(exchange.private_get_account_interest_limits(params={'type': 1, 'ccy': "BTC"}))
+Positions(db, 'positions').create(
+    client="faraday",
+    exch=exchange,
+    exchange="okx",
+    sub_account="subls", 
+    logger=logger
+)
+
+# print(exchange.private_get_account_interest_limits(params={'type': 1, 'ccy': "BTC"}))
