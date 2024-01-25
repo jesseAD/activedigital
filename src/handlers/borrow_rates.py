@@ -178,7 +178,7 @@ class BorrowRates:
                         for _account in config['clients'][_client]['subaccounts'][exchange]:
                             print(_client + exchange + _account)
                             
-                            if _account.startswith('sub'):
+                            if _account != "base_ccy":
                                 spec = _client.upper() + "_" + exchange.upper() + "_" + _account.upper() + "_"
                                 API_KEY = os.getenv(spec + "API_KEY")
                                 API_SECRET = os.getenv(spec + "API_SECRET")

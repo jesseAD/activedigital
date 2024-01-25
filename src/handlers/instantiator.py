@@ -56,7 +56,7 @@ def get_data_collectors(client):
                 continue
             exchange_data = config['clients'][client][collection][exchange]
             for account in exchange_data:
-                if account.startswith('sub'):
+                if account != "base_ccy":
                     data_collector = instantiate(client, collection, exchange, account)
                     data_collectors.append(data_collector)
          
