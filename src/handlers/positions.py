@@ -280,67 +280,75 @@ class Positions:
                         #         pass
 
                         # value["margin"] = portfolio
-                        if exchange == "bybit":
-                            value['symbol'] = value['base'] + value['quote'] + "-PERP"
-                            value["liquidationBuffer"] = liquidation_buffer
-                        else:
-                            value["base"] = value["symbol"].split("/")[0]
-                            value["quote"] = (
-                                value["symbol"].split("-")[0].split("/")[1].split(":")[0]
-                            )
-                            value['symbol'] = value['base'] + value['quote'] + "-PERP"
-                            value["liquidationBuffer"] = liquidation_buffer
+                        try:
+                            if exchange == "bybit":
+                                value['symbol'] = value['base'] + value['quote'] + "-PERP"
+                                value["liquidationBuffer"] = liquidation_buffer
+                            else:
+                                value["base"] = value["symbol"].split("/")[0]
+                                value["quote"] = (
+                                    value["symbol"].split("-")[0].split("/")[1].split(":")[0]
+                                )
+                                value['symbol'] = value['base'] + value['quote'] + "-PERP"
+                                value["liquidationBuffer"] = liquidation_buffer
 
-                            if value["quote"] == "USD":
-                                value["notional"] = float(
-                                    value["notional"]
-                                ) * Helper().calc_cross_ccy_ratio(
-                                    value["base"],
-                                    config["clients"][client]["subaccounts"][exchange][
-                                        "base_ccy"
-                                    ],
-                                    tickers,
-                                )
-                                value["unrealizedPnl"] = float(
-                                    value["unrealizedPnl"]
-                                ) * Helper().calc_cross_ccy_ratio(
-                                    value["base"],
-                                    config["clients"][client]["subaccounts"][exchange][
-                                        "base_ccy"
-                                    ],
-                                    tickers,
-                                )
-                        position_info.append(value)
+                                if value["quote"] == "USD":
+                                    value["notional"] = float(
+                                        value["notional"]
+                                    ) * Helper().calc_cross_ccy_ratio(
+                                        value["base"],
+                                        config["clients"][client]["subaccounts"][exchange][
+                                            "base_ccy"
+                                        ],
+                                        tickers,
+                                    )
+                                    value["unrealizedPnl"] = float(
+                                        value["unrealizedPnl"]
+                                    ) * Helper().calc_cross_ccy_ratio(
+                                        value["base"],
+                                        config["clients"][client]["subaccounts"][exchange][
+                                            "base_ccy"
+                                        ],
+                                        tickers,
+                                    )
+                            position_info.append(value)
+
+                        except Exception as e:
+                            logger.warning(client + " " + exchange + " " + sub_account + " positions " + str(e))
 
                 else:
-                    value["base"] = value["symbol"].split("_")[0].split("USD")[0]
-                    value["quote"] = "USD" + value["symbol"].split("_")[0].split("USD")[1]
-                    value['symbol'] = value['base'] + value['quote'] + "-PERP"
-                    value['side'] = "long" if float(value['contracts']) > 0 else "short"
-                    
-                    value["liquidationBuffer"] = liquidation_buffer
+                    try:
+                        value["base"] = value["symbol"].split("_")[0].split("USD")[0]
+                        value["quote"] = "USD" + value["symbol"].split("_")[0].split("USD")[1]
+                        value['symbol'] = value['base'] + value['quote'] + "-PERP"
+                        value['side'] = "long" if float(value['contracts']) > 0 else "short"
+                        
+                        value["liquidationBuffer"] = liquidation_buffer
 
-                    if value["quote"] == "USD":
-                        value["notional"] = float(
-                            value["notional"]
-                        ) * Helper().calc_cross_ccy_ratio(
-                            value["base"],
-                            config["clients"][client]["subaccounts"][exchange][
-                                "base_ccy"
-                            ],
-                            tickers,
-                        )
-                        value["unrealizedPnl"] = float(
-                            value["unrealizedPnl"]
-                        ) * Helper().calc_cross_ccy_ratio(
-                            value["base"],
-                            config["clients"][client]["subaccounts"][exchange][
-                                "base_ccy"
-                            ],
-                            tickers,
-                        )
+                        if value["quote"] == "USD":
+                            value["notional"] = float(
+                                value["notional"]
+                            ) * Helper().calc_cross_ccy_ratio(
+                                value["base"],
+                                config["clients"][client]["subaccounts"][exchange][
+                                    "base_ccy"
+                                ],
+                                tickers,
+                            )
+                            value["unrealizedPnl"] = float(
+                                value["unrealizedPnl"]
+                            ) * Helper().calc_cross_ccy_ratio(
+                                value["base"],
+                                config["clients"][client]["subaccounts"][exchange][
+                                    "base_ccy"
+                                ],
+                                tickers,
+                            )
 
-                    position_info.append(value)
+                        position_info.append(value)
+
+                    except Exception as e:
+                        logger.warning(client + " " + exchange + " " + sub_account + " positions " + str(e))
             
             if exchange == "binance":
                 for position in position_info:
@@ -367,6 +375,10 @@ class Positions:
         except ccxt.ExchangeError as e:
             logger.warning(client + " " + exchange + " " + sub_account + " positions " + str(e))
             # print("An error occurred in Positions:", e)
+            pass
+
+        except Exception as e:
+            logger.warning(client + " " + exchange + " " + sub_account + " positions " + str(e))
             pass
 
         del position_value
@@ -430,139 +442,10 @@ class Positions:
         i = 0
         j = 0
         while True:
-            if i == len(position_info) and j == len(lifetime_funding_values):
-                break
-            if i == len(position_info):
-                funding = {
-                    'client': client,
-                    'venue': exchange,
-                    'account': sub_account,
-                    'symbol': lifetime_funding_values[j]['symbol'],
-                    'funding': lifetime_funding_values[j]['funding'],
-                    'state': "closed",
-                    'open_close_time': lifetime_funding_values[j]['open_close_time'],
-                    'last_time': lifetime_funding_values[j]['last_time'],
-                    'base': lifetime_funding_values[j]['base'],
-                    'quote': lifetime_funding_values[j]['quote'],
-                }
-                if lifetime_funding_values[j]['state'] == "closed":
-                    if lifetime_funding_values[j]['open_close_time'] > lifetime_funding_values[j]['last_time']:
-                        query = {
-                            'venue': exchange,
-                            'symbol': lifetime_funding_values[j]['base'] + "/USDT" if lifetime_funding_values[j]['quote'] == "USDT" else lifetime_funding_values[j]['base'] + "/USD"
-                        }
-                        funding_rates = self.funding_rates_db.find(query).sort("_id", -1).limit(1)
-                        funding_rate = 0.0
-                        funding_time = 0
-                        for item in funding_rates:
-                            funding_rate = item['funding_rates_value']['fundingRate']
-                            funding_time = item['funding_rates_value']['timestamp']
-
-                        if funding_time > lifetime_funding_values[j]['last_time']:
-                            funding['last_time'] = lifetime_funding_values[j]['open_close_time']
-                            funding['funding'] += (funding_rate * (lifetime_funding_values[j]['open_close_time'] - lifetime_funding_values[j]['last_time']) / 28800000)
-                else:
-                    funding['open_close_time'] = current_time
-
-                fundings.append(funding)
-                j += 1
-
-            elif j == len(lifetime_funding_values):
-                fundings.append({
-                    'client': client,
-                    'venue': exchange,
-                    'account': sub_account,
-                    'symbol': position_info[i]['symbol'],
-                    'funding': 0.0,
-                    'state': "open",
-                    'open_close_time': current_time,
-                    'last_time': current_time,
-                    'base': position_info[i]['base'],
-                    'quote': position_info[i]['quote']
-                })
-                position_info[i]['lifetime_funding_rates'] = 0.0
-                i += 1
-
-            else:
-                if position_info[i]['symbol'] == lifetime_funding_values[j]['symbol']:
-                    if lifetime_funding_values[j]['state'] == "closed":
-                        if lifetime_funding_values[j]['open_close_time'] > lifetime_funding_values[j]['last_time']:
-                            fundings.append({
-                                'client': client,
-                                'venue': exchange,
-                                'account': sub_account,
-                                'symbol': lifetime_funding_values[j]['symbol'],
-                                'funding': lifetime_funding_values[j]['funding'],
-                                'state': "open",
-                                'open_close_time': current_time - lifetime_funding_values[j]['open_close_time'] + lifetime_funding_values[j]['last_time'],
-                                'last_time': lifetime_funding_values[j]['last_time'],
-                                'base': lifetime_funding_values[j]['base'],
-                                'quote': lifetime_funding_values[j]['quote']
-                            })
-                        else:
-                            fundings.append({
-                                'client': client,
-                                'venue': exchange,
-                                'account': sub_account,
-                                'symbol': lifetime_funding_values[j]['symbol'],
-                                'funding': lifetime_funding_values[j]['funding'],
-                                'state': "open",
-                                'open_close_time': current_time,
-                                'last_time': current_time,
-                                'base': lifetime_funding_values[j]['base'],
-                                'quote': lifetime_funding_values[j]['quote']
-                            })
-                        position_info[i]['lifetime_funding_rates'] = lifetime_funding_values[j]['funding']
-                    else:
-                        query = {
-                            'venue': exchange,
-                            'symbol': position_info[i]['base'] + "/USDT" if position_info[i]['quote'] == "USDT" else position_info[i]['base'] + "/USD"
-                        }
-                        funding_rates = self.funding_rates_db.find(query).sort("_id", -1).limit(1)
-                        funding_rate = 0.0
-                        funding_time = 0
-                        for item in funding_rates:
-                            funding_rate = item['funding_rates_value']['fundingRate']
-                            funding_time = item['funding_rates_value']['timestamp']
-
-                        if lifetime_funding_values[j]['open_close_time'] < funding_time and lifetime_funding_values[j]['last_time'] < funding_time:
-                            fundings.append({
-                                'client': client,
-                                'venue': exchange,
-                                'account': sub_account,
-                                'symbol': position_info[i]['symbol'],
-                                'funding': (lifetime_funding_values[j]['funding'] + funding_rate 
-                                            * (funding_time - max(lifetime_funding_values[j]['open_close_time'], lifetime_funding_values[j]['last_time'])) / 28800000),
-                                'state': "open",
-                                'open_close_time': lifetime_funding_values[j]['open_close_time'],
-                                'last_time': funding_time,
-                                'base': lifetime_funding_values[j]['base'],
-                                'quote': lifetime_funding_values[j]['quote']
-                            })
-                            position_info[i]['lifetime_funding_rates'] = fundings[-1]['funding']
-                        else:
-                            position_info[i]['lifetime_funding_rates'] = lifetime_funding_values[j]['funding']
-
-                    i += 1
-                    j += 1
-
-                elif position_info[i]['symbol'] < lifetime_funding_values[j]['symbol']:
-                    fundings.append({
-                        'client': client,
-                        'venue': exchange,
-                        'account': sub_account,
-                        'symbol': position_info[i]['symbol'],
-                        'funding': 0.0,
-                        'state': "open",
-                        'open_close_time': current_time,
-                        'last_time': current_time,
-                        'base': position_info[i]['base'],
-                        'quote': position_info[i]['quote']
-                    })
-                    position_info[i]['lifetime_funding_rates'] = 0.0
-                    i += 1
-
-                elif position_info[i]['symbol'] > lifetime_funding_values[j]['symbol']:
+            try:
+                if i == len(position_info) and j == len(lifetime_funding_values):
+                    break
+                if i == len(position_info):
                     funding = {
                         'client': client,
                         'venue': exchange,
@@ -596,6 +479,139 @@ class Positions:
 
                     fundings.append(funding)
                     j += 1
+
+                elif j == len(lifetime_funding_values):
+                    fundings.append({
+                        'client': client,
+                        'venue': exchange,
+                        'account': sub_account,
+                        'symbol': position_info[i]['symbol'],
+                        'funding': 0.0,
+                        'state': "open",
+                        'open_close_time': current_time,
+                        'last_time': current_time,
+                        'base': position_info[i]['base'],
+                        'quote': position_info[i]['quote']
+                    })
+                    position_info[i]['lifetime_funding_rates'] = 0.0
+                    i += 1
+
+                else:
+                    if position_info[i]['symbol'] == lifetime_funding_values[j]['symbol']:
+                        if lifetime_funding_values[j]['state'] == "closed":
+                            if lifetime_funding_values[j]['open_close_time'] > lifetime_funding_values[j]['last_time']:
+                                fundings.append({
+                                    'client': client,
+                                    'venue': exchange,
+                                    'account': sub_account,
+                                    'symbol': lifetime_funding_values[j]['symbol'],
+                                    'funding': lifetime_funding_values[j]['funding'],
+                                    'state': "open",
+                                    'open_close_time': current_time - lifetime_funding_values[j]['open_close_time'] + lifetime_funding_values[j]['last_time'],
+                                    'last_time': lifetime_funding_values[j]['last_time'],
+                                    'base': lifetime_funding_values[j]['base'],
+                                    'quote': lifetime_funding_values[j]['quote']
+                                })
+                            else:
+                                fundings.append({
+                                    'client': client,
+                                    'venue': exchange,
+                                    'account': sub_account,
+                                    'symbol': lifetime_funding_values[j]['symbol'],
+                                    'funding': lifetime_funding_values[j]['funding'],
+                                    'state': "open",
+                                    'open_close_time': current_time,
+                                    'last_time': current_time,
+                                    'base': lifetime_funding_values[j]['base'],
+                                    'quote': lifetime_funding_values[j]['quote']
+                                })
+                            position_info[i]['lifetime_funding_rates'] = lifetime_funding_values[j]['funding']
+                        else:
+                            query = {
+                                'venue': exchange,
+                                'symbol': position_info[i]['base'] + "/USDT" if position_info[i]['quote'] == "USDT" else position_info[i]['base'] + "/USD"
+                            }
+                            funding_rates = self.funding_rates_db.find(query).sort("_id", -1).limit(1)
+                            funding_rate = 0.0
+                            funding_time = 0
+                            for item in funding_rates:
+                                funding_rate = item['funding_rates_value']['fundingRate']
+                                funding_time = item['funding_rates_value']['timestamp']
+
+                            if lifetime_funding_values[j]['open_close_time'] < funding_time and lifetime_funding_values[j]['last_time'] < funding_time:
+                                fundings.append({
+                                    'client': client,
+                                    'venue': exchange,
+                                    'account': sub_account,
+                                    'symbol': position_info[i]['symbol'],
+                                    'funding': (lifetime_funding_values[j]['funding'] + funding_rate 
+                                                * (funding_time - max(lifetime_funding_values[j]['open_close_time'], lifetime_funding_values[j]['last_time'])) / 28800000),
+                                    'state': "open",
+                                    'open_close_time': lifetime_funding_values[j]['open_close_time'],
+                                    'last_time': funding_time,
+                                    'base': lifetime_funding_values[j]['base'],
+                                    'quote': lifetime_funding_values[j]['quote']
+                                })
+                                position_info[i]['lifetime_funding_rates'] = fundings[-1]['funding']
+                            else:
+                                position_info[i]['lifetime_funding_rates'] = lifetime_funding_values[j]['funding']
+
+                        i += 1
+                        j += 1
+
+                    elif position_info[i]['symbol'] < lifetime_funding_values[j]['symbol']:
+                        fundings.append({
+                            'client': client,
+                            'venue': exchange,
+                            'account': sub_account,
+                            'symbol': position_info[i]['symbol'],
+                            'funding': 0.0,
+                            'state': "open",
+                            'open_close_time': current_time,
+                            'last_time': current_time,
+                            'base': position_info[i]['base'],
+                            'quote': position_info[i]['quote']
+                        })
+                        position_info[i]['lifetime_funding_rates'] = 0.0
+                        i += 1
+
+                    elif position_info[i]['symbol'] > lifetime_funding_values[j]['symbol']:
+                        funding = {
+                            'client': client,
+                            'venue': exchange,
+                            'account': sub_account,
+                            'symbol': lifetime_funding_values[j]['symbol'],
+                            'funding': lifetime_funding_values[j]['funding'],
+                            'state': "closed",
+                            'open_close_time': lifetime_funding_values[j]['open_close_time'],
+                            'last_time': lifetime_funding_values[j]['last_time'],
+                            'base': lifetime_funding_values[j]['base'],
+                            'quote': lifetime_funding_values[j]['quote'],
+                        }
+                        if lifetime_funding_values[j]['state'] == "closed":
+                            if lifetime_funding_values[j]['open_close_time'] > lifetime_funding_values[j]['last_time']:
+                                query = {
+                                    'venue': exchange,
+                                    'symbol': lifetime_funding_values[j]['base'] + "/USDT" if lifetime_funding_values[j]['quote'] == "USDT" else lifetime_funding_values[j]['base'] + "/USD"
+                                }
+                                funding_rates = self.funding_rates_db.find(query).sort("_id", -1).limit(1)
+                                funding_rate = 0.0
+                                funding_time = 0
+                                for item in funding_rates:
+                                    funding_rate = item['funding_rates_value']['fundingRate']
+                                    funding_time = item['funding_rates_value']['timestamp']
+
+                                if funding_time > lifetime_funding_values[j]['last_time']:
+                                    funding['last_time'] = lifetime_funding_values[j]['open_close_time']
+                                    funding['funding'] += (funding_rate * (lifetime_funding_values[j]['open_close_time'] - lifetime_funding_values[j]['last_time']) / 28800000)
+                        else:
+                            funding['open_close_time'] = current_time
+
+                        fundings.append(funding)
+                        j += 1
+
+            except Exception as e:
+                logger.warning(client + " " + exchange + " " + sub_account + " positions " + str(e))
 
         for item in fundings:
             try:

@@ -28,17 +28,20 @@ params = {
     'password': "pwd"
 }
 
-exchange = ccxt.okex5(params)
+# exchange = ccxt.okex5(params)
 
 # exchange.sapi_get_margin_tradecoeff()
 # exchange.fapiprivatev2_get_balance()
 
-Positions(db, 'positions').create(
-    client="faraday",
-    exch=exchange,
-    exchange="okx",
-    sub_account="subls", 
-    logger=logger
-)
+# Positions(db, 'positions').create(
+#     client="faraday",
+#     exch=exchange,
+#     exchange="okx",
+#     sub_account="subls", 
+#     logger=logger
+# )
 
 # print(exchange.private_get_account_interest_limits(params={'type': 1, 'ccy': "BTC"}))
+
+exchange = ccxt.binance()
+print(exchange.fapipublic_get_premiumindex())
