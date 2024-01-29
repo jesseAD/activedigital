@@ -239,7 +239,7 @@ class Positions:
 
             for value in position_value:
                 if config['clients'][client]['subaccounts'][exchange][sub_account]['margin_mode'] == 'non_portfolio':
-                    if float(value["initialMargin"]) > 0:
+                    if float(value["initialMargin"]) != 0.0:
                         # portfolio = None
                         # if exchange == "binance":
                         #     try:
