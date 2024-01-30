@@ -1,4 +1,4 @@
-import os
+import os, json
 from dotenv import load_dotenv
 from datetime import datetime, timezone
 import time
@@ -111,6 +111,8 @@ class Positions:
                             item['marginMode'] = "cross"
                     else:
                         position_value = Helper().get_positions(exch=exch)
+                        if client == "lucid":
+                            logger.info("lucid positions: " + json.dumps(position_value))
 
                 elif exchange == "bybit":
                     position_value = BybitHelper().get_positions(exch=exch)
