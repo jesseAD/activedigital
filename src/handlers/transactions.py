@@ -1,6 +1,6 @@
 import os
 from dotenv import load_dotenv
-from datetime import datetime, timezone, timedelta
+from datetime import datetime, timezone, timedelta, date
 import ccxt 
 import time
 
@@ -23,6 +23,7 @@ class Transactions:
         self.runs_db = db['runs']
         self.tickers_db = db['tickers']
         self.transactions_db = db['transactions']
+        self.mtd_pnls_db = db['mtd_pnls']
 
     def get(
         self,
@@ -708,6 +709,76 @@ class Transactions:
             if len(transaction) == 0:
                 return True
         
+        #  MTD PnL
+        try:
+            pnl = 0
+
+            if exchange == "binance":
+                pnl = sum(float(item['income']) for item in transaction_value)
+
+            elif exchange == "okx":
+                pnl = sum(float(item['sz']) for item in transaction_value if item['instType'] == "SPOT")
+
+            elif exchange == "bybit":
+                pnl = sum(float(item['funding']) for item in transaction_value)
+
+            query = {
+                'client': client,
+                'venue': exchange,
+                'account': sub_account
+            }
+            last_pnls = self.mtd_pnls_db.find(query).sort("date", -1).limit(1)
+
+            last_pnl = None
+            for item in last_pnls:
+                last_pnl = item
+
+            current_date = datetime.combine(date.today(), datetime.min.time())
+            
+            if last_pnl is None:
+                self.mtd_pnls_db.insert_one({
+                    'client': client,
+                    'venue': exchange,
+                    'account': sub_account,
+                    'pnl': pnl,
+                    'cumulative_pnl': pnl,
+                    'date': current_date
+                })
+            
+            else:
+                if last_pnl['date'] == current_date:
+                    self.mtd_pnls_db.update_one(
+                        {
+                            'client': client,
+                            'venue': exchange,
+                            'account': sub_account,
+                            'date': current_date
+                        },
+                        {"$set": {
+                            'pnl': pnl + last_pnl['pnl'],
+                            'cumulative_pnl': pnl + last_pnl['cumulative_pnl'],
+                        }}
+                    )
+                
+                else:
+                    if current_date.day == 1:
+                        cumulative = 0
+                    else:
+                        cumulative = last_pnl['cumulative_pnl']
+
+                    self.mtd_pnls_db.insert_one({
+                        'client': client,
+                        'venue': exchange,
+                        'account': sub_account,
+                        'pnl': pnl,
+                        'cumulative_pnl': pnl + cumulative,
+                        'date': current_date
+                    })
+        
+        except Exception as e:
+            logger.warning(client + " " + exchange + " " + sub_account + " MTL PnL " + str(e))
+
+        
         del transaction_value
 
         try:
@@ -741,5 +812,5 @@ class Transactions:
 
             # return transaction
         except Exception as e:
-            logger.error(client + " " + exchange + " " + sub_account + " positions " + str(e))
+            logger.error(client + " " + exchange + " " + sub_account + " transactions " + str(e))
             return True
