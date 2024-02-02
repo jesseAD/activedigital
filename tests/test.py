@@ -20,15 +20,17 @@ params = {
     'secret': "secret",
     'enableRateLimit': True,
     'requests_trust_env':True,
-    'verbose': True,
+    'verbose': False,
     'options': {
         'adjustForTimeDifference':True,
     },
     'headers': {},
-    'password': "pwd"
+    # 'password': "pwd"
 }
 
-# exchange = ccxt.binance(params)
+exchange = ccxt.binance(params)
+
+print(exchange.fapiprivatev2_get_account())
 
 # exchange.sapi_get_margin_tradecoeff()
 # exchange.fapiprivatev2_get_balance()
@@ -43,5 +45,5 @@ params = {
 
 # print(exchange.fetch_account_positions(params={"type": "future"}))
 
-exchange = ccxt.okex5()
-print(exchange.fetch_funding_rate(symbol="XRP/USDT:USDT"))
+# exchange = ccxt.okex5()
+# print(exchange.fetch_funding_rate(symbol="XRP/USDT:USDT"))

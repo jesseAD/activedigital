@@ -218,8 +218,41 @@ class Helper:
     def get_pm_cross_margin_ratio(self, exch):
         return exch.papi_get_account()['uniMMR']
     
-    def get_maintenance_margin_ratio(self, exch):
-        return exch.fapiPrivateV2GetAccount()['totalMaintMargin']
+    def get_cross_margin_ratio(self, exch):
+        ratio = 3
+
+        try:
+            ratio = float(exch.sapi_get_margin_account()['marginLevel'])
+        except Exception as e:
+            print("An error occurred in Binance non-PM margin ratio: ", e)
+
+        return ratio if ratio > 0 else 0
+    
+    def get_um_margin_ratio(self, exch):
+        ratio = 3
+
+        try:
+            res = exch.fapiprivatev2_get_account()
+            ratio = 3 if float(res['totalMaintMargin']) == 0.0 else float(res['totalMarginBalance']) / float(res['totalMaintMargin'])
+        except Exception as e:
+            print("An error occurred in Binance non-PM margin ratio: ", e)
+
+        return ratio
+    
+    def get_cm_margin_ratio(self, exch):
+        ratio = 3
+
+        try:
+            res = exch.dapiprivate_get_account()
+
+            for item in res['assets']:
+                if float(item['maintMargin']) != 0.0:
+                    ratio = min(ratio, float(item['marginBalance']) / float(item['maintMargin']))
+        
+        except Exception as e:
+            print("An error occurred in Binance non-PM margin ratio: ", e)
+
+        return ratio
 
     def calc_liquidation_buffer(self, exchange, mgnRatio):
         return max(0, min(

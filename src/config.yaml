@@ -35,12 +35,16 @@ ccxt:
 
 liquidation:
   threshold: 
-    binance: 1.7
+    binance: 1.1
+    binance_cm: 1
+    binance_um: 1
     binance_pm: 1.7
     okx: 0.95
     bybit: 0.75
   scalar:
-    binance: 1
+    binance: 0.53
+    binance_cm: 0.5
+    binance_um: 0.5
     binance_pm: 1
     okx: 0.125
     bybit: -1
