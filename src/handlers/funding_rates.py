@@ -128,23 +128,23 @@ class FundingRates:
                     last_time = int(current_values['timestamp']) + 1
                     if exchange == "okx":
                         fundingRatesValue = OKXHelper().get_funding_rates(
-                            exch=exch, limit=100, symbol=symbol, since=last_time + 28800000
+                            exch=exch, limit=100, symbol=symbol, since=last_time# + 28800000
                         )
 
-                        if len(fundingRatesValue) > 0 or (datetime.now(timezone.utc).timestamp() * 1000) > (last_time + 28800000):
-                            funding_rate = OKXHelper().get_funding_rate(
-                                exch=exch,
-                                symbol=symbol
-                            )
+                        # if len(fundingRatesValue) > 0 or (datetime.now(timezone.utc).timestamp() * 1000) > (last_time + 28800000):
+                        #     funding_rate = OKXHelper().get_funding_rate(
+                        #         exch=exch,
+                        #         symbol=symbol
+                        #     )
 
-                            current_funding_rate = {}
-                            current_funding_rate["info"] = funding_rate['info']
-                            current_funding_rate["symbol"] = symbol
-                            current_funding_rate["fundingRate"] = funding_rate["fundingRate"]
-                            current_funding_rate["info"]["realizedRate"] = funding_rate["fundingRate"]
-                            current_funding_rate["timestamp"] = funding_rate["fundingTimestamp"]
-                            current_funding_rate["datetime"] = funding_rate["fundingDatetime"]
-                            fundingRatesValue.append(current_funding_rate)
+                        #     current_funding_rate = {}
+                        #     current_funding_rate["info"] = funding_rate['info']
+                        #     current_funding_rate["symbol"] = symbol
+                        #     current_funding_rate["fundingRate"] = funding_rate["fundingRate"]
+                        #     current_funding_rate["info"]["realizedRate"] = funding_rate["fundingRate"]
+                        #     current_funding_rate["timestamp"] = funding_rate["fundingTimestamp"]
+                        #     current_funding_rate["datetime"] = funding_rate["fundingDatetime"]
+                        #     fundingRatesValue.append(current_funding_rate)
 
                     elif exchange == "binance":
                         fundingRatesValue = Helper().get_funding_rates(
@@ -171,24 +171,24 @@ class FundingRates:
                             )
 
                         for item in fundingRatesValue:
-                            item["nextFundingRate"] = funding_rate["nextFundingRate"]
-                            item["nextFundingTime"] = funding_rate["nextFundingTimestamp"]
+                            item["nextFundingRate"] = funding_rate["fundingRate"]
+                            item["nextFundingTime"] = funding_rate["fundingTimestamp"]
                             item["base"] = symbol.split("/")[0]
                             item["quote"] = symbol.split("/")[1].split(":")[0]
                             item["scalar"] = scalar
 
-                            if (
-                                config["funding_rates"][exchange]["valid"]
-                                == "valid_to"
-                            ):
-                                item["timestamp"] = int(item["timestamp"]) - (
-                                    int(funding_rate["nextFundingTimestamp"])
-                                    - int(funding_rate["fundingTimestamp"])
-                                )
-                                item["nextFundingTime"] = int(item["nextFundingTime"]) - (
-                                    int(funding_rate["nextFundingTimestamp"])
-                                    - int(funding_rate["fundingTimestamp"])
-                                )
+                            # if (
+                            #     config["funding_rates"][exchange]["valid"]
+                            #     == "valid_to"
+                            # ):
+                            #     item["timestamp"] = int(item["timestamp"]) - (
+                            #         int(funding_rate["nextFundingTimestamp"])
+                            #         - int(funding_rate["fundingTimestamp"])
+                            #     )
+                            #     item["nextFundingTime"] = int(item["nextFundingTime"]) - (
+                            #         int(funding_rate["nextFundingTimestamp"])
+                            #         - int(funding_rate["fundingTimestamp"])
+                            #     )
 
                     elif exchange == "binance":
                         funding_rate = Helper().get_funding_rate(
@@ -425,7 +425,7 @@ class FundingRates:
                             },
                             {
                                 "$set": {
-                                    "funding_rates_value.nextFundingRate": funding_rate['nextFundingRate']
+                                    "funding_rates_value.nextFundingRate": funding_rate['fundingRate']
                                 }
                             },
                             upsert=False

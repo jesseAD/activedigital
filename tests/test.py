@@ -28,7 +28,7 @@ params = {
     'password': "pwd"
 }
 
-exchange = ccxt.binance(params)
+# exchange = ccxt.binance(params)
 
 # exchange.sapi_get_margin_tradecoeff()
 # exchange.fapiprivatev2_get_balance()
@@ -41,7 +41,7 @@ exchange = ccxt.binance(params)
 #     logger=logger
 # )
 
-print(exchange.fetch_account_positions(params={"type": "future"}))
+# print(exchange.fetch_account_positions(params={"type": "future"}))
 
-# exchange = ccxt.okex5()
-# print(exchange.fetch_funding_rate(symbol="XRP/USDT:USDT"))
+exchange = ccxt.okex5()
+print(exchange.fetch_funding_rate(symbol="XRP/USDT:USDT"))
