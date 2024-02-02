@@ -103,6 +103,8 @@ class Positions:
                 if exchange == "okx":
                     position_value = OKXHelper().get_positions(exch=exch)
 
+                    logger.info("okx positions: " + json.dumps(position_value))
+
                 elif exchange == "binance":
                     if config['clients'][client]['subaccounts'][exchange][sub_account]['margin_mode'] == 'portfolio':
                         position_value = Helper().get_pm_positions(exch=exch)
@@ -112,8 +114,8 @@ class Positions:
                     else:
                         position_value = Helper().get_positions(exch=exch)
 
-                        if client == "lucid":
-                            logger.info("lucid positions: " + json.dumps(position_value))
+                        # if client == "lucid":
+                        #     logger.info("lucid positions: " + json.dumps(position_value))
 
                 elif exchange == "bybit":
                     position_value = BybitHelper().get_positions(exch=exch)
