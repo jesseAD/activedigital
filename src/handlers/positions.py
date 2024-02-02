@@ -103,7 +103,7 @@ class Positions:
                 if exchange == "okx":
                     position_value = OKXHelper().get_positions(exch=exch)
 
-                    logger.info("okx positions: " + json.dumps(position_value))
+                    # logger.info("okx positions: " + json.dumps(position_value))
 
                 elif exchange == "binance":
                     if config['clients'][client]['subaccounts'][exchange][sub_account]['margin_mode'] == 'portfolio':
@@ -217,14 +217,16 @@ class Positions:
                         pass
                 else:
                     try:
-                        cross_margin_ratio = 1e10
-                        for position in position_value:
-                            if position['initialMargin'] > 0:
-                                cross_margin_ratio = (position['marginRatio'] 
-                                    if cross_margin_ratio > position['marginRatio'] else cross_margin_ratio)
-                        liquidation_buffer = Helper().calc_liquidation_buffer(
-                            exchange=exchange, mgnRatio=cross_margin_ratio
+                        liquidation1 = Helper().calc_liquidation_buffer(
+                            exchange=exchange, mgnRatio=Helper().get_cross_margin_ratio(exch=exch)
                         )
+                        liquidation2 = Helper().calc_liquidation_buffer(
+                            exchange=exchange+"_cm", mgnRatio=Helper().get_cm_margin_ratio(exch=exch)
+                        )
+                        liquidation3 = Helper().calc_liquidation_buffer(
+                            exchange=exchange+"_um", mgnRatio=Helper().get_um_margin_ratio(exch=exch)
+                        )
+                        liquidation_buffer = min(liquidation1, liquidation2, liquidation3)
 
                     # except ccxt.InvalidNonce as e:
                     #     print("Hit rate limit", e)
@@ -290,10 +292,15 @@ class Positions:
                                 value['symbol'] = value['base'] + value['quote'] + "-PERP"
                                 value["liquidationBuffer"] = liquidation_buffer
                             else:
-                                value["base"] = value["symbol"].split("/")[0]
-                                value["quote"] = (
-                                    value["symbol"].split("-")[0].split("/")[1].split(":")[0]
-                                )
+                                if ":" in value['symbol']:
+                                    value["base"] = value["symbol"].split("/")[0]
+                                    value["quote"] = (
+                                        value["symbol"].split("-")[0].split("/")[1].split(":")[0]
+                                    )
+                                else:
+                                    value['base'] = value["symbol"].split("-")[0]
+                                    value['quote'] = value['symbol'].split("-")[1]
+
                                 value['symbol'] = value['base'] + value['quote'] + "-PERP"
                                 value["liquidationBuffer"] = liquidation_buffer
 
@@ -616,7 +623,7 @@ class Positions:
                         j += 1
 
             except Exception as e:
-                logger.warning(client + " " + exchange + " " + sub_account + " positions " + str(e))
+                logger.warning(client + " " + exchange + " " + sub_account + " lifetime fundings " + str(e))
 
         for item in fundings:
             try:
@@ -638,7 +645,7 @@ class Positions:
                     upsert=True
                 )
             except Exception as e:
-                logger.error(client + " " + exchange + " " + sub_account + " positions " + str(e))
+                logger.error(client + " " + exchange + " " + sub_account + " lifetime fundings " + str(e))
                 # print("An error occurred in Lifetime Funding:", e)
 
         # calculate unhedged
@@ -737,7 +744,7 @@ class Positions:
                 self.split_positions_db.insert_one(split_position)
                 
             except Exception as e:
-                logger.error(client + " " + exchange + " " + sub_account + " positions " + str(e))
+                logger.error(client + " " + exchange + " " + sub_account + " split positions " + str(e))
                 return True
             
 
