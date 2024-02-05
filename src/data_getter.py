@@ -224,8 +224,8 @@ else:
         }},
     ]))
     
-    symbols = [item['symbol'] for item in latest_positions if item['symbol'] != None and item['symbol'] not in config['symbols']['symbols_1']]
-    symbols += config['symbols']['symbols_1']
+    symbols = [item['symbol'] for item in latest_positions if item['symbol'] != None and item['symbol'] not in config['symbols']]
+    symbols += config['symbols']
 
     for balance in latest_balances:
         for _key in balance['balance_value']:

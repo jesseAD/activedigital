@@ -755,6 +755,7 @@ class Positions:
             # "positionType": positionType.lower(),
             "account": "Main Account",
             "position_value": position_info,
+            "alert_threshold": config['positions']['alert_threshold'],
             "active": True,
             "entry": False,
             "exit": False,

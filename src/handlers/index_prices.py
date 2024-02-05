@@ -7,13 +7,13 @@ import time
 # from src.lib.db import MongoDB
 from src.lib.log import Log
 from src.lib.exchange import Exchange
-from src.config import read_config_file
+# from src.config import read_config_file
 from src.handlers.helpers import Helper, OKXHelper, BybitHelper
 # from src.handlers.database_connector import database_connector
 
 load_dotenv()
 log = Log()
-config = read_config_file()
+# config = read_config_file()
 
 class IndexPrices:
     def __init__(self, db, collection):
