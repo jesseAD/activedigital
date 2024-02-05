@@ -393,6 +393,10 @@ class Positions:
             logger.warning(client + " " + exchange + " " + sub_account + " positions " + str(e))
             pass
 
+        if client == "lucid" and len(position_info) < 13:
+            logger.info(json.dumps(position_value))
+            logger.info(json.dumps(exch.fapiprivatev2_get_account()['positions']))
+        
         del position_value
         
         # back_off[client + "_" + exchange + "_" + sub_account] = config["dask"]["back_off"]
