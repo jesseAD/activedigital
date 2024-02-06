@@ -99,11 +99,11 @@ class Helper:
     
     def get_pm_balances(self, exch):
         balances = exch.papi_get_balance()
-        balances = [item for item in balances if item['totalWalletBalance'] != "0.0"]
+        balances = [item for item in balances if item['totalWalletBalance'] != "0.0" or item['crossMarginBorrowed'] != "0.0"]
 
         balance_value = {}
         for item in balances:
-            balance_value[item['asset']] = float(item['totalWalletBalance'])
+            balance_value[item['asset']] = -float(item['crossMarginBorrowed']) if item['crossMarginBorrowed'] != "0.0" else float(item['totalWalletBalance'])
 
         _balances = self.get_balances(exch)
         for item in _balances:
