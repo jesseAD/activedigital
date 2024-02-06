@@ -39,7 +39,8 @@ class Exchange:
             exchange = ccxt.bybit(params)
         elif self.exchange == 'okx':
             params['password'] = self.passphrase
-            exchange = ccxt.okex5(params)
+            # exchange = ccxt.okex5(params)
+            exchange = ccxt.okx(params)
         elif self.exchange == 'coinbase':
             exchange = ccxt.coinbasepro()
         
