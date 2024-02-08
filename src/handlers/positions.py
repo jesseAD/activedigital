@@ -395,7 +395,7 @@ class Positions:
 
         if client == "lucid" and len(position_info) < 13:
             logger.info(json.dumps(position_value))
-            logger.info(json.dumps(exch.fapiprivatev2_get_account()['positions']))
+            logger.info(json.dumps(exch.fapiprivatev2_get_account()))
         
         del position_value
         

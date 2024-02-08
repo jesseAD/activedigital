@@ -30,7 +30,8 @@ params = {
 
 exchange = ccxt.binance(params)
 
-print(exchange.papi_get_balance())
+# print(exchange.papi_get_balance())
+exchange.fetch_account_positions(None, params={"type": "future"})
 
 # exchange.sapi_get_margin_tradecoeff()
 # exchange.fapiprivatev2_get_balance()
