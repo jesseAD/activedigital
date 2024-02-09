@@ -298,8 +298,8 @@ class Positions:
                                         value["symbol"].split("-")[0].split("/")[1].split(":")[0]
                                     )
                                 else:
-                                    value['base'] = value["symbol"].split("-")[0]
-                                    value['quote'] = value['symbol'].split("-")[1]
+                                    value['base'] = value["symbol"].split("-")[0].split("/")[0]
+                                    value['quote'] = value['symbol'].split("-")[1] if "-" in value['symbol'] else value['symbol'].split("_")[0].split("/")[1]
 
                                 value['symbol'] = value['base'] + value['quote'] + "-PERP"
                                 value["liquidationBuffer"] = liquidation_buffer
