@@ -69,7 +69,9 @@ class tickers:
 # default helper for Binance
 class Helper:
     def get_positions(self, exch):
-        return exch.fetch_account_positions(params={"type": "future"})
+        # return exch.fetch_account_positions(params={"type": "future"})
+
+        return exch.fapiprivatev2_get_account()['positions']
     
     def get_pm_positions(self, exch):
         position_value = []
