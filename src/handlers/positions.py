@@ -332,7 +332,7 @@ class Positions:
                         logger.warning(client + " " + exchange + " " + sub_account + " positions " + str(e))
 
                 else:
-                    if float(value["initialMargin"]) != 0.0:
+                    if not (float(value["initialMargin"]) == 0.0  and config['clients'][client]['subaccounts'][exchange][sub_account]['margin_mode'] == 'non_portfolio'):
                         try:
                             value["base"] = value["symbol"].split("_")[0].split("USD")[0]
                             value["quote"] = "USD" + value["symbol"].split("_")[0].split("USD")[1]
