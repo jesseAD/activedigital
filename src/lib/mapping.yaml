@@ -6,6 +6,7 @@ binance:
       unrealizedProfit: unrealisedpnl
     notionalValue: notional
     unRealizedProfit: unrealizedPnl
+    unrealizedProfit: unrealizedPnl
     positionSide: side
     positionAmt: contracts
     updateTime: timestamp
