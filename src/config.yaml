@@ -97,8 +97,8 @@ mark_prices:
   store_type: timeseries
 
 vip_loan_rates:
-  client: wizardly
-  account: submn
+  client: blackburn
+  account: submn1
 
 borrow_rates:
   period: 
