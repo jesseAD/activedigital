@@ -295,7 +295,7 @@ clients:
           hedged_exclusion_negative: {'USDT': 0}
           
   edison:
-    split_positions: False
+    split_positions: True
     subaccounts:
       okx:
         base_ccy: USDT
