@@ -15,6 +15,7 @@ class Leverages:
     def __init__(self, db, collection):
 
         self.runs_db = db['runs']
+        self.positions_db = db['positions']
         self.split_positions_db = db['split_positions']
         self.balances_db = db['balances']
         self.tickers_db = db['tickers']
@@ -55,10 +56,41 @@ class Leverages:
             if account:
                 query["account"] = account
 
-            position_value = self.split_positions_db.find(query).sort('runid', -1).limit(1)
-            for item in position_value:
+            if config['clients'][client]['split_positions'] == True:
+                position_value = self.split_positions_db.find(query).sort('runid', -1).limit(1)
+                for item in position_value:
+                    try:
+                        latest_position = item['position_value']
+                    except Exception as e:
+                        logger.error(client + " " + exchange + " " + account + " leverages " + str(e))
+                        # print("An error occurred in Leverages:", e)
+                        return True
+                
                 try:
-                    latest_position = item['position_value']
+                    # max_notional = abs(float(max(latest_position, key=lambda x: abs(float(x['notional'])))['notional']))
+                    max_notional = 0
+                    for pair in latest_position:
+                        max_notional += max([abs(item['notional']) for item in pair])
+                except Exception as e:
+                    logger.error(client + " " + exchange + " " + account + " leverages " + str(e))
+                    # print("An error occurred in Leverages:", e)
+                    return True
+                
+            else:
+                position_value = self.positions_db.find(query).sort('runid', -1).limit(1)
+                for item in position_value:
+                    try:
+                        latest_position = item['position_value']
+                    except Exception as e:
+                        logger.error(client + " " + exchange + " " + account + " leverages " + str(e))
+                        # print("An error occurred in Leverages:", e)
+                        return True
+                    
+                try:
+                    # max_notional = abs(float(max(latest_position, key=lambda x: abs(float(x['notional'])))['notional']))
+                    max_notional = 0
+                    for item in latest_position:
+                        max_notional += abs(float(item['notional']))
                 except Exception as e:
                     logger.error(client + " " + exchange + " " + account + " leverages " + str(e))
                     # print("An error occurred in Leverages:", e)
@@ -72,17 +104,7 @@ class Leverages:
                     logger.error(client + " " + exchange + " " + account + " leverages " + str(e))
                     # print("An error occurred in Leverages:", e)
                     return True
-
-            try:
-                # max_notional = abs(float(max(latest_position, key=lambda x: abs(float(x['notional'])))['notional']))
-                max_notional = 0
-                for pair in latest_position:
-                    max_notional += max([abs(item['notional']) for item in pair])
-            except Exception as e:
-                logger.error(client + " " + exchange + " " + account + " leverages " + str(e))
-                # print("An error occurred in Leverages:", e)
-                return True
-            
+                
             base_currency = config["clients"][client]["subaccounts"][exchange]["base_ccy"]
 
             balance_in_base_currency = 0
