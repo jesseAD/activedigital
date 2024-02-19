@@ -172,7 +172,7 @@ class Transactions:
                             transactions = []
 
                             while(True):
-                                end_time = int(transactions[0]['ts']) if len(transactions) > 0 else datetime.timestamp(datetime.now(timezone.utc)) * 1000
+                                end_time = int(transactions[0]['ts']) if len(transactions) > 0 else int(datetime.timestamp(datetime.now(timezone.utc)) * 1000)
                                 res = OKXHelper().get_transactions(exch=exch, params={"end": end_time})
                                 if len(res) == 0:
                                     break
