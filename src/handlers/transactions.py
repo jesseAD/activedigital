@@ -174,6 +174,7 @@ class Transactions:
                             while(True):
                                 end_time = int(transactions[0]['ts']) - 1 if len(transactions) > 0 else int(datetime.timestamp(datetime.now(timezone.utc)) * 1000)
                                 res = OKXHelper().get_transactions(exch=exch, params={"end": end_time})
+                                
                                 if len(res) == 0:
                                     break
 
@@ -182,7 +183,6 @@ class Transactions:
 
                                 time.sleep(0.5)
 
-                            transactions = OKXHelper().get_transactions(exch=exch)
                             for item in transactions:
                                 item['info'] = {**item}
 
@@ -257,9 +257,21 @@ class Transactions:
                                 current_value = item["transaction_value"]
 
                             if current_value is None:
-                                cm_trades = Helper().get_cm_transactions(
-                                    exch=exch, params={"limit": 100}
-                                )
+                                cm_trades = []
+
+                                while(True):
+                                    end_time = int(cm_trades[0]['time']) - 1 if len(cm_trades) > 0 else int(datetime.timestamp(datetime.now(timezone.utc)) * 1000)
+
+                                    res = Helper().get_cm_transactions(exch=exch, params={"endTime": end_time, "limit": 1000})
+                                
+                                    if len(res) == 0:
+                                        break
+
+                                    res.sort(key = lambda x: x['time'])
+                                    cm_trades = res + cm_trades
+
+                                    time.sleep(0.5)
+
                                 for item in cm_trades:
                                     item['info'] = {**item}
                                 cm_trades = Mapping().mapping_transactions(
@@ -267,15 +279,25 @@ class Transactions:
                                 )
 
                                 transaction_value['cm'] = cm_trades
+
                             else:
                                 last_time = current_value["timestamp"] + 1 + config['transactions']['time_slack']
-                                cm_trades = Helper().get_cm_transactions(
-                                    exch=exch,
-                                    params={
-                                        "startTime": last_time,
-                                        "limit": 100,
-                                    },
-                                )
+
+                                cm_trades = []
+
+                                while(True):
+                                    end_time = int(cm_trades[0]['time']) - 1 if len(cm_trades) > 0 else int(datetime.timestamp(datetime.now(timezone.utc)) * 1000)
+
+                                    res = Helper().get_cm_transactions(exch=exch, params={"startTime": last_time, "endTime": end_time, "limit": 1000})
+                                
+                                    if len(res) == 0:
+                                        break
+
+                                    res.sort(key = lambda x: x['time'])
+                                    cm_trades = res + cm_trades
+
+                                    time.sleep(0.5)
+
                                 for item in cm_trades:
                                     item['info'] = {**item}
 
@@ -298,9 +320,21 @@ class Transactions:
                                 current_value = item["transaction_value"]
 
                             if current_value is None:
-                                um_trades = Helper().get_um_transactions(
-                                    exch=exch, params={"limit": 100}
-                                )
+                                um_trades = []
+
+                                while(True):
+                                    end_time = int(um_trades[0]['time']) - 1 if len(um_trades) > 0 else int(datetime.timestamp(datetime.now(timezone.utc)) * 1000)
+
+                                    res = Helper().get_um_transactions(exch=exch, params={"endTime": end_time, "limit": 1000})
+                                
+                                    if len(res) == 0:
+                                        break
+
+                                    res.sort(key = lambda x: x['time'])
+                                    um_trades = res + um_trades
+
+                                    time.sleep(0.5)
+
                                 for item in um_trades:
                                     item['info'] = {**item}
                                 um_trades = Mapping().mapping_transactions(
@@ -310,13 +344,22 @@ class Transactions:
                                 transaction_value['um'] = um_trades
                             else:
                                 last_time = current_value["timestamp"] + 1 + config['transactions']['time_slack']
-                                um_trades = Helper().get_um_transactions(
-                                    exch=exch,
-                                    params={
-                                        "startTime": last_time,
-                                        "limit": 100,
-                                    },
-                                )
+
+                                um_trades = []
+
+                                while(True):
+                                    end_time = int(um_trades[0]['time']) - 1 if len(um_trades) > 0 else int(datetime.timestamp(datetime.now(timezone.utc)) * 1000)
+
+                                    res = Helper().get_um_transactions(exch=exch, params={"startTime": last_time, "endTime": end_time, "limit": 1000})
+                                
+                                    if len(res) == 0:
+                                        break
+
+                                    res.sort(key = lambda x: x['time'])
+                                    um_trades = res + um_trades
+
+                                    time.sleep(0.5)
+
                                 for item in um_trades:
                                     item['info'] = {**item}
 
@@ -339,9 +382,21 @@ class Transactions:
                                 current_value = item["transaction_value"]
 
                             if current_value is None:
-                                borrow_trades = Helper().get_pm_borrow_transactions(
-                                    exch=exch, params={"size": 100}
-                                )
+                                borrow_trades = []
+
+                                while(True):
+                                    end_time = int(borrow_trades[0]['interestAccuredTime']) - 1 if len(borrow_trades) > 0 else int(datetime.timestamp(datetime.now(timezone.utc)) * 1000)
+
+                                    res = Helper().get_pm_borrow_transactions(exch=exch, params={"endTime": end_time, "size": 100})
+                                
+                                    if len(res) == 0:
+                                        break
+
+                                    res.sort(key = lambda x: x['interestAccuredTime'])
+                                    borrow_trades = res + borrow_trades
+
+                                    time.sleep(0.5)
+
                                 for item in borrow_trades:
                                     item['info'] = {**item}
                                     item['interest'] = -float(item['interest'])
@@ -352,14 +407,23 @@ class Transactions:
 
                                 transaction_value['borrow'] = borrow_trades
                             else:
-                                last_time = current_value["timestamp"] + 1000 + config['transactions']['time_slack']
-                                borrow_trades = Helper().get_pm_borrow_transactions(
-                                    exch=exch,
-                                    params={
-                                        "startTime": last_time,
-                                        "size": 100,
-                                    },
-                                )
+                                last_time = current_value["timestamp"] + 1 + config['transactions']['time_slack']
+
+                                borrow_trades = []
+
+                                while(True):
+                                    end_time = int(borrow_trades[0]['interestAccuredTime']) - 1 if len(borrow_trades) > 0 else int(datetime.timestamp(datetime.now(timezone.utc)) * 1000)
+
+                                    res = Helper().get_pm_borrow_transactions(exch=exch, params={"startTime": last_time, "endTime": end_time, "size": 100})
+                                
+                                    if len(res) == 0:
+                                        break
+
+                                    res.sort(key = lambda x: x['interestAccuredTime'])
+                                    borrow_trades = res + borrow_trades
+
+                                    time.sleep(0.5)
+                                
                                 for item in borrow_trades:
                                     item['info'] = {**item}
                                     item['interest'] = -float(item['interest'])
