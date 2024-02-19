@@ -31,7 +31,8 @@ params = {
     # 'password': "pwd"
 }
 
-# exchange = ccxt.binance(params)
+exchange = ccxt.binance(params)
+exchange.private_get_mytrades()
 
              
 
