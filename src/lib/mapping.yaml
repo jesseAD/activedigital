@@ -20,7 +20,7 @@ binance:
     time: timestamp
     quoteQty: income
     interest: income
-    id: tradeId
+    # id: tradeId
     type: incomeType
     commissionAsset: asset
     values:

@@ -455,9 +455,21 @@ class Transactions:
                                 current_value = item["transaction_value"]
 
                             if current_value is None:
-                                futures_trades = Helper().get_future_transactions(
-                                    exch=exch, params={"limit": 100}
-                                )
+                                futures_trades = []
+
+                                while(True):
+                                    end_time = int(futures_trades[0]['time']) - 1 if len(futures_trades) > 0 else int(datetime.timestamp(datetime.now(timezone.utc)) * 1000)
+
+                                    res = Helper().get_future_transactions(exch=exch, params={"endTime": end_time, "limit": 1000})
+                                
+                                    if len(res) == 0:
+                                        break
+
+                                    res.sort(key = lambda x: x['time'])
+                                    futures_trades = res + futures_trades
+
+                                    time.sleep(0.5)
+
                                 for item in futures_trades:
                                     item['info'] = {**item}
                                 futures_trades = Mapping().mapping_transactions(
@@ -467,13 +479,22 @@ class Transactions:
                                 transaction_value["future"] = futures_trades
                             else:
                                 last_time = current_value["timestamp"] + 1 + config['transactions']['time_slack']
-                                futures_trades = Helper().get_future_transactions(
-                                    exch=exch,
-                                    params={
-                                        "startTime": last_time,
-                                        "limit": 100,
-                                    },
-                                )
+
+                                futures_trades = []
+
+                                while(True):
+                                    end_time = int(futures_trades[0]['time']) - 1 if len(futures_trades) > 0 else int(datetime.timestamp(datetime.now(timezone.utc)) * 1000)
+
+                                    res = Helper().get_future_transactions(exch=exch, params={"startTime": last_time, "endTime": end_time, "limit": 1000})
+                                
+                                    if len(res) == 0:
+                                        break
+
+                                    res.sort(key = lambda x: x['time'])
+                                    futures_trades = res + futures_trades
+
+                                    time.sleep(0.5)
+
                                 for item in futures_trades:
                                     item['info'] = {**item}
 
@@ -496,9 +517,21 @@ class Transactions:
                                 current_value = item["transaction_value"]
 
                             if current_value is None:
-                                spot_trades = Helper().get_spot_transactions(
-                                    exch=exch, params={"symbol": symbol, "limit": 100}
-                                )
+                                spot_trades = []
+
+                                while(True):
+                                    end_time = int(spot_trades[0]['time']) - 1 if len(spot_trades) > 0 else int(datetime.timestamp(datetime.now(timezone.utc)) * 1000)
+
+                                    res = Helper().get_spot_transactions(exch=exch, params={"endTime": end_time, "symbol": symbol, "limit": 1000})
+                                
+                                    if len(res) == 0:
+                                        break
+
+                                    res.sort(key = lambda x: x['time'])
+                                    spot_trades = res + spot_trades
+
+                                    time.sleep(0.5)
+
                                 for item in spot_trades:
                                     item['info'] = {**item}
 
@@ -516,20 +549,27 @@ class Transactions:
                                         params={
                                             "fromId": last_id,
                                             "symbol": symbol,
-                                            "limit": 100,
+                                            "limit": 1000,
                                         },
                                     )
 
                                 elif config["transactions"]["fetch_type"] == "time":
                                     last_time = current_value["timestamp"] + 1 + config['transactions']['time_slack']
-                                    spot_trades = Helper().get_spot_transactions(
-                                        exch=exch,
-                                        params={
-                                            "startTime": last_time,
-                                            "symbol": symbol,
-                                            "limit": 100,
-                                        },
-                                    )
+
+                                    spot_trades = []
+
+                                    while(True):
+                                        end_time = int(spot_trades[0]['time']) - 1 if len(spot_trades) > 0 else int(datetime.timestamp(datetime.now(timezone.utc)) * 1000)
+
+                                        res = Helper().get_spot_transactions(exch=exch, params={"startTime": last_time, "endTime": end_time, "symbol": symbol, "limit": 1000})
+                                    
+                                        if len(res) == 0:
+                                            break
+
+                                        res.sort(key = lambda x: x['time'])
+                                        spot_trades = res + spot_trades
+
+                                        time.sleep(0.5)
                                 
                                 for item in spot_trades:
                                     item['info'] = {**item}
@@ -561,7 +601,20 @@ class Transactions:
                             current_value = item["transaction_value"]
 
                         if current_value is None:
-                            transactions = BybitHelper().get_commissions(exch=exch, params={'limit': 50})
+                            transactions = []
+
+                            while(True):
+                                end_time = int(transactions[0]['transactionTime']) - 1 if len(transactions) > 0 else int(datetime.timestamp(datetime.now(timezone.utc)) * 1000)
+                                res = BybitHelper().get_commissions(exch=exch, params={"endTime": end_time})
+                                
+                                if len(res) == 0:
+                                    break
+
+                                res.sort(key = lambda x: x['transactionTime'])
+                                transactions = res + transactions
+
+                                time.sleep(0.5)
+
                             for item in transactions:
                                 item['info'] = {**item}
 
@@ -570,10 +623,20 @@ class Transactions:
                             )
                         else:
                             last_time = int(current_value['timestamp']) + 1 + config['transactions']['time_slack']
-                            transactions = BybitHelper().get_commissions(
-                                exch=exch,
-                                params={'startTime': last_time, 'limit': 50}
-                            )
+
+                            transactions = []
+
+                            while(True):
+                                end_time = int(transactions[0]['transactionTime']) - 1 if len(transactions) > 0 else int(datetime.timestamp(datetime.now(timezone.utc)) * 1000)
+                                res = BybitHelper().get_commissions(exch=exch, params={'startTime': last_time, "endTime": end_time})
+                                
+                                if len(res) == 0:
+                                    break
+
+                                res.sort(key = lambda x: x['transactionTime'])
+                                transactions = res + transactions
+
+                                time.sleep(0.5)
 
                             for item in transactions:
                                 item['info'] = {**item}
@@ -595,7 +658,20 @@ class Transactions:
                             current_value = item["transaction_value"]
 
                         if current_value is None:
-                            transactions = BybitHelper().get_borrow_history(exch=exch, params={'limit': 50})
+                            transactions = []
+
+                            while(True):
+                                end_time = int(transactions[0]['createdTime']) - 1 if len(transactions) > 0 else int(datetime.timestamp(datetime.now(timezone.utc)) * 1000)
+                                res = BybitHelper().get_borrow_history(exch=exch, params={"endTime": end_time, 'limit': 50})
+                                
+                                if len(res) == 0:
+                                    break
+
+                                res.sort(key = lambda x: x['createdTime'])
+                                transactions = res + transactions
+
+                                time.sleep(0.5)
+
                             for item in transactions:
                                 item['info'] = {**item}
                                 item['funding'] = 0
@@ -606,10 +682,20 @@ class Transactions:
                             )
                         else:
                             last_time = int(current_value['timestamp']) + 1 + config['transactions']['time_slack']
-                            transactions = BybitHelper().get_borrow_history(
-                                exch=exch,
-                                params={'startTime': last_time, 'limit': 50}
-                            )
+
+                            transactions = []
+
+                            while(True):
+                                end_time = int(transactions[0]['createdTime']) - 1 if len(transactions) > 0 else int(datetime.timestamp(datetime.now(timezone.utc)) * 1000)
+                                res = BybitHelper().get_borrow_history(exch=exch, params={'startTime': last_time, "endTime": end_time, 'limit': 50})
+                                
+                                if len(res) == 0:
+                                    break
+
+                                res.sort(key = lambda x: x['createdTime'])
+                                transactions = res + transactions
+
+                                time.sleep(0.5)
 
                             for item in transactions:
                                 item['info'] = {**item}

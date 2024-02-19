@@ -197,6 +197,7 @@ def collect_transactions(client_alias, data_collector, logger, db, back_off={}):
                     exch=data_collector.exch,
                     exchange=data_collector.exchange,
                     sub_account=data_collector.account,
+                    symbol='BTCUSDT',
                     back_off=back_off,
                     logger=logger
                 )
