@@ -59,4 +59,6 @@ while(True):
     transactions = res + transactions
     print(res)
     time.sleep(1)
+
+print(len(transactions))
     
