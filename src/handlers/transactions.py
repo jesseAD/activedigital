@@ -192,9 +192,22 @@ class Transactions:
                         else:
                             if config["transactions"]["fetch_type"] == "id":
                                 last_id = int(current_value["billId"]) + 1
-                                transactions = OKXHelper().get_transactions(
-                                    exch=exch, params={"before": last_id}
-                                )
+
+                                transactions = []
+
+                                while(True):
+                                    end_id = int(transactions[0]['billId']) - 1 if len(transactions) > 0 else int(1e30)
+
+                                    res = OKXHelper().get_transactions(exch=exch, params={"after": end_id, "before": last_id})
+
+                                    if len(res) == 0:
+                                        break
+
+                                    res.sort(key = lambda x: x['billId'])
+                                    transactions = res + transactions
+
+                                    time.sleep(0.5)
+
                                 for item in transactions:
                                     item['info'] = {**item}
                                 transaction_value = Mapping().mapping_transactions(
@@ -215,10 +228,7 @@ class Transactions:
                                     transactions = res + transactions
 
                                     time.sleep(0.5)
-                                    
-                                transactions = OKXHelper().get_transactions(
-                                    exch=exch, params={"begin": last_time}
-                                )
+
                                 for item in transactions:
                                     item['info'] = {**item}
                                 transaction_value = Mapping().mapping_transactions(
