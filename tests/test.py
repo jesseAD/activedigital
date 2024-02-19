@@ -2,6 +2,8 @@ import os, sys
 import ccxt
 import pymongo
 import pdb
+from datetime import datetime, timezone
+import time
 
 current_file = os.path.abspath(__file__)
 current_directory = os.path.dirname(current_file)
@@ -45,15 +47,22 @@ print(parsed)
 # exchange.sapi_get_margin_tradecoeff()
 # exchange.fapiprivatev2_get_balance()
 
-# Positions(db, 'positions').create(
-#     client="faraday",
-#     exch=exchange,
-#     exchange="okx",
-#     sub_account="subls", 
-#     logger=logger
-# )
 
 # print(exchange.fetch_account_positions(params={"type": "future"}))
 
-# exchange = ccxt.okex5()
-# print(exchange.fetch_funding_rate(symbol="XRP/USDT:USDT"))
+exchange = ccxt.okx(params)
+
+transactions = []
+
+while(True):
+    end_time = int(transactions[0]['ts']) - 1 if len(transactions) > 0 else int(datetime.timestamp(datetime.now(timezone.utc)) * 1000)
+    res = exchange.private_get_account_bills_archive(params={"end": end_time})["data"]
+
+    if len(res) == 0:
+        break
+
+    res.sort(key = lambda x: x['ts'])
+    transactions = res + transactions
+    print(res)
+    time.sleep(1)
+    

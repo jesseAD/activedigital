@@ -172,13 +172,15 @@ class Transactions:
                             transactions = []
 
                             while(True):
-                                end_time = int(transactions[0]['ts']) if len(transactions) > 0 else int(datetime.timestamp(datetime.now(timezone.utc)) * 1000)
+                                end_time = int(transactions[0]['ts']) - 1 if len(transactions) > 0 else int(datetime.timestamp(datetime.now(timezone.utc)) * 1000)
                                 res = OKXHelper().get_transactions(exch=exch, params={"end": end_time})
                                 if len(res) == 0:
                                     break
 
                                 res.sort(key = lambda x: x['ts'])
                                 transactions = res + transactions
+
+                                time.sleep(0.5)
 
                             transactions = OKXHelper().get_transactions(exch=exch)
                             for item in transactions:
@@ -200,6 +202,20 @@ class Transactions:
                                 )
                             elif config["transactions"]["fetch_type"] == "time":
                                 last_time = int(current_value["timestamp"]) + 1 + config['transactions']['time_slack']
+
+                                transactions = []
+
+                                while(True):
+                                    end_time = int(transactions[0]['ts']) - 1 if len(transactions) > 0 else int(datetime.timestamp(datetime.now(timezone.utc)) * 1000)
+                                    res = OKXHelper().get_transactions(exch=exch, params={"begin": last_time, "end": end_time})
+                                    if len(res) == 0:
+                                        break
+
+                                    res.sort(key = lambda x: x['ts'])
+                                    transactions = res + transactions
+
+                                    time.sleep(0.5)
+                                    
                                 transactions = OKXHelper().get_transactions(
                                     exch=exch, params={"begin": last_time}
                                 )
