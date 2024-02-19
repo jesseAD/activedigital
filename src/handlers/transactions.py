@@ -169,6 +169,17 @@ class Transactions:
                             current_value = item["transaction_value"]
 
                         if current_value is None:
+                            transactions = []
+
+                            while(True):
+                                end_time = int(transactions[0]['ts']) if len(transactions) > 0 else datetime.timestamp(datetime.now(timezone.utc)) * 1000
+                                res = OKXHelper().get_transactions(exch=exch, params={"end": end_time})
+                                if len(res) == 0:
+                                    break
+
+                                res.sort(key = lambda x: x['ts'])
+                                transactions = res + transactions
+
                             transactions = OKXHelper().get_transactions(exch=exch)
                             for item in transactions:
                                 item['info'] = {**item}
