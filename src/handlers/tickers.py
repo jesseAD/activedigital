@@ -126,22 +126,22 @@ class Tickers:
         ticker["runid"] = latest_run_id
 
         # get latest tickers data
-        query = {}
-        if exchange:
-            query["venue"] = exchange
+        # query = {}
+        # if exchange:
+        #     query["venue"] = exchange
 
-        ticker_values = self.tickers_db.find(query).sort('runid', -1).limit(1)
+        # ticker_values = self.tickers_db.find(query).sort('runid', -1).limit(1)
 
-        latest_run_id = -1
-        latest_value = None
-        for item in ticker_values:
-            if latest_run_id < item['runid']:
-                latest_run_id = item['runid']
-                latest_value = item['ticker_value']
+        # latest_run_id = -1
+        # latest_value = None
+        # for item in ticker_values:
+        #     if latest_run_id < item['runid']:
+        #         latest_run_id = item['runid']
+        #         latest_value = item['ticker_value']
         
-        if latest_value == ticker['ticker_value']:
-            print('same ticker')
-            return True
+        # if latest_value == ticker['ticker_value']:
+        #     print('same ticker')
+        #     return True
         
         try:
             if config['tickers']['store_type'] == "timeseries":

@@ -782,27 +782,27 @@ class Positions:
             position["perpMarket"] = perp
 
         # get latest positions data
-        query = {}
-        if client:
-            query["client"] = client
-        if exchange:
-            query["venue"] = exchange
-        if sub_account:
-            query["account"] = sub_account
+        # query = {}
+        # if client:
+        #     query["client"] = client
+        # if exchange:
+        #     query["venue"] = exchange
+        # if sub_account:
+        #     query["account"] = sub_account
 
-        position_values = self.positions_db.find(query).sort("_id", -1).limit(1)
+        # position_values = self.positions_db.find(query).sort("_id", -1).limit(1)
 
-        latest_run_id = -1
-        latest_value = None
-        for item in position_values:
-            if latest_run_id < item["runid"]:
-                latest_run_id = item["runid"]
-                latest_value = item["position_value"]
+        # latest_run_id = -1
+        # latest_value = None
+        # for item in position_values:
+        #     if latest_run_id < item["runid"]:
+        #         latest_run_id = item["runid"]
+        #         latest_value = item["position_value"]
 
-        if latest_value == position["position_value"]:
-            logger.info(client + " " + exchange + " " + sub_account + " positions " + "same position")
-            # print("same position")
-            return True
+        # if latest_value == position["position_value"]:
+        #     logger.info(client + " " + exchange + " " + sub_account + " positions " + "same position")
+        #     # print("same position")
+        #     return True
 
         run_ids = self.runs_db.find({}).sort("_id", -1).limit(1)
         latest_run_id = 0

@@ -191,27 +191,27 @@ class Balances:
         balance["runid"] = latest_run_id
 
         # get latest balances data
-        query = {}
-        if client:
-            query["client"] = client
-        if exchange:
-            query["venue"] = exchange
-        if sub_account:
-            query["account"] = sub_account
+        # query = {}
+        # if client:
+        #     query["client"] = client
+        # if exchange:
+        #     query["venue"] = exchange
+        # if sub_account:
+        #     query["account"] = sub_account
 
-        balances_values = self.balances_db.find(query).sort("runid", -1).limit(1)
+        # balances_values = self.balances_db.find(query).sort("runid", -1).limit(1)
 
-        latest_run_id = -1
-        latest_value = None
-        for item in balances_values:
-            if latest_run_id < item["runid"]:
-                latest_run_id = item["runid"]
-                latest_value = item["balance_value"]
+        # latest_run_id = -1
+        # latest_value = None
+        # for item in balances_values:
+        #     if latest_run_id < item["runid"]:
+        #         latest_run_id = item["runid"]
+        #         latest_value = item["balance_value"]
 
-        if latest_value == balance["balance_value"]:
-            logger.info(client + " " + exchange + " " + sub_account + " " + "same balance")
-            # print("same balance")
-            return True
+        # if latest_value == balance["balance_value"]:
+        #     logger.info(client + " " + exchange + " " + sub_account + " " + "same balance")
+        #     # print("same balance")
+        #     return True
 
         try:
             if config["balances"]["store_type"] == "timeseries":

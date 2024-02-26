@@ -246,12 +246,13 @@ class FundingRates:
                         
                         borrow_ccy = "USDT" if fundingRatesValue[-1]['quote'] == "USDT" else fundingRatesValue[-1]['base']
                         
-                        pipeline = []
-                        pipeline.append({"$match": {"venue": exchange}})
-                        pipeline.append({"$match": {"code": borrow_ccy}})
-                        pipeline.append({"$match": {"borrow_rates_value.timestamp": {"$gte": max(last_time - 1, fundingRatesValue[-1]["timestamp"] - 28800000), "$lt": fundingRatesValue[-1]["timestamp"]}}})
-
-                        borrow_rates = list(self.borrow_rates_db.aggregate(pipeline))
+                        borrow_rates = list(self.borrow_rates_db.find({
+                            "$and": [
+                                {"venue": exchange},
+                                {"code": borrow_ccy},
+                                {"borrow_rates_value.timestamp": {"$gte": max(last_time - 1, fundingRatesValue[-1]["timestamp"] - 28800000), "$lt": fundingRatesValue[-1]["timestamp"]}}
+                            ]
+                        }))
                         market_borrow_rate = 0
                         vip_borrow_rate = 0
                         try:
@@ -317,12 +318,13 @@ class FundingRates:
 
                         self.long_funding_db.insert_many(long_fundings)
 
-                        pipeline = []
-                        pipeline.append({"$match": {"venue": exchange}})
-                        pipeline.append({"$match": {"code": symbol.split("/")[0]}})
-                        pipeline.append({"$match": {"borrow_rates_value.timestamp": {"$gte": max(last_time - 1, fundingRatesValue[-1]["timestamp"] - 28800000), "$lt": fundingRatesValue[-1]["timestamp"]}}})
-
-                        borrow_rates = list(self.borrow_rates_db.aggregate(pipeline))
+                        borrow_rates = list(self.borrow_rates_db.find({
+                            "$and": [
+                            {"venue": exchange},
+                            {"code": symbol.split("/")[0]},
+                            {"borrow_rates_value.timestamp": {"$gte": max(last_time - 1, fundingRatesValue[-1]["timestamp"] - 28800000), "$lt": fundingRatesValue[-1]["timestamp"]}}
+                            ]
+                        }))
                         market_borrow_rate = 0
                         vip_borrow_rate = 0
                         try:
