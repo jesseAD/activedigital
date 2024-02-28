@@ -314,10 +314,17 @@ clients:
           margin_mode: non_portfolio
           hedged_exclusion_positive: {'USDT': 0}
           hedged_exclusion_negative: {'USDT': 0}
+          
+  edisonhedge:
+    split_positions: True
+    subaccounts:
+      okx:
+        base_ccy: ETH
         synswap:
           margin_mode: non_portfolio
           hedged_exclusion_positive: {'USDT': 0}
-          hedged_exclusion_negative: {'USDT': 0}          
+          hedged_exclusion_negative: {'USDT': 0}        
+        
   kepler:
     split_positions: True
     subaccounts:
