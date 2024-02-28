@@ -306,7 +306,6 @@ clients:
     subaccounts:
       okx:
         base_ccy: USDT
-
         submn1:
           margin_mode: non_portfolio
           hedged_exclusion_positive: {'USDT': 0, 'SOL': 347,'ETH': 14 }
@@ -315,6 +314,10 @@ clients:
           margin_mode: non_portfolio
           hedged_exclusion_positive: {'USDT': 0}
           hedged_exclusion_negative: {'USDT': 0}
+        synswap:
+          margin_mode: non_portfolio
+          hedged_exclusion_positive: {'USDT': 0}
+          hedged_exclusion_negative: {'USDT': 0}          
   kepler:
     split_positions: True
     subaccounts:
@@ -345,3 +348,10 @@ clients:
           margin_mode: non_portfolio
           hedged_exclusion_positive: {'USDT': 0}
           hedged_exclusion_negative: {'USDT': 0}
+      binance:
+        base_ccy: USDT
+        subbasis1:
+          margin_mode: portfolio
+          hedged_exclusion_positive: {'USDT': 0}
+          hedged_exclusion_negative: {'USDT': 0}  
+          
