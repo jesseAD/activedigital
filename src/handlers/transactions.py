@@ -150,19 +150,44 @@ class Transactions:
 
                 elif config["transactions"]["store_type"] == "timeseries":
                     if exchange == "okx":
-                        query = {}
-                        if client:
-                            query["client"] = client
-                        if exchange:
-                            query["venue"] = exchange
-                        if sub_account:
-                            query["account"] = sub_account
-
-                        transactions_values = (
-                            self.transactions_db.find(query)
-                            .sort("transaction_value.timestamp", -1)
-                            .limit(1)
-                        )
+                        transactions_values = self.transactions_db.aggregate([
+                            {
+                                '$match': {
+                                    '$expr': {
+                                        '$and': [
+                                            {
+                                                '$eq': [
+                                                    '$client', client
+                                                ]
+                                            }, {
+                                                '$eq': [
+                                                    '$venue', exchange
+                                                ]
+                                            }, {
+                                                '$eq': [
+                                                    '$account', sub_account
+                                                ]
+                                            }
+                                        ]
+                                    }
+                                }
+                            }, {
+                                '$project': {
+                                    'transaction_value': 1
+                                }
+                            }, {
+                                '$sort': {
+                                    'transaction_value.timestamp': 1
+                                }
+                            }, {
+                                '$group': {
+                                    '_id': None, 
+                                    'transaction_value': {
+                                        '$last': '$transaction_value'
+                                    }
+                                }
+                            }
+                        ])
 
                         current_value = None
                         for item in transactions_values:
@@ -237,20 +262,48 @@ class Transactions:
                     elif exchange == "binance":
                         transaction_value = {}
                         if config['clients'][client]['subaccounts'][exchange][sub_account]['margin_mode'] == 'portfolio':
-                            query = {}
-                            if client:
-                                query["client"] = client
-                            if exchange:
-                                query["venue"] = exchange
-                            if sub_account:
-                                query["account"] = sub_account
-                            query["trade_type"] = "cm"
-
-                            transactions_values = (
-                                self.transactions_db.find(query)
-                                .sort("transaction_value.timestamp", -1)
-                                .limit(1)
-                            )
+                            transactions_values = self.transactions_db.aggregate([
+                                {
+                                    '$match': {
+                                        '$expr': {
+                                            '$and': [
+                                                {
+                                                    '$eq': [
+                                                        '$client', client
+                                                    ]
+                                                }, {
+                                                    '$eq': [
+                                                        '$venue', exchange
+                                                    ]
+                                                }, {
+                                                    '$eq': [
+                                                        '$account', sub_account
+                                                    ]
+                                                }, {
+                                                    '$eq': [
+                                                        '$trade_type', 'cm'
+                                                    ]
+                                                }
+                                            ]
+                                        }
+                                    }
+                                }, {
+                                    '$project': {
+                                        'transaction_value': 1
+                                    }
+                                }, {
+                                    '$sort': {
+                                        'transaction_value.timestamp': 1
+                                    }
+                                }, {
+                                    '$group': {
+                                        '_id': None, 
+                                        'transaction_value': {
+                                            '$last': '$transaction_value'
+                                        }
+                                    }
+                                }
+                            ])
 
                             current_value = None
                             for item in transactions_values:
@@ -307,13 +360,48 @@ class Transactions:
 
                                 transaction_value['cm'] = cm_trades
                             
-                            query["trade_type"] = "um"
-
-                            transactions_values = (
-                                self.transactions_db.find(query)
-                                .sort("transaction_value.timestamp", -1)
-                                .limit(1)
-                            )
+                            transactions_values = self.transactions_db.aggregate([
+                                {
+                                    '$match': {
+                                        '$expr': {
+                                            '$and': [
+                                                {
+                                                    '$eq': [
+                                                        '$client', client
+                                                    ]
+                                                }, {
+                                                    '$eq': [
+                                                        '$venue', exchange
+                                                    ]
+                                                }, {
+                                                    '$eq': [
+                                                        '$account', sub_account
+                                                    ]
+                                                }, {
+                                                    '$eq': [
+                                                        '$trade_type', 'um'
+                                                    ]
+                                                }
+                                            ]
+                                        }
+                                    }
+                                }, {
+                                    '$project': {
+                                        'transaction_value': 1
+                                    }
+                                }, {
+                                    '$sort': {
+                                        'transaction_value.timestamp': 1
+                                    }
+                                }, {
+                                    '$group': {
+                                        '_id': None, 
+                                        'transaction_value': {
+                                            '$last': '$transaction_value'
+                                        }
+                                    }
+                                }
+                            ])
 
                             current_value = None
                             for item in transactions_values:
@@ -369,13 +457,48 @@ class Transactions:
 
                                 transaction_value['um'] = um_trades
 
-                            query["trade_type"] = "borrow"
-
-                            transactions_values = (
-                                self.transactions_db.find(query)
-                                .sort("transaction_value.timestamp", -1)
-                                .limit(1)
-                            )
+                            transactions_values = self.transactions_db.aggregate([
+                                {
+                                    '$match': {
+                                        '$expr': {
+                                            '$and': [
+                                                {
+                                                    '$eq': [
+                                                        '$client', client
+                                                    ]
+                                                }, {
+                                                    '$eq': [
+                                                        '$venue', exchange
+                                                    ]
+                                                }, {
+                                                    '$eq': [
+                                                        '$account', sub_account
+                                                    ]
+                                                }, {
+                                                    '$eq': [
+                                                        '$trade_type', 'borrow'
+                                                    ]
+                                                }
+                                            ]
+                                        }
+                                    }
+                                }, {
+                                    '$project': {
+                                        'transaction_value': 1
+                                    }
+                                }, {
+                                    '$sort': {
+                                        'transaction_value.timestamp': 1
+                                    }
+                                }, {
+                                    '$group': {
+                                        '_id': None, 
+                                        'transaction_value': {
+                                            '$last': '$transaction_value'
+                                        }
+                                    }
+                                }
+                            ])
 
                             current_value = None
                             for item in transactions_values:
@@ -435,20 +558,48 @@ class Transactions:
                                 transaction_value['borrow'] = borrow_trades
 
                         else:
-                            query = {}
-                            if client:
-                                query["client"] = client
-                            if exchange:
-                                query["venue"] = exchange
-                            if sub_account:
-                                query["account"] = sub_account
-                            query["trade_type"] = "future"
-
-                            transactions_values = (
-                                self.transactions_db.find(query)
-                                .sort("transaction_value.timestamp", -1)
-                                .limit(1)
-                            )
+                            transactions_values = self.transactions_db.aggregate([
+                                {
+                                    '$match': {
+                                        '$expr': {
+                                            '$and': [
+                                                {
+                                                    '$eq': [
+                                                        '$client', client
+                                                    ]
+                                                }, {
+                                                    '$eq': [
+                                                        '$venue', exchange
+                                                    ]
+                                                }, {
+                                                    '$eq': [
+                                                        '$account', sub_account
+                                                    ]
+                                                }, {
+                                                    '$eq': [
+                                                        '$trade_type', 'future'
+                                                    ]
+                                                }
+                                            ]
+                                        }
+                                    }
+                                }, {
+                                    '$project': {
+                                        'transaction_value': 1
+                                    }
+                                }, {
+                                    '$sort': {
+                                        'transaction_value.timestamp': 1
+                                    }
+                                }, {
+                                    '$group': {
+                                        '_id': None, 
+                                        'transaction_value': {
+                                            '$last': '$transaction_value'
+                                        }
+                                    }
+                                }
+                            ])
 
                             current_value = None
                             for item in transactions_values:
@@ -504,13 +655,48 @@ class Transactions:
 
                                 transaction_value['future'] = futures_trades
 
-                            query["trade_type"] = "spot"
-
-                            transactions_values = (
-                                self.transactions_db.find(query)
-                                .sort("transaction_value.timestamp", -1)
-                                .limit(1)
-                            )
+                            transactions_values = self.transactions_db.aggregate([
+                                {
+                                    '$match': {
+                                        '$expr': {
+                                            '$and': [
+                                                {
+                                                    '$eq': [
+                                                        '$client', client
+                                                    ]
+                                                }, {
+                                                    '$eq': [
+                                                        '$venue', exchange
+                                                    ]
+                                                }, {
+                                                    '$eq': [
+                                                        '$account', sub_account
+                                                    ]
+                                                }, {
+                                                    '$eq': [
+                                                        '$trade_type', 'spot'
+                                                    ]
+                                                }
+                                            ]
+                                        }
+                                    }
+                                }, {
+                                    '$project': {
+                                        'transaction_value': 1
+                                    }
+                                }, {
+                                    '$sort': {
+                                        'transaction_value.timestamp': 1
+                                    }
+                                }, {
+                                    '$group': {
+                                        '_id': None, 
+                                        'transaction_value': {
+                                            '$last': '$transaction_value'
+                                        }
+                                    }
+                                }
+                            ])
 
                             current_value = None
                             for item in transactions_values:
@@ -580,21 +766,48 @@ class Transactions:
                                 transaction_value["spot"] = spot_trades
 
                     elif exchange == "bybit":
-                        transaction_value = {}
-                        query = {}
-                        if client:
-                            query["client"] = client
-                        if exchange:
-                            query["venue"] = exchange
-                        if sub_account:
-                            query["account"] = sub_account
-                        query['trade_type'] = "commission"
-
-                        transactions_values = (
-                            self.transactions_db.find(query)
-                            .sort("transaction_value.timestamp", -1)
-                            .limit(1)
-                        )
+                        transactions_values = self.transactions_db.aggregate([
+                            {
+                                '$match': {
+                                    '$expr': {
+                                        '$and': [
+                                            {
+                                                '$eq': [
+                                                    '$client', client
+                                                ]
+                                            }, {
+                                                '$eq': [
+                                                    '$venue', exchange
+                                                ]
+                                            }, {
+                                                '$eq': [
+                                                    '$account', sub_account
+                                                ]
+                                            }, {
+                                                '$eq': [
+                                                    '$trade_type', 'commission'
+                                                ]
+                                            }
+                                        ]
+                                    }
+                                }
+                            }, {
+                                '$project': {
+                                    'transaction_value': 1
+                                }
+                            }, {
+                                '$sort': {
+                                    'transaction_value.timestamp': 1
+                                }
+                            }, {
+                                '$group': {
+                                    '_id': None, 
+                                    'transaction_value': {
+                                        '$last': '$transaction_value'
+                                    }
+                                }
+                            }
+                        ])
 
                         current_value = None
                         for item in transactions_values:
@@ -645,13 +858,48 @@ class Transactions:
                                 exchange=exchange, transactions=transactions
                             )
 
-                        query['trade_type'] = "borrow"
-
-                        transactions_values = (
-                            self.transactions_db.find(query)
-                            .sort("transaction_value.timestamp", -1)
-                            .limit(1)
-                        )
+                        transactions_values = self.transactions_db.aggregate([
+                            {
+                                '$match': {
+                                    '$expr': {
+                                        '$and': [
+                                            {
+                                                '$eq': [
+                                                    '$client', client
+                                                ]
+                                            }, {
+                                                '$eq': [
+                                                    '$venue', exchange
+                                                ]
+                                            }, {
+                                                '$eq': [
+                                                    '$account', sub_account
+                                                ]
+                                            }, {
+                                                '$eq': [
+                                                    '$trade_type', 'borrow'
+                                                ]
+                                            }
+                                        ]
+                                    }
+                                }
+                            }, {
+                                '$project': {
+                                    'transaction_value': 1
+                                }
+                            }, {
+                                '$sort': {
+                                    'transaction_value.timestamp': 1
+                                }
+                            }, {
+                                '$group': {
+                                    '_id': None, 
+                                    'transaction_value': {
+                                        '$last': '$transaction_value'
+                                    }
+                                }
+                            }
+                        ])
 
                         current_value = None
                         for item in transactions_values:
@@ -909,12 +1157,42 @@ class Transactions:
             elif exchange == "bybit":
                 pnl = sum(float(item['funding']) for item in transaction_value)
 
-            query = {
-                'client': client,
-                'venue': exchange,
-                'account': sub_account
-            }
-            last_pnls = self.mtd_pnls_db.find(query).sort("date", -1).limit(1)
+            last_pnls = self.mtd_pnls_db.aggregate([
+                {
+                    '$match': {
+                        '$expr': {
+                            '$and': [
+                                {
+                                    '$eq': [
+                                        '$client', client
+                                    ]
+                                }, {
+                                    '$eq': [
+                                        '$venue', exchange
+                                    ]
+                                }, {
+                                    '$eq': [
+                                        '$account', sub_account
+                                    ]
+                                }
+                            ]
+                        }
+                    }
+                }, {
+                    '$group': {
+                        '_id': None, 
+                        'date': {
+                            '$last': '$date'
+                        }, 
+                        'pnl': {
+                            '$last': '$pnl'
+                        }, 
+                        'cumulative_pnl': {
+                            '$last': '$cumulative_pnl'
+                        }
+                    }
+                }
+            ])
 
             last_pnl = None
             for item in last_pnls:
