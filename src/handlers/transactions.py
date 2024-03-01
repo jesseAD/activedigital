@@ -1159,13 +1159,15 @@ class Transactions:
             pnl = 0
 
             if exchange == "binance":
-                pnl = sum(float(item['income']) for item in transaction_value)
+                for _type in transaction_value:
+                    pnl += sum(float(item['income']) for item in transaction_value[_type])
 
             elif exchange == "okx":
                 pnl = sum(float(item['sz']) for item in transaction_value if item['instType'] == "SPOT")
 
             elif exchange == "bybit":
-                pnl = sum(float(item['funding']) for item in transaction_value)
+                for _type in transaction_value:
+                    pnl += sum(float(item['funding']) for item in transaction_value[_type])
 
             last_pnls = self.mtd_pnls_db.aggregate([
                 {
@@ -1251,7 +1253,7 @@ class Transactions:
                     })
         
         except Exception as e:
-            print(client + " " + exchange + " " + sub_account + " MTL PnL " + str(e))
+            print(client + " " + exchange + " " + sub_account + " MTD PnL " + str(e))
 
         
         del transaction_value
