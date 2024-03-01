@@ -790,6 +790,9 @@ class Positions:
                         '_id': None, 
                         'balance_value': {
                             '$last': '$balance_value'
+                        },
+                        'timestamp': {
+                            '$last': '$timestamp'
                         }
                     }
                 }
