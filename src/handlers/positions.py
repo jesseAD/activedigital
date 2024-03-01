@@ -369,7 +369,36 @@ class Positions:
             if exchange == "binance":
                 for position in position_info:
                     try:
-                        mark_prices = self.mark_prices_db.find({'venue': exchange, 'symbol': position['base'] + "/" + position['quote']}).sort('_id', -1).limit(1)
+                        mark_prices = self.mark_prices_db.aggregate([
+                            {
+                                '$match': {
+                                    '$expr': {
+                                        '$and': [
+                                            {
+                                                '$eq': [
+                                                    '$venue', exchange
+                                                ]
+                                            }, {
+                                                '$eq': [
+                                                    '$symbol', position['base'] + "/" + position['quote']
+                                                ]
+                                            }
+                                        ]
+                                    }
+                                }
+                            }, {
+                                '$project': {
+                                    'mark_price_value': 1
+                                }
+                            }, {
+                                '$group': {
+                                    '_id': None, 
+                                    'mark_price_value': {
+                                        '$last': '$mark_price_value'
+                                    }
+                                }
+                            }
+                        ])
                         for item in mark_prices:
                             try:
                                 mark_price = item['mark_price_value']['markPrice']
@@ -396,10 +425,6 @@ class Positions:
         except Exception as e:
             logger.warning(client + " " + exchange + " " + sub_account + " positions " + str(e))
             pass
-
-        if client == "lucid" and len(position_info) < 13:
-            logger.info(json.dumps(position_value))
-            logger.info(json.dumps(exch.fapiprivatev2_get_account()))
         
         del position_value
         
@@ -480,11 +505,36 @@ class Positions:
                     }
                     if lifetime_funding_values[j]['state'] == "closed":
                         if lifetime_funding_values[j]['open_close_time'] > lifetime_funding_values[j]['last_time']:
-                            query = {
-                                'venue': exchange,
-                                'symbol': lifetime_funding_values[j]['base'] + "/USDT" if lifetime_funding_values[j]['quote'] == "USDT" else lifetime_funding_values[j]['base'] + "/USD"
-                            }
-                            funding_rates = self.funding_rates_db.find(query).sort("_id", -1).limit(1)
+                            funding_rates = self.funding_rates_db.aggregate([
+                                {
+                                    '$match': {
+                                        '$expr': {
+                                            '$and': [
+                                                {
+                                                    '$eq': [
+                                                        '$venue', exchange
+                                                    ]
+                                                }, {
+                                                    '$eq': [
+                                                        '$symbol', lifetime_funding_values[j]['base'] + "/USDT" if lifetime_funding_values[j]['quote'] == "USDT" else lifetime_funding_values[j]['base'] + "/USD"
+                                                    ]
+                                                }
+                                            ]
+                                        }
+                                    }
+                                }, {
+                                    '$project': {
+                                        'funding_rates_value': 1
+                                    }
+                                }, {
+                                    '$group': {
+                                        '_id': None, 
+                                        'funding_rates_value': {
+                                            '$last': '$funding_rates_value'
+                                        }
+                                    }
+                                }
+                            ])
                             funding_rate = 0.0
                             funding_time = 0
                             for item in funding_rates:
@@ -547,11 +597,36 @@ class Positions:
                                 })
                             position_info[i]['lifetime_funding_rates'] = lifetime_funding_values[j]['funding']
                         else:
-                            query = {
-                                'venue': exchange,
-                                'symbol': position_info[i]['base'] + "/USDT" if position_info[i]['quote'] == "USDT" else position_info[i]['base'] + "/USD"
-                            }
-                            funding_rates = self.funding_rates_db.find(query).sort("_id", -1).limit(1)
+                            funding_rates = self.funding_rates_db.aggregate([
+                                {
+                                    '$match': {
+                                        '$expr': {
+                                            '$and': [
+                                                {
+                                                    '$eq': [
+                                                        '$venue', exchange
+                                                    ]
+                                                }, {
+                                                    '$eq': [
+                                                        '$symbol', position_info[i]['base'] + "/USDT" if position_info[i]['quote'] == "USDT" else position_info[i]['base'] + "/USD"
+                                                    ]
+                                                }
+                                            ]
+                                        }
+                                    }
+                                }, {
+                                    '$project': {
+                                        'funding_rates_value': 1
+                                    }
+                                }, {
+                                    '$group': {
+                                        '_id': None, 
+                                        'funding_rates_value': {
+                                            '$last': '$funding_rates_value'
+                                        }
+                                    }
+                                }
+                            ])
                             funding_rate = 0.0
                             funding_time = 0
                             for item in funding_rates:
@@ -610,11 +685,36 @@ class Positions:
                         }
                         if lifetime_funding_values[j]['state'] == "closed":
                             if lifetime_funding_values[j]['open_close_time'] > lifetime_funding_values[j]['last_time']:
-                                query = {
-                                    'venue': exchange,
-                                    'symbol': lifetime_funding_values[j]['base'] + "/USDT" if lifetime_funding_values[j]['quote'] == "USDT" else lifetime_funding_values[j]['base'] + "/USD"
-                                }
-                                funding_rates = self.funding_rates_db.find(query).sort("_id", -1).limit(1)
+                                funding_rates = self.funding_rates_db.aggregate([
+                                    {
+                                        '$match': {
+                                            '$expr': {
+                                                '$and': [
+                                                    {
+                                                        '$eq': [
+                                                            '$venue', exchange
+                                                        ]
+                                                    }, {
+                                                        '$eq': [
+                                                            '$symbol', lifetime_funding_values[j]['base'] + "/USDT" if lifetime_funding_values[j]['quote'] == "USDT" else lifetime_funding_values[j]['base'] + "/USD"
+                                                        ]
+                                                    }
+                                                ]
+                                            }
+                                        }
+                                    }, {
+                                        '$project': {
+                                            'funding_rates_value': 1
+                                        }
+                                    }, {
+                                        '$group': {
+                                            '_id': None, 
+                                            'funding_rates_value': {
+                                                '$last': '$funding_rates_value'
+                                            }
+                                        }
+                                    }
+                                ])
                                 funding_rate = 0.0
                                 funding_time = 0
                                 for item in funding_rates:
@@ -659,16 +759,41 @@ class Positions:
         # calculate unhedged
 
         if config['clients'][client]['split_positions'] == True:
-            query = {}
-
-            if client:
-                query["client"] = client            
-            if sub_account:
-                query["account"] = sub_account
-            if exchange:
-                query["venue"] = exchange
-
-            balance_values = self.balances_db.find(query).sort("_id", -1).limit(1)
+            balance_values = self.balances_db.aggregate([
+                {
+                    '$match': {
+                        '$expr': {
+                            '$and': [
+                                {
+                                    '$eq': [
+                                        '$client', client
+                                    ]
+                                }, {
+                                    '$eq': [
+                                        '$venue', exchange
+                                    ]
+                                }, {
+                                    '$eq': [
+                                        '$account', sub_account
+                                    ]
+                                }
+                            ]
+                        }
+                    }
+                }, {
+                    '$project': {
+                        'balance_value': 1,
+                        'timestamp': 1
+                    }
+                }, {
+                    '$group': {
+                        '_id': None, 
+                        'balance_value': {
+                            '$last': '$balance_value'
+                        }
+                    }
+                }
+            ])
 
             balance = None
             for item in balance_values:
