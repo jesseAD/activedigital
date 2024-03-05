@@ -42,7 +42,7 @@ class Leverages:
                 query["venue"] = exchange
             
             # fetch latest position, balance, tickers
-            ticker_value = self.tickers_db.find(query).sort('runid', -1).limit(1)
+            ticker_value = self.tickers_db.find(query)
             for item in ticker_value:
                 try: 
                     latest_ticker = item['ticker_value']
@@ -57,7 +57,41 @@ class Leverages:
                 query["account"] = account
 
             if config['clients'][client]['split_positions'] == True:
-                position_value = self.split_positions_db.find(query).sort('runid', -1).limit(1)
+                position_value = self.split_positions_db.aggregate([
+                    {
+                        '$match': {
+                            '$expr': {
+                                '$and': [
+                                    {
+                                        '$eq': [
+                                            '$client', client
+                                        ]
+                                    }, {
+                                        '$eq': [
+                                            '$venue', exchange
+                                        ]
+                                    }, {
+                                        '$eq': [
+                                            '$account', account
+                                        ]
+                                    }
+                                ]
+                            }
+                        }
+                    }, {
+                        '$project': {
+                            'position_value': 1
+                        }
+                    }, {
+                        '$group': {
+                            '_id': None, 
+                            'position_value': {
+                                '$last': '$position_value'
+                            }
+                        }
+                    }
+                ])
+
                 for item in position_value:
                     try:
                         latest_position = item['position_value']
@@ -77,7 +111,41 @@ class Leverages:
                     return True
                 
             else:
-                position_value = self.positions_db.find(query).sort('runid', -1).limit(1)
+                position_value = self.positions_db.aggregate([
+                    {
+                        '$match': {
+                            '$expr': {
+                                '$and': [
+                                    {
+                                        '$eq': [
+                                            '$client', client
+                                        ]
+                                    }, {
+                                        '$eq': [
+                                            '$venue', exchange
+                                        ]
+                                    }, {
+                                        '$eq': [
+                                            '$account', account
+                                        ]
+                                    }
+                                ]
+                            }
+                        }
+                    }, {
+                        '$project': {
+                            'position_value': 1
+                        }
+                    }, {
+                        '$group': {
+                            '_id': None, 
+                            'position_value': {
+                                '$last': '$position_value'
+                            }
+                        }
+                    }
+                ])
+                
                 for item in position_value:
                     try:
                         latest_position = item['position_value']
@@ -96,7 +164,41 @@ class Leverages:
                     # print("An error occurred in Leverages:", e)
                     return True
             
-            balance_valule = self.balances_db.find(query).sort('runid', -1).limit(1)
+            balance_valule = self.balances_db.aggregate([
+                {
+                    '$match': {
+                        '$expr': {
+                            '$and': [
+                                {
+                                    '$eq': [
+                                        '$client', client
+                                    ]
+                                }, {
+                                    '$eq': [
+                                        '$venue', exchange
+                                    ]
+                                }, {
+                                    '$eq': [
+                                        '$account', account
+                                    ]
+                                }
+                            ]
+                        }
+                    }
+                }, {
+                    '$project': {
+                        'balance_value': 1,
+                    }
+                }, {
+                    '$group': {
+                        '_id': None, 
+                        'balance_value': {
+                            '$last': '$balance_value'
+                        }
+                    }
+                }
+            ])
+
             for item in balance_valule:
                 try: 
                     latest_balance = item['balance_value']

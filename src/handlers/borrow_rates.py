@@ -89,9 +89,40 @@ class BorrowRates:
                 query["market/vip"] = "market"
 
             
-                borrow_rate_values = (
-                    self.borrow_rates_db.find(query).sort("_id", -1).limit(1)
-                )
+                borrow_rate_values = self.borrow_rates_db.aggregate([
+                    {
+                        '$match': {
+                            '$expr': {
+                                '$and': [
+                                    {
+                                        '$eq': [
+                                            '$venue', exchange
+                                        ]
+                                    }, {
+                                        '$eq': [
+                                            '$code', code
+                                        ]
+                                    }, {
+                                        '$eq': [
+                                            '$market/vip', 'market'
+                                        ]
+                                    }
+                                ]
+                            }
+                        }
+                    }, {
+                        '$project': {
+                            'borrow_rates_value': 1
+                        }
+                    }, {
+                        '$group': {
+                            '_id': None, 
+                            'borrow_rates_value': {
+                                '$last': '$borrow_rates_value'
+                            }
+                        }
+                    }
+                ])
 
                 current_values = None
                 for item in borrow_rate_values:
@@ -197,9 +228,40 @@ class BorrowRates:
                                 query["market/vip"] = "market"
 
                                 try:
-                                    borrow_rate_values = (
-                                        self.borrow_rates_db.find(query).sort("_id", -1).limit(1)
-                                    )
+                                    borrow_rate_values = self.borrow_rates_db.aggregate([
+                                        {
+                                            '$match': {
+                                                '$expr': {
+                                                    '$and': [
+                                                        {
+                                                            '$eq': [
+                                                                '$venue', exchange
+                                                            ]
+                                                        }, {
+                                                            '$eq': [
+                                                                '$code', code
+                                                            ]
+                                                        }, {
+                                                            '$eq': [
+                                                                '$market/vip', 'market'
+                                                            ]
+                                                        }
+                                                    ]
+                                                }
+                                            }
+                                        }, {
+                                            '$project': {
+                                                'borrow_rates_value': 1
+                                            }
+                                        }, {
+                                            '$group': {
+                                                '_id': None, 
+                                                'borrow_rates_value': {
+                                                    '$last': '$borrow_rates_value'
+                                                }
+                                            }
+                                        }
+                                    ])
 
                                     current_values = None
                                     for item in borrow_rate_values:
