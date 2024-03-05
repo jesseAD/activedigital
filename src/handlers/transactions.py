@@ -551,6 +551,8 @@ class Transactions:
 
                                     time.sleep(0.5)
                                 
+                                borrow_trades = borrow_trades[:-1]
+                                
                                 for item in borrow_trades:
                                     item['info'] = {**item}
                                     item['interest'] = -float(item['interest'])
@@ -977,7 +979,7 @@ class Transactions:
         
         # back_off[client + "_" + exchange + "_" + sub_account] = config['dask']['back_off']
 
-        tickers = list(self.tickers_db.find({"venue": exchange}).sort("_id", -1).limit(1))[0]['ticker_value']
+        tickers = list(self.tickers_db.find({"venue": exchange}))[0]['ticker_value']
         
         current_time = datetime.now(timezone.utc)
         run_ids = self.runs_db.find({}).sort("_id", -1).limit(1)

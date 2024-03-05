@@ -83,7 +83,41 @@ class Fills:
             if sub_account:
                 query["account"] = sub_account
 
-            position_values = self.positions_db.find(query).sort("_id", -1).limit(1)
+            position_values = self.positions_db.aggregate([
+                {
+                    '$match': {
+                        '$expr': {
+                            '$and': [
+                                {
+                                    '$eq': [
+                                        '$client', client
+                                    ]
+                                }, {
+                                    '$eq': [
+                                        '$venue', exchange
+                                    ]
+                                }, {
+                                    '$eq': [
+                                        '$account', sub_account
+                                    ]
+                                }
+                            ]
+                        }
+                    }
+                }, {
+                    '$project': {
+                        'position_value': 1
+                    }
+                }, {
+                    '$group': {
+                        '_id': None, 
+                        'position_value': {
+                            '$last': '$position_value'
+                        }
+                    }
+                }
+            ])
+
             symbols = []
             for position in position_values:
                 for item in position['position_value']:
@@ -118,7 +152,44 @@ class Fills:
                     query["account"] = sub_account
                 query["symbol"] = symbol
 
-                fills_values = self.fills_db.find(query).sort("_id", -1).limit(1)
+                fills_values = self.fills_db.aggregate([
+                    {
+                        '$match': {
+                            '$expr': {
+                                '$and': [
+                                    {
+                                        '$eq': [
+                                            '$client', client
+                                        ]
+                                    }, {
+                                        '$eq': [
+                                            '$venue', exchange
+                                        ]
+                                    }, {
+                                        '$eq': [
+                                            '$account', sub_account
+                                        ]
+                                    }, {
+                                        '$eq': [
+                                            '$symbol', symbol
+                                        ]
+                                    }
+                                ]
+                            }
+                        }
+                    }, {
+                        '$project': {
+                            'fills_value': 1
+                        }
+                    }, {
+                        '$group': {
+                            '_id': None, 
+                            'fills_value': {
+                                '$last': '$fills_value'
+                            }
+                        }
+                    }
+                ])
 
                 current_value = None
                 for item in fills_values:

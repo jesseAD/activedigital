@@ -131,7 +131,7 @@ class Balances:
         query = {}
         if exchange:
             query["venue"] = exchange
-        ticker_values = self.tickers_db.find(query).sort("_id", -1).limit(1)
+        ticker_values = self.tickers_db.find(query)
 
         for item in ticker_values:
             ticker_value = item["ticker_value"]

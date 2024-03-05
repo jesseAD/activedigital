@@ -12,9 +12,9 @@ import ccxt
 mongo_uri = 'mongodb+srv://activedigital:pwd@mongodbcluster.nzphth1.mongodb.net/?retryWrites=true&w=majority'
 
 mongo_client = pymongo.MongoClient(mongo_uri)
-db = mongo_client['active_digital']['borrow_rates']
+db = mongo_client['active_digital']['transactions']
 
-query = {'$and': [{'venue': 'binance'}, {'runid': 45299}]}
+query = {'$and': [{'client': 'nifty'}, {'venue': 'binance'}, {'runid': {'$gte': 52648}}]}
 # query = {'$and': [{'client': 'lucid'}, {'venue': 'binance'}, {'account': 'subls1'}]}
 
 db.delete_many(query)
