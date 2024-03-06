@@ -551,7 +551,7 @@ class Transactions:
 
                                     time.sleep(0.5)
                                 
-                                borrow_trades = borrow_trades[:-1]
+                                borrow_trades = borrow_trades[1:]
                                 
                                 for item in borrow_trades:
                                     item['info'] = {**item}
