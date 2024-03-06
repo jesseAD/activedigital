@@ -8,6 +8,7 @@ from dask.distributed import LocalCluster, Client
 import concurrent.futures
 import pymongo
 from dotenv import load_dotenv
+from datetime import datetime, timedelta, timezone
 # import warnings
 
 current_file = os.path.abspath(__file__)
@@ -199,6 +200,7 @@ if config['dask']['workers'] > 0:
 
 else:
     latest_positions = list(db['positions'].aggregate([
+        {"$match": {"$expr": {"$gte": ["$timestamp", datetime.now(timezone.utc) - timedelta(days=1)]}}},
         {"$group": {
             "_id": {"client": "$client", "venue": "$venue", "account": "$account"},
             "position_value": {"$last": "$position_value"}
@@ -215,6 +217,7 @@ else:
     ]))
 
     latest_balances = list(db['balances'].aggregate([
+        {"$match": {"$expr": {"$gte": ["$timestamp", datetime.now(timezone.utc) - timedelta(days=1)]}}},
         {"$group": {
             "_id": {"client": "$client", "venue": "$venue", "account": "$account"},
             "balance_value": {"$last": "$balance_value"}
