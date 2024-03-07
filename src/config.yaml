@@ -133,7 +133,7 @@ clients:
 
     subaccounts:
       binance:
-        base_ccy: USD
+        base_ccy: BTC
 
         subaccount4:
           margin_mode: non_portfolio
