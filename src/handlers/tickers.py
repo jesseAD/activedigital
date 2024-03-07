@@ -1,18 +1,10 @@
-import os
-from dotenv import load_dotenv
 from datetime import datetime, timezone
 import ccxt 
-import time
 
-# from src.lib.db import MongoDB
-from src.lib.log import Log
 from src.lib.exchange import Exchange
 from src.config import read_config_file
 from src.handlers.helpers import Helper, OKXHelper, BybitHelper, CoinbaseHelper
-# from src.handlers.database_connector import database_connector
 
-load_dotenv()
-log = Log()
 config = read_config_file()
 
 class Tickers:
@@ -21,37 +13,37 @@ class Tickers:
         self.runs_db = db['runs']
         self.tickers_db = db['tickers']
 
-    def get(
-        self,
-        active: bool = None,
-        spot: str = None,
-        future: str = None,
-        perp: str = None,
-        exchange: str = None,
-    ):
-        results = []
+    # def get(
+    #     self,
+    #     active: bool = None,
+    #     spot: str = None,
+    #     future: str = None,
+    #     perp: str = None,
+    #     exchange: str = None,
+    # ):
+    #     results = []
 
-        pipeline = [
-            {"$sort": {"_id": -1}},
-        ]
+    #     pipeline = [
+    #         {"$sort": {"_id": -1}},
+    #     ]
 
-        if active is not None:
-            pipeline.append({"$match": {"active": active}})
-        if spot:
-            pipeline.append({"$match": {"spotMarket": spot}})
-        if future:
-            pipeline.append({"$match": {"futureMarket": future}})
-        if perp:
-            pipeline.append({"$match": {"perpMarket": perp}})
-        if exchange:
-            pipeline.append({"$match": {"venue": exchange}})
+    #     if active is not None:
+    #         pipeline.append({"$match": {"active": active}})
+    #     if spot:
+    #         pipeline.append({"$match": {"spotMarket": spot}})
+    #     if future:
+    #         pipeline.append({"$match": {"futureMarket": future}})
+    #     if perp:
+    #         pipeline.append({"$match": {"perpMarket": perp}})
+    #     if exchange:
+    #         pipeline.append({"$match": {"venue": exchange}})
 
-        try:
-            results = self.tickers_db.aggregate(pipeline)
-            return results
+    #     try:
+    #         results = self.tickers_db.aggregate(pipeline)
+    #         return results
 
-        except Exception as e:
-            log.error(e)
+    #     except Exception as e:
+    #         log.error(e)
 
     def create(
         self,

@@ -4,16 +4,12 @@ from datetime import datetime, timezone, timedelta, date
 import ccxt 
 import time
 
-# from src.lib.db import MongoDB
-from src.lib.log import Log
 from src.lib.exchange import Exchange
 from src.lib.mapping import Mapping
 from src.config import read_config_file
 from src.handlers.helpers import Helper, OKXHelper, BybitHelper
-# from src.handlers.database_connector import database_connector
 
 load_dotenv()
-log = Log()
 config = read_config_file()
 
 
@@ -25,43 +21,43 @@ class Transactions:
         self.transactions_db = db['transactions']
         self.mtd_pnls_db = db['mtd_pnls']
 
-    def get(
-        self,
-        client,
-        active: bool = None,
-        spot: str = None,
-        future: str = None,
-        perp: str = None,
-        exchange: str = None,
-        account: str = None,
-    ):
-        results = []
+    # def get(
+    #     self,
+    #     client,
+    #     active: bool = None,
+    #     spot: str = None,
+    #     future: str = None,
+    #     perp: str = None,
+    #     exchange: str = None,
+    #     account: str = None,
+    # ):
+    #     results = []
 
-        pipeline = [
-            {"$sort": {"_id": -1}},
-        ]
+    #     pipeline = [
+    #         {"$sort": {"_id": -1}},
+    #     ]
 
-        if active is not None:
-            pipeline.append({"$match": {"active": active}})
-        if spot:
-            pipeline.append({"$match": {"spotMarket": spot}})
-        if future:
-            pipeline.append({"$match": {"futureMarket": future}})
-        if perp:
-            pipeline.append({"$match": {"perpMarket": perp}})
-        if client:
-            pipeline.append({"$match": {"client": client}})
-        if exchange:
-            pipeline.append({"$match": {"venue": exchange}})
-        if account:
-            pipeline.append({"$match": {"account": account}})
+    #     if active is not None:
+    #         pipeline.append({"$match": {"active": active}})
+    #     if spot:
+    #         pipeline.append({"$match": {"spotMarket": spot}})
+    #     if future:
+    #         pipeline.append({"$match": {"futureMarket": future}})
+    #     if perp:
+    #         pipeline.append({"$match": {"perpMarket": perp}})
+    #     if client:
+    #         pipeline.append({"$match": {"client": client}})
+    #     if exchange:
+    #         pipeline.append({"$match": {"venue": exchange}})
+    #     if account:
+    #         pipeline.append({"$match": {"account": account}})
 
-        try:
-            results = self.transactions_db.aggregate(pipeline)
-            return results
+    #     try:
+    #         results = self.transactions_db.aggregate(pipeline)
+    #         return results
 
-        except Exception as e:
-            log.error(e)    
+    #     except Exception as e:
+    #         log.error(e)    
 
     def create(
         self,

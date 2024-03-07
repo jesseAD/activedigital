@@ -1,20 +1,15 @@
-import os, json
+import os
 from dotenv import load_dotenv
 from datetime import datetime, timezone
-import time
 import ccxt
-import pdb
-# from src.lib.db import MongoDB
-from src.lib.log import Log
+# import pdb
 from src.lib.exchange import Exchange
 from src.lib.mapping import Mapping
 from src.lib.unhedged import get_unhedged
 from src.config import read_config_file
 from src.handlers.helpers import Helper, OKXHelper, BybitHelper
-# from src.handlers.database_connector import database_connector
 
 load_dotenv()
-log = Log()
 config = read_config_file()
 
 
@@ -31,46 +26,46 @@ class Positions:
         self.mark_prices_db = db['mark_prices']
         self.price_changes_db = db['open_positions_price_change']
 
-    def get(
-        self,
-        client,
-        active: bool = None,
-        spot: str = None,
-        future: str = None,
-        perp: str = None,
-        position_type: str = None,
-        exchange: str = None,
-        account: str = None,
-    ):
-        results = []
+    # def get(
+    #     self,
+    #     client,
+    #     active: bool = None,
+    #     spot: str = None,
+    #     future: str = None,
+    #     perp: str = None,
+    #     position_type: str = None,
+    #     exchange: str = None,
+    #     account: str = None,
+    # ):
+    #     results = []
 
-        pipeline = [
-            {"$sort": {"_id": -1}},
-        ]
+    #     pipeline = [
+    #         {"$sort": {"_id": -1}},
+    #     ]
 
-        if active is not None:
-            pipeline.append({"$match": {"active": active}})
-        if spot:
-            pipeline.append({"$match": {"spotMarket": spot}})
-        if future:
-            pipeline.append({"$match": {"futureMarket": future}})
-        if perp:
-            pipeline.append({"$match": {"perpMarket": perp}})
-        if position_type:
-            pipeline.append({"$match": {"positionType": position_type}})
-        if client:
-            pipeline.append({"$match": {"client": client}})
-        if exchange:
-            pipeline.append({"$match": {"venue": exchange}})
-        if account:
-            pipeline.append({"$match": {"account": account}})
+    #     if active is not None:
+    #         pipeline.append({"$match": {"active": active}})
+    #     if spot:
+    #         pipeline.append({"$match": {"spotMarket": spot}})
+    #     if future:
+    #         pipeline.append({"$match": {"futureMarket": future}})
+    #     if perp:
+    #         pipeline.append({"$match": {"perpMarket": perp}})
+    #     if position_type:
+    #         pipeline.append({"$match": {"positionType": position_type}})
+    #     if client:
+    #         pipeline.append({"$match": {"client": client}})
+    #     if exchange:
+    #         pipeline.append({"$match": {"venue": exchange}})
+    #     if account:
+    #         pipeline.append({"$match": {"account": account}})
 
-        try:
-            results = self.positions_db.aggregate(pipeline)
-            return results
+    #     try:
+    #         results = self.positions_db.aggregate(pipeline)
+    #         return results
 
-        except Exception as e:
-            log.error(e)
+    #     except Exception as e:
+    #         log.error(e)
 
     def create(
         self,
@@ -909,29 +904,6 @@ class Positions:
         if perp:
             position["perpMarket"] = perp
 
-        # get latest positions data
-        # query = {}
-        # if client:
-        #     query["client"] = client
-        # if exchange:
-        #     query["venue"] = exchange
-        # if sub_account:
-        #     query["account"] = sub_account
-
-        # position_values = self.positions_db.find(query).sort("_id", -1).limit(1)
-
-        # latest_run_id = -1
-        # latest_value = None
-        # for item in position_values:
-        #     if latest_run_id < item["runid"]:
-        #         latest_run_id = item["runid"]
-        #         latest_value = item["position_value"]
-
-        # if latest_value == position["position_value"]:
-        #     logger.info(client + " " + exchange + " " + sub_account + " positions " + "same position")
-        #     # print("same position")
-        #     return True
-
         run_ids = self.runs_db.find({}).sort("_id", -1).limit(1)
         latest_run_id = 0
         for item in run_ids:
@@ -975,63 +947,3 @@ class Positions:
         except Exception as e:
             logger.error(client + " " + exchange + " " + sub_account + " positions " + str(e))
             return True
-
-    # def entry(self, account: str = None, status: bool = True):
-    #     # get all positions with account
-    #     positions = Positions.get(active=True, account=account)
-
-    #     for position in positions:
-    #         try:
-    #             self.positions_db.update(
-    #                 {"_id": position["_id"]},
-    #                 {"$set": {"entry": status}},
-    #             )
-    #             log.debug(
-    #                 f"position in account entry {account} has been set to {status}"
-    #             )
-    #         except Exception as e:
-    #             log.error(e)
-    #             return False
-
-    #     return True
-
-    # def exit(self, account: str = None, status: bool = False):
-    #     # get all positions with account
-    #     positions = Positions.get(active=True, account=account)
-
-    #     for position in positions:
-    #         if position["entry"] is False:
-    #             log.debug(
-    #                 f"position in account {account} has not been entered, skipping"
-    #             )
-    #             continue
-    #         try:
-    #             self.positions_db.update(
-    #                 {"_id": position["_id"]},
-    #                 {"$set": {"exit": status}},
-    #             )
-    #             log.debug(
-    #                 f"Position in account exit {account} has been set to {status}"
-    #             )
-    #         except Exception as e:
-    #             log.error(e)
-    #             return False
-
-    #     return True
-
-    # def update(self, account: str = None, **kwargs: dict):
-    #     # get all positions with account
-    #     positions = Positions.get(account=account)
-
-    #     for position in positions:
-    #         try:
-    #             self.positions_db.update_one(
-    #                 {"_id": position["_id"]},
-    #                 {"$set": kwargs},
-    #             )
-    #             log.debug(f"Position in account {account} has been updated")
-    #         except Exception as e:
-    #             log.error(e)
-    #             return False
-
-    #     return True
