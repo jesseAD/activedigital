@@ -205,11 +205,11 @@ class Leverages:
             balance_in_base_currency = 0
             try:
                 if base_currency == "USDT":
-                    balance_in_base_currency = latest_balance['base'] / latest_ticker['USDT/USD']['last']
+                    balance_in_base_currency = latest_balance['base'] * latest_ticker['USDT/USD']['last']
                 elif base_currency == "USD":
                     balance_in_base_currency = latest_balance['base'] 
                 else:
-                    balance_in_base_currency = latest_balance['base'] / (latest_ticker['USDT/USD']['last'] * latest_ticker[base_currency + '/USDT']['last'])
+                    balance_in_base_currency = latest_balance['base'] * (latest_ticker['USDT/USD']['last'] * latest_ticker[base_currency + '/USDT']['last'])
             except Exception as e:
                 logger.error(client + " " + exchange + " " + account + " leverages " + str(e))
                 # print("An error occurred in Leverages:", e)
