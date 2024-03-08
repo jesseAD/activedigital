@@ -708,11 +708,11 @@ class Transactions:
                             if current_value is None:
                                 spot_trades = []
 
+                                last_time = int(datetime.timestamp(datetime(datetime.now(timezone.utc).year, datetime.now(timezone.utc).month, 1)) * 1000)
                                 while(True):
-                                    last_time = int(datetime.timestamp(datetime(datetime.now(timezone.utc).year, datetime.now(timezone.utc).month, 1)) * 1000)
                                     end_time = int(spot_trades[0]['time']) - 1 if len(spot_trades) > 0 else int(datetime.timestamp(datetime.now(timezone.utc)) * 1000)
 
-                                    res = Helper().get_spot_transactions(exch=exch, params={"startTime": last_time, "endTime": end_time, "symbol": symbol, "limit": 1000})
+                                    res = Helper().get_spot_transactions(exch=exch, params={"startTime": max(last_time, end_time - 82800000), "endTime": end_time, "symbol": symbol, "limit": 1000})
                                 
                                     if len(res) == 0:
                                         break
@@ -751,7 +751,7 @@ class Transactions:
                                     while(True):
                                         end_time = int(spot_trades[0]['time']) - 1 if len(spot_trades) > 0 else int(datetime.timestamp(datetime.now(timezone.utc)) * 1000)
 
-                                        res = Helper().get_spot_transactions(exch=exch, params={"startTime": last_time, "endTime": end_time, "symbol": symbol, "limit": 1000})
+                                        res = Helper().get_spot_transactions(exch=exch, params={"startTime": max(last_time, end_time - 82800000), "endTime": end_time, "symbol": symbol, "limit": 1000})
                                     
                                         if len(res) == 0:
                                             break
@@ -825,8 +825,12 @@ class Transactions:
                             while(True):
                                 last_time = int(datetime.timestamp(datetime(datetime.now(timezone.utc).year, datetime.now(timezone.utc).month, 1)) * 1000)
                                 end_time = int(transactions[0]['transactionTime']) - 1 if len(transactions) > 0 else int(datetime.timestamp(datetime.now(timezone.utc)) * 1000)
-                                res = BybitHelper().get_commissions(exch=exch, params={'startTime': max(last_time, end_time - 518400000), "endTime": end_time})
                                 
+                                try:
+                                    res = BybitHelper().get_commissions(exch=exch, params={'startTime': max(last_time, end_time - 518400000), "endTime": end_time})
+                                except:
+                                    break
+
                                 if len(res) == 0:
                                     break
 
@@ -848,8 +852,13 @@ class Transactions:
 
                             while(True):
                                 end_time = int(transactions[0]['transactionTime']) - 1 if len(transactions) > 0 else int(datetime.timestamp(datetime.now(timezone.utc)) * 1000)
-                                res = BybitHelper().get_commissions(exch=exch, params={'startTime': max(last_time, end_time - 518400000), "endTime": end_time})
                                 
+                                try:
+                                    res = BybitHelper().get_commissions(exch=exch, params={'startTime': max(last_time, end_time - 518400000), "endTime": end_time})
+                                except:
+                                    break
+
+
                                 if len(res) == 0:
                                     break
 
@@ -918,8 +927,12 @@ class Transactions:
                             while(True):
                                 last_time = int(datetime.timestamp(datetime(datetime.now(timezone.utc).year, datetime.now(timezone.utc).month, 1)) * 1000)
                                 end_time = int(transactions[0]['createdTime']) - 1 if len(transactions) > 0 else int(datetime.timestamp(datetime.now(timezone.utc)) * 1000)
-                                res = BybitHelper().get_borrow_history(exch=exch, params={'startTime': max(last_time, end_time - 2073600000), "endTime": end_time, 'limit': 50})
                                 
+                                try:
+                                    res = BybitHelper().get_borrow_history(exch=exch, params={'startTime': max(last_time, end_time - 2073600000), "endTime": end_time, 'limit': 50})
+                                except:
+                                    break
+
                                 if len(res) == 0:
                                     break
 
@@ -943,7 +956,11 @@ class Transactions:
 
                             while(True):
                                 end_time = int(transactions[0]['createdTime']) - 1 if len(transactions) > 0 else int(datetime.timestamp(datetime.now(timezone.utc)) * 1000)
-                                res = BybitHelper().get_borrow_history(exch=exch, params={'startTime': max(last_time, end_time - 2073600000), "endTime": end_time, 'limit': 50})
+                                
+                                try:
+                                    res = BybitHelper().get_borrow_history(exch=exch, params={'startTime': max(last_time, end_time - 2073600000), "endTime": end_time, 'limit': 50})
+                                except:
+                                    break
                                 
                                 if len(res) == 0:
                                     break
