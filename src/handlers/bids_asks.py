@@ -1,29 +1,9 @@
-import os
 from dotenv import load_dotenv
 from datetime import datetime, timezone
-import gzip
-import pickle
 import ccxt 
-import time
 
-# from src.lib.db import MongoDB
-from src.lib.log import Log
 from src.lib.exchange import Exchange
-# from src.lib.mapping import Mapping
-# from src.config import read_config_file
 from src.handlers.helpers import Helper, OKXHelper, BybitHelper
-# from src.handlers.database_connector import database_connector
-
-load_dotenv()
-log = Log()
-# config = read_config_file()
-
-
-def compress_list(data):
-    serialized_data = pickle.dumps(data)
-    compressed_data = gzip.compress(serialized_data)
-    return compressed_data
-
 
 class Bids_Asks:
     def __init__(self, db, collection):
@@ -31,43 +11,43 @@ class Bids_Asks:
         self.runs_db = db['runs']
         self.bid_asks_db = db['bid_asks']
 
-    def get(
-        self,
-        active: bool = None,
-        spot: str = None,
-        future: str = None,
-        perp: str = None,
-        position_type: str = None,
-        exchange: str = None,
-        symbol: str = None,
-    ):
-        results = []
+    # def get(
+    #     self,
+    #     active: bool = None,
+    #     spot: str = None,
+    #     future: str = None,
+    #     perp: str = None,
+    #     position_type: str = None,
+    #     exchange: str = None,
+    #     symbol: str = None,
+    # ):
+    #     results = []
 
-        pipeline = [
-            {"$sort": {"_id": -1}},
-        ]
+    #     pipeline = [
+    #         {"$sort": {"_id": -1}},
+    #     ]
 
-        if active is not None:
-            pipeline.append({"$match": {"active": active}})
-        if spot:
-            pipeline.append({"$match": {"spotMarket": spot}})
-        if future:
-            pipeline.append({"$match": {"futureMarket": future}})
-        if perp:
-            pipeline.append({"$match": {"perpMarket": perp}})
-        if position_type:
-            pipeline.append({"$match": {"positionType": position_type}})
-        if exchange:
-            pipeline.append({"$match": {"venue": exchange}})
-        if symbol:
-            pipeline.append({"$match": {"symbol": symbol}})
+    #     if active is not None:
+    #         pipeline.append({"$match": {"active": active}})
+    #     if spot:
+    #         pipeline.append({"$match": {"spotMarket": spot}})
+    #     if future:
+    #         pipeline.append({"$match": {"futureMarket": future}})
+    #     if perp:
+    #         pipeline.append({"$match": {"perpMarket": perp}})
+    #     if position_type:
+    #         pipeline.append({"$match": {"positionType": position_type}})
+    #     if exchange:
+    #         pipeline.append({"$match": {"venue": exchange}})
+    #     if symbol:
+    #         pipeline.append({"$match": {"symbol": symbol}})
 
-        try:
-            results = self.bid_asks_db.aggregate(pipeline)
-            return results
+    #     try:
+    #         results = self.bid_asks_db.aggregate(pipeline)
+    #         return results
 
-        except Exception as e:
-            log.error(e)
+    #     except Exception as e:
+    #         log.error(e)
 
     def create(
         self,
@@ -109,8 +89,8 @@ class Bids_Asks:
                     }   
                 
                 elif exchange == "bybit":
-                    spot_value = Helper().get_bid_ask(exch=exch, symbol=symbol+"/USDT")
-                    perp_value = Helper().get_bid_ask(exch=exch, symbol=symbol+"/USDT:USDT")
+                    spot_value = BybitHelper().get_bid_ask(exch=exch, symbol=symbol+"/USDT")
+                    perp_value = BybitHelper().get_bid_ask(exch=exch, symbol=symbol+"/USDT:USDT")
 
                     bid_ask_value = {
                         'spot': spot_value,

@@ -1,18 +1,7 @@
-import os
-from dotenv import load_dotenv
 from datetime import datetime, timezone
 
-# from src.lib.db import MongoDB
-from src.lib.log import Log
-# from src.lib.exchange import Exchange
-# from src.lib.mapping import Mapping
 from src.config import read_config_file
-# from src.handlers.helpers import Helper
-# from src.handlers.helpers import OKXHelper
-# from src.handlers.database_connector import database_connector
 
-load_dotenv()
-log = Log()
 config = read_config_file()
 
 
@@ -34,7 +23,7 @@ class Runs:
             return latest_run_id
 
         except Exception as e:
-            log.error(e)
+            print(e)
 
     def start(self, logger=None):
         current_time = datetime.now(timezone.utc)

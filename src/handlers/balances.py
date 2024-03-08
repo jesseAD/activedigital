@@ -2,17 +2,12 @@ import os
 from dotenv import load_dotenv
 from datetime import datetime, timezone
 import ccxt
-import time
 
-# from src.lib.db import MongoDB
-from src.lib.log import Log
 from src.lib.exchange import Exchange
 from src.config import read_config_file
 from src.handlers.helpers import Helper, OKXHelper, BybitHelper
-# from src.handlers.database_connector import database_connector
 
 load_dotenv()
-log = Log()
 config = read_config_file()
 
 
@@ -23,46 +18,46 @@ class Balances:
         self.tickers_db = db['tickers']
         self.balances_db = db['balances']
 
-    def get(
-        self,
-        active: bool = None,
-        spot: str = None,
-        future: str = None,
-        perp: str = None,
-        position_type: str = None,
-        client: str = None,
-        exchange: str = None,
-        account: str = None,
-    ):
-        results = []
+    # def get(
+    #     self,
+    #     active: bool = None,
+    #     spot: str = None,
+    #     future: str = None,
+    #     perp: str = None,
+    #     position_type: str = None,
+    #     client: str = None,
+    #     exchange: str = None,
+    #     account: str = None,
+    # ):
+    #     results = []
 
-        pipeline = [
-            {"$sort": {"_id": -1}},
-        ]
+    #     pipeline = [
+    #         {"$sort": {"_id": -1}},
+    #     ]
 
-        if active is not None:
-            pipeline.append({"$match": {"active": active}})
-        if spot:
-            pipeline.append({"$match": {"spotMarket": spot}})
-        if future:
-            pipeline.append({"$match": {"futureMarket": future}})
-        if perp:
-            pipeline.append({"$match": {"perpMarket": perp}})
-        if position_type:
-            pipeline.append({"$match": {"positionType": position_type}})
-        if client:
-            pipeline.append({"$match": {"client": client}})
-        if exchange:
-            pipeline.append({"$match": {"venue": exchange}})
-        if account:
-            pipeline.append({"$match": {"account": account}})
+    #     if active is not None:
+    #         pipeline.append({"$match": {"active": active}})
+    #     if spot:
+    #         pipeline.append({"$match": {"spotMarket": spot}})
+    #     if future:
+    #         pipeline.append({"$match": {"futureMarket": future}})
+    #     if perp:
+    #         pipeline.append({"$match": {"perpMarket": perp}})
+    #     if position_type:
+    #         pipeline.append({"$match": {"positionType": position_type}})
+    #     if client:
+    #         pipeline.append({"$match": {"client": client}})
+    #     if exchange:
+    #         pipeline.append({"$match": {"venue": exchange}})
+    #     if account:
+    #         pipeline.append({"$match": {"account": account}})
 
-        try:
-            results = self.balances_db.aggregate(pipeline)
-            return results
+    #     try:
+    #         results = self.balances_db.aggregate(pipeline)
+    #         return results
 
-        except Exception as e:
-            log.error(e)
+    #     except Exception as e:
+    #         log.error(e)
 
     def create(
         self,
@@ -189,29 +184,6 @@ class Balances:
                 pass
 
         balance["runid"] = latest_run_id
-
-        # get latest balances data
-        # query = {}
-        # if client:
-        #     query["client"] = client
-        # if exchange:
-        #     query["venue"] = exchange
-        # if sub_account:
-        #     query["account"] = sub_account
-
-        # balances_values = self.balances_db.find(query).sort("runid", -1).limit(1)
-
-        # latest_run_id = -1
-        # latest_value = None
-        # for item in balances_values:
-        #     if latest_run_id < item["runid"]:
-        #         latest_run_id = item["runid"]
-        #         latest_value = item["balance_value"]
-
-        # if latest_value == balance["balance_value"]:
-        #     logger.info(client + " " + exchange + " " + sub_account + " " + "same balance")
-        #     # print("same balance")
-        #     return True
 
         try:
             if config["balances"]["store_type"] == "timeseries":

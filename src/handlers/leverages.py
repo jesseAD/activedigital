@@ -1,14 +1,7 @@
-import os
-from dotenv import load_dotenv
 from datetime import datetime, timezone
 
-# from src.lib.db import MongoDB
-from src.lib.log import Log
 from src.config import read_config_file
-# from src.handlers.database_connector import database_connector
 
-load_dotenv()
-log = Log()
 config = read_config_file()
 
 class Leverages:
