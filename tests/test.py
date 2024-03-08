@@ -31,9 +31,24 @@ params = {
     # 'password': "pwd"
 }
 
-exchange = ccxt.binance(params)
-exchange.private_get_mytrades()
+# exchange = ccxt.binance(params)
+# exchange.private_get_mytrades()
+exchage = ccxt.bybit(params)
+coins = ["BTC", "ETH", "XRP", "ADA", "DOT", "LTC", "EOS", "MANA", "USDT", "USDC", ]
+positions = []
 
+for coin in coins:
+    res = exchage.private_get_v5_position_list(params={'category': 'linear', 'settleCoin': coin})['result']['list']
+    
+    for item in res:
+        item['info'] = {**item}
+        item['marginMode'] = "cross"
+        item['side'] = "long" if item['side'] == "Buy" else "short"
+        item['quote'] = coin
+        item['base'] = item['symbol'].split(coin)[0] if coin != "USDC" else item['symbol'].split("PERP")[0]
+
+    positions += res
+print(positions)
              
 
 # print(exchange.papi_get_balance())
@@ -45,21 +60,21 @@ exchange.private_get_mytrades()
 
 # print(exchange.fetch_account_positions(params={"type": "future"}))
 
-exchange = ccxt.okx(params)
+# exchange = ccxt.okx(params)
 
-transactions = []
+# transactions = []
 
-while(True):
-    end_time = int(transactions[0]['ts']) - 1 if len(transactions) > 0 else int(datetime.timestamp(datetime.now(timezone.utc)) * 1000)
-    res = exchange.private_get_account_bills_archive(params={"end": end_time})["data"]
+# while(True):
+#     end_time = int(transactions[0]['ts']) - 1 if len(transactions) > 0 else int(datetime.timestamp(datetime.now(timezone.utc)) * 1000)
+#     res = exchange.private_get_account_bills_archive(params={"end": end_time})["data"]
 
-    if len(res) == 0:
-        break
+#     if len(res) == 0:
+#         break
 
-    res.sort(key = lambda x: x['ts'])
-    transactions = res + transactions
-    print(res)
-    time.sleep(1)
+#     res.sort(key = lambda x: x['ts'])
+#     transactions = res + transactions
+#     print(res)
+#     time.sleep(1)
 
-print(len(transactions))
+# print(len(transactions))
     
