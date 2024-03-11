@@ -1,6 +1,6 @@
 import os
 from dotenv import load_dotenv
-from datetime import datetime, timezone
+from datetime import datetime, timezone, timedelta
 import ccxt
 
 from src.lib.exchange import Exchange
@@ -153,6 +153,62 @@ class Balances:
 
         balanceValue["base"] = base_balance
 
+        balance_values = self.balances_db.aggregate([
+            {
+                '$match': {
+                    '$expr': {
+                        '$and': [
+                            {
+                                '$eq': [
+                                    '$client', client
+                                ]
+                            }, {
+                                '$eq': [
+                                    '$venue', exchange
+                                ]
+                            }, {
+                                '$eq': [
+                                    '$account', sub_account
+                                ]
+                            }, {
+                                '$gt': [
+                                    '$timestamp', datetime.now(timezone.utc) - timedelta(days=1)
+                                ]
+                            }
+                        ]
+                    }
+                }
+            }, {
+                '$project': {
+                    'balance_value': 1,
+                    'base_ccy': 1
+                }
+            }, {
+                '$group': {
+                    '_id': None, 
+                    'balance_value': {
+                        '$last': '$balance_value'
+                    },
+                    'base_ccy': {
+                        '$last': '$base_ccy'
+                    }
+                }
+            }
+        ])
+
+        latest_balance = 0
+        for item in balance_values:
+            latest_balance = item['balance_value']['base']
+            latest_base_ccy = item['base_ccy']
+
+        balance_change = 0
+        if latest_base_ccy == config["clients"][client]["subaccounts"][exchange]["base_ccy"]:
+            balance_change = base_balance - latest_balance
+            try:
+                balance_change = abs(balance_change / (base_balance if base_balance != 0.0 else latest_balance))
+            except:
+                pass
+
         balance = {
             "client": client,
             "venue": exchange,
@@ -160,6 +216,7 @@ class Balances:
             "balance_value": balanceValue,
             "repayments": repayments,
             "loan_pools": loan_pools,
+            "balace_change": balance_change,
             "base_ccy": config["clients"][client]["subaccounts"][exchange]["base_ccy"],
             "active": True,
             "entry": False,

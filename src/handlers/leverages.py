@@ -157,7 +157,7 @@ class Leverages:
                     # print("An error occurred in Leverages:", e)
                     return True
             
-            balance_valule = self.balances_db.aggregate([
+            balance_value = self.balances_db.aggregate([
                 {
                     '$match': {
                         '$expr': {
@@ -192,7 +192,7 @@ class Leverages:
                 }
             ])
 
-            for item in balance_valule:
+            for item in balance_value:
                 try: 
                     latest_balance = item['balance_value']
                 except Exception as e:
