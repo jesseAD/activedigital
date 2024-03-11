@@ -216,7 +216,7 @@ class Balances:
             "balance_value": balanceValue,
             "repayments": repayments,
             "loan_pools": loan_pools,
-            "balace_change": balance_change,
+            "balance_change": balance_change,
             "base_ccy": config["clients"][client]["subaccounts"][exchange]["base_ccy"],
             "active": True,
             "entry": False,
