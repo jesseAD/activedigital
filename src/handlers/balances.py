@@ -205,7 +205,7 @@ class Balances:
         if latest_base_ccy == config["clients"][client]["subaccounts"][exchange]["base_ccy"]:
             balance_change = base_balance - latest_balance
             try:
-                balance_change = abs(balance_change / (base_balance if base_balance != 0.0 else latest_balance))
+                balance_change = balance_change / abs((latest_balance if latest_balance != 0.0 else base_balance))
             except:
                 pass
 
