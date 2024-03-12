@@ -1,4 +1,4 @@
-from datetime import datetime, timezone
+from datetime import datetime, timezone, timedelta
 
 from src.config import read_config_file
 
@@ -67,6 +67,10 @@ class Leverages:
                                         '$eq': [
                                             '$account', account
                                         ]
+                                    }, {
+                                        '$gt': [
+                                            '$timestamp', datetime.now(timezone.utc) - timedelta(days=1)
+                                        ]
                                     }
                                 ]
                             }
@@ -121,6 +125,10 @@ class Leverages:
                                         '$eq': [
                                             '$account', account
                                         ]
+                                    }, {
+                                        '$gt': [
+                                            '$timestamp', datetime.now(timezone.utc) - timedelta(days=1)
+                                        ]
                                     }
                                 ]
                             }
@@ -173,6 +181,10 @@ class Leverages:
                                 }, {
                                     '$eq': [
                                         '$account', account
+                                    ]
+                                }, {
+                                    '$gt': [
+                                        '$timestamp', datetime.now(timezone.utc) - timedelta(days=1)
                                     ]
                                 }
                             ]
