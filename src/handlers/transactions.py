@@ -1076,8 +1076,10 @@ class Transactions:
 
                 for item in transaction_value:
                     item['timestamp'] = int(item["timestamp"]) - config['transactions']['time_slack']
+
                     if item['fee'] != '':
-                        item['fee'] = (
+                        item['fee_origin'] = float(item['fee'])
+                        item['fee_base'] = (
                             float(item["fee"]) * 
                             Helper().calc_cross_ccy_ratio(
                                 item['ccy'],
@@ -1085,8 +1087,11 @@ class Transactions:
                                 tickers
                             )
                         )
+                        item['fee'] = float(item["fee"]) * Helper().calc_cross_ccy_ratio(item['ccy'], "USDT", tickers)
+                        
                     if item['sz'] != '':
-                        item['sz'] = (
+                        item['sz_origin'] = float(item["sz"])
+                        item['sz_base'] = (
                             float(item["sz"]) * 
                             Helper().calc_cross_ccy_ratio(
                                 item['ccy'],
@@ -1094,8 +1099,11 @@ class Transactions:
                                 tickers
                             )
                         )
+                        item['sz'] = float(item["sz"]) * Helper().calc_cross_ccy_ratio(item['ccy'], "USDT", tickers)
+
                     if item['pnl'] != '':
-                        item['pnl'] = (
+                        item['pnl_origin'] = float(item['pnl'])
+                        item['pnl_base'] = (
                             float(item["pnl"]) * 
                             Helper().calc_cross_ccy_ratio(
                                 item['ccy'],
@@ -1103,6 +1111,8 @@ class Transactions:
                                 tickers
                             )
                         )
+                        item['pnl'] = float(item["pnl"]) * Helper().calc_cross_ccy_ratio(item['ccy'], "USDT", tickers)
+
                     new_value = {
                         "client": client,
                         "venue": exchange,
@@ -1131,7 +1141,9 @@ class Transactions:
                 for _type in transaction_value:
                     for item in transaction_value[_type]:
                         item['timestamp'] = int(item["timestamp"]) - config['transactions']['time_slack']
-                        item['income'] = (
+
+                        item['income_origin'] = float(item['income'])
+                        item['income_base'] = (
                             float(item["income"]) * 
                             Helper().calc_cross_ccy_ratio(
                                 item['asset'],
@@ -1139,6 +1151,8 @@ class Transactions:
                                 tickers
                             )
                         )
+                        item['income'] = float(item["income"]) * Helper().calc_cross_ccy_ratio(item['asset'], "USDT", tickers)
+
                         new_value = {
                             "client": client,
                             "venue": exchange,
@@ -1166,8 +1180,10 @@ class Transactions:
                 for _type in transaction_value:
                     for item in transaction_value[_type]:
                         item['timestamp'] = int(item["timestamp"]) - config['transactions']['time_slack']
+
                         if item['fee'] != '':
-                            item['fee'] = (
+                            item['fee_origin'] = float(item['fee'])
+                            item['fee_base'] = (
                                 float(item["fee"]) * 
                                 Helper().calc_cross_ccy_ratio(
                                     item['currency'],
@@ -1175,8 +1191,11 @@ class Transactions:
                                     tickers
                                 )
                             )
+                            item['fee'] = float(item['fee']) * Helper().calc_cross_ccy_ratio(item['currency'], "USDT", tickers)
+
                         if item['funding'] != '':
-                            item['funding'] = (
+                            item['funding_origin'] = float(item['funding'])
+                            item['funding_base'] = (
                                 float(item["funding"]) * 
                                 Helper().calc_cross_ccy_ratio(
                                     item['currency'],
@@ -1184,6 +1203,8 @@ class Transactions:
                                     tickers
                                 )
                             )
+                            item['funding'] = float(item['funding']) * Helper().calc_cross_ccy_ratio(item['currency'], "USDT", tickers)
+
                         new_value = {
                             "client": client,
                             "venue": exchange,
