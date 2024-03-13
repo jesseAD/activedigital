@@ -64,12 +64,12 @@ def get_unhedged(perp=[], spot=[]):
         else:
             new_position['avgPrice'] = float(position['info']['avgPrice'])
 
-        if position['leverage'] != None:
+        if position['leverage'] != None and position['leverage'] != "":
             new_position['leverage'] = float(position['leverage'])
         else:
             new_position['leverage'] = 0
 
-        if position['unrealizedPnl'] != None:
+        if position['unrealizedPnl'] != None and position['unrealizedPnl'] != "":
             new_position['unrealizedPnl'] = float(position['unrealizedPnl'])
         else:
             new_position['unrealizedPnl'] = 0  
