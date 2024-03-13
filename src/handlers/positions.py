@@ -821,6 +821,7 @@ class Positions:
                         spot_positions.append(spot_position)
 
             try:
+                split_positions = []
                 split_positions = get_unhedged(position_info, spot_positions)
             except Exception as e:
                 logger.warning(client + " " + exchange + " " + sub_account + " split positions " + str(e))
