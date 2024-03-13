@@ -1,7 +1,7 @@
 import os, sys
 import ccxt
-import pymongo
-import pdb
+# import pymongo
+# import pdb
 from datetime import datetime, timezone
 import time
 
@@ -10,13 +10,13 @@ current_directory = os.path.dirname(current_file)
 target_dir = os.path.abspath(os.path.join(current_directory, os.pardir))
 sys.path.append(target_dir)
 
-from src.handlers.positions import Positions
-from src.lib.log import Log
+# from src.handlers.positions import Positions
+# from src.lib.log import Log
 
-logger = Log()
+# logger = Log()
 
-mongo_uri = 'mongodb+srv://activedigital:'+'pwd'+'@mongodbcluster.nzphth1.mongodb.net/?retryWrites=true&w=majority'
-db = pymongo.MongoClient(mongo_uri, maxPoolsize=1)['active_digital']
+# mongo_uri = 'mongodb+srv://activedigital:'+'pwd'+'@mongodbcluster.nzphth1.mongodb.net/?retryWrites=true&w=majority'
+# db = pymongo.MongoClient(mongo_uri, maxPoolsize=1)['active_digital']
 
 params = {
     'apiKey': "api",
@@ -34,21 +34,9 @@ params = {
 # exchange = ccxt.binance(params)
 # exchange.private_get_mytrades()
 exchage = ccxt.bybit(params)
-coins = ["BTC", "ETH", "XRP", "ADA", "DOT", "LTC", "EOS", "MANA", "USDT", "USDC", ]
-positions = []
 
-for coin in coins:
-    res = exchage.private_get_v5_position_list(params={'category': 'linear', 'settleCoin': coin})['result']['list']
-    
-    for item in res:
-        item['info'] = {**item}
-        item['marginMode'] = "cross"
-        item['side'] = "long" if item['side'] == "Buy" else "short"
-        item['quote'] = coin
-        item['base'] = item['symbol'].split(coin)[0] if coin != "USDC" else item['symbol'].split("PERP")[0]
 
-    positions += res
-print(positions)
+exchage.fetch_my_trades(symbol="FILUSDT")
              
 
 # print(exchange.papi_get_balance())

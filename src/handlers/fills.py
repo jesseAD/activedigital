@@ -1,6 +1,6 @@
 import os
 from dotenv import load_dotenv
-from datetime import datetime, timezone
+from datetime import datetime, timezone, timedelta
 import ccxt 
 
 from src.lib.exchange import Exchange
@@ -95,6 +95,10 @@ class Fills:
                                     '$eq': [
                                         '$account', sub_account
                                     ]
+                                }, {
+                                    '$gt': [
+                                        '$timestamp', datetime.now(timezone.utc) - timedelta(days=1)
+                                    ]
                                 }
                             ]
                         }
@@ -177,6 +181,9 @@ class Fills:
                             'fills_value': 1
                         }
                     }, {
+                        '$sort': {'fills_value.timestamp': 1}
+                    },
+                    {
                         '$group': {
                             '_id': None, 
                             'fills_value': {
