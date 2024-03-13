@@ -197,6 +197,7 @@ class Balances:
         ])
 
         latest_balance = 0
+        latest_base_ccy = ""
         for item in balance_values:
             latest_balance = item['balance_value']['base']
             latest_base_ccy = item['base_ccy']
