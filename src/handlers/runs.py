@@ -41,11 +41,10 @@ class Runs:
                 {"start_time": current_time, "runid": latest_run_id}
             )
 
-            # log.debug(f"Position created: {position}")
-            return latest_run_id
+            return True
 
         except Exception as e:
-            logger.error(e)
+            logger.error("Error in inserting a run: " + str(e))
             return False
 
     def end(self, logger=None):
@@ -65,9 +64,8 @@ class Runs:
                 {"$set": {"end_time": current_time}},
             )
 
-            # log.debug(f"Position created: {position}")
-            return latest_run_id
+            return True
 
         except Exception as e:
-            logger.error(e)
+            logger.error("Error in enclosing a run: " + str(e))
             return False

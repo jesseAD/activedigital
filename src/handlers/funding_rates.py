@@ -190,19 +190,6 @@ class FundingRates:
                             item["quote"] = symbol.split("/")[1].split(":")[0]
                             item["scalar"] = scalar
 
-                            # if (
-                            #     config["funding_rates"][exchange]["valid"]
-                            #     == "valid_to"
-                            # ):
-                            #     item["timestamp"] = int(item["timestamp"]) - (
-                            #         int(funding_rate["nextFundingTimestamp"])
-                            #         - int(funding_rate["fundingTimestamp"])
-                            #     )
-                            #     item["nextFundingTime"] = int(item["nextFundingTime"]) - (
-                            #         int(funding_rate["nextFundingTimestamp"])
-                            #         - int(funding_rate["fundingTimestamp"])
-                            #     )
-
                     elif exchange == "binance":
                         funding_rate = Helper().get_funding_rate(
                             exch=exch, symbol=symbol
@@ -446,16 +433,9 @@ class FundingRates:
                             upsert=False
                         )
                     pass
-
-            # except ccxt.InvalidNonce as e:
-            #     print("Hit rate limit", e)
-            #     time.sleep(back_off[exchange] / 1000.0)
-            #     back_off[exchange] *= 2
-            #     return True
             
             except ccxt.ExchangeError as e:
                 logger.warning(exchange + " funding rates " + str(e))
-                # print("An error occurred in Funding Rates:", e)
                 return True
             except ccxt.NetworkError as e:
                 logger.warning(exchange + " funding rates " + str(e))
@@ -508,8 +488,6 @@ class FundingRates:
             del funding_rates
 
             return True
-
-            # return funding_rates
 
         except Exception as e:
             logger.error(exchange + " funding rates " + str(e))

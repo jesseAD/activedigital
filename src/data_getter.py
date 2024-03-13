@@ -4,7 +4,7 @@ import time
 import gc
 # from dask.distributed import as_completed
 # from dask.distributed import wait
-from dask.distributed import LocalCluster, Client
+# from dask.distributed import LocalCluster, Client
 import concurrent.futures
 import pymongo
 from dotenv import load_dotenv
@@ -111,7 +111,8 @@ def leverage_pool(leverage_collector, accounts_group):
 
 #   Insert new run
 logger.info("Application started")
-insert_runs(logger, db)
+if(not insert_runs(logger, db)):
+    sys.exit()
 print("inserted a new run")
 
 #  ------------  Dask + Concurrent  ----------------
@@ -128,8 +129,9 @@ private_data_collectors = [
 ]
 
 if config['dask']['workers'] > 0:
-    cluster = LocalCluster(n_workers=config['dask']['workers'], memory_limit=config['dask']['memory'], processes=False)
-    dask = Client(cluster)
+    pass
+    # cluster = LocalCluster(n_workers=config['dask']['workers'], memory_limit=config['dask']['memory'], processes=False)
+    # dask = Client(cluster)
     # futures = []
 
     # for exchange in config['exchanges']:
@@ -196,7 +198,7 @@ if config['dask']['workers'] > 0:
     # del accounts
 
 
-    dask.close()
+    # dask.close()
 
 else:
     latest_positions = list(db['positions'].aggregate([

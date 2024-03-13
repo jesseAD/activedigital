@@ -97,12 +97,6 @@ class Bids_Asks:
                         'perp': perp_value,
                         'spread': spot_value['mid_point'] - perp_value['mid_point'],
                     } 
-
-            # except ccxt.InvalidNonce as e:
-            #     print("Hit rate limit", e)
-            #     time.sleep(back_off[exchange] / 1000.0)
-            #     back_off[exchange] *= 2
-            #     return True
         
             except ccxt.ExchangeError as e:
                 logger.warning(exchange +" bids and asks " + str(e))
@@ -110,8 +104,6 @@ class Bids_Asks:
             except ccxt.NetworkError as e:
                 logger.warning(exchange +" bids and asks " + str(e))
                 return False
-
-        # back_off[exchange] = config['dask']['back_off']
 
         run_ids = self.runs_db.find({}).sort("_id", -1).limit(1)
 

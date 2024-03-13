@@ -64,14 +64,12 @@ class Transactions:
         client,
         exch=None,
         exchange: str = None,
-        positionType: str = None,
         sub_account: str = None,
         spot: str = None,
         future: str = None,
         perp: str = None,
         transaction_value: str = None,
         symbol: str = None,
-        back_off = {},
         logger=None
     ):
         if transaction_value is None:
@@ -1020,20 +1018,11 @@ class Transactions:
                             transaction_value['borrow'] = Mapping().mapping_transactions(
                                 exchange=exchange, transactions=transactions
                             )
-
-            # except ccxt.InvalidNonce as e:
-            #     print("Hit rate limit", e)
-            #     time.sleep(back_off[client + "_" + exchange + "_" + sub_account] / 1000.0)
-            #     back_off[client + "_" + exchange + "_" + sub_account] *= 2
-            #     return True
     
             except ccxt.ExchangeError as e:
-                print(client + " " + exchange + " " + sub_account + " transactions " + str(e))
-                # print("An error occurred in Transactions:", e)
+                logger.error(client + " " + exchange + " " + sub_account + " transactions " + str(e))
                 return True
         
-        # back_off[client + "_" + exchange + "_" + sub_account] = config['dask']['back_off']
-
         tickers = list(self.tickers_db.find({"venue": exchange}))[0]['ticker_value']
         
         current_time = datetime.now(timezone.utc)
@@ -1137,7 +1126,6 @@ class Transactions:
                     transaction.append(new_value)
 
             elif exchange == "binance":
-                # if len(transaction_value["future"]) > 0:
                 for _type in transaction_value:
                     for item in transaction_value[_type]:
                         item['timestamp'] = int(item["timestamp"]) - config['transactions']['time_slack']
@@ -1331,7 +1319,7 @@ class Transactions:
                     })
         
         except Exception as e:
-            print(client + " " + exchange + " " + sub_account + " MTD PnL " + str(e))
+            logger.warning(client + " " + exchange + " " + sub_account + " MTD PnL " + str(e))
 
         
         del transaction_value
@@ -1360,12 +1348,10 @@ class Transactions:
             elif config["transactions"]["store_type"] == "timeseries":
                 self.transactions_db.insert_many(transaction)
 
-            # log.debug(f"transaction created: {transaction}")
             del transaction
 
             return True
 
-            # return transaction
         except Exception as e:
-            print(client + " " + exchange + " " + sub_account + " transactions " + str(e))
+            logger.error(client + " " + exchange + " " + sub_account + " transactions " + str(e))
             return True
