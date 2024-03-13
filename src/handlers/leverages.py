@@ -1,4 +1,5 @@
 from datetime import datetime, timezone, timedelta
+import sys
 
 from src.config import read_config_file
 
@@ -41,8 +42,7 @@ class Leverages:
                     latest_ticker = item['ticker_value']
                 except Exception as e:
                     logger.error(client + " " + exchange + " " + account + " leverages " + str(e))
-                    # print("An error occurred in Leverages:", e)
-                    return True  
+                    return False  
                 
             if client:
                 query["client"] = client
@@ -94,8 +94,7 @@ class Leverages:
                         latest_position = item['position_value']
                     except Exception as e:
                         logger.error(client + " " + exchange + " " + account + " leverages " + str(e))
-                        # print("An error occurred in Leverages:", e)
-                        return True
+                        return False
                 
                 try:
                     # max_notional = abs(float(max(latest_position, key=lambda x: abs(float(x['notional'])))['notional']))
@@ -104,8 +103,7 @@ class Leverages:
                         max_notional += max([abs(item['notional']) for item in pair])
                 except Exception as e:
                     logger.error(client + " " + exchange + " " + account + " leverages " + str(e))
-                    # print("An error occurred in Leverages:", e)
-                    return True
+                    return False
                 
             else:
                 position_value = self.positions_db.aggregate([
@@ -152,8 +150,7 @@ class Leverages:
                         latest_position = item['position_value']
                     except Exception as e:
                         logger.error(client + " " + exchange + " " + account + " leverages " + str(e))
-                        # print("An error occurred in Leverages:", e)
-                        return True
+                        return False
                     
                 try:
                     # max_notional = abs(float(max(latest_position, key=lambda x: abs(float(x['notional'])))['notional']))
@@ -162,8 +159,7 @@ class Leverages:
                         max_notional += abs(float(item['notional']))
                 except Exception as e:
                     logger.error(client + " " + exchange + " " + account + " leverages " + str(e))
-                    # print("An error occurred in Leverages:", e)
-                    return True
+                    return False
             
             balance_value = self.balances_db.aggregate([
                 {
@@ -209,8 +205,7 @@ class Leverages:
                     latest_balance = item['balance_value']
                 except Exception as e:
                     logger.error(client + " " + exchange + " " + account + " leverages " + str(e))
-                    # print("An error occurred in Leverages:", e)
-                    return True
+                    return False
                 
             base_currency = config["clients"][client]["subaccounts"][exchange]["base_ccy"]
 
@@ -224,19 +219,7 @@ class Leverages:
                     balance_in_base_currency = latest_balance['base'] * (latest_ticker['USDT/USD']['last'] * latest_ticker[base_currency + '/USDT']['last'])
             except Exception as e:
                 logger.error(client + " " + exchange + " " + account + " leverages " + str(e))
-                # print("An error occurred in Leverages:", e)
-                return True
-
-            # try:
-            #     balance_in_base_currency = 0
-            #     for currency, balance in latest_balance.items():
-            #         if currency == base_currency:
-            #             balance_in_base_currency += balance
-            #         else:
-            #             balance_in_base_currency += latest_ticker * balance
-            # except Exception as e:
-            #     print("An error occurred in Leverages:", e)
-            #     return False
+                return False
 
             leverage_value = {
                 "client": client,
@@ -245,11 +228,15 @@ class Leverages:
                 "timestamp": datetime.now(timezone.utc),
             }
             try:
-                leverage_value['leverage'] = max_notional / balance_in_base_currency
+                if max_notional == 0.0 and balance_in_base_currency == 0.0:
+                    leverage_value['leverage'] = 0
+                elif balance_in_base_currency == 0.0:
+                    leverage_value['leverage'] = sys.float_info.max
+                else:
+                    leverage_value['leverage'] = max_notional / balance_in_base_currency
             except Exception as e:
                 logger.error(client + " " + exchange + " " + account + " leverages " + str(e))
-                # print("An error occurred in Leverages:", e)
-                return True
+                return False
             
             leverage_value["runid"] = latest_run_id
             
@@ -274,4 +261,4 @@ class Leverages:
         
         except Exception as e:
             logger.error(client + " " + exchange + " " + account + " leverages " + str(e))
-            return True
+            return False

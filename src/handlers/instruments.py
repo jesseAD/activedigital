@@ -76,21 +76,14 @@ class Instruments:
                     instrumentValue = Helper().get_instruments(exch=exch)
                 elif exchange == "bybit":
                     instrumentValue = BybitHelper().get_instruments(exch=exch)
-
-            # except ccxt.InvalidNonce as e:
-            #     print("Hit rate limit", e)
-            #     time.sleep(back_off[exchange] / 1000.0)
-            #     back_off[exchange] *= 2
-            #     return True
             
             except ccxt.ExchangeError as e:
                 logger.warning(exchange +" instruments " + str(e))
-                # print("An error occurred in Instruments:", e)
                 pass
 
         instrument = {
             "venue": exchange,
-            "instrument_value": instrumentValue,#Mapping().mapping_instruments(exchange=exchange, instrument=instrumentValue),
+            "instrument_value": instrumentValue,
             "active": True,
             "entry": False,
             "exit": False,
@@ -137,7 +130,6 @@ class Instruments:
 
             return True
 
-            # return instrument
         except Exception as e:
             logger.error(exchange +" instruments " + str(e))
             return True

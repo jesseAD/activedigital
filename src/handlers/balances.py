@@ -105,21 +105,10 @@ class Balances:
                         
                 elif exchange == "bybit":
                     balanceValue = BybitHelper().get_balances(exch=exch)
-                
-            # except ccxt.InvalidNonce as e:
-            #     print("Hit rate limit", e)
-            #     time.sleep(
-            #         back_off[client + "_" + exchange + "_" + sub_account] / 1000.0
-            #     )
-            #     back_off[client + "_" + exchange + "_" + sub_account] *= 2
-            #     return True
 
             except ccxt.ExchangeError as e:
                 logger.warning(client + " " + exchange + " " + sub_account + " balances " + str(e))
-                # print("An error occurred in Balances:", e)
                 return True
-
-        # back_off[client + "_" + exchange + "_" + sub_account] = config["dask"]["back_off"]
 
         balanceValue = {_key: balanceValue[_key] for _key in balanceValue if balanceValue[_key] != 0.0}
 
@@ -141,7 +130,6 @@ class Balances:
                     )
             except ccxt.ExchangeError as e:
                 logger.warning(client + " " + exchange + " " + sub_account + " balances " + str(e))
-                # print("An error occurred in Balances:", e)
                 pass
         else:
             for _key, _value in balanceValue.items():
@@ -269,7 +257,6 @@ class Balances:
             return True
         
         except Exception as e:
-            # print("An error occurred in Balances:", e)
             logger.error(client + " " + exchange + " " + sub_account + " balances " + str(e))
             return True
 

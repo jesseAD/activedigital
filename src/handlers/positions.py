@@ -98,8 +98,6 @@ class Positions:
                 if exchange == "okx":
                     position_value = OKXHelper().get_positions(exch=exch)
 
-                    # logger.info("okx positions: " + json.dumps(position_value))
-
                 elif exchange == "binance":
                     if config['clients'][client]['subaccounts'][exchange][sub_account]['margin_mode'] == 'portfolio':
                         position_value = Helper().get_pm_positions(exch=exch)
@@ -112,25 +110,13 @@ class Positions:
                             item['info'] = {**item}
                             item['marginMode'] = "cross"
 
-                        # if client == "lucid":
-                        #     logger.info("lucid positions: " + json.dumps(position_value))
-
                 elif exchange == "bybit":
                     position_value = BybitHelper().get_positions(exch=exch)
 
                 position_value = Mapping().mapping_positions(exchange=exchange, positions=position_value)
 
-            # except ccxt.InvalidNonce as e:
-            #     print("Hit rate limit", e)
-            #     time.sleep(
-            #         back_off[client + "_" + exchange + "_" + sub_account] / 1000.0
-            #     )
-            #     back_off[client + "_" + exchange + "_" + sub_account] *= 2
-            #     return True
-
             except ccxt.ExchangeError as e:
-                logger.warning(client + " " + exchange + " " + sub_account + " positions " + str(e))
-                # print("An error occurred in Positions:", e)
+                logger.error(client + " " + exchange + " " + sub_account + " positions " + str(e))
                 return True
                 
         try:
@@ -147,17 +133,8 @@ class Positions:
                         exchange=exchange, mgnRatio=cross_margin_ratio
                     )
 
-                # except ccxt.InvalidNonce as e:
-                #     print("Hit rate limit", e)
-                #     time.sleep(
-                #         back_off[client + "_" + exchange + "_" + sub_account] / 1000.0
-                #     )
-                #     back_off[client + "_" + exchange + "_" + sub_account] *= 2
-                #     return True
-
                 except ccxt.ExchangeError as e:
                     logger.warning(client + " " + exchange + " " + sub_account + " positions " + str(e))
-                    # print("An error occurred in Positions:", e)
                     pass
                 except Exception as e:
                     logger.warning(client + " " + exchange + " " + sub_account + " positions " + str(e))
@@ -172,17 +149,8 @@ class Positions:
                         exchange=exchange, mgnRatio=cross_margin_ratio
                     )
 
-                # except ccxt.InvalidNonce as e:
-                #     print("Hit rate limit", e)
-                #     time.sleep(
-                #         back_off[client + "_" + exchange + "_" + sub_account] / 1000.0
-                #     )
-                #     back_off[client + "_" + exchange + "_" + sub_account] *= 2
-                #     return True
-
                 except ccxt.ExchangeError as e:
                     logger.warning(client + " " + exchange + " " + sub_account + " positions " + str(e))
-                    # print("An error occurred in Positions:", e)
                     pass
                 except Exception as e:
                     logger.warning(client + " " + exchange + " " + sub_account + " positions " + str(e))
@@ -198,17 +166,8 @@ class Positions:
                             exchange=exchange, mgnRatio=cross_margin_ratio
                         )
 
-                    # except ccxt.InvalidNonce as e:
-                    #     print("Hit rate limit", e)
-                    #     time.sleep(
-                    #         back_off[client + "_" + exchange + "_" + sub_account] / 1000.0
-                    #     )
-                    #     back_off[client + "_" + exchange + "_" + sub_account] *= 2
-                    #     return True
-
                     except ccxt.ExchangeError as e:
                         logger.warning(client + " " + exchange + " " + sub_account + " positions " + str(e))
-                        # print("An error occurred in Positions:", e)
                         pass
                     except Exception as e:
                         logger.warning(client + " " + exchange + " " + sub_account + " positions " + str(e))
@@ -226,65 +185,15 @@ class Positions:
                         )
                         liquidation_buffer = min(liquidation1, liquidation2, liquidation3)
 
-                    # except ccxt.InvalidNonce as e:
-                    #     print("Hit rate limit", e)
-                    #     time.sleep(
-                    #         back_off[client + "_" + exchange + "_" + sub_account] / 1000.0
-                    #     )
-                    #     back_off[client + "_" + exchange + "_" + sub_account] *= 2
-                    #     return True
-
                     except ccxt.ExchangeError as e:
                         logger.warning(client + " " + exchange + " " + sub_account + " positions " + str(e))
-                        # print("An error occurred in Positions:", e)
                         pass
                     except Exception as e:
                         logger.warning(client + " " + exchange + " " + sub_account + " positions " + str(e))
                         pass
 
             for value in position_value:
-                # if config['clients'][client]['subaccounts'][exchange][sub_account]['margin_mode'] == 'non_portfolio':
                 if exchange != "binance":
-                        # portfolio = None
-                        # if exchange == "binance":
-                        #     try:
-                        #         if (
-                        #             config["clients"][client]["subaccounts"][exchange][
-                        #                 sub_account
-                        #             ]["margin_mode"] == "non_portfolio"
-                        #         ):
-                        #             portfolio = Helper().get_non_portfolio_margin(
-                        #                 exch=exch,
-                        #                 params={"symbol": value["info"]["symbol"]},
-                        #             )
-                        #         elif (
-                        #             config["clients"][client]["subaccounts"][exchange][
-                        #                 sub_account
-                        #             ]["margin_mode"] == "portfolio"
-                        #         ):
-                        #             portfolio = Helper().get_portfolio_margin(
-                        #                 exch=exch, params={"symbol": "USDT"}
-                        #             )
-                        #             portfolio = [
-                        #                 item
-                        #                 for item in portfolio
-                        #                 if float(item["balance"]) != 0
-                        #             ]
-
-                        #     except ccxt.InvalidNonce as e:
-                        #         print("Hit rate limit", e)
-                        #         time.sleep(
-                        #             back_off[client + "_" + exchange + "_" + sub_account]
-                        #             / 1000.0
-                        #         )
-                        #         back_off[client + "_" + exchange + "_" + sub_account] *= 2
-                        #         return False
-
-                        #     except Exception as e:
-                        #         print("An error occurred in Positions:", e)
-                        #         pass
-
-                        # value["margin"] = portfolio
                     try:
                         if exchange == "bybit":
                             value['symbol'] = value['base'] + value['quote'] + "-PERP"
@@ -403,18 +312,10 @@ class Positions:
                         position["markPrice"] = mark_price
                     except ccxt.ExchangeError as e:
                         logger.warning(client + " " + exchange + " " + sub_account + " positions " + str(e))
-                        # print("An error occurred in Positions:", e)
                         pass
-
-        # except ccxt.InvalidNonce as e:
-        #     print("Hit rate limit", e)
-        #     time.sleep(back_off[client + "_" + exchange + "_" + sub_account] / 1000.0)
-        #     back_off[client + "_" + exchange + "_" + sub_account] *= 2
-        #     return True
 
         except ccxt.ExchangeError as e:
             logger.warning(client + " " + exchange + " " + sub_account + " positions " + str(e))
-            # print("An error occurred in Positions:", e)
             pass
 
         except Exception as e:
@@ -423,8 +324,6 @@ class Positions:
         
         del position_value
         
-        # back_off[client + "_" + exchange + "_" + sub_account] = config["dask"]["back_off"]
-
         run_ids = self.runs_db.find({}).sort("_id", -1).limit(1)
         latest_run_id = 0
         for item in run_ids:
@@ -748,7 +647,7 @@ class Positions:
                     upsert=True
                 )
             except Exception as e:
-                logger.error(client + " " + exchange + " " + sub_account + " lifetime fundings " + str(e))
+                logger.warning(client + " " + exchange + " " + sub_account + " lifetime fundings " + str(e))
                 # print("An error occurred in Lifetime Funding:", e)
 
         # calculate unhedged

@@ -75,40 +75,23 @@ class MarkPrices:
                     res = OKXHelper().get_mark_prices(exch=exch)
                     symbols_set = set(symbols)
                     markPriceValue = {item['symbol'][:-10]: item for item in res if item['symbol'][:-10] in symbols_set}
-                    # for symbol in symbols:
-                    #     for item in res:
-                    #         if item['symbol'].startswith(symbol):
-                    #             markPriceValue[symbol] = item
                                 
                 elif exchange == "binance":
                     res = Helper().get_mark_prices(exch=exch)
                     symbols_set = set(symbols)
                     markPriceValue = {item['symbol'][:-4]: item for item in res if item['symbol'][:-4] in symbols_set}
-                    # for symbol in symbols:
-                    #     for item in res:
-                    #         if item['symbol'].startswith(symbol):
-                    #             markPriceValue[symbol] = item
 
                 elif exchange == "bybit":
                     res = BybitHelper().get_mark_prices(exch=exch, symbol=symbols+"USDT")
                     markPriceValue = {symbols: res}
-
-            # except ccxt.InvalidNonce as e:
-            #     print("Hit rate limit", e)
-            #     time.sleep(back_off[exchange] / 1000.0)
-            #     back_off[exchange] *= 2
-            #     return True
             
             except ccxt.ExchangeError as e:
                 logger.warning(exchange +" mark prices " + str(e))
-                # print("An error occurred in Mark Prices:", e)
                 return True
             except ccxt.NetworkError as e:
                 logger.warning(exchange +" mark prices " + str(e))
                 return False
 
-        # back_off[exchange] = config['dask']['back_off']
-        
         run_ids = self.runs_db.find({}).sort("_id", -1).limit(1)
         latest_run_id = 0
         for item in run_ids:
@@ -166,7 +149,6 @@ class MarkPrices:
 
             return True
 
-            # return mark_price
         except Exception as e:
             logger.error(exchange +" mark prices " + str(e))
             return True

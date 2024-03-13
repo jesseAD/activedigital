@@ -121,12 +121,6 @@ class Fills:
             for position in position_values:
                 for item in position['position_value']:
                     symbols.append(item['info']['symbol'])
-            
-            # if config['clients'][client]['subaccounts'][exchange][sub_account]['margin_mode'] == 'portfolio':
-            #     symbols = [item.replace("/", "") for item in config["fills"]["symbols"][exchange]]
-            #     symbols += [item[: -1] for item in symbols]
-            # else:
-            #     symbols = config["fills"]["symbols"][exchange]
 
         if fillsValue is None:
             if exch == None:
@@ -318,20 +312,11 @@ class Fills:
                                 #         },
                                 #     ),
                                 # )
-                
-                # except ccxt.InvalidNonce as e:
-                #     print("Hit rate limit", e)
-                #     time.sleep(back_off[client + "_" + exchange + "_" + sub_account] / 1000.0)
-                #     back_off[client + "_" + exchange + "_" + sub_account] *= 2
-                #     return False
             
                 except ccxt.ExchangeError as e:
                     logger.warning(client + " " + exchange + " " + sub_account + " fills " + str(e))
-                    # print("An error occurred in Fills:", e)
                     pass
                
-        # back_off[client + "_" + exchange + "_" + sub_account] = config['dask']['back_off']
-        
         fills = []
 
         run_ids = self.runs_db.find({}).sort("_id", -1).limit(1)
@@ -382,7 +367,6 @@ class Fills:
 
             return True
 
-            # return fills
         except Exception as e:
             logger.error(client + " " + exchange + " " + sub_account + " fills " + str(e))
             return True

@@ -76,19 +76,10 @@ class Tickers:
                 
                 tickerValue = {symbol: tickerValue[symbol] for symbol in tickerValue if symbol.endswith("USDT")}
                 tickerValue['USDT/USD'] = CoinbaseHelper().get_usdt2usd_ticker(exch=Exchange(exchange='coinbase').exch())
-
-            # except ccxt.InvalidNonce as e:
-            #     print("Hit rate limit", e)
-            #     time.sleep(back_off[exchange] / 1000.0)
-            #     back_off[exchange] *= 2
-            #     return True
         
             except ccxt.ExchangeError as e:
                 logger.warning(exchange +" tickers " + str(e))
-                # print("An error occurred in Tickers:", e)
                 return True
-        
-        # back_off[exchange] = config['dask']['back_off']        
         
         ticker = {
             "venue": exchange,
@@ -116,24 +107,6 @@ class Tickers:
             except:
                 pass
         ticker["runid"] = latest_run_id
-
-        # get latest tickers data
-        # query = {}
-        # if exchange:
-        #     query["venue"] = exchange
-
-        # ticker_values = self.tickers_db.find(query).sort('runid', -1).limit(1)
-
-        # latest_run_id = -1
-        # latest_value = None
-        # for item in ticker_values:
-        #     if latest_run_id < item['runid']:
-        #         latest_run_id = item['runid']
-        #         latest_value = item['ticker_value']
-        
-        # if latest_value == ticker['ticker_value']:
-        #     print('same ticker')
-        #     return True
         
         try:
             if config['tickers']['store_type'] == "timeseries":
@@ -158,7 +131,6 @@ class Tickers:
 
             return True
                 
-            # return ticker
         except Exception as e:
             logger.error(exchange +" tickers " + str(e))
             return True

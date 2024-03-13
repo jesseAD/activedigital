@@ -185,18 +185,10 @@ class BorrowRates:
                                 item['scalar'] = scalar 
                 except ccxt.BadSymbol as e:
                     logger.warning(exchange +  " borrow rates " + str(e))
-                    # print("An error occurred in Borrow Rates:", e)
                     return True
-
-            # except ccxt.InvalidNonce as e:
-            #     print("Hit rate limit", e)
-            #     time.sleep(back_off[exchange] / 1000.0)
-            #     back_off[exchange] *= 2
-            #     return True
         
             except ccxt.AuthenticationError as e:
                 logger.warning(exchange + " borrow rates " + str(e))
-                # print("An error occurred in Borrow Rates:", e)
 
                 for _client in config['clients']:
                     if exchange in config['clients'][_client]['subaccounts']:
@@ -303,7 +295,6 @@ class BorrowRates:
                                                 item['scalar'] = scalar  
                                 except ccxt.ExchangeError as e:
                                     logger.warning(exchange + " borrow rates " + str(e))
-                                    # print("An error occurred in Borrow Rates:", e)
                                     return True
                                 except ccxt.NetworkError as e:  
                                     logger.warning(exchange + " borrow rates " + str(e))
@@ -317,14 +308,11 @@ class BorrowRates:
 
             except ccxt.ExchangeError as e:
                 logger.warning(exchange + " borrow rates " + str(e))
-                # print("An error occurred in Borrow Rates:", e)
                 return True
             except ccxt.NetworkError as e:
                 logger.warning(exchange + " borrow rates " + str(e))
                 return False
         
-        # back_off[exchange] = config['dask']['back_off']
-            
         if exchange == "okx" and vipLoanRatesValue is None:
             try:
                 vipLoanRatesValue = {}
@@ -420,8 +408,6 @@ class BorrowRates:
             del borrow_rates
 
             return True
-
-            # return borrow_rates
 
         except Exception as e:
             logger.error(exchange +" borrow rates " + str(e))
