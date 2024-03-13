@@ -820,7 +820,10 @@ class Positions:
 
                         spot_positions.append(spot_position)
 
-            split_positions = get_unhedged(position_info, spot_positions)
+            try:
+                split_positions = get_unhedged(position_info, spot_positions)
+            except Exception as e:
+                logger.warning(client + " " + exchange + " " + sub_account + " split positions " + str(e))
 
             hedged_exclusion_positive = config['clients'][client]['subaccounts'][exchange][sub_account]['hedged_exclusion_positive']
             hedged_exclusion_negative = config['clients'][client]['subaccounts'][exchange][sub_account]['hedged_exclusion_negative']
