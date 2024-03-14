@@ -1,4 +1,4 @@
-import os
+import os, time
 from dotenv import load_dotenv
 from datetime import datetime, timezone, timedelta
 import ccxt 
@@ -207,7 +207,37 @@ class Fills:
                             #     ),
                             # )
                         elif exchange == "bybit":
-                            fillsValue[symbol] = BybitHelper().get_fills(exch=exch, symbol=symbol)
+                            fills = []
+                            last_time = int(datetime.timestamp(datetime(datetime.now(timezone.utc).year, datetime.now(timezone.utc).month, 1)) * 1000)
+
+                            while(True):
+                                end_time = int(fills[0]['timestamp']) - 1 if len(fills) > 0 else int(datetime.timestamp(datetime.now(timezone.utc)) * 1000)
+
+                                res = []
+                                try: 
+                                    res += BybitHelper().get_fills(
+                                        exch=exch, symbol=symbol, since=max(last_time, end_time - 518400000), params={'endTime': end_time}
+                                    )
+                                except:
+                                    break
+
+                                try: 
+                                    res += BybitHelper().get_fills(
+                                        exch=exch, symbol=symbol, since=max(last_time, end_time - 518400000), params={'endTime': end_time, 'category': "spot"}
+                                    )
+                                except:
+                                    break
+
+                                if len(res) == 0:
+                                    break
+
+                                res.sort(key = lambda x: x['timestamp'])
+                                fills = res + fills
+
+                                time.sleep(0.3)
+
+                            fillsValue[symbol] = fills
+
                         elif exchange == "binance":
                             if config['clients'][client]['subaccounts'][exchange][sub_account]['margin_mode'] == 'portfolio':
                                 fills = Helper().get_pm_fills(exch=exch, symbol=symbol, params={'limit': 100})
@@ -245,10 +275,36 @@ class Fills:
                                 #     ),
                                 # )
                             if exchange == "bybit":
-                                fillsValue[symbol] = BybitHelper().get_fills(
-                                    exch=exch, symbol=symbol, since=last_time,
-                                    params={'endTime': int(datetime.now(timezone.utc).timestamp() * 1000)}
-                                )
+                                fills = []
+
+                                while(True):
+                                    end_time = int(fills[0]['timestamp']) - 1 if len(fills) > 0 else int(datetime.timestamp(datetime.now(timezone.utc)) * 1000)
+
+                                    res = []
+                                    try: 
+                                        res += BybitHelper().get_fills(
+                                            exch=exch, symbol=symbol, since=max(last_time, end_time - 518400000), params={'endTime': end_time}
+                                        )
+                                    except:
+                                        break
+
+                                    try: 
+                                        res += BybitHelper().get_fills(
+                                            exch=exch, symbol=symbol, since=max(last_time, end_time - 518400000), params={'endTime': end_time, 'category': "spot"}
+                                        )
+                                    except:
+                                        break
+
+                                    if len(res) == 0:
+                                        break
+
+                                    res.sort(key = lambda x: x['timestamp'])
+                                    fills = res + fills
+
+                                    time.sleep(0.3)
+
+                                fillsValue[symbol] = fills
+                                
                             elif exchange == "binance":
                                 if config['clients'][client]['subaccounts'][exchange][sub_account]['margin_mode'] == 'portfolio':
                                     fills = Helper().get_pm_fills(exch=exch, symbol=symbol, params={'limit': 100, 'startTime': last_time})

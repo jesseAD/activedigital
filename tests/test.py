@@ -36,7 +36,7 @@ params = {
 exchage = ccxt.bybit(params)
 
 
-exchage.fetch_my_trades(symbol="FILUSDT", since=1709715347000, params={'endTime': 1710408971353.678})
+exchage.fetch_my_trades(symbol="FILUSDT", since=1709804171353, params={'category': "linear", 'endTime': 1710408971353})
              
 
 # print(exchange.papi_get_balance())
