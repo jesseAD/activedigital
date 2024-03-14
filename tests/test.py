@@ -23,7 +23,7 @@ params = {
     'secret': "secret",
     'enableRateLimit': True,
     'requests_trust_env':True,
-    'verbose': False,
+    'verbose': True,
     'options': {
         'adjustForTimeDifference':True,
     },
@@ -36,7 +36,7 @@ params = {
 exchage = ccxt.bybit(params)
 
 
-exchage.fetch_my_trades(symbol="FILUSDT")
+exchage.fetch_my_trades(symbol="FILUSDT", since=1709715347000, params={'endTime': 1710406547000})
              
 
 # print(exchange.papi_get_balance())
