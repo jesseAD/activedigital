@@ -247,7 +247,7 @@ class Fills:
                             if exchange == "bybit":
                                 fillsValue[symbol] = BybitHelper().get_fills(
                                     exch=exch, symbol=symbol, since=last_time,
-                                    params={'endTime': datetime.now(timezone.utc).timestamp() * 1000}
+                                    params={'endTime': int(datetime.now(timezone.utc).timestamp() * 1000)}
                                 )
                             elif exchange == "binance":
                                 if config['clients'][client]['subaccounts'][exchange][sub_account]['margin_mode'] == 'portfolio':
