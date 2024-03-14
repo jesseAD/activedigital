@@ -314,8 +314,11 @@ class Fills:
                                 # )
             
                 except ccxt.ExchangeError as e:
-                    logger.warning(client + " " + exchange + " " + sub_account + " fills " + str(e))
+                    logger.warning(client + " " + exchange + " " + sub_account + " fills " + str(e) + " on " + symbol)
                     pass
+                
+                except Exception as e:
+                    logger.warning(client + " " + exchange + " " + sub_account + " fills " + str(e) + " on " + symbol)
                
         fills = []
 
