@@ -65,7 +65,6 @@ class Fills:
         perp: str = None,
         fillsValue: str = None,
         symbols: str = None,
-        back_off = {},
         logger=None
     ):
         if symbols is None:

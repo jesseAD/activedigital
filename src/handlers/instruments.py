@@ -61,7 +61,6 @@ class Instruments:
         perp: str = None,
         instrumentValue: str = None,
         bid_ask_value: str = None,
-        back_off = {},
         logger=None
     ):
         if exch == None:

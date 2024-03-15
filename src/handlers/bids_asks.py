@@ -58,7 +58,6 @@ class Bids_Asks:
         future: str = None,
         perp: str = None,
         bid_ask_value: str = None,
-        back_off = {},
         logger=None
     ):
         if exch == None:

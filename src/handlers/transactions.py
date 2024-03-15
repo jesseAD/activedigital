@@ -70,7 +70,6 @@ class Transactions:
         perp: str = None,
         transaction_value: str = None,
         symbol: str = None,
-        back_off={},
         logger=None
     ):
         if transaction_value is None:

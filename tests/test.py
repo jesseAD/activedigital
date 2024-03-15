@@ -19,11 +19,11 @@ sys.path.append(target_dir)
 # db = pymongo.MongoClient(mongo_uri, maxPoolsize=1)['active_digital']
 
 params = {
-    'apiKey': "api",
-    'secret': "secret",
+    'apiKey': "6iXhfvj6EIfEBRGZwO2hsn4YJGkLzm2nfmo7lNvoRTDGK9ISZF2pVuz1FRLkWrUm",
+    'secret': "I41jLtrCeAS6qMouJ7p3C3Ve6iWHEcbGIRrc1M59t7RuFgaTlfK1OZAr35OYPjwV",
     'enableRateLimit': True,
     'requests_trust_env':True,
-    'verbose': True,
+    'verbose': False,
     'options': {
         'adjustForTimeDifference':True,
     },
@@ -31,12 +31,17 @@ params = {
     # 'password': "pwd"
 }
 
-# exchange = ccxt.binance(params)
+exchange = ccxt.binance(params)
+print("papi_get_balance")
+print(exchange.papi_get_balance())
+print("fetch_balance()")
+print(exchange.fetch_balance())
+
 # exchange.private_get_mytrades()
-exchage = ccxt.bybit(params)
+# exchage = ccxt.bybit(params)
 
 
-exchage.fetch_my_trades(symbol="FILUSDT", since=1709804171353, params={'category': "linear", 'endTime': 1710408971353})
+# exchage.fetch_my_trades(symbol="FILUSDT", since=1709804171353, params={'category': "linear", 'endTime': 1710408971353})
              
 
 # print(exchange.papi_get_balance())

@@ -1,6 +1,7 @@
 import os
 from dotenv import load_dotenv
 from datetime import datetime, timezone
+import time
 import ccxt
 # import pdb
 from src.lib.exchange import Exchange
@@ -78,9 +79,12 @@ class Positions:
         future: str = None,
         perp: str = None,
         position_value: str = None,
-        back_off={},
-        logger=None
+        logger=None,
+        balance_finished={}
     ):
+        while(not balance_finished[client + "_" + exchange + "_" + sub_account]):
+            time.sleep(0.5)
+
         if position_value is None:
             if exch == None:
                 spec = (client.upper() + "_" + exchange.upper() + "_" + sub_account.upper() + "_")

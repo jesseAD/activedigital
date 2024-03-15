@@ -55,7 +55,6 @@ class Tickers:
         future: str = None,
         perp: str = None,
         tickerValue: str = None,
-        back_off = {},
         logger=None
     ):
         if tickerValue is None:

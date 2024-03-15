@@ -62,7 +62,6 @@ class MarkPrices:
         future: str = None,
         perp: str = None,
         markPriceValue: str = None,
-        back_off = {},
         logger=None
     ):
         if markPriceValue is None:

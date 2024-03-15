@@ -65,7 +65,6 @@ class BorrowRates:
         perp: str = None,
         borrowRatesValue: str = None,
         vipLoanRatesValue: str = None,
-        back_off = {},
         logger=None
     ):
 
