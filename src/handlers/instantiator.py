@@ -63,7 +63,7 @@ def get_data_collectors(client):
     return data_collectors
 
 #   Private data
-def collect_positions(client_alias, data_collector, logger, db, back_off={}):
+def collect_positions(client_alias, data_collector, logger, db, balance_finished):
     res = False
     positions = Positions(db, 'positions')
     try:
@@ -72,8 +72,8 @@ def collect_positions(client_alias, data_collector, logger, db, back_off={}):
             exch=data_collector.exch,
             exchange=data_collector.exchange,
             sub_account=data_collector.account,
-            back_off=back_off,
-            logger=logger
+            logger=logger,
+            balance_finished = balance_finished
         )
 
     except Exception as e:
@@ -94,8 +94,8 @@ def collect_positions(client_alias, data_collector, logger, db, back_off={}):
                     exch=data_collector.exch,
                     exchange=data_collector.exchange,
                     sub_account=data_collector.account,
-                    back_off=back_off,
-                    logger=logger
+                    logger=logger,
+                    balance_finished = balance_finished
                 )
             except Exception as e:
                 logger.warning(client_alias + " " + data_collector.exchange + " " + data_collector.account + " Positions " + str(e))
@@ -113,7 +113,7 @@ def collect_positions(client_alias, data_collector, logger, db, back_off={}):
 
         return res
 
-def collect_balances(client_alias, data_collector, logger, db, back_off={}):
+def collect_balances(client_alias, data_collector, logger, db, balance_finished):
     res = False
     balances = Balances(db, 'balances')
     try:
@@ -122,7 +122,6 @@ def collect_balances(client_alias, data_collector, logger, db, back_off={}):
             exch=data_collector.exch,
             exchange=data_collector.exchange,
             sub_account=data_collector.account,
-            back_off=back_off,
             logger=logger
         )
 
@@ -144,7 +143,6 @@ def collect_balances(client_alias, data_collector, logger, db, back_off={}):
                     exch=data_collector.exch,
                     exchange=data_collector.exchange,
                     sub_account=data_collector.account,
-                    back_off=back_off,
                     logger=logger
                 )
             except:
@@ -161,9 +159,11 @@ def collect_balances(client_alias, data_collector, logger, db, back_off={}):
         else:
             logger.error("Unable to collect balances for " + client_alias + " " + data_collector.exchange + " " + data_collector.account)
 
+        balance_finished[client_alias + "_" + data_collector.exchange + "_" + data_collector.account] = True
+
         return res
 
-def collect_transactions(client_alias, data_collector, logger, db, back_off={}):
+def collect_transactions(client_alias, data_collector, logger, db):
     res = False
     transactions = Transactions(db, 'transactions')
     try:
@@ -173,7 +173,6 @@ def collect_transactions(client_alias, data_collector, logger, db, back_off={}):
             exchange=data_collector.exchange,
             sub_account=data_collector.account,
             symbol='BTCUSDT',
-            back_off=back_off,
             logger=logger
         )
 
@@ -196,7 +195,6 @@ def collect_transactions(client_alias, data_collector, logger, db, back_off={}):
                     exchange=data_collector.exchange,
                     sub_account=data_collector.account,
                     symbol='BTCUSDT',
-                    back_off=back_off,
                     logger=logger
                 )
             except:
@@ -215,7 +213,7 @@ def collect_transactions(client_alias, data_collector, logger, db, back_off={}):
 
         return res
 
-def collect_fills(client_alias, data_collector, logger, db, back_off={}):
+def collect_fills(client_alias, data_collector, logger, db):
     res = False
     fills = Fills(db, 'fills')
     try:
@@ -224,7 +222,6 @@ def collect_fills(client_alias, data_collector, logger, db, back_off={}):
             exch=data_collector.exch,
             exchange=data_collector.exchange,
             sub_account=data_collector.account,
-            back_off=back_off,
             logger=logger
         )
 
@@ -246,7 +243,6 @@ def collect_fills(client_alias, data_collector, logger, db, back_off={}):
                     exch=data_collector.exch,
                     exchange=data_collector.exchange,
                     sub_account=data_collector.account,
-                    back_off=back_off,
                     logger=logger
                 )
             except:
@@ -266,14 +262,13 @@ def collect_fills(client_alias, data_collector, logger, db, back_off={}):
         return res
 
 #   Public data
-def collect_instruments(exch, exchange, logger, db, back_off={}):
+def collect_instruments(exch, exchange, logger, db):
     res = False
     instruments = Instruments(db, 'instruments')
     try:
         res = instruments.create(
             exch=exch,
             exchange=exchange,
-            back_off=back_off,
             logger=logger
         )
 
@@ -293,7 +288,6 @@ def collect_instruments(exch, exchange, logger, db, back_off={}):
                 res = instruments.create(
                     exch=exch,
                     exchange=exchange,
-                    back_off=back_off,
                     logger=logger
                 )
             except:
@@ -312,14 +306,13 @@ def collect_instruments(exch, exchange, logger, db, back_off={}):
 
         return res
 
-def collect_tickers(exch, exchange, logger, db, back_off={}):
+def collect_tickers(exch, exchange, logger, db):
     res = False
     tickers = Tickers(db, 'tickers')
     try:
         res = tickers.create(
             exch=exch,
             exchange=exchange,
-            back_off=back_off,
             logger=logger
         )
 
@@ -339,7 +332,6 @@ def collect_tickers(exch, exchange, logger, db, back_off={}):
                 res = tickers.create(
                     exch=exch,
                     exchange=exchange,
-                    back_off=back_off,
                     logger=logger
                 )
             except:
@@ -358,7 +350,7 @@ def collect_tickers(exch, exchange, logger, db, back_off={}):
 
         return res
 
-def collect_index_prices(exch, exchange, symbols, logger, db, back_off={}):
+def collect_index_prices(exch, exchange, symbols, logger, db):
     res = False
     index_prices = IndexPrices(db, 'index_prices')
     try:
@@ -366,7 +358,6 @@ def collect_index_prices(exch, exchange, symbols, logger, db, back_off={}):
             exch=exch,
             exchange=exchange,
             symbols=symbols,
-            back_off=back_off,
             logger=logger
         )
 
@@ -387,7 +378,6 @@ def collect_index_prices(exch, exchange, symbols, logger, db, back_off={}):
                     exch=exch,
                     exchange=exchange,
                     symbols=symbols,
-                    back_off=back_off,
                     logger=logger
                 )
             except:
@@ -406,7 +396,7 @@ def collect_index_prices(exch, exchange, symbols, logger, db, back_off={}):
             
         return res
 
-def collect_borrow_rates(exch, exchange, code, logger, db, back_off={}):
+def collect_borrow_rates(exch, exchange, code, logger, db):
     res = False
     borrow_rates = BorrowRates(db, 'borrow_rates')
     try:
@@ -414,7 +404,6 @@ def collect_borrow_rates(exch, exchange, code, logger, db, back_off={}):
             exch=exch,
             exchange=exchange,
             code=code,
-            back_off=back_off,
             logger=logger
         )
 
@@ -435,7 +424,6 @@ def collect_borrow_rates(exch, exchange, code, logger, db, back_off={}):
                     exch=exch,
                     exchange=exchange,
                     code=code,
-                    back_off=back_off,
                     logger=logger
                 )
             except:
@@ -454,7 +442,7 @@ def collect_borrow_rates(exch, exchange, code, logger, db, back_off={}):
 
         return res
 
-def collect_funding_rates(exch, exchange, symbol, logger, db, back_off={}):
+def collect_funding_rates(exch, exchange, symbol, logger, db):
     res = False
     funding_rates = FundingRates(db, 'funding_rates')
     try:
@@ -462,7 +450,6 @@ def collect_funding_rates(exch, exchange, symbol, logger, db, back_off={}):
             exch=exch,
             exchange=exchange,
             symbol=symbol,
-            back_off=back_off,
             logger=logger
         )
 
@@ -483,7 +470,6 @@ def collect_funding_rates(exch, exchange, symbol, logger, db, back_off={}):
                     exch=exch,
                     exchange=exchange,
                     symbol=symbol,
-                    back_off=back_off,
                     logger=logger
                 )
             except:
@@ -502,7 +488,7 @@ def collect_funding_rates(exch, exchange, symbol, logger, db, back_off={}):
 
         return res
     
-def collect_bids_asks(exch, exchange, symbol, logger, db, back_off={}):
+def collect_bids_asks(exch, exchange, symbol, logger, db):
     res = False
     bid_asks = Bids_Asks(db, 'bid_asks')
     try:
@@ -510,7 +496,6 @@ def collect_bids_asks(exch, exchange, symbol, logger, db, back_off={}):
             exch=exch,
             exchange=exchange,
             symbol=symbol,
-            back_off=back_off,
             logger=logger
         )
 
@@ -531,7 +516,6 @@ def collect_bids_asks(exch, exchange, symbol, logger, db, back_off={}):
                     exch=exch,
                     exchange=exchange,
                     symbol=symbol,
-                    back_off=back_off,
                     logger=logger
                 )
             except:
@@ -550,7 +534,7 @@ def collect_bids_asks(exch, exchange, symbol, logger, db, back_off={}):
 
         return res
 
-def collect_mark_prices(exch, exchange, symbols, logger, db, back_off={}):
+def collect_mark_prices(exch, exchange, symbols, logger, db):
     res = False
     mark_prices = MarkPrices(db, 'mark_prices')
     try:
@@ -558,7 +542,6 @@ def collect_mark_prices(exch, exchange, symbols, logger, db, back_off={}):
             exch=exch,
             exchange=exchange,
             symbols=symbols,
-            back_off=back_off,
             logger=logger
         )
 
@@ -579,7 +562,6 @@ def collect_mark_prices(exch, exchange, symbols, logger, db, back_off={}):
                     exch=exch,
                     exchange=exchange,
                     symbols=symbols,
-                    back_off=back_off,
                     logger=logger
                 )
             except:
@@ -674,16 +656,16 @@ def bids_asks_wrapper(thread_pool, exch, exchange, symbols, logger, db):
 
     return threads
 
-def positions_wrapper(thread_pool, client_alias, data_collector, logger, db):
-    return thread_pool.submit(collect_positions, client_alias, data_collector, logger, db)
+def positions_wrapper(thread_pool, client_alias, data_collector, logger, db, balance_finished):
+    return thread_pool.submit(collect_positions, client_alias, data_collector, logger, db, balance_finished)
 
-def balances_wrapper(thread_pool, client_alias, data_collector, logger, db):
-    return thread_pool.submit(collect_balances, client_alias, data_collector, logger, db)
+def balances_wrapper(thread_pool, client_alias, data_collector, logger, db, balance_finished):
+    return thread_pool.submit(collect_balances, client_alias, data_collector, logger, db, balance_finished)
 
-def transactions_wrapper(thread_pool, client_alias, data_collector, logger, db):
+def transactions_wrapper(thread_pool, client_alias, data_collector, logger, db, balance_finished):
     return thread_pool.submit(collect_transactions, client_alias, data_collector, logger, db)
 
-def fills_wrapper(thread_pool, client_alias, data_collector, logger, db):
+def fills_wrapper(thread_pool, client_alias, data_collector, logger, db, balance_finished):
     return thread_pool.submit(collect_fills, client_alias, data_collector, logger, db)
 
 def leverages_wrapper(thread_pool, client_alias, data_collector, logger, db):

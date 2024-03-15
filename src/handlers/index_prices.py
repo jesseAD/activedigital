@@ -52,7 +52,6 @@ class IndexPrices:
         future: str = None,
         perp: str = None,
         indexPriceValue: str = None,
-        back_off = {},
         logger=None
     ):
         if indexPriceValue is None:

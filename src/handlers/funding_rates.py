@@ -62,7 +62,6 @@ class FundingRates:
         perp: str = None,
         fundingRatesValue: str = None,
         symbols: str = None,
-        back_off = {},
         logger=None
     ):
 

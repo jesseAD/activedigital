@@ -69,7 +69,6 @@ class Balances:
         future: str = None,
         perp: str = None,
         balanceValue: str = None,
-        back_off={},
         logger=None
     ):
         if balanceValue is None:

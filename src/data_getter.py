@@ -73,7 +73,7 @@ def public_pool(data_collectors, exchanges, symbols):
 
     return "Finished Public"
 
-def private_pool(data_collectors, accounts_group):
+def private_pool(data_collectors, accounts_group, balance_finished):
     db2 = pymongo.MongoClient(mongo_uri, maxPoolsize=config['mongodb']['max_pool'])[config['mongodb']['database']]
     executors = [concurrent.futures.ThreadPoolExecutor(config['dask']['threadsPerPool']) for i in range(config['dask']['threadPoolsPerWorker'])]
     
@@ -81,7 +81,7 @@ def private_pool(data_collectors, accounts_group):
     for i in range(config['dask']['threadPoolsPerWorker']):
         for j in range(int(i * len(accounts_group) / config['dask']['threadPoolsPerWorker']), int((i+1) * len(accounts_group) / config['dask']['threadPoolsPerWorker'])):
             for collector in data_collectors:
-                threads.append(collector(executors[i], accounts_group[j].client, accounts_group[j], logger, db2))
+                threads.append(collector(executors[i], accounts_group[j].client, accounts_group[j], logger, db2, balance_finished))
     
     for thread in concurrent.futures.as_completed(threads):
         print(thread.result())
@@ -248,7 +248,14 @@ else:
         data_collectors = get_data_collectors(client)
         accounts += data_collectors
 
-    private_pool(private_data_collectors, accounts)
+    balance_finished = {}
+    for client in config['clients']:
+        for exchange in config['clients'][client]['subaccounts']:
+            for account in config['clients'][client]['subaccounts'][exchange]:
+                if account != "base_ccy":
+                    balance_finished[client + "_" + exchange + "_" + account] = False
+
+    private_pool(private_data_collectors, accounts, balance_finished)
 
     leverage_pool(leverages_wrapper, accounts)
 
