@@ -40,7 +40,7 @@ liquidation:
     binance_um: 1
     binance_pm: 1.7
     okx: 0.95
-    bybit: 1
+    bybit: 0.95
   scalar:
     binance: 0.53
     binance_cm: 0.5
