@@ -126,7 +126,7 @@ class Balances:
                 wallet_balances = Helper().get_wallet_balances(exch=exch)
                 for item in wallet_balances:
                     base_balance += float(item['balance']) * Helper().calc_cross_ccy_ratio(
-                        "BTC", "USD", ticker_value
+                        "BTC", config["clients"][client]["subaccounts"][exchange]["base_ccy"], ticker_value
                     )
             except ccxt.ExchangeError as e:
                 logger.warning(client + " " + exchange + " " + sub_account + " balances " + str(e))
