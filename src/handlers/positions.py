@@ -83,6 +83,7 @@ class Positions:
         balance_finished={}
     ):
         while(not balance_finished[client + "_" + exchange + "_" + sub_account]):
+            logger.info(client + " " + exchange + " " + sub_account + " positions: balances was not finished")
             time.sleep(0.5)
 
         if position_value is None:
