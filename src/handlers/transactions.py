@@ -1076,7 +1076,7 @@ class Transactions:
                                 tickers
                             )
                         )
-                        item['fee'] = float(item["fee"]) * Helper().calc_cross_ccy_ratio(item['ccy'], "USDT", tickers)
+                        item['fee'] = float(item["fee"]) * Helper().calc_cross_ccy_ratio(item['ccy'], config['transactions']['convert_ccy'], tickers)
                         
                     if item['sz'] != '':
                         item['sz_origin'] = float(item["sz"])
@@ -1088,7 +1088,7 @@ class Transactions:
                                 tickers
                             )
                         )
-                        item['sz'] = float(item["sz"]) * Helper().calc_cross_ccy_ratio(item['ccy'], "USDT", tickers)
+                        item['sz'] = float(item["sz"]) * Helper().calc_cross_ccy_ratio(item['ccy'], config['transactions']['convert_ccy'], tickers)
 
                     if item['pnl'] != '':
                         item['pnl_origin'] = float(item['pnl'])
@@ -1100,13 +1100,14 @@ class Transactions:
                                 tickers
                             )
                         )
-                        item['pnl'] = float(item["pnl"]) * Helper().calc_cross_ccy_ratio(item['ccy'], "USDT", tickers)
+                        item['pnl'] = float(item["pnl"]) * Helper().calc_cross_ccy_ratio(item['ccy'], config['transactions']['convert_ccy'], tickers)
 
                     new_value = {
                         "client": client,
                         "venue": exchange,
                         "account": "Main Account",
                         "transaction_value": item,
+                        "convert_ccy": config['transactions']['convert_ccy'],
                         "runid": latest_run_id,
                         "active": True,
                         "entry": False,
@@ -1139,7 +1140,7 @@ class Transactions:
                                 tickers
                             )
                         )
-                        item['income'] = float(item["income"]) * Helper().calc_cross_ccy_ratio(item['asset'], "USDT", tickers)
+                        item['income'] = float(item["income"]) * Helper().calc_cross_ccy_ratio(item['asset'], config['transactions']['convert_ccy'], tickers)
 
                         new_value = {
                             "client": client,
@@ -1147,6 +1148,7 @@ class Transactions:
                             "account": "Main Account",
                             "transaction_value": item,
                             "trade_type": _type,
+                            "convert_ccy": config['transactions']['convert_ccy'],
                             "runid": latest_run_id,
                             "active": True,
                             "entry": False,
@@ -1179,7 +1181,7 @@ class Transactions:
                                     tickers
                                 )
                             )
-                            item['fee'] = float(item['fee']) * Helper().calc_cross_ccy_ratio(item['currency'], "USDT", tickers)
+                            item['fee'] = float(item['fee']) * Helper().calc_cross_ccy_ratio(item['currency'], config['transactions']['convert_ccy'], tickers)
 
                         if item['funding'] != '':
                             item['funding_origin'] = float(item['funding'])
@@ -1191,7 +1193,7 @@ class Transactions:
                                     tickers
                                 )
                             )
-                            item['funding'] = float(item['funding']) * Helper().calc_cross_ccy_ratio(item['currency'], "USDT", tickers)
+                            item['funding'] = float(item['funding']) * Helper().calc_cross_ccy_ratio(item['currency'], config['transactions']['convert_ccy'], tickers)
 
                         new_value = {
                             "client": client,
@@ -1199,6 +1201,7 @@ class Transactions:
                             "account": "Main Account",
                             "transaction_value": item,
                             "trade_type": _type,
+                            "convert_ccy": config['transactions']['convert_ccy'],
                             "runid": latest_run_id,
                             "active": True,
                             "entry": False,
