@@ -14,6 +14,7 @@ from src.handlers.funding_rates import FundingRates
 from src.handlers.mark_price import MarkPrices
 from src.handlers.fills import Fills
 from src.handlers.bids_asks import Bids_Asks
+from src.handlers.roll_costs import Roll_Costs
 from src.handlers.runs import Runs
 from src.config import read_config_file
 from dotenv import load_dotenv
@@ -533,6 +534,50 @@ def collect_bids_asks(exch, exchange, symbol, logger, db):
             logger.error("Unable to collect bids and asks for " + exchange)
 
         return res
+    
+def collect_roll_costs(exch, exchange, logger, db):
+    res = False
+    roll_costs = Roll_Costs(db, 'roll_costs')
+    try:
+        res = roll_costs.create(
+            exch=exch,
+            exchange=exchange,
+            logger=logger
+        )
+
+    except Exception as e:
+        logger.warning(exchange + " roll costs " + str(e))
+
+    finally:
+        attempt = 1
+        timeout = config['ccxt'][exchange]['timeout']
+
+        while(not res):
+            time.sleep(timeout / 1000)
+            logger.info(exchange + " Retrying Roll Costs " + str(attempt))
+            timeout *= 2
+
+            try:
+                res = roll_costs.create(
+                    exch=exch,
+                    exchange=exchange,
+                    logger=logger
+                )
+            except:
+                pass
+
+            if attempt == config['ccxt'][exchange]['retry']:
+                break
+            attempt += 1
+
+        del roll_costs
+
+        if res:
+            logger.info("Collected roll costs for " + exchange)
+        else:
+            logger.error("Unable to collect roll costs for " + exchange)
+
+        return res
 
 def collect_mark_prices(exch, exchange, symbols, logger, db):
     res = False
@@ -653,6 +698,12 @@ def bids_asks_wrapper(thread_pool, exch, exchange, symbols, logger, db):
     threads = []
     for symbol in symbols:
         threads.append(thread_pool.submit(collect_bids_asks, exch, exchange, symbol, logger, db))
+
+    return threads
+
+def roll_costs_wrapper(thread_pool, exch, exchange, symbols, logger, db):
+    threads = []
+    threads.append(thread_pool.submit(collect_roll_costs, exch, exchange, logger, db))
 
     return threads
 

@@ -1,8 +1,14 @@
+import os, sys
 import json
 import unittest
 from unittest import mock
 from pymongo import MongoClient
 from datetime import datetime, timezone
+
+current_file = os.path.abspath(__file__)
+current_directory = os.path.dirname(current_file)
+target_dir = os.path.abspath(os.path.join(current_directory, os.pardir))
+sys.path.append(target_dir)
 
 from src.lib.unhedged import get_unhedged
 from src.config import read_config_file

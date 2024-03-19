@@ -99,6 +99,9 @@ ENV/
 .mypy_cache/
 
 
+# vscode
+.vscode
+
 
 tests/test.py
 tests/test_delete_db.py

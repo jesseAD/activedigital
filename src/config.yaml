@@ -81,6 +81,10 @@ tickers:
 index_prices:
   store_type: timeseries
 
+roll_costs:
+  prompts: ["THISWEEK", "NEXTWEEK", "THISMONTH", "NEXTMONTH", "QUARTER", "NEXTQUARTER"]
+  symbols: ["BTC", "ETH"]
+
 leverages:
   store_type: timeseries
 

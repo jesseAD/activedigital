@@ -30,6 +30,7 @@ from src.handlers.instantiator import funding_rates_wrapper
 from src.handlers.instantiator import mark_prices_wrapper
 from src.handlers.instantiator import fills_wrapper
 from src.handlers.instantiator import bids_asks_wrapper
+from src.handlers.instantiator import roll_costs_wrapper
 from src.handlers.instantiator import insert_runs
 from src.handlers.instantiator import enclose_runs
 from src.handlers.instantiator import get_data_collectors
@@ -118,10 +119,13 @@ print("inserted a new run")
 #  ------------  Dask + Concurrent  ----------------
 
 public_data_collectors = [
-    instruments_wrapper, tickers_wrapper, 
-    mark_prices_wrapper, index_prices_wrapper,
-    funding_rates_wrapper, borrow_rates_wrapper, bids_asks_wrapper,
+    roll_costs_wrapper
 ]
+# public_data_collectors = [
+#     instruments_wrapper, tickers_wrapper, roll_costs_wrapper,
+#     mark_prices_wrapper, index_prices_wrapper, bids_asks_wrapper,
+#     funding_rates_wrapper, borrow_rates_wrapper
+# ]
 
 private_data_collectors = [
     balances_wrapper, positions_wrapper,
@@ -241,25 +245,25 @@ else:
         exchs[exchange] = Exchange(exchange).exch()
 
     public_pool(public_data_collectors, config['exchanges'], symbols)
-    exchs = {}
+    # exchs = {}
 
-    accounts = []
-    for client in config['clients']:
-        data_collectors = get_data_collectors(client)
-        accounts += data_collectors
+    # accounts = []
+    # for client in config['clients']:
+    #     data_collectors = get_data_collectors(client)
+    #     accounts += data_collectors
 
-    balance_finished = {}
-    for client in config['clients']:
-        for exchange in config['clients'][client]['subaccounts']:
-            for account in config['clients'][client]['subaccounts'][exchange]:
-                if account != "base_ccy":
-                    balance_finished[client + "_" + exchange + "_" + account] = False
+    # balance_finished = {}
+    # for client in config['clients']:
+    #     for exchange in config['clients'][client]['subaccounts']:
+    #         for account in config['clients'][client]['subaccounts'][exchange]:
+    #             if account != "base_ccy":
+    #                 balance_finished[client + "_" + exchange + "_" + account] = False
 
-    private_pool(private_data_collectors, accounts, balance_finished)
+    # private_pool(private_data_collectors, accounts, balance_finished)
 
-    leverage_pool(leverages_wrapper, accounts)
+    # leverage_pool(leverages_wrapper, accounts)
 
-    del accounts
+    # del accounts
 
 
 

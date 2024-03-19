@@ -19,11 +19,11 @@ sys.path.append(target_dir)
 # db = pymongo.MongoClient(mongo_uri, maxPoolsize=1)['active_digital']
 
 params = {
-    'apiKey': "6iXhfvj6EIfEBRGZwO2hsn4YJGkLzm2nfmo7lNvoRTDGK9ISZF2pVuz1FRLkWrUm",
-    'secret': "I41jLtrCeAS6qMouJ7p3C3Ve6iWHEcbGIRrc1M59t7RuFgaTlfK1OZAr35OYPjwV",
+    'apiKey': "",
+    'secret': "",
     'enableRateLimit': True,
     'requests_trust_env':True,
-    'verbose': False,
+    'verbose': True,
     'options': {
         'adjustForTimeDifference':True,
     },
@@ -31,11 +31,17 @@ params = {
     # 'password': "pwd"
 }
 
-exchange = ccxt.binance(params)
-print("papi_get_balance")
-print(exchange.papi_get_balance())
-print("fetch_balance()")
-print(exchange.fetch_balance())
+exchange = ccxt.bybit({'verbose': True})
+# exchange.fetch_order_book(symbol="BTC/USD")
+# exchange.fetch_order_book(symbol="BTC-USDT-240927")
+exchange.public_get_v5_market_tickers(params={'category': "linear", 'symbol': "BTC-31May24"})
+exchange.public_get_v5_market_tickers(params={'category': "inverse", 'symbol': "BTC-31May24"})
+
+# exchange = ccxt.binance(params)
+# print("papi_get_balance")
+# print(exchange.papi_get_balance())
+# print("fetch_balance()")
+# print(exchange.fetch_balance())
 
 # exchange.private_get_mytrades()
 # exchage = ccxt.bybit(params)
