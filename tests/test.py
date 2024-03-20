@@ -31,11 +31,12 @@ params = {
     # 'password': "pwd"
 }
 
-exchange = ccxt.bybit({'verbose': True})
+exchange = ccxt.binance({'verbose': False})
 # exchange.fetch_order_book(symbol="BTC/USD")
 # exchange.fetch_order_book(symbol="BTC-USDT-240927")
-exchange.public_get_v5_market_tickers(params={'category': "linear", 'symbol': "BTC-31May24"})
-exchange.public_get_v5_market_tickers(params={'category': "inverse", 'symbol': "BTC-31May24"})
+# exchange.public_get_v5_market_tickers(params={'category': "linear", 'symbol': "BTC-31May24"})
+# exchange.public_get_v5_market_tickers(params={'category': "inverse", 'symbol': "BTC-31May24"})
+print(exchange.fapipublic_get_exchangeinfo())
 
 # exchange = ccxt.binance(params)
 # print("papi_get_balance")
