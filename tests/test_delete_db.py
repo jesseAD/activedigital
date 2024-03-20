@@ -4,7 +4,7 @@ from datetime import datetime, timezone
 mongo_uri = 'mongodb+srv://activedigital:pwd@mongodbcluster.nzphth1.mongodb.net/?retryWrites=true&w=majority'
 
 mongo_client = pymongo.MongoClient(mongo_uri)
-db = mongo_client['active_digital']['fills']
+db = mongo_client['active_digital']['transactions']
 
 # collections = ['borrow_rates', 'fills', 
 #             'funding_rates', 'transactions'
@@ -20,12 +20,12 @@ db = mongo_client['active_digital']['fills']
 # for i in range(0, len(data), 500):
 #     db['positions_temp'].insert_many(data[i, i + 499])
 
-query = {'$and': [{'venue': 'bybit'}, {'fills_value.timestamp': {'$gte': 1710028800000}}]}
+# query = {'$and': [{'venue': 'bybit'}, {'fills_value.timestamp': {'$gte': 1710028800000}}]}
 # query = {'$and': [{'client': 'lucid'}, {'venue': 'binance'}, {'account': 'subls1'}]}
 
-db.delete_many(query)
+# db.delete_many(query)
 
-# db.update_many(
-#     {'runid': {'$lte': 45162}},
-#     {'$set': {'market/vip': 'market'}}
-# )
+db.update_many(
+    {'runid': {'$gte': 54993, '$lt': 56145}},
+    {'$set': {'convert_ccy': 'USDT'}}
+)
