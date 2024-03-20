@@ -245,25 +245,25 @@ else:
         exchs[exchange] = Exchange(exchange).exch()
 
     public_pool(public_data_collectors, config['exchanges'], symbols)
-    # exchs = {}
+    exchs = {}
 
-    # accounts = []
-    # for client in config['clients']:
-    #     data_collectors = get_data_collectors(client)
-    #     accounts += data_collectors
+    accounts = []
+    for client in config['clients']:
+        data_collectors = get_data_collectors(client)
+        accounts += data_collectors
 
-    # balance_finished = {}
-    # for client in config['clients']:
-    #     for exchange in config['clients'][client]['subaccounts']:
-    #         for account in config['clients'][client]['subaccounts'][exchange]:
-    #             if account != "base_ccy":
-    #                 balance_finished[client + "_" + exchange + "_" + account] = False
+    balance_finished = {}
+    for client in config['clients']:
+        for exchange in config['clients'][client]['subaccounts']:
+            for account in config['clients'][client]['subaccounts'][exchange]:
+                if account != "base_ccy":
+                    balance_finished[client + "_" + exchange + "_" + account] = False
 
-    # private_pool(private_data_collectors, accounts, balance_finished)
+    private_pool(private_data_collectors, accounts, balance_finished)
 
-    # leverage_pool(leverages_wrapper, accounts)
+    leverage_pool(leverages_wrapper, accounts)
 
-    # del accounts
+    del accounts
 
 
 
