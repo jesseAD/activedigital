@@ -87,14 +87,16 @@ class Roll_Costs:
                 'contract': symbol+"-USDT-"+expiry_str,
                 'prompt': prompt,
                 'roll_cost': (spot_bid - linear_ask) / spot_bid,
-                'expiry': expiry_date
+                'expiry': expiry_date,
+                'type': "linear"
               })
               roll_cost_value.append({
                 'symbol': symbol,
                 'contract': symbol+"-USD-"+expiry_str,
                 'prompt': prompt,
                 'roll_cost': (spot_bid - inverse_ask) / spot_bid,
-                'expiry': expiry_date
+                'expiry': expiry_date,
+                'type': "inverse"
               })
 
             elif exchange == "binance":
@@ -109,14 +111,16 @@ class Roll_Costs:
                 'contract': symbol+"USDT_"+expiry_str,
                 'prompt': prompt,
                 'roll_cost': (spot_bid - linear_ask) / spot_bid,
-                'expiry': expiry_date
+                'expiry': expiry_date,
+                'type': "linear"
               })
               roll_cost_value.append({
                 'symbol': symbol,
                 'contract': symbol+"USD_"+expiry_str,
                 'prompt': prompt,
                 'roll_cost': (spot_bid - inverse_ask) / spot_bid,
-                'expiry': expiry_date
+                'expiry': expiry_date,
+                'type': "inverse"
               })
       
             elif exchange == "bybit":
@@ -131,14 +135,16 @@ class Roll_Costs:
                 'contract': symbol+"-"+expiry_str,
                 'prompt': prompt,
                 'roll_cost': (spot_bid - linear_ask) / spot_bid,
-                'expiry': expiry_date
+                'expiry': expiry_date,
+                'type': "linear"
               })
               roll_cost_value.append({
                 'symbol': symbol,
                 'contract': symbol+"-"+expiry_str,
                 'prompt': prompt,
                 'roll_cost': (spot_bid - inverse_ask) / spot_bid,
-                'expiry': expiry_date
+                'expiry': expiry_date,
+                'type': "inverse"
               })
 
           except ccxt.NetworkError as e:
