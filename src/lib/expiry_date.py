@@ -196,5 +196,10 @@ def get_friday_after_next(date):
   return local_time
 
 
-date = datetime.strptime("2024-03-19T08:28:30+00:00", "%Y-%m-%dT%H:%M:%S%z")
-print(get_expiry_date("NEXTWEEK", date))
+# date = datetime.now(timezone.utc)
+# print(get_expiry_date("THISWEEK", date))
+# print(get_expiry_date("NEXTWEEK", date))
+# print(get_expiry_date("THISMONTH", date))
+# print(get_expiry_date("NEXTMONTH", date))
+# print(get_expiry_date("QUARTER", date))
+# print(get_expiry_date("NEXTQUARTER", date))

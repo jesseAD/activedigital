@@ -77,7 +77,6 @@ class Roll_Costs:
           try:
             if exchange == "okx":
               expiry_str = expiry_date.strftime('%y%m%d')
-              print(exchange + " " + symbol + " " + expiry_str)
 
               linear_ask = OKXHelper().get_future_ask(exch=exch, symbol=symbol+"-USDT-"+expiry_str)
               spot_bid = OKXHelper().get_bid_ask(exch=exch, symbol=symbol+"/USDT")['bid']
@@ -87,18 +86,19 @@ class Roll_Costs:
                 'symbol': symbol,
                 'contract': symbol+"-USDT-"+expiry_str,
                 'prompt': prompt,
-                'roll_cost': (spot_bid - linear_ask) / spot_bid
+                'roll_cost': (spot_bid - linear_ask) / spot_bid,
+                'expiry': expiry_date
               })
               roll_cost_value.append({
                 'symbol': symbol,
                 'contract': symbol+"-USD-"+expiry_str,
                 'prompt': prompt,
-                'roll_cost': (spot_bid - inverse_ask) / spot_bid
+                'roll_cost': (spot_bid - inverse_ask) / spot_bid,
+                'expiry': expiry_date
               })
 
             elif exchange == "binance":
               expiry_str = expiry_date.strftime('%y%m%d')
-              print(exchange + " " + symbol + " " + expiry_str)
 
               linear_ask = Helper().get_linear_ask(exch=exch, symbol=symbol+"USDT_"+expiry_str)
               spot_bid = Helper().get_bid_ask(exch=exch, symbol=symbol+"/USDT")['bid']
@@ -108,18 +108,19 @@ class Roll_Costs:
                 'symbol': symbol,
                 'contract': symbol+"USDT_"+expiry_str,
                 'prompt': prompt,
-                'roll_cost': (spot_bid - linear_ask) / spot_bid
+                'roll_cost': (spot_bid - linear_ask) / spot_bid,
+                'expiry': expiry_date
               })
               roll_cost_value.append({
                 'symbol': symbol,
                 'contract': symbol+"USD_"+expiry_str,
                 'prompt': prompt,
-                'roll_cost': (spot_bid - inverse_ask) / spot_bid
+                'roll_cost': (spot_bid - inverse_ask) / spot_bid,
+                'expiry': expiry_date
               })
       
             elif exchange == "bybit":
-              expiry_str = expiry_date.strftime('%d%b%y')
-              print(exchange + " " + symbol + " " + expiry_str)
+              expiry_str = expiry_date.strftime('%d%b%y').upper()
 
               linear_ask = BybitHelper().get_linear_ask(exch=exch, symbol=symbol+"-"+expiry_str)
               spot_bid = BybitHelper().get_bid_ask(exch=exch, symbol=symbol+"/USDT")['bid']
@@ -129,13 +130,15 @@ class Roll_Costs:
                 'symbol': symbol,
                 'contract': symbol+"-"+expiry_str,
                 'prompt': prompt,
-                'roll_cost': (spot_bid - linear_ask) / spot_bid
+                'roll_cost': (spot_bid - linear_ask) / spot_bid,
+                'expiry': expiry_date
               })
               roll_cost_value.append({
                 'symbol': symbol,
                 'contract': symbol+"-"+expiry_str,
                 'prompt': prompt,
-                'roll_cost': (spot_bid - inverse_ask) / spot_bid
+                'roll_cost': (spot_bid - inverse_ask) / spot_bid,
+                'expiry': expiry_date
               })
 
           except ccxt.NetworkError as e:
