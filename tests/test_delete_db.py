@@ -1,7 +1,7 @@
 import pymongo
 from datetime import datetime, timezone
 
-mongo_uri = 'mongodb+srv://activedigital:8EnNmGsai9pD0gxq@mongodbcluster.nzphth1.mongodb.net/?retryWrites=true&w=majority'
+mongo_uri = 'mongodb+srv://activedigital:pwd@mongodbcluster.nzphth1.mongodb.net/?retryWrites=true&w=majority'
 
 mongo_client = pymongo.MongoClient(mongo_uri)
 db = mongo_client['active_digital']['roll_costs']
@@ -23,7 +23,7 @@ db = mongo_client['active_digital']['roll_costs']
 # query = {'$and': [{'venue': 'bybit'}, {'fills_value.timestamp': {'$gte': 1710028800000}}]}
 # query = {'$and': [{'client': 'lucid'}, {'venue': 'binance'}, {'account': 'subls1'}]}
 
-db.delete_many({'runid': {'$lt': 57106}})
+db.delete_many({'runid': {'$lt': 57219}})
 
 # db.update_many(
 #     {'runid': {'$lt': 57106}},
