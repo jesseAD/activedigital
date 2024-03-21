@@ -81,7 +81,7 @@ tickers:
 index_prices:
   store_type: timeseries
 
-roll_costs:
+carry_costs:
   prompts: ["THISWEEK", "NEXTWEEK", "THISMONTH", "NEXTMONTH", "QUARTER", "NEXTQUARTER"]
     # okx: ["THISWEEK", "NEXTWEEK", "THISMONTH", "NEXTMONTH", "QUARTER", "NEXTQUARTER"]
     # binance: ["QUARTER", "NEXTQUARTER"]

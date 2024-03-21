@@ -9,11 +9,11 @@ from src.config import read_config_file
 
 config = read_config_file()
 
-class Roll_Costs:
+class Carry_Costs:
   def __init__(self, db, collection):
 
     self.runs_db = db['runs']
-    self.roll_costs_db = db['roll_costs']
+    self.carry_costs_db = db['roll_costs']
 
   # def get(
   #     self,
@@ -61,17 +61,17 @@ class Roll_Costs:
     spot: str = None,
     future: str = None,
     perp: str = None,
-    roll_cost_value: str = None,
+    carry_cost_value: str = None,
     logger=None
   ):
     if exch == None:
       exch = Exchange(exchange).exch()
 
-    if roll_cost_value is None:
-      roll_cost_value = []
+    if carry_cost_value is None:
+      carry_cost_value = []
 
-      for symbol in config['roll_costs']['symbols']:
-        for prompt in config['roll_costs']['prompts']:
+      for symbol in config['carry_costs']['symbols']:
+        for prompt in config['carry_costs']['prompts']:
           expiry_date = get_expiry_date(prompt, datetime.now(timezone.utc))
           
           try:
@@ -82,19 +82,19 @@ class Roll_Costs:
               spot_bid = OKXHelper().get_bid_ask(exch=exch, symbol=symbol+"/USDT")['bid']
               inverse_ask = OKXHelper().get_future_ask(exch=exch, symbol=symbol+"-USD-"+expiry_str)
 
-              roll_cost_value.append({
+              carry_cost_value.append({
                 'symbol': symbol,
                 'contract': symbol+"-USDT-"+expiry_str,
                 'prompt': prompt,
-                'roll_cost': (spot_bid - linear_ask) / spot_bid,
+                'carry_cost': (linear_ask - spot_bid) / spot_bid,
                 'expiry': expiry_date,
                 'type': "linear"
               })
-              roll_cost_value.append({
+              carry_cost_value.append({
                 'symbol': symbol,
                 'contract': symbol+"-USD-"+expiry_str,
                 'prompt': prompt,
-                'roll_cost': (spot_bid - inverse_ask) / spot_bid,
+                'carry_cost': (inverse_ask - spot_bid) / spot_bid,
                 'expiry': expiry_date,
                 'type': "inverse"
               })
@@ -106,19 +106,19 @@ class Roll_Costs:
               spot_bid = Helper().get_bid_ask(exch=exch, symbol=symbol+"/USDT")['bid']
               inverse_ask = Helper().get_inverse_ask(exch=exch, symbol=symbol+"USD_"+expiry_str)
 
-              roll_cost_value.append({
+              carry_cost_value.append({
                 'symbol': symbol,
                 'contract': symbol+"USDT_"+expiry_str,
                 'prompt': prompt,
-                'roll_cost': (spot_bid - linear_ask) / spot_bid,
+                'carry_cost': (linear_ask - spot_bid) / spot_bid,
                 'expiry': expiry_date,
                 'type': "linear"
               })
-              roll_cost_value.append({
+              carry_cost_value.append({
                 'symbol': symbol,
                 'contract': symbol+"USD_"+expiry_str,
                 'prompt': prompt,
-                'roll_cost': (spot_bid - inverse_ask) / spot_bid,
+                'carry_cost': (inverse_ask - spot_bid) / spot_bid,
                 'expiry': expiry_date,
                 'type': "inverse"
               })
@@ -130,28 +130,28 @@ class Roll_Costs:
               spot_bid = BybitHelper().get_bid_ask(exch=exch, symbol=symbol+"/USDT")['bid']
               inverse_ask = BybitHelper().get_inverse_ask(exch=exch, symbol=symbol+"-"+expiry_str)
 
-              roll_cost_value.append({
+              carry_cost_value.append({
                 'symbol': symbol,
                 'contract': symbol+"-"+expiry_str,
                 'prompt': prompt,
-                'roll_cost': (spot_bid - linear_ask) / spot_bid,
+                'carry_cost': (linear_ask - spot_bid) / spot_bid,
                 'expiry': expiry_date,
                 'type': "linear"
               })
-              roll_cost_value.append({
+              carry_cost_value.append({
                 'symbol': symbol,
                 'contract': symbol+"-"+expiry_str,
                 'prompt': prompt,
-                'roll_cost': (spot_bid - inverse_ask) / spot_bid,
+                'carry_cost': (inverse_ask - spot_bid) / spot_bid,
                 'expiry': expiry_date,
                 'type': "inverse"
               })
 
           except ccxt.NetworkError as e:
-            logger.warning(exchange +" roll costs " + symbol + " " + prompt + ": " + str(e))
+            logger.warning(exchange +" carry costs " + symbol + " " + prompt + ": " + str(e))
             return False
           except Exception as e:
-            logger.warning(exchange +" roll costs " + symbol + " " + prompt + ": " + str(e))
+            logger.warning(exchange +" carry costs " + symbol + " " + prompt + ": " + str(e))
 
     run_ids = self.runs_db.find({}).sort("_id", -1).limit(1)
 
@@ -162,12 +162,12 @@ class Roll_Costs:
       except:
         pass
 
-    roll_costs = []
+    carry_costs = []
 
-    for item in roll_cost_value:
+    for item in carry_cost_value:
       new_value = {
         "venue": exchange,
-        "roll_cost_value": item, 
+        "carry_cost_value": item, 
         "active": True,
         "entry": False,
         "exit": False,
@@ -181,13 +181,17 @@ class Roll_Costs:
       if perp:
         new_value["perpMarket"] = perp
 
-      roll_costs.append(new_value)
+      carry_costs.append(new_value)
+
+    del carry_cost_value
 
     try:
-      self.roll_costs_db.insert_many(roll_costs)
+      self.carry_costs_db.insert_many(carry_costs)
+
+      del carry_costs
 
       return True
     
     except Exception as e:
-      logger.error(exchange +" roll costs " + str(e))
+      logger.error(exchange +" carry costs " + str(e))
       return True
