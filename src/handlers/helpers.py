@@ -123,11 +123,11 @@ class Helper:
             "mid_point": (best_ask + best_bid) / 2.0,
         }
     
-    def get_linear_ask(self, exch, symbol):
-        return float(exch.fapipublic_get_ticker_bookticker(params={'symbol': symbol})['askPrice'])
+    def get_linear_prices(self, exch, symbol):
+        return exch.fapipublic_get_ticker_bookticker(params={'symbol': symbol})
     
-    def get_inverse_ask(self, exch, symbol):
-        return float(exch.dapipublic_get_ticker_bookticker(params={'symbol': symbol})[0]['askPrice'])
+    def get_inverse_prices(self, exch, symbol):
+        return exch.dapipublic_get_ticker_bookticker(params={'symbol': symbol})[0]
 
     def get_tickers(self, exch, params={}):
         return exch.fetch_tickers(params=params)
@@ -350,8 +350,8 @@ class OKXHelper(Helper):
         finally:
             return market_loan
         
-    def get_future_ask(self, exch, symbol):
-        return float(exch.public_get_market_history_candles(params={"instId": symbol, "limit": 1})['data'][0][2])
+    def get_future_prices(self, exch, symbol):
+        return exch.public_get_market_history_candles(params={"instId": symbol, "limit": 1})['data'][0]
 
     def get_mark_prices(self, exch, symbol=None):
         params = {
@@ -422,11 +422,11 @@ class BybitHelper(Helper):
     def get_borrow_history(self, exch, params={}):
         return exch.private_get_v5_account_borrow_history(params=params)['result']['list']
     
-    def get_linear_ask(self, exch, symbol):
-        return float(exch.public_get_v5_market_tickers(params={'category': "linear", 'symbol': symbol})['result']['list'][0]['ask1Price'])
+    def get_linear_prices(self, exch, symbol):
+        return exch.public_get_v5_market_tickers(params={'category': "linear", 'symbol': symbol})['result']['list'][0]
     
-    def get_inverse_ask(self, exch, symbol):
-        return float(exch.public_get_v5_market_tickers(params={'category': "inverse", 'symbol': symbol})['result']['list'][0]['ask1Price'])
+    def get_inverse_prices(self, exch, symbol):
+        return exch.public_get_v5_market_tickers(params={'category': "inverse", 'symbol': symbol})['result']['list'][0]
     
     def get_mark_prices(self, exch, symbol):
         params = {
