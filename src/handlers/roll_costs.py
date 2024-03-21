@@ -9,7 +9,7 @@ from src.config import read_config_file
 
 config = read_config_file()
 
-class Carry_Costs:
+class Roll_Costs:
   def __init__(self, db, collection):
 
     self.runs_db = db['runs']
