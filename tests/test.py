@@ -32,11 +32,14 @@ params = {
 }
 
 exchange = ccxt.bybit({'verbose': True})
+print(exchange.fetch_tickers().keys())
+# res = exchange.public_get_v5_market_kline(params={'category': 'linear', 'symbol': "OPUSDT", 'interval': 1, 'start': 1711086450000, 'end': 1711087290000, 'limit': 200})
+# print(res['result']['list'])
 # exchange.fetch_order_book(symbol="BTC/USD")
 # exchange.fetch_order_book(symbol="BTC-USDT-240927")
-exchange.public_get_v5_market_tickers(params={'category': "linear", 'symbol': "BTC-22MAR24"})
-exchange.public_get_v5_market_tickers(params={'category': "inverse", 'symbol': "BTC-22MAR24"})
-exchange.fetch_order_book(symbol = "BTC/USDT")
+# exchange.public_get_v5_market_tickers(params={'category': "linear", 'symbol': "BTC-22MAR24"})
+# exchange.public_get_v5_market_tickers(params={'category': "inverse", 'symbol': "BTC-22MAR24"})
+# exchange.fetch_order_book(symbol = "BTC/USDT")
 # exchange.fapipublic_get_exchangeinfo()
 
 # exchange = ccxt.binance(params)

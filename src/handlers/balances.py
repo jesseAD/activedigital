@@ -124,19 +124,31 @@ class Balances:
             try:
                 wallet_balances = Helper().get_wallet_balances(exch=exch)
                 for item in wallet_balances:
-                    base_balance += float(item['balance']) * Helper().calc_cross_ccy_ratio(
+                    cross_ratio = Helper().calc_cross_ccy_ratio(
                         "BTC", config["clients"][client]["subaccounts"][exchange]["base_ccy"], ticker_value
                     )
+
+                    if cross_ratio == 0:
+                        logger.error(client + " " + exchange + " " + sub_account + " balances: skipped as zero ticker price")
+                        return True
+                
+                    base_balance += float(item['balance']) * cross_ratio
             except ccxt.ExchangeError as e:
                 logger.warning(client + " " + exchange + " " + sub_account + " balances " + str(e))
                 pass
         else:
             for _key, _value in balanceValue.items():
-                base_balance += _value * Helper().calc_cross_ccy_ratio(
+                cross_ratio = Helper().calc_cross_ccy_ratio(
                     _key,
                     config["clients"][client]["subaccounts"][exchange]["base_ccy"],
                     ticker_value,
                 )
+
+                if cross_ratio == 0:
+                    logger.error(client + " " + exchange + " " + sub_account + " balances: skipped as zero ticker price")
+                    return True
+                
+                base_balance += _value * cross_ratio
 
         balanceValue["base"] = base_balance
 
