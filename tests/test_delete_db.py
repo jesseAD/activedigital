@@ -23,7 +23,7 @@ db = mongo_client['active_digital']['roll_costs']
 # query = {'$and': [{'venue': 'bybit'}, {'fills_value.timestamp': {'$gte': 1710028800000}}]}
 # query = {'$and': [{'client': 'lucid'}, {'venue': 'binance'}, {'account': 'subls1'}]}
 
-db.delete_many({'runid': {'$lt': 57219}})
+db.delete_many({'runid': {'$lte': 57230}})
 
 # db.update_many(
 #     {'runid': {'$lt': 57106}},
