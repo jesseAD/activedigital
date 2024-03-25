@@ -81,12 +81,28 @@ tickers:
 index_prices:
   store_type: timeseries
 
-carry_costs:
+roll_costs:
   prompts: ["THISWEEK", "NEXTWEEK", "THISMONTH", "NEXTMONTH", "QUARTER", "NEXTQUARTER"]
     # okx: ["THISWEEK", "NEXTWEEK", "THISMONTH", "NEXTMONTH", "QUARTER", "NEXTQUARTER"]
     # binance: ["QUARTER", "NEXTQUARTER"]
     # bybit: ["THISWEEK", "NEXTWEEK", "THISMONTH", "NEXTMONTH", "QUARTER", "NEXTQUARTER"]
   symbols: ["BTC", "ETH"]
+  contract_values:
+    binance:
+      BTC_LINEAR: 1
+      BTC_INVERSE: 100
+      ETH_LINEAR: 1
+      ETH_INVERSE: 10
+    okx:
+      BTC_LINEAR: 0.01
+      BTC_INVERSE: 100
+      ETH_LINEAR: 0.001
+      ETH_INVERSE: 10
+    bybit:
+      BTC_LINEAR: 1
+      BTC_INVERSE: 1
+      ETH_LINEAR: 1
+      ETH_INVERSE: 1
 
 leverages:
   store_type: timeseries

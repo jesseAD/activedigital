@@ -131,6 +131,12 @@ class Helper:
 
     def get_tickers(self, exch, params={}):
         return exch.fetch_tickers(params=params)
+    
+    def get_ticker(self, exch, symbol=None, params={}):
+        return exch.fetch_ticker(symbol=symbol, params=params)
+    
+    def get_open_interests(self, exch, symbol=None, params={}):
+        return exch.fetch_open_interest(symbol=symbol, params=params)
 
     def get_borrow_rates(self, exch, code, limit=None, since=None, params={}):
         return exch.fetch_borrow_rate_history(
