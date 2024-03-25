@@ -33,6 +33,20 @@ def get_expiry_date(prompt, date):
 
   return expiry_date
 
+def get_prompt_month_code_from_expiry_date(expiry_date):
+  month_codes = " FGHJKMNQUVXZ"
+
+  return month_codes[expiry_date.month] + expiry_date.strftime('%y')
+
+def get_expiry_date_from_prompt_month_code(prompt_month_code):
+  month_codes = " FGHJKMNQUVXZ"
+
+  month = month_codes.index(prompt_month_code[0])
+  day = int(prompt_month_code[1:])
+  year = datetime.now().year if month >= datetime.now().month else datetime.now().year - 1
+
+  return datetime(year=year, month=month, day=day, hour=0, minute=0, second=0).replace(tzinfo=timezone.utc)
+
 def get_last_friday_of_next_quarter(date):
     local_zone = date.tzinfo
     target_zone = tz.gettz('Hongkong')
@@ -197,6 +211,7 @@ def get_friday_after_next(date):
 
 
 # date = datetime.now(timezone.utc)
+# print(get_expiry_date_from_prompt_month_code("H25"))
 # print(get_expiry_date("THISWEEK", date))
 # print(get_expiry_date("NEXTWEEK", date))
 # print(get_expiry_date("THISMONTH", date))
