@@ -416,7 +416,7 @@ clients:
         base_ccy: ETH
         subbasis1:
           margin_mode: non_portfolio
-          hedged_exclusion_positive: {'ETH': 0}
+          hedged_exclusion_positive: {'ETH': 101.99}
           hedged_exclusion_negative: {'ETH': 0} 
   sanderson:
     split_positions: True
