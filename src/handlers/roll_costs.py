@@ -92,6 +92,9 @@ class Roll_Costs:
               linear_oi = OKXHelper().get_open_interests(exch=exch, symbol=symbol+"-USDT-"+expiry_str)
               inverse_oi = OKXHelper().get_open_interests(exch=exch, symbol=symbol+"-USD-"+expiry_str)
 
+              linear_ticker = OKXHelper().get_ticker(exch=exch, symbol=symbol+"-USDT-"+expiry_str)
+              inverse_ticker = OKXHelper().get_ticker(exch=exch, symbol=symbol+"-USD-"+expiry_str)
+
               roll_cost_values.append({
                 'symbol': symbol,
                 'contract': symbol+"-USDT-"+expiry_str,
@@ -99,8 +102,8 @@ class Roll_Costs:
                 'carry_cost': (float(linear_prices[2]) - spot_bid) / spot_bid,
                 'term_structure': (float(linear_prices[2]) + float(linear_prices[3])) / 2,
                 'open_interests': {
-                  'oi': linear_oi['openInterestAmount'] * config['roll_costs']['contract_values'][exchange][symbol+"_LINEAR"] * ticker_value[symbol+"/USDT"]['last'],
-                  'volume': linear_oi['openInterestValue']
+                  'oi': linear_oi['openInterestAmount'] * config['roll_costs']['contract_values'][exchange][symbol+"_LINEAR"] * linear_ticker['last'],
+                  'volume': config['roll_costs']['contract_values'][exchange][symbol+"_LINEAR"] * linear_ticker['baseVolume'] * linear_ticker['last']
                 },
                 'expiry': expiry_date,
                 'type': "linear"
@@ -113,7 +116,7 @@ class Roll_Costs:
                 'term_structure': (float(inverse_prices[2]) + float(inverse_prices[3])) / 2,
                 'open_interests': {
                   'oi': inverse_oi['openInterestAmount'] * config['roll_costs']['contract_values'][exchange][symbol+"_INVERSE"],
-                  'volume': inverse_oi['openInterestValue']
+                  'volume': config['roll_costs']['contract_values'][exchange][symbol+"_INVERSE"] * inverse_ticker['baseVolume']
                 },
                 'expiry': expiry_date,
                 'type': "inverse"
@@ -129,6 +132,9 @@ class Roll_Costs:
               linear_oi = Helper().get_open_interests(exch=exch, symbol=symbol+"USDT_"+expiry_str)
               inverse_oi = Helper().get_open_interests(exch=exch, symbol=symbol+"USD_"+expiry_str)
 
+              linear_ticker = Helper().get_ticker(exch=exch, symbol=symbol+"USDT_"+expiry_str)
+              inverse_ticker = Helper().get_ticker(exch=exch, symbol=symbol+"USD_"+expiry_str)
+
               roll_cost_values.append({
                 'symbol': symbol,
                 'contract': symbol+"USDT_"+expiry_str,
@@ -136,7 +142,8 @@ class Roll_Costs:
                 'carry_cost': (float(linear_prices['askPrice']) - spot_bid) / spot_bid,
                 'term_structure': (float(linear_prices['bidPrice']) + float(linear_prices['askPrice'])) / 2,
                 'open_interests': {
-                  'oi': linear_oi['openInterestAmount'] * config['roll_costs']['contract_values'][exchange][symbol+"_LINEAR"] * ticker_value[symbol+"/USDT"]['last'],
+                  'oi': linear_oi['openInterestAmount'] * config['roll_costs']['contract_values'][exchange][symbol+"_LINEAR"] * linear_ticker['last'],
+                  'volume': config['roll_costs']['contract_values'][exchange][symbol+"_LINEAR"] * linear_ticker['quoteVolume']
                 },
                 'expiry': expiry_date,
                 'type': "linear"
@@ -149,6 +156,7 @@ class Roll_Costs:
                 'term_structure': (float(inverse_prices['bidPrice']) + float(inverse_prices['askPrice'])) / 2,
                 'open_interests': {
                   'oi': inverse_oi['openInterestAmount'] * config['roll_costs']['contract_values'][exchange][symbol+"_INVERSE"],
+                  'volume': config['roll_costs']['contract_values'][exchange][symbol+"_INVERSE"] * inverse_ticker['quoteVolume']
                 },
                 'expiry': expiry_date,
                 'type': "inverse"
@@ -190,11 +198,16 @@ class Roll_Costs:
                   params={'intervalTime': "5min", 'limit': 1, 'category': "inverse"}
                 )
 
+                linear_ticker = BybitHelper().get_ticker(exch=exch, symbol=symbol+"-"+expiry_str)
+                inverse_ticker = BybitHelper().get_ticker(exch=exch, symbol=symbol+"USD"+get_prompt_month_code_from_expiry_date(expiry_date))
+
                 roll_cost_values[-2]['open_interests'] = {
-                  'oi': linear_oi['openInterestValue'] * config['roll_costs']['contract_values'][exchange][symbol+"_LINEAR"] * ticker_value[symbol+"/USDT"]['last'],
+                  'oi': linear_oi['openInterestValue'] * config['roll_costs']['contract_values'][exchange][symbol+"_LINEAR"] * linear_ticker['last'],
+                  'volume': config['roll_costs']['contract_values'][exchange][symbol+"_LINEAR"] * linear_ticker['quoteVolume']
                 }
                 roll_cost_values[-1]['open_interests'] = {
                   'oi': inverse_oi['openInterestValue'] * config['roll_costs']['contract_values'][exchange][symbol+"_INVERSE"],
+                  'volume': config['roll_costs']['contract_values'][exchange][symbol+"_INVERSE"] * inverse_ticker['baseVolume']
                 }
               except:
                 pass
