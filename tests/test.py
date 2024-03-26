@@ -31,9 +31,9 @@ params = {
     # 'password': "pwd"
 }
 
-exchange = ccxt.bybit({'verbose': True})
-# print(exchange.fetch_ticker(symbol="BTCUSD_240329"))
-print(exchange.fetch_open_interest(symbol="BTCUSDM24", params={'category': "inverse", 'intervalTime': "5min", 'limit': 1}))
+exchange = ccxt.bybit({'verbose': False})
+print(exchange.fetch_ticker(symbol="BTCUSDM24"))
+# print(exchange.fetch_open_interest(symbol="BTCUSDM24", params={'category': "inverse", 'intervalTime': "5min", 'limit': 1}))
 # res = exchange.public_get_v5_market_kline(params={'category': 'linear', 'symbol': "OPUSDT", 'interval': 1, 'start': 1711086450000, 'end': 1711087290000, 'limit': 200})
 # print(res['result']['list'])
 # exchange.fetch_order_book(symbol="BTC/USD")
