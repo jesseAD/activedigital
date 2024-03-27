@@ -139,11 +139,11 @@ class Positions:
                     )
 
                 except ccxt.ExchangeError as e:
-                    logger.warning(client + " " + exchange + " " + sub_account + " positions " + str(e))
-                    pass
+                    logger.warning(client + " " + exchange + " " + sub_account + " positions: in cross margin ratio " + str(e))
+                    return False
                 except Exception as e:
-                    logger.warning(client + " " + exchange + " " + sub_account + " positions " + str(e))
-                    pass
+                    logger.warning(client + " " + exchange + " " + sub_account + " positions: in cross margin ratio " + str(e))
+                    return True
 
             elif exchange == "bybit":
                 try:
@@ -155,11 +155,12 @@ class Positions:
                     )
 
                 except ccxt.ExchangeError as e:
-                    logger.warning(client + " " + exchange + " " + sub_account + " positions " + str(e))
-                    pass
+                    logger.warning(client + " " + exchange + " " + sub_account + " positions: in cross margin ratio " + str(e))
+                    return False
+                
                 except Exception as e:
-                    logger.warning(client + " " + exchange + " " + sub_account + " positions " + str(e))
-                    pass
+                    logger.warning(client + " " + exchange + " " + sub_account + " positions: in cross margin ratio " + str(e))
+                    return True
 
             elif exchange == "binance":
                 if config['clients'][client]['subaccounts'][exchange][sub_account]['margin_mode'] == 'portfolio':
@@ -172,11 +173,12 @@ class Positions:
                         )
 
                     except ccxt.ExchangeError as e:
-                        logger.warning(client + " " + exchange + " " + sub_account + " positions " + str(e))
-                        pass
+                        logger.warning(client + " " + exchange + " " + sub_account + " positions: in cross margin ratio " + str(e))
+                        return False
+                    
                     except Exception as e:
-                        logger.warning(client + " " + exchange + " " + sub_account + " positions " + str(e))
-                        pass
+                        logger.warning(client + " " + exchange + " " + sub_account + " positions: in cross margin ratio " + str(e))
+                        return True
                 else:
                     try:
                         liquidation1 = Helper().calc_liquidation_buffer(
@@ -191,11 +193,12 @@ class Positions:
                         liquidation_buffer = min(liquidation1, liquidation2, liquidation3)
 
                     except ccxt.ExchangeError as e:
-                        logger.warning(client + " " + exchange + " " + sub_account + " positions " + str(e))
-                        pass
+                        logger.warning(client + " " + exchange + " " + sub_account + " positions: in cross margin ratio " + str(e))
+                        return False
+                    
                     except Exception as e:
-                        logger.warning(client + " " + exchange + " " + sub_account + " positions " + str(e))
-                        pass
+                        logger.warning(client + " " + exchange + " " + sub_account + " positions: in cross margin ratio " + str(e))
+                        return True
 
             for value in position_value:
                 if exchange != "binance":
@@ -217,24 +220,18 @@ class Positions:
                             value["liquidationBuffer"] = liquidation_buffer
 
                             if value["quote"] == "USD":
-                                value["notional"] = float(
-                                    value["notional"]
-                                ) * Helper().calc_cross_ccy_ratio(
+                                cross_ratio = Helper().calc_cross_ccy_ratio(
                                     value["base"],
-                                    config["clients"][client]["subaccounts"][exchange][
-                                        "base_ccy"
-                                    ],
+                                    config["clients"][client]["subaccounts"][exchange]["base_ccy"],
                                     tickers,
                                 )
-                                value["unrealizedPnl"] = float(
-                                    value["unrealizedPnl"]
-                                ) * Helper().calc_cross_ccy_ratio(
-                                    value["base"],
-                                    config["clients"][client]["subaccounts"][exchange][
-                                        "base_ccy"
-                                    ],
-                                    tickers,
-                                )
+                                if cross_ratio == 0:
+                                    logger.warning(client + " " + exchange + " " + sub_account + " positions skipped" + value['symbol'] + "as zero ticker price")
+                                    continue
+
+                                value["notional"] = float(value["notional"]) * cross_ratio
+                                value["unrealizedPnl"] = float(value["unrealizedPnl"]) * cross_ratio
+
                         position_info.append(value)
 
                     except Exception as e:
@@ -251,24 +248,19 @@ class Positions:
                             value["liquidationBuffer"] = liquidation_buffer
 
                             if value["quote"] == "USD":
-                                value["notional"] = float(
-                                    value["notional"]
-                                ) * Helper().calc_cross_ccy_ratio(
+                                cross_ratio = Helper().calc_cross_ccy_ratio(
                                     value["base"],
                                     config["clients"][client]["subaccounts"][exchange][
                                         "base_ccy"
                                     ],
                                     tickers,
                                 )
-                                value["unrealizedPnl"] = float(
-                                    value["unrealizedPnl"]
-                                ) * Helper().calc_cross_ccy_ratio(
-                                    value["base"],
-                                    config["clients"][client]["subaccounts"][exchange][
-                                        "base_ccy"
-                                    ],
-                                    tickers,
-                                )
+                                if cross_ratio == 0:
+                                    logger.warning(client + " " + exchange + " " + sub_account + " positions skipped" + value['symbol'] + "as zero ticker price")
+                                    continue
+                                
+                                value["notional"] = float(value["notional"]) * cross_ratio
+                                value["unrealizedPnl"] = float(value["unrealizedPnl"]) * cross_ratio
 
                             position_info.append(value)
 
