@@ -74,10 +74,9 @@ class OpenOrders:
         return True
 
 
-    print(client + " " + exchange + " " + sub_account + " open orders ")
     openOrderValue = [
       order for order in openOrderValue 
-      if datetime.now(timezone.utc).timestamp() * 1000 - int(order['timestamp']) <= config['open_orders']['timeout'] * 1000
+      if datetime.now(timezone.utc).timestamp() * 1000 - int(order['timestamp']) >= config['open_orders']['timeout'] * 1000
     ]
 
     query = {}
