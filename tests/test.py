@@ -33,4 +33,4 @@ params = {
 }
 
 exchange = ccxt.binance(params)
-print(exchange.fetch_open_orders(symbol="OPUSD_PERP", params={}))
+print(exchange.fetch_ticker(symbol="OPUSD_PERP", params={}))

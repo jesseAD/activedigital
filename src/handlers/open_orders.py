@@ -90,13 +90,13 @@ class OpenOrders:
     for order in openOrderValue:
       if exchange == "binance":
         try:
-          order['current_price'] = Helper().get_ticker(symbol=order['symbol'])['last']
+          order['current_price'] = Helper().get_ticker(exch=exch, symbol=order['symbol'])['last']
         except Exception as e:
           logger.warning(client + " " + exchange + " " + sub_account + " open orders " + str(e) + " in fetching ticker")
 
       else:
         try:
-          order['current_price'] = ticker_value[order['symbol']]['last']
+          order['current_price'] = ticker_value[order['symbol'].split(":")[0]]['last']
         except Exception as e:
           logger.warning(client + " " + exchange + " " + sub_account + " open orders " + str(e) + " in reading ticker")
 
