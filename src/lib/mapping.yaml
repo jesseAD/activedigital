@@ -41,6 +41,14 @@ binance:
     quoteQty: cost
     baseQty: cost
 
+  open_orders:
+    origQty: amount
+    bookTime: timestamp
+    time: timestamp
+    strategyId: id
+    orderId: id
+    executedQty: filled
+
 okx:
   position:
     info:

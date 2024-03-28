@@ -4,6 +4,7 @@ from src.lib.exchange import Exchange
 from src.lib.data_collector import DataCollector
 from src.handlers.positions import Positions
 from src.handlers.balances import Balances
+from src.handlers.open_orders import OpenOrders
 from src.handlers.instruments import Instruments
 from src.handlers.tickers import Tickers
 from src.handlers.index_prices import IndexPrices
@@ -161,6 +162,55 @@ def collect_balances(client_alias, data_collector, logger, db, balance_finished)
             logger.error("Unable to collect balances for " + client_alias + " " + data_collector.exchange + " " + data_collector.account)
 
         balance_finished[client_alias + "_" + data_collector.exchange + "_" + data_collector.account] = True
+
+        return res
+    
+def collect_open_orders(client_alias, data_collector, logger, db):
+    res = False
+    open_orders = OpenOrders(db, 'open_orders')
+    try:
+        res = open_orders.create(
+            client=client_alias,
+            exch=data_collector.exch,
+            exchange=data_collector.exchange,
+            sub_account=data_collector.account,
+            logger=logger
+        )
+
+    except Exception as e:
+        logger.warning(client_alias + " " + data_collector.exchange + " " + data_collector.account + " open orders " + str(e))
+
+    finally:
+        attempt = 1
+        timeout = config['ccxt'][data_collector.exchange]['timeout']
+
+        while(not res):
+            time.sleep(timeout / 1000)
+            logger.info(client_alias + " " + data_collector.exchange + " " + data_collector.account + " Retrying open orders " + str(attempt))
+            timeout *= 2
+
+            try:
+                res = open_orders.create(
+                    client=client_alias,
+                    exch=data_collector.exch,
+                    exchange=data_collector.exchange,
+                    sub_account=data_collector.account,
+                    logger=logger
+                )
+            except:
+                pass
+
+            if attempt == config['ccxt'][data_collector.exchange]['retry']:
+                break
+            attempt += 1
+
+        del open_orders
+
+        if res:
+            logger.info("Collected open orders for " + client_alias + " " + data_collector.exchange + " " + data_collector.account)
+        else:
+            logger.error("Unable to collect open orders for " + client_alias + " " + data_collector.exchange + " " + data_collector.account)
+
 
         return res
 
@@ -712,6 +762,9 @@ def positions_wrapper(thread_pool, client_alias, data_collector, logger, db, bal
 
 def balances_wrapper(thread_pool, client_alias, data_collector, logger, db, balance_finished):
     return thread_pool.submit(collect_balances, client_alias, data_collector, logger, db, balance_finished)
+
+def open_orders_wrapper(thread_pool, client_alias, data_collector, logger, db, balance_finished):
+    return thread_pool.submit(collect_open_orders, client_alias, data_collector, logger, db)
 
 def transactions_wrapper(thread_pool, client_alias, data_collector, logger, db, balance_finished):
     return thread_pool.submit(collect_transactions, client_alias, data_collector, logger, db)

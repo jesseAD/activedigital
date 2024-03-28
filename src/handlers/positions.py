@@ -808,7 +808,7 @@ class Positions:
         latest_run_id = 0
         for item in run_ids:
             try:
-                latest_run_id = item["runid"] + 1
+                latest_run_id = item["runid"]
             except:
                 pass
 

@@ -301,6 +301,24 @@ class Helper:
             return 0.0
         
         return tickers[src_ccy + "/USDT"]['last'] / tickers[dest_ccy + "/USDT"]['last']
+    
+    def get_open_orders(self, exch, params={}):
+        return exch.fetch_open_orders(params=params)
+    
+    def get_spot_open_orders(self, exch, params={}):
+        return exch.private_get_openorders(params=params)
+    
+    def get_um_open_orders(self, exch, params={}):
+        return exch.papi_get_um_openorders(params=params)
+    
+    def get_cm_open_orders(self, exch, params={}):
+        return exch.papi_get_cm_openorders(params=params)
+    
+    def get_linear_open_orders(self, exch, params={}):
+        return exch.fapiprivate_get_openorders(params=params)
+    
+    def get_inverse_open_orders(self, exch, params={}):
+        return exch.dapiprivate_get_openorders(params=params)
 
 
 class OKXHelper(Helper):
@@ -392,7 +410,7 @@ class OKXHelper(Helper):
 
     def get_cross_margin_ratio(self, exch):
         return exch.private_get_account_balance()["data"][0]["mgnRatio"]
-    
+
 
 class BybitHelper(Helper):
     def get_positions(self, exch, params={}):

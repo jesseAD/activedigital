@@ -20,6 +20,7 @@ sys.path.append(target_dir)
 from src.lib.exchange import Exchange
 from src.handlers.instantiator import positions_wrapper
 from src.handlers.instantiator import balances_wrapper
+from src.handlers.instantiator import open_orders_wrapper
 from src.handlers.instantiator import instruments_wrapper
 from src.handlers.instantiator import tickers_wrapper
 from src.handlers.instantiator import index_prices_wrapper
@@ -127,8 +128,11 @@ public_data_collectors = [
     funding_rates_wrapper, borrow_rates_wrapper
 ]
 
+# private_data_collectors = [
+#     open_orders_wrapper,
+# ]
 private_data_collectors = [
-    balances_wrapper, positions_wrapper,
+    balances_wrapper, positions_wrapper, open_orders_wrapper,
     fills_wrapper, transactions_wrapper
 ]
 
