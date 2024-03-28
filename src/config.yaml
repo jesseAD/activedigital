@@ -75,6 +75,10 @@ positions:
   bybit_coins: ["BTC", "ETH", "XRP", "ADA", "DOT", "LTC", "EOS", "MANA", "USDT", "USDC", ]
   alert_threshold: 1000
 
+open_orders:
+  timeout: 120
+  store_type: snapshot
+
 tickers:
   store_type: snapshot
 

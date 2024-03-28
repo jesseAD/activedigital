@@ -166,3 +166,26 @@ class Mapping:
                 new_fills.append(new_fill)
 
             return new_fills
+        
+    def mapping_open_orders(self, exchange, open_orders=None):
+        if exchange not in self.mapping_data.keys():
+            return open_orders
+
+        if open_orders is not None:
+            if "open_orders" not in self.mapping_data[exchange].keys():
+                return open_orders
+
+            new_open_orders = []
+            mapping_data = self.mapping_data[exchange]["open_orders"]
+
+            for item in open_orders:
+                new_open_order = {}
+                for _key, _value in item.items():
+                    if _key in mapping_data.keys():
+                        new_open_order[mapping_data[_key]] = _value
+                    else:
+                        new_open_order[_key] = _value
+                
+                new_open_orders.append(new_open_order)
+
+            return new_open_orders
