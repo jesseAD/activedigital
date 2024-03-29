@@ -320,12 +320,18 @@ class Positions:
             pass
         
         del position_value
+
+        for position in position_info:
+            try:
+                position['liquidationPriceChange'] = (float(position['liquidationPrice']) - float(position['markPrice'])) / float(position['markPrice'])
+            except Exception as e:
+                logger.warning(client + " " + exchange + " " + sub_account + " positions in liquidation price change: " + str(e))
         
         run_ids = self.runs_db.find({}).sort("_id", -1).limit(1)
         latest_run_id = 0
         for item in run_ids:
             try:
-                latest_run_id = item["runid"] + 1
+                latest_run_id = item["runid"]
             except:
                 pass
 
@@ -804,16 +810,9 @@ class Positions:
         if perp:
             position["perpMarket"] = perp
 
-        run_ids = self.runs_db.find({}).sort("_id", -1).limit(1)
-        latest_run_id = 0
-        for item in run_ids:
-            try:
-                latest_run_id = item["runid"]
-            except:
-                pass
+        position["runid"] = latest_run_id
 
         try:
-            position["runid"] = latest_run_id
 
             if config["positions"]["store_type"] == "timeseries":
                 self.positions_db.insert_one(position)
