@@ -1019,6 +1019,7 @@ class Transactions:
     
             except ccxt.ExchangeError as e:
                 logger.error(client + " " + exchange + " " + sub_account + " transactions " + str(e))
+                logger.error("Unable to collect transactions for " + client + " " + exchange + " " + sub_account)
                 return True
         
         tickers = list(self.tickers_db.find({"venue": exchange}))[0]['ticker_value']
@@ -1058,8 +1059,6 @@ class Transactions:
             transaction = []
 
             if exchange == "okx":
-                if len(transaction_value) == 0:
-                    return True
 
                 for item in transaction_value:
                     item['timestamp'] = int(item["timestamp"]) - config['transactions']['time_slack']
@@ -1216,10 +1215,7 @@ class Transactions:
                         if perp:
                             new_value["perpMarket"] = perp
 
-                        transaction.append(new_value)     
-
-            if len(transaction) == 0:
-                return True
+                        transaction.append(new_value)
         
         #  MTD PnL
         try:
@@ -1351,8 +1347,11 @@ class Transactions:
 
             del transaction
 
+            logger.info("Collected transactions for " + client + " " + exchange + " " + sub_account)
+            
             return True
 
         except Exception as e:
             logger.error(client + " " + exchange + " " + sub_account + " transactions " + str(e))
+            logger.error("Unable to collect transactions for " + client + " " + exchange + " " + sub_account)
             return True

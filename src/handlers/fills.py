@@ -414,16 +414,16 @@ class Fills:
 
         del fillsValue
 
-        if len(fills) <= 0:
-            return True
-
         try:
             self.fills_db.insert_many(fills)
 
             del fills
 
+            logger.info("Collected fills for " + client + " " + exchange + " " + sub_account)
+
             return True
 
         except Exception as e:
             logger.error(client + " " + exchange + " " + sub_account + " fills " + str(e))
+            logger.error("Unable to collect fills for " + client + " " + exchange + " " + sub_account)
             return True

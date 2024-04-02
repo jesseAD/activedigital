@@ -182,6 +182,7 @@ class BorrowRates:
                                 item['scalar'] = scalar 
                 except ccxt.BadSymbol as e:
                     logger.warning(exchange +  " borrow rates " + str(e))
+                    logger.error("Unable to collect borrow rates for " + exchange)
                     return True
         
             except ccxt.AuthenticationError as e:
@@ -292,6 +293,7 @@ class BorrowRates:
                                                 item['scalar'] = scalar  
                                 except ccxt.ExchangeError as e:
                                     logger.warning(exchange + " borrow rates " + str(e))
+                                    logger.error("Unable to collect borrow rates for " + exchange)
                                     return True
                                 except ccxt.NetworkError as e:  
                                     logger.warning(exchange + " borrow rates " + str(e))
@@ -305,6 +307,7 @@ class BorrowRates:
 
             except ccxt.ExchangeError as e:
                 logger.warning(exchange + " borrow rates " + str(e))
+                logger.error("Unable to collect borrow rates for " + exchange)
                 return True
             except ccxt.NetworkError as e:
                 logger.warning(exchange + " borrow rates " + str(e))
@@ -338,6 +341,8 @@ class BorrowRates:
                 logger.warning(exchange + " borrow rates " + str(e))
 
         if len(borrowRatesValue) <= 0 and (vipLoanRatesValue == {} or vipLoanRatesValue is None):
+            logger.warning("Empty borrow rates for " + exchange)
+            logger.error("Unable to collect borrow rates for " + exchange)
             return True
 
         borrow_rates = []
@@ -404,8 +409,11 @@ class BorrowRates:
 
             del borrow_rates
 
+            logger.info("Collected borrow rates for " + exchange)
+
             return True
 
         except Exception as e:
             logger.error(exchange +" borrow rates " + str(e))
+            logger.error("Unable to collect borrow rates for " + exchange)
             return True

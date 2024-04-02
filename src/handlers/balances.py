@@ -105,6 +105,7 @@ class Balances:
 
             except ccxt.ExchangeError as e:
                 logger.warning(client + " " + exchange + " " + sub_account + " balances " + str(e))
+                logger.error("Unable to collect balances for " + client + " " + exchange + " " + sub_account)
                 return True
 
         balanceValue = {_key: balanceValue[_key] for _key in balanceValue if balanceValue[_key] != 0.0}
@@ -128,6 +129,7 @@ class Balances:
 
                     if cross_ratio == 0:
                         logger.error(client + " " + exchange + " " + sub_account + " balances: skipped as zero ticker price")
+                        logger.error("Unable to collect balances for " + client + " " + exchange + " " + sub_account)
                         return True
                 
                     base_balance += float(item['balance']) * cross_ratio
@@ -144,6 +146,7 @@ class Balances:
 
                 if cross_ratio == 0:
                     logger.error(client + " " + exchange + " " + sub_account + " balances: skipped as zero ticker price")
+                    logger.error("Unable to collect balances for " + client + " " + exchange + " " + sub_account)
                     return True
                 
                 base_balance += _value * cross_ratio
@@ -263,10 +266,13 @@ class Balances:
                     upsert=True,
                 )
 
+            logger.info("Collected balances for " + client + " " + exchange + " " + sub_account)
+
             return True
         
         except Exception as e:
             logger.error(client + " " + exchange + " " + sub_account + " balances " + str(e))
+            logger.error("Unable to collect balances for " + client + " " + exchange + " " + sub_account)
             return True
 
     
