@@ -1,5 +1,3 @@
-import os
-from dotenv import load_dotenv
 from datetime import datetime, timezone, timedelta
 import ccxt
 
@@ -7,7 +5,6 @@ from src.lib.exchange import Exchange
 from src.config import read_config_file
 from src.handlers.helpers import Helper, OKXHelper, BybitHelper
 
-load_dotenv()
 config = read_config_file()
 
 
@@ -69,16 +66,17 @@ class Balances:
         future: str = None,
         perp: str = None,
         balanceValue: str = None,
-        logger=None
+        logger=None,
+        secrets={},
     ):
         if balanceValue is None:
             if exch == None:
                 spec = (client.upper() + "_" + exchange.upper() + "_" + sub_account.upper() + "_")
-                API_KEY = os.getenv(spec + "API_KEY")
-                API_SECRET = os.getenv(spec + "API_SECRET")
+                API_KEY = secrets[spec + "API_KEY"]
+                API_SECRET = secrets[spec + "API_SECRET"]
                 PASSPHRASE = None
                 if exchange == "okx":
-                    PASSPHRASE = os.getenv(spec + "PASSPHRASE")
+                    PASSPHRASE = secrets[spec + "PASSPHRASE"]
 
                 exch = Exchange(
                     exchange, sub_account, API_KEY, API_SECRET, PASSPHRASE
@@ -107,6 +105,7 @@ class Balances:
 
             except ccxt.ExchangeError as e:
                 logger.warning(client + " " + exchange + " " + sub_account + " balances " + str(e))
+                logger.error("Unable to collect balances for " + client + " " + exchange + " " + sub_account)
                 return True
 
         balanceValue = {_key: balanceValue[_key] for _key in balanceValue if balanceValue[_key] != 0.0}
@@ -130,6 +129,7 @@ class Balances:
 
                     if cross_ratio == 0:
                         logger.error(client + " " + exchange + " " + sub_account + " balances: skipped as zero ticker price")
+                        logger.error("Unable to collect balances for " + client + " " + exchange + " " + sub_account)
                         return True
                 
                     base_balance += float(item['balance']) * cross_ratio
@@ -146,6 +146,7 @@ class Balances:
 
                 if cross_ratio == 0:
                     logger.error(client + " " + exchange + " " + sub_account + " balances: skipped as zero ticker price")
+                    logger.error("Unable to collect balances for " + client + " " + exchange + " " + sub_account)
                     return True
                 
                 base_balance += _value * cross_ratio
@@ -265,10 +266,13 @@ class Balances:
                     upsert=True,
                 )
 
+            logger.info("Collected balances for " + client + " " + exchange + " " + sub_account)
+
             return True
         
         except Exception as e:
             logger.error(client + " " + exchange + " " + sub_account + " balances " + str(e))
+            logger.error("Unable to collect balances for " + client + " " + exchange + " " + sub_account)
             return True
 
     

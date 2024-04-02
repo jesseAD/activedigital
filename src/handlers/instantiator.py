@@ -65,7 +65,7 @@ def get_data_collectors(client):
     return data_collectors
 
 #   Private data
-def collect_positions(client_alias, data_collector, logger, db, balance_finished):
+def collect_positions(client_alias, data_collector, logger, db, secrets, balance_finished):
     res = False
     positions = Positions(db, 'positions')
     try:
@@ -75,6 +75,7 @@ def collect_positions(client_alias, data_collector, logger, db, balance_finished
             exchange=data_collector.exchange,
             sub_account=data_collector.account,
             logger=logger,
+            secrets=secrets,
             balance_finished = balance_finished
         )
 
@@ -97,6 +98,7 @@ def collect_positions(client_alias, data_collector, logger, db, balance_finished
                     exchange=data_collector.exchange,
                     sub_account=data_collector.account,
                     logger=logger,
+                    secrets=secrets,
                     balance_finished = balance_finished
                 )
             except Exception as e:
@@ -108,14 +110,12 @@ def collect_positions(client_alias, data_collector, logger, db, balance_finished
 
         del positions
 
-        if res:
-            logger.info("Collected positions for " + client_alias + " " + data_collector.exchange + " " + data_collector.account)
-        else:
+        if not res:
             logger.error("Unable to collect positions for " + client_alias + " " + data_collector.exchange + " " + data_collector.account)
 
         return res
 
-def collect_balances(client_alias, data_collector, logger, db, balance_finished):
+def collect_balances(client_alias, data_collector, logger, db, secrets, balance_finished):
     res = False
     balances = Balances(db, 'balances')
     try:
@@ -124,7 +124,8 @@ def collect_balances(client_alias, data_collector, logger, db, balance_finished)
             exch=data_collector.exch,
             exchange=data_collector.exchange,
             sub_account=data_collector.account,
-            logger=logger
+            logger=logger,
+            secrets=secrets
         )
 
     except Exception as e:
@@ -145,7 +146,8 @@ def collect_balances(client_alias, data_collector, logger, db, balance_finished)
                     exch=data_collector.exch,
                     exchange=data_collector.exchange,
                     sub_account=data_collector.account,
-                    logger=logger
+                    logger=logger,
+                    secrets=secrets
                 )
             except:
                 pass
@@ -156,16 +158,14 @@ def collect_balances(client_alias, data_collector, logger, db, balance_finished)
 
         del balances
 
-        if res:
-            logger.info("Collected balances for " + client_alias + " " + data_collector.exchange + " " + data_collector.account)
-        else:
+        if not res:
             logger.error("Unable to collect balances for " + client_alias + " " + data_collector.exchange + " " + data_collector.account)
 
         balance_finished[client_alias + "_" + data_collector.exchange + "_" + data_collector.account] = True
 
         return res
     
-def collect_open_orders(client_alias, data_collector, logger, db):
+def collect_open_orders(client_alias, data_collector, logger, db, secrets):
     res = False
     open_orders = OpenOrders(db, 'open_orders')
     try:
@@ -174,7 +174,8 @@ def collect_open_orders(client_alias, data_collector, logger, db):
             exch=data_collector.exch,
             exchange=data_collector.exchange,
             sub_account=data_collector.account,
-            logger=logger
+            logger=logger,
+            secrets=secrets
         )
 
     except Exception as e:
@@ -195,7 +196,8 @@ def collect_open_orders(client_alias, data_collector, logger, db):
                     exch=data_collector.exch,
                     exchange=data_collector.exchange,
                     sub_account=data_collector.account,
-                    logger=logger
+                    logger=logger,
+                    secrets=secrets
                 )
             except:
                 pass
@@ -206,15 +208,12 @@ def collect_open_orders(client_alias, data_collector, logger, db):
 
         del open_orders
 
-        if res:
-            logger.info("Collected open orders for " + client_alias + " " + data_collector.exchange + " " + data_collector.account)
-        else:
+        if not res:
             logger.error("Unable to collect open orders for " + client_alias + " " + data_collector.exchange + " " + data_collector.account)
-
 
         return res
 
-def collect_transactions(client_alias, data_collector, logger, db):
+def collect_transactions(client_alias, data_collector, logger, db, secrets):
     res = False
     transactions = Transactions(db, 'transactions')
     try:
@@ -224,7 +223,8 @@ def collect_transactions(client_alias, data_collector, logger, db):
             exchange=data_collector.exchange,
             sub_account=data_collector.account,
             symbol='BTCUSDT',
-            logger=logger
+            logger=logger,
+            secrets=secrets
         )
 
     except Exception as e:
@@ -246,7 +246,8 @@ def collect_transactions(client_alias, data_collector, logger, db):
                     exchange=data_collector.exchange,
                     sub_account=data_collector.account,
                     symbol='BTCUSDT',
-                    logger=logger
+                    logger=logger,
+                    secrets=secrets
                 )
             except:
                 pass
@@ -257,14 +258,12 @@ def collect_transactions(client_alias, data_collector, logger, db):
 
         del transactions
 
-        if res:
-            logger.info("Collected transactions for " + client_alias + " " + data_collector.exchange + " " + data_collector.account)
-        else:
-            logger.error("Unable to collect transactions for " + client_alias + " " + data_collector.exchange + " " + data_collector.account)
+        if not res:
+            logger.error("Unable to collect transactions for " + client_alias + " " + data_collector.exchange + " " + data_collector.account)            
 
         return res
 
-def collect_fills(client_alias, data_collector, logger, db):
+def collect_fills(client_alias, data_collector, logger, db, secrets):
     res = False
     fills = Fills(db, 'fills')
     try:
@@ -273,7 +272,8 @@ def collect_fills(client_alias, data_collector, logger, db):
             exch=data_collector.exch,
             exchange=data_collector.exchange,
             sub_account=data_collector.account,
-            logger=logger
+            logger=logger,
+            secrets=secrets
         )
 
     except Exception as e:
@@ -294,7 +294,8 @@ def collect_fills(client_alias, data_collector, logger, db):
                     exch=data_collector.exch,
                     exchange=data_collector.exchange,
                     sub_account=data_collector.account,
-                    logger=logger
+                    logger=logger,
+                    secrets=secrets
                 )
             except:
                 pass
@@ -305,9 +306,7 @@ def collect_fills(client_alias, data_collector, logger, db):
 
         del fills
 
-        if res:
-            logger.info("Collected fills for " + client_alias + " " + data_collector.exchange + " " + data_collector.account)
-        else:
+        if not res:
             logger.error("Unable to collect fills for " + client_alias + " " + data_collector.exchange + " " + data_collector.account)
 
         return res
@@ -350,9 +349,7 @@ def collect_instruments(exch, exchange, logger, db):
 
         del instruments
 
-        if res:
-            logger.info("Collected instruments for " + exchange)
-        else:
+        if not res:
             logger.error("Unable to collect instruments for " + exchange)
 
         return res
@@ -394,9 +391,7 @@ def collect_tickers(exch, exchange, logger, db):
         
         del tickers
 
-        if res:
-            logger.info("Collected tickers for " + exchange)
-        else:
+        if not res:
             logger.error("Unable to collect tickers for " + exchange)
 
         return res
@@ -440,14 +435,12 @@ def collect_index_prices(exch, exchange, symbols, logger, db):
 
         del index_prices
 
-        if res:
-            logger.info("Collected index prices for " + exchange)
-        else:
+        if not res:
             logger.error("Unable to collect index prices for " + exchange)
             
         return res
 
-def collect_borrow_rates(exch, exchange, code, logger, db):
+def collect_borrow_rates(exch, exchange, code, logger, db, secrets):
     res = False
     borrow_rates = BorrowRates(db, 'borrow_rates')
     try:
@@ -455,7 +448,8 @@ def collect_borrow_rates(exch, exchange, code, logger, db):
             exch=exch,
             exchange=exchange,
             code=code,
-            logger=logger
+            logger=logger,
+            secrets=secrets
         )
 
     except Exception as e:
@@ -475,7 +469,8 @@ def collect_borrow_rates(exch, exchange, code, logger, db):
                     exch=exch,
                     exchange=exchange,
                     code=code,
-                    logger=logger
+                    logger=logger,
+                    secrets=secrets
                 )
             except:
                 pass
@@ -486,9 +481,7 @@ def collect_borrow_rates(exch, exchange, code, logger, db):
 
         del borrow_rates
 
-        if res:
-            logger.info("Collected borrow rates for " + exchange)
-        else:
+        if not res:
             logger.error("Unable to collect borrow rates for " + exchange)
 
         return res
@@ -532,9 +525,7 @@ def collect_funding_rates(exch, exchange, symbol, logger, db):
 
         del funding_rates
 
-        if res:
-            logger.info("Collected funding rates for " + exchange)
-        else:
+        if not res:
             logger.error("Unable to collect funding rates for " + exchange)
 
         return res
@@ -578,9 +569,7 @@ def collect_bids_asks(exch, exchange, symbol, logger, db):
 
         del bid_asks
 
-        if res:
-            logger.info("Collected bids and asks for " + exchange)
-        else:
+        if not res:
             logger.error("Unable to collect bids and asks for " + exchange)
 
         return res
@@ -622,9 +611,7 @@ def collect_roll_costs(exch, exchange, logger, db):
 
         del roll_costs
 
-        if res:
-            logger.info("Collected roll costs for " + exchange)
-        else:
+        if not res:
             logger.error("Unable to collect roll costs for " + exchange)
 
         return res
@@ -668,9 +655,7 @@ def collect_mark_prices(exch, exchange, symbols, logger, db):
 
         del mark_prices
 
-        if res:
-            logger.info("Collected mark prices for " + exchange)
-        else:
+        if not res:
             logger.error("Unable to collect mark prices for " + exchange)
 
         return res
@@ -701,13 +686,13 @@ def collect_leverages(client_alias, data_collector, logger, db):
 
         return res
 
-def instruments_wrapper(thread_pool, exch, exchange, symbols, logger, db):
+def instruments_wrapper(thread_pool, exch, exchange, symbols, logger, db, secrets):
     return [thread_pool.submit(collect_instruments, exch, exchange, logger, db)]
 
-def tickers_wrapper(thread_pool, exch, exchange, symbols, logger, db):
+def tickers_wrapper(thread_pool, exch, exchange, symbols, logger, db, secrets):
     return [thread_pool.submit(collect_tickers, exch, exchange, logger, db)]
 
-def funding_rates_wrapper(thread_pool, exch, exchange, symbols, logger, db):
+def funding_rates_wrapper(thread_pool, exch, exchange, symbols, logger, db, secrets):
 
     symbols = [symbol + "/USDT:USDT" for symbol in symbols] + [symbol + "/USD:" + symbol for symbol in symbols]
 
@@ -717,14 +702,14 @@ def funding_rates_wrapper(thread_pool, exch, exchange, symbols, logger, db):
 
     return threads
 
-def borrow_rates_wrapper(thread_pool, exch, exchange, symbols, logger, db):
+def borrow_rates_wrapper(thread_pool, exch, exchange, symbols, logger, db, secrets):
     threads = []
     for code in symbols:
-        threads.append(thread_pool.submit(collect_borrow_rates, exch, exchange, code, logger, db))
+        threads.append(thread_pool.submit(collect_borrow_rates, exch, exchange, code, logger, db, secrets))
 
     return threads
 
-def mark_prices_wrapper(thread_pool, exch, exchange, symbols, logger, db):
+def mark_prices_wrapper(thread_pool, exch, exchange, symbols, logger, db, secrets):
     threads = []
     if exchange == "bybit":
         for symbol in symbols:
@@ -734,7 +719,7 @@ def mark_prices_wrapper(thread_pool, exch, exchange, symbols, logger, db):
 
     return threads
 
-def index_prices_wrapper(thread_pool, exch, exchange, symbols, logger, db):
+def index_prices_wrapper(thread_pool, exch, exchange, symbols, logger, db, secrets):
     threads = []
     if exchange == "bybit":
         for symbol in symbols:
@@ -744,33 +729,33 @@ def index_prices_wrapper(thread_pool, exch, exchange, symbols, logger, db):
 
     return threads
 
-def bids_asks_wrapper(thread_pool, exch, exchange, symbols, logger, db):
+def bids_asks_wrapper(thread_pool, exch, exchange, symbols, logger, db, secrets):
     threads = []
     for symbol in symbols:
         threads.append(thread_pool.submit(collect_bids_asks, exch, exchange, symbol, logger, db))
 
     return threads
 
-def roll_costs_wrapper(thread_pool, exch, exchange, symbols, logger, db):
+def roll_costs_wrapper(thread_pool, exch, exchange, symbols, logger, db, secrets):
     threads = []
     threads.append(thread_pool.submit(collect_roll_costs, exch, exchange, logger, db))
 
     return threads
 
-def positions_wrapper(thread_pool, client_alias, data_collector, logger, db, balance_finished):
-    return thread_pool.submit(collect_positions, client_alias, data_collector, logger, db, balance_finished)
+def positions_wrapper(thread_pool, client_alias, data_collector, logger, db, secrets, balance_finished):
+    return thread_pool.submit(collect_positions, client_alias, data_collector, logger, db, secrets, balance_finished)
 
-def balances_wrapper(thread_pool, client_alias, data_collector, logger, db, balance_finished):
-    return thread_pool.submit(collect_balances, client_alias, data_collector, logger, db, balance_finished)
+def balances_wrapper(thread_pool, client_alias, data_collector, logger, db, secrets, balance_finished):
+    return thread_pool.submit(collect_balances, client_alias, data_collector, logger, db, secrets, balance_finished)
 
-def open_orders_wrapper(thread_pool, client_alias, data_collector, logger, db, balance_finished):
-    return thread_pool.submit(collect_open_orders, client_alias, data_collector, logger, db)
+def open_orders_wrapper(thread_pool, client_alias, data_collector, logger, db, secrets, balance_finished):
+    return thread_pool.submit(collect_open_orders, client_alias, data_collector, logger, db, secrets)
 
-def transactions_wrapper(thread_pool, client_alias, data_collector, logger, db, balance_finished):
-    return thread_pool.submit(collect_transactions, client_alias, data_collector, logger, db)
+def transactions_wrapper(thread_pool, client_alias, data_collector, logger, db, secrets, balance_finished):
+    return thread_pool.submit(collect_transactions, client_alias, data_collector, logger, db, secrets)
 
-def fills_wrapper(thread_pool, client_alias, data_collector, logger, db, balance_finished):
-    return thread_pool.submit(collect_fills, client_alias, data_collector, logger, db)
+def fills_wrapper(thread_pool, client_alias, data_collector, logger, db, secrets, balance_finished):
+    return thread_pool.submit(collect_fills, client_alias, data_collector, logger, db, secrets)
 
 def leverages_wrapper(thread_pool, client_alias, data_collector, logger, db):
     return thread_pool.submit(collect_leverages, client_alias, data_collector, logger, db)

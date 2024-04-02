@@ -80,6 +80,7 @@ class IndexPrices:
             
             except ccxt.ExchangeError as e:
                 logger.warning(exchange +" index prices " + str(e))
+                logger.error("Unable to collect index prices for " + exchange)
                 return True
             except ccxt.NetworkError as e:
                 logger.warning(exchange +" index prices " + str(e))
@@ -121,8 +122,11 @@ class IndexPrices:
 
             del index_price
 
+            logger.info("Collected index prices for " + exchange)
+
             return True
                 
         except Exception as e:
             logger.error(exchange +" index prices " + str(e))
+            logger.error("Unable to collect index prices for " + exchange)
             return True

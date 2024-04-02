@@ -78,6 +78,7 @@ class Tickers:
         
             except ccxt.ExchangeError as e:
                 logger.warning(exchange +" tickers " + str(e))
+                logger.error("Unable to collect tickers for " + exchange)
                 return True
         
         ticker = {
@@ -128,8 +129,11 @@ class Tickers:
 
             del ticker
 
+            logger.info("Collected tickers for " + exchange)
+
             return True
                 
         except Exception as e:
             logger.error(exchange +" tickers " + str(e))
+            logger.error("Unable to collect tickers for " + exchange)
             return True

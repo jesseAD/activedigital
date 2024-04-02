@@ -1,5 +1,3 @@
-import os
-from dotenv import load_dotenv
 from datetime import datetime, timezone
 import ccxt 
 
@@ -7,7 +5,6 @@ from src.lib.exchange import Exchange
 from src.config import read_config_file
 from src.handlers.helpers import Helper, OKXHelper, BybitHelper
 
-load_dotenv()
 config = read_config_file()
 
 
@@ -65,7 +62,8 @@ class BorrowRates:
         perp: str = None,
         borrowRatesValue: str = None,
         vipLoanRatesValue: str = None,
-        logger=None
+        logger=None,
+        secrets={},
     ):
 
         if borrowRatesValue is None:
@@ -184,6 +182,7 @@ class BorrowRates:
                                 item['scalar'] = scalar 
                 except ccxt.BadSymbol as e:
                     logger.warning(exchange +  " borrow rates " + str(e))
+                    logger.error("Unable to collect borrow rates for " + exchange)
                     return True
         
             except ccxt.AuthenticationError as e:
@@ -196,11 +195,11 @@ class BorrowRates:
                             
                             if _account != "base_ccy":
                                 spec = _client.upper() + "_" + exchange.upper() + "_" + _account.upper() + "_"
-                                API_KEY = os.getenv(spec + "API_KEY")
-                                API_SECRET = os.getenv(spec + "API_SECRET")
+                                API_KEY = secrets[spec + "API_KEY"]
+                                API_SECRET = secrets[spec + "API_SECRET"]
                                 PASSPHRASE = None
                                 if exchange == "okx":
-                                    PASSPHRASE = os.getenv(spec + "PASSPHRASE")
+                                    PASSPHRASE = secrets[spec + "PASSPHRASE"]
 
                                 exch = Exchange(exchange, _account, API_KEY, API_SECRET, PASSPHRASE).exch()
 
@@ -294,6 +293,7 @@ class BorrowRates:
                                                 item['scalar'] = scalar  
                                 except ccxt.ExchangeError as e:
                                     logger.warning(exchange + " borrow rates " + str(e))
+                                    logger.error("Unable to collect borrow rates for " + exchange)
                                     return True
                                 except ccxt.NetworkError as e:  
                                     logger.warning(exchange + " borrow rates " + str(e))
@@ -307,6 +307,7 @@ class BorrowRates:
 
             except ccxt.ExchangeError as e:
                 logger.warning(exchange + " borrow rates " + str(e))
+                logger.error("Unable to collect borrow rates for " + exchange)
                 return True
             except ccxt.NetworkError as e:
                 logger.warning(exchange + " borrow rates " + str(e))
@@ -316,9 +317,9 @@ class BorrowRates:
             try:
                 vipLoanRatesValue = {}
                 spec = config['vip_loan_rates']['client'].upper() + "_" + exchange.upper() + "_" + config['vip_loan_rates']['account'].upper() + "_"
-                API_KEY = os.getenv(spec + "API_KEY")
-                API_SECRET = os.getenv(spec + "API_SECRET")
-                PASSPHRASE = os.getenv(spec + "PASSPHRASE")
+                API_KEY = secrets[spec + "API_KEY"]
+                API_SECRET = secrets[spec + "API_SECRET"]
+                PASSPHRASE = secrets[spec + "PASSPHRASE"]
 
                 _exch = Exchange(exchange, config['vip_loan_rates']['account'], API_KEY, API_SECRET, PASSPHRASE).exch()
                 vipLoanRatesValue['info'] = OKXHelper().get_vip_loan_rate(
@@ -340,6 +341,8 @@ class BorrowRates:
                 logger.warning(exchange + " borrow rates " + str(e))
 
         if len(borrowRatesValue) <= 0 and (vipLoanRatesValue == {} or vipLoanRatesValue is None):
+            logger.warning("Empty borrow rates for " + exchange)
+            logger.error("Unable to collect borrow rates for " + exchange)
             return True
 
         borrow_rates = []
@@ -406,8 +409,11 @@ class BorrowRates:
 
             del borrow_rates
 
+            logger.info("Collected borrow rates for " + exchange)
+
             return True
 
         except Exception as e:
             logger.error(exchange +" borrow rates " + str(e))
+            logger.error("Unable to collect borrow rates for " + exchange)
             return True

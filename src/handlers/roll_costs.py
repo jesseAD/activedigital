@@ -1,4 +1,3 @@
-from dotenv import load_dotenv
 from datetime import datetime, timezone
 import ccxt 
 
@@ -255,8 +254,11 @@ class Roll_Costs:
 
       del roll_costs
 
+      logger.info("Collected roll costs for " + exchange)
+
       return True
     
     except Exception as e:
       logger.error(exchange +" carry costs " + str(e))
+      logger.error("Unable to collect roll costs for " + exchange)
       return True

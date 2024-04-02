@@ -99,6 +99,7 @@ class Bids_Asks:
         
             except ccxt.ExchangeError as e:
                 logger.warning(exchange +" bids and asks " + str(e))
+                logger.error("Unable to collect bids and asks for " + exchange)
                 return True
             except ccxt.NetworkError as e:
                 logger.warning(exchange +" bids and asks " + str(e))
@@ -135,8 +136,11 @@ class Bids_Asks:
         try:
             self.bid_asks_db.insert_one(new_value)
 
+            logger.info("Collected bids and asks for " + exchange)
+
             return True
         
         except Exception as e:
             logger.error(exchange +" bids and asks " + str(e))
+            logger.error("Unable to collect bids and asks for " + exchange)
             return True

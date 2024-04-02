@@ -1,5 +1,3 @@
-import os
-from dotenv import load_dotenv
 from datetime import datetime, timezone, timedelta, date
 import ccxt 
 import time
@@ -9,7 +7,6 @@ from src.lib.mapping import Mapping
 from src.config import read_config_file
 from src.handlers.helpers import Helper, OKXHelper, BybitHelper
 
-load_dotenv()
 config = read_config_file()
 
 
@@ -70,16 +67,17 @@ class Transactions:
         perp: str = None,
         transaction_value: str = None,
         symbol: str = None,
-        logger=None
+        logger=None,
+        secrets={},
     ):
         if transaction_value is None:
             if exch == None:
                 spec = client.upper() + "_" + exchange.upper() + "_" + sub_account.upper() + "_"
-                API_KEY = os.getenv(spec + "API_KEY")
-                API_SECRET = os.getenv(spec + "API_SECRET")
+                API_KEY = secrets[spec + "API_KEY"]
+                API_SECRET = secrets[spec + "API_SECRET"]
                 PASSPHRASE = None
                 if exchange == "okx":
-                    PASSPHRASE = os.getenv(spec + "PASSPHRASE")
+                    PASSPHRASE = secrets[spec + "PASSPHRASE"]
 
                 exch = Exchange(exchange, sub_account, API_KEY, API_SECRET, PASSPHRASE).exch()
             
@@ -1021,6 +1019,7 @@ class Transactions:
     
             except ccxt.ExchangeError as e:
                 logger.error(client + " " + exchange + " " + sub_account + " transactions " + str(e))
+                logger.error("Unable to collect transactions for " + client + " " + exchange + " " + sub_account)
                 return True
         
         tickers = list(self.tickers_db.find({"venue": exchange}))[0]['ticker_value']
@@ -1060,8 +1059,6 @@ class Transactions:
             transaction = []
 
             if exchange == "okx":
-                if len(transaction_value) == 0:
-                    return True
 
                 for item in transaction_value:
                     item['timestamp'] = int(item["timestamp"]) - config['transactions']['time_slack']
@@ -1218,10 +1215,7 @@ class Transactions:
                         if perp:
                             new_value["perpMarket"] = perp
 
-                        transaction.append(new_value)     
-
-            if len(transaction) == 0:
-                return True
+                        transaction.append(new_value)
         
         #  MTD PnL
         try:
@@ -1353,8 +1347,11 @@ class Transactions:
 
             del transaction
 
+            logger.info("Collected transactions for " + client + " " + exchange + " " + sub_account)
+            
             return True
 
         except Exception as e:
             logger.error(client + " " + exchange + " " + sub_account + " transactions " + str(e))
+            logger.error("Unable to collect transactions for " + client + " " + exchange + " " + sub_account)
             return True
