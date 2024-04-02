@@ -1,5 +1,4 @@
-import os, time
-from dotenv import load_dotenv
+import time
 from datetime import datetime, timezone, timedelta
 import ccxt 
 
@@ -8,7 +7,6 @@ from src.config import read_config_file
 from src.handlers.helpers import Helper, OKXHelper, BybitHelper
 from src.lib.mapping import Mapping
 
-load_dotenv()
 config = read_config_file()
 
 
@@ -65,7 +63,8 @@ class Fills:
         perp: str = None,
         fillsValue: str = None,
         symbols: str = None,
-        logger=None
+        logger=None,
+        secrets={},
     ):
         if symbols is None:
             # get latest positions data
@@ -124,11 +123,11 @@ class Fills:
         if fillsValue is None:
             if exch == None:
                 spec = client.upper() + "_" + exchange.upper() + "_" + sub_account.upper() + "_"
-                API_KEY = os.getenv(spec + "API_KEY")
-                API_SECRET = os.getenv(spec + "API_SECRET")
+                API_KEY = secrets[spec + "API_KEY"]
+                API_SECRET = secrets[spec + "API_SECRET"]
                 PASSPHRASE = None
                 if exchange == "okx":
-                    PASSPHRASE = os.getenv(spec + "PASSPHRASE")
+                    PASSPHRASE = secrets[spec + "PASSPHRASE"]
 
                 exch = Exchange(exchange, sub_account, API_KEY, API_SECRET, PASSPHRASE).exch()
 

@@ -1,5 +1,3 @@
-import os
-from dotenv import load_dotenv
 from datetime import datetime, timezone
 import time
 import ccxt
@@ -10,7 +8,6 @@ from src.lib.unhedged import get_unhedged
 from src.config import read_config_file
 from src.handlers.helpers import Helper, OKXHelper, BybitHelper
 
-load_dotenv()
 config = read_config_file()
 
 
@@ -73,14 +70,14 @@ class Positions:
         client,
         exch=None,
         exchange: str = None,
-        positionType: str = None,
         sub_account: str = None,
         spot: str = None,
         future: str = None,
         perp: str = None,
         position_value: str = None,
         logger=None,
-        balance_finished={}
+        secrets={},
+        balance_finished={},
     ):
         while(not balance_finished[client + "_" + exchange + "_" + sub_account]):
             logger.info(client + " " + exchange + " " + sub_account + " positions: balances was not finished")
@@ -89,11 +86,11 @@ class Positions:
         if position_value is None:
             if exch == None:
                 spec = (client.upper() + "_" + exchange.upper() + "_" + sub_account.upper() + "_")
-                API_KEY = os.getenv(spec + "API_KEY")
-                API_SECRET = os.getenv(spec + "API_SECRET")
+                API_KEY = secrets[spec + "API_KEY"]
+                API_SECRET = secrets[spec + "API_SECRET"]
                 PASSPHRASE = None
                 if exchange == "okx":
-                    PASSPHRASE = os.getenv(spec + "PASSPHRASE")
+                    PASSPHRASE = secrets[spec + "PASSPHRASE"]
 
                 exch = Exchange(
                     exchange, sub_account, API_KEY, API_SECRET, PASSPHRASE

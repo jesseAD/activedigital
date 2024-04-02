@@ -7,7 +7,7 @@ import gc
 # from dask.distributed import LocalCluster, Client
 import concurrent.futures
 import pymongo
-from dotenv import load_dotenv
+from dotenv import load_dotenv, dotenv_values
 from datetime import datetime, timedelta, timezone
 # import warnings
 
@@ -40,13 +40,13 @@ from lib.log import Log
 from lib.db import MongoDB
 
 config = read_config_file()
-load_dotenv()
+secrets = dotenv_values()
 logger = Log()
 # warnings.showwarning = logger.warning
 
 mongo_uri = None
-if os.getenv("mode") == "prod":
-    mongo_uri = 'mongodb+srv://activedigital:'+os.getenv("CLOUD_MONGO_PASSWORD")+'@mongodbcluster.nzphth1.mongodb.net/?retryWrites=true&w=majority'
+if secrets["mode"] == "prod":
+    mongo_uri = 'mongodb+srv://activedigital:'+secrets["CLOUD_MONGO_PASSWORD"]+'@mongodbcluster.nzphth1.mongodb.net/?retryWrites=true&w=majority'
 
 db = pymongo.MongoClient(mongo_uri, maxPoolsize=config['mongodb']['max_pool'])[config['mongodb']['database']]
 # db = MongoDB(db_name=config['mongodb']['database'], uri=mongo_uri)
@@ -62,7 +62,7 @@ def public_pool(data_collectors, exchanges, symbols):
     for i in range(config['dask']['threadPoolsPerWorker']):
         for j in range(int(i * len(data_collectors) / config['dask']['threadPoolsPerWorker']), int((i+1) * len(data_collectors) / config['dask']['threadPoolsPerWorker'])):
             for exchange in exchanges:
-                threads += (data_collectors[j](executors[i], exchs[exchange], exchange, symbols, logger, db1))
+                threads += (data_collectors[j](executors[i], exchs[exchange], exchange, symbols, logger, db1, secrets))
             pass
     
     for thread in concurrent.futures.as_completed(threads):
@@ -83,7 +83,7 @@ def private_pool(data_collectors, accounts_group, balance_finished):
     for i in range(config['dask']['threadPoolsPerWorker']):
         for j in range(int(i * len(accounts_group) / config['dask']['threadPoolsPerWorker']), int((i+1) * len(accounts_group) / config['dask']['threadPoolsPerWorker'])):
             for collector in data_collectors:
-                threads.append(collector(executors[i], accounts_group[j].client, accounts_group[j], logger, db2, balance_finished))
+                threads.append(collector(executors[i], accounts_group[j].client, accounts_group[j], logger, db2, secrets, balance_finished))
     
     for thread in concurrent.futures.as_completed(threads):
         print(thread.result())
