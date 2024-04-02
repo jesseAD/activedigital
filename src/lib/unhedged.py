@@ -26,15 +26,20 @@ def get_unhedged(perp=[], spot=[]):
         else:
             new_position['avgPrice'] = float(position['info']['avgPrice'])
 
-        if position['leverage'] != None:
+        try:
             new_position['leverage'] = float(position['leverage'])
-        else:
+        except:
             new_position['leverage'] = 0
 
-        if position['unrealizedPnl'] != None:
+        try:
             new_position['unrealizedPnl'] = float(position['unrealizedPnl'])
-        else:
+        except:
             new_position['unrealizedPnl'] = 0  
+
+        try:
+            new_position['liquidationPriceChange'] = float(position['liquidationPriceChange'])
+        except:
+            new_position['liquidationPriceChange'] = 0
 
         new_position['side'] = position['side'] 
         new_position['base'] = position['base']
@@ -64,15 +69,20 @@ def get_unhedged(perp=[], spot=[]):
         else:
             new_position['avgPrice'] = float(position['info']['avgPrice'])
 
-        if position['leverage'] != None and position['leverage'] != "":
+        try:
             new_position['leverage'] = float(position['leverage'])
-        else:
+        except:
             new_position['leverage'] = 0
 
-        if position['unrealizedPnl'] != None and position['unrealizedPnl'] != "":
+        try:
             new_position['unrealizedPnl'] = float(position['unrealizedPnl'])
-        else:
+        except:
             new_position['unrealizedPnl'] = 0  
+
+        try:
+            new_position['liquidationPriceChange'] = float(position['liquidationPriceChange'])
+        except:
+            new_position['liquidationPriceChange'] = 0
 
         new_position['side'] = position['side'] 
         new_position['base'] = position['base']
