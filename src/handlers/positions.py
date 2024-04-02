@@ -119,6 +119,7 @@ class Positions:
 
             except ccxt.ExchangeError as e:
                 logger.error(client + " " + exchange + " " + sub_account + " positions " + str(e))
+                logger.error("Unable to collect positions for " + client + " " + exchange + " " + sub_account)
                 return True
                 
         try:
@@ -140,6 +141,7 @@ class Positions:
                     return False
                 except Exception as e:
                     logger.warning(client + " " + exchange + " " + sub_account + " positions: in cross margin ratio " + str(e))
+                    logger.error("Unable to collect positions for " + client + " " + exchange + " " + sub_account)
                     return True
 
             elif exchange == "bybit":
@@ -157,6 +159,7 @@ class Positions:
                 
                 except Exception as e:
                     logger.warning(client + " " + exchange + " " + sub_account + " positions: in cross margin ratio " + str(e))
+                    logger.error("Unable to collect positions for " + client + " " + exchange + " " + sub_account)
                     return True
 
             elif exchange == "binance":
@@ -175,6 +178,7 @@ class Positions:
                     
                     except Exception as e:
                         logger.warning(client + " " + exchange + " " + sub_account + " positions: in cross margin ratio " + str(e))
+                        logger.error("Unable to collect positions for " + client + " " + exchange + " " + sub_account)
                         return True
                 else:
                     try:
@@ -195,6 +199,7 @@ class Positions:
                     
                     except Exception as e:
                         logger.warning(client + " " + exchange + " " + sub_account + " positions: in cross margin ratio " + str(e))
+                        logger.error("Unable to collect positions for " + client + " " + exchange + " " + sub_account)
                         return True
 
             for value in position_value:
@@ -779,6 +784,7 @@ class Positions:
                 
             except Exception as e:
                 logger.error(client + " " + exchange + " " + sub_account + " split positions " + str(e))
+                logger.error("Unable to collect positions for " + client + " " + exchange + " " + sub_account)
                 return True
             
 
@@ -837,9 +843,12 @@ class Positions:
 
             del position
 
+            logger.info("Collected positions for " + client + " " + exchange + " " + sub_account)
+
             return True
 
             # return position
         except Exception as e:
             logger.error(client + " " + exchange + " " + sub_account + " positions " + str(e))
+            logger.error("Unable to collect positions for " + client + " " + exchange + " " + sub_account)
             return True

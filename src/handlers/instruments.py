@@ -78,7 +78,8 @@ class Instruments:
             
             except ccxt.ExchangeError as e:
                 logger.warning(exchange +" instruments " + str(e))
-                pass
+                logger.error("Unable to collect instruments for " + exchange)
+                return True
 
         instrument = {
             "venue": exchange,
@@ -127,9 +128,12 @@ class Instruments:
 
             del instrument
 
+            logger.info("Collected instruments for " + exchange)
+
             return True
 
         except Exception as e:
             logger.error(exchange +" instruments " + str(e))
+            logger.error("Unable to collect instruments for " + exchange)
             return True
 

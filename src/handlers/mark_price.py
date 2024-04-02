@@ -86,6 +86,7 @@ class MarkPrices:
             
             except ccxt.ExchangeError as e:
                 logger.warning(exchange +" mark prices " + str(e))
+                logger.error("Unable to collect mark prices for " + exchange)
                 return True
             except ccxt.NetworkError as e:
                 logger.warning(exchange +" mark prices " + str(e))
@@ -146,8 +147,11 @@ class MarkPrices:
 
             del mark_price
 
+            logger.info("Collected mark prices for " + exchange)
+
             return True
 
         except Exception as e:
             logger.error(exchange +" mark prices " + str(e))
+            logger.error("Unable to collect mark prices for " + exchange)
             return True

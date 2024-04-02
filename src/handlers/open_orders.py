@@ -69,6 +69,7 @@ class OpenOrders:
 
       except ccxt.ExchangeError as e:
         logger.warning(client + " " + exchange + " " + sub_account + " open orders " + str(e))
+        logger.error("Unable to collect open orders for " + client + " " + exchange + " " + sub_account)
         return True
 
 
@@ -145,10 +146,13 @@ class OpenOrders:
                 upsert=True,
             )
 
+        logger.info("Collected open orders for " + client + " " + exchange + " " + sub_account)
+        
         return True
     
     except Exception as e:
         logger.error(client + " " + exchange + " " + sub_account + " open orders " + str(e) + " in persisting to database")
+        logger.error("Unable to collect open orders for " + client + " " + exchange + " " + sub_account)
         return True
 
     

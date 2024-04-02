@@ -110,9 +110,7 @@ def collect_positions(client_alias, data_collector, logger, db, secrets, balance
 
         del positions
 
-        if res:
-            logger.info("Collected positions for " + client_alias + " " + data_collector.exchange + " " + data_collector.account)
-        else:
+        if not res:
             logger.error("Unable to collect positions for " + client_alias + " " + data_collector.exchange + " " + data_collector.account)
 
         return res
@@ -160,9 +158,7 @@ def collect_balances(client_alias, data_collector, logger, db, secrets, balance_
 
         del balances
 
-        if res:
-            logger.info("Collected balances for " + client_alias + " " + data_collector.exchange + " " + data_collector.account)
-        else:
+        if not res:
             logger.error("Unable to collect balances for " + client_alias + " " + data_collector.exchange + " " + data_collector.account)
 
         balance_finished[client_alias + "_" + data_collector.exchange + "_" + data_collector.account] = True
@@ -212,11 +208,8 @@ def collect_open_orders(client_alias, data_collector, logger, db, secrets):
 
         del open_orders
 
-        if res:
-            logger.info("Collected open orders for " + client_alias + " " + data_collector.exchange + " " + data_collector.account)
-        else:
+        if not res:
             logger.error("Unable to collect open orders for " + client_alias + " " + data_collector.exchange + " " + data_collector.account)
-
 
         return res
 
@@ -265,10 +258,8 @@ def collect_transactions(client_alias, data_collector, logger, db, secrets):
 
         del transactions
 
-        if res:
-            logger.info("Collected transactions for " + client_alias + " " + data_collector.exchange + " " + data_collector.account)
-        else:
-            logger.error("Unable to collect transactions for " + client_alias + " " + data_collector.exchange + " " + data_collector.account)
+        if not res:
+            logger.error("Unable to collect transactions for " + client_alias + " " + data_collector.exchange + " " + data_collector.account)            
 
         return res
 
@@ -315,9 +306,7 @@ def collect_fills(client_alias, data_collector, logger, db, secrets):
 
         del fills
 
-        if res:
-            logger.info("Collected fills for " + client_alias + " " + data_collector.exchange + " " + data_collector.account)
-        else:
+        if not res:
             logger.error("Unable to collect fills for " + client_alias + " " + data_collector.exchange + " " + data_collector.account)
 
         return res
@@ -360,9 +349,7 @@ def collect_instruments(exch, exchange, logger, db):
 
         del instruments
 
-        if res:
-            logger.info("Collected instruments for " + exchange)
-        else:
+        if not res:
             logger.error("Unable to collect instruments for " + exchange)
 
         return res
@@ -404,9 +391,7 @@ def collect_tickers(exch, exchange, logger, db):
         
         del tickers
 
-        if res:
-            logger.info("Collected tickers for " + exchange)
-        else:
+        if not res:
             logger.error("Unable to collect tickers for " + exchange)
 
         return res
@@ -450,9 +435,7 @@ def collect_index_prices(exch, exchange, symbols, logger, db):
 
         del index_prices
 
-        if res:
-            logger.info("Collected index prices for " + exchange)
-        else:
+        if not res:
             logger.error("Unable to collect index prices for " + exchange)
             
         return res
@@ -498,9 +481,7 @@ def collect_borrow_rates(exch, exchange, code, logger, db, secrets):
 
         del borrow_rates
 
-        if res:
-            logger.info("Collected borrow rates for " + exchange)
-        else:
+        if not res:
             logger.error("Unable to collect borrow rates for " + exchange)
 
         return res
@@ -544,9 +525,7 @@ def collect_funding_rates(exch, exchange, symbol, logger, db):
 
         del funding_rates
 
-        if res:
-            logger.info("Collected funding rates for " + exchange)
-        else:
+        if not res:
             logger.error("Unable to collect funding rates for " + exchange)
 
         return res
@@ -590,9 +569,7 @@ def collect_bids_asks(exch, exchange, symbol, logger, db):
 
         del bid_asks
 
-        if res:
-            logger.info("Collected bids and asks for " + exchange)
-        else:
+        if not res:
             logger.error("Unable to collect bids and asks for " + exchange)
 
         return res
@@ -634,9 +611,7 @@ def collect_roll_costs(exch, exchange, logger, db):
 
         del roll_costs
 
-        if res:
-            logger.info("Collected roll costs for " + exchange)
-        else:
+        if not res:
             logger.error("Unable to collect roll costs for " + exchange)
 
         return res
@@ -680,9 +655,7 @@ def collect_mark_prices(exch, exchange, symbols, logger, db):
 
         del mark_prices
 
-        if res:
-            logger.info("Collected mark prices for " + exchange)
-        else:
+        if not res:
             logger.error("Unable to collect mark prices for " + exchange)
 
         return res

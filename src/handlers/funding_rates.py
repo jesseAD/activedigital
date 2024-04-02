@@ -435,6 +435,7 @@ class FundingRates:
             
             except ccxt.ExchangeError as e:
                 logger.warning(exchange + " funding rates " + str(e))
+                logger.error("Unable to collect funding rates for " + exchange)
                 return True
             except ccxt.NetworkError as e:
                 logger.warning(exchange + " funding rates " + str(e))
@@ -479,6 +480,8 @@ class FundingRates:
         del fundingRatesValue
 
         if len(funding_rates) <= 0:
+            logger.info("Empty funding rates for " + exchange)
+            logger.error("Unable to collect funding rates for " + exchange)
             return True
 
         try:
@@ -486,8 +489,11 @@ class FundingRates:
 
             del funding_rates
 
+            logger.info("Collected funding rates for " + exchange)
+
             return True
 
         except Exception as e:
             logger.error(exchange + " funding rates " + str(e))
+            logger.error("Unable to collect funding rates for " + exchange)
             return True
