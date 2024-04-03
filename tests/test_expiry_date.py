@@ -191,6 +191,31 @@ class TestExpiryDate(unittest.TestCase):
     assert(quaterExpiry == quaterResult)
     assert(nextQuarterExpiry == nextQuarterResult)
 
+  @mock.patch('src.lib.expiry_date.get_expiry_date', autospec=True)
+  def test_1st_month_of_quarter(self, mock_expiry):
+
+    date = datetime.strptime("2024-04-03T08:28:30+00:00", "%Y-%m-%dT%H:%M:%S%z")
+    weeklyExpiry = datetime.strptime("2024-04-05T08:00:30+00:00", "%Y-%m-%dT%H:%M:%S%z")
+    nextWeekExpiry = datetime.strptime("2024-04-12T08:00:30+00:00", "%Y-%m-%dT%H:%M:%S%z")
+    monthlyExpiry = datetime.strptime("2024-04-26T08:00:30+00:00", "%Y-%m-%dT%H:%M:%S%z")
+    nextMonthExpiry = datetime.strptime("2024-05-31T08:00:30+00:00", "%Y-%m-%dT%H:%M:%S%z")
+    quaterExpiry = datetime.strptime("2024-06-28T08:00:30+00:00", "%Y-%m-%dT%H:%M:%S%z")
+    nextQuarterExpiry = datetime.strptime("2024-09-27T08:00:30+00:00", "%Y-%m-%dT%H:%M:%S%z")
+
+    weeklyResult = get_expiry_date("THISWEEK", date)
+    nextWeekResult = get_expiry_date("NEXTWEEK", date)
+    monthlyResult = get_expiry_date("THISMONTH", date)
+    nextMonthResult = get_expiry_date("NEXTMONTH", date)
+    quaterResult = get_expiry_date("QUARTER", date)
+    nextQuarterResult = get_expiry_date("NEXTQUARTER", date)
+
+    assert(weeklyExpiry == weeklyResult)
+    assert(nextWeekExpiry == nextWeekResult)
+    assert(monthlyExpiry == monthlyResult)
+    assert(nextMonthExpiry == nextMonthResult)
+    assert(quaterExpiry == quaterResult)
+    assert(nextQuarterExpiry == nextQuarterResult)
+
 
 if __name__ == '__main__':
     unittest.main()
