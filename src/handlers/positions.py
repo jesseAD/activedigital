@@ -80,7 +80,11 @@ class Positions:
         balance_finished={},
     ):
         while(not balance_finished[client + "_" + exchange + "_" + sub_account]):
-            logger.info(client + " " + exchange + " " + sub_account + " positions: balances was not finished")
+            if logger == None:
+                print(client + " " + exchange + " " + sub_account + " positions: balances was not finished")
+            else:
+                logger.info(client + " " + exchange + " " + sub_account + " positions: balances was not finished")
+
             time.sleep(0.5)
 
         if position_value is None:
@@ -118,8 +122,13 @@ class Positions:
                 position_value = Mapping().mapping_positions(exchange=exchange, positions=position_value)
 
             except ccxt.ExchangeError as e:
-                logger.error(client + " " + exchange + " " + sub_account + " positions " + str(e))
-                logger.error("Unable to collect positions for " + client + " " + exchange + " " + sub_account)
+                if logger == None:
+                    print(client + " " + exchange + " " + sub_account + " positions " + str(e))
+                    print("Unable to collect positions for " + client + " " + exchange + " " + sub_account)
+                else:
+                    logger.error(client + " " + exchange + " " + sub_account + " positions " + str(e))
+                    logger.error("Unable to collect positions for " + client + " " + exchange + " " + sub_account)
+
                 return True
                 
         try:
@@ -137,11 +146,20 @@ class Positions:
                     )
 
                 except ccxt.ExchangeError as e:
-                    logger.warning(client + " " + exchange + " " + sub_account + " positions: in cross margin ratio " + str(e))
+                    if logger == None:
+                        print(client + " " + exchange + " " + sub_account + " positions: in cross margin ratio " + str(e))
+                    else:
+                        logger.warning(client + " " + exchange + " " + sub_account + " positions: in cross margin ratio " + str(e))
+                        
                     return False
                 except Exception as e:
-                    logger.warning(client + " " + exchange + " " + sub_account + " positions: in cross margin ratio " + str(e))
-                    logger.error("Unable to collect positions for " + client + " " + exchange + " " + sub_account)
+                    if logger == None:
+                        print(client + " " + exchange + " " + sub_account + " positions: in cross margin ratio " + str(e))
+                        print("Unable to collect positions for " + client + " " + exchange + " " + sub_account)
+                    else:
+                        logger.warning(client + " " + exchange + " " + sub_account + " positions: in cross margin ratio " + str(e))
+                        logger.error("Unable to collect positions for " + client + " " + exchange + " " + sub_account)
+
                     return True
 
             elif exchange == "bybit":
@@ -154,12 +172,21 @@ class Positions:
                     )
 
                 except ccxt.ExchangeError as e:
-                    logger.warning(client + " " + exchange + " " + sub_account + " positions: in cross margin ratio " + str(e))
+                    if logger == None:
+                        print(client + " " + exchange + " " + sub_account + " positions: in cross margin ratio " + str(e))
+                    else:
+                        logger.warning(client + " " + exchange + " " + sub_account + " positions: in cross margin ratio " + str(e))
+
                     return False
                 
                 except Exception as e:
-                    logger.warning(client + " " + exchange + " " + sub_account + " positions: in cross margin ratio " + str(e))
-                    logger.error("Unable to collect positions for " + client + " " + exchange + " " + sub_account)
+                    if logger == None:
+                        print(client + " " + exchange + " " + sub_account + " positions: in cross margin ratio " + str(e))
+                        print("Unable to collect positions for " + client + " " + exchange + " " + sub_account)
+                    else:
+                        logger.warning(client + " " + exchange + " " + sub_account + " positions: in cross margin ratio " + str(e))
+                        logger.error("Unable to collect positions for " + client + " " + exchange + " " + sub_account)
+
                     return True
 
             elif exchange == "binance":
@@ -173,12 +200,21 @@ class Positions:
                         )
 
                     except ccxt.ExchangeError as e:
-                        logger.warning(client + " " + exchange + " " + sub_account + " positions: in cross margin ratio " + str(e))
+                        if logger == None:
+                            print(client + " " + exchange + " " + sub_account + " positions: in cross margin ratio " + str(e))
+                        else:
+                            logger.warning(client + " " + exchange + " " + sub_account + " positions: in cross margin ratio " + str(e))
+
                         return False
                     
                     except Exception as e:
-                        logger.warning(client + " " + exchange + " " + sub_account + " positions: in cross margin ratio " + str(e))
-                        logger.error("Unable to collect positions for " + client + " " + exchange + " " + sub_account)
+                        if logger == None:
+                            print(client + " " + exchange + " " + sub_account + " positions: in cross margin ratio " + str(e))
+                            print("Unable to collect positions for " + client + " " + exchange + " " + sub_account)
+                        else:
+                            logger.warning(client + " " + exchange + " " + sub_account + " positions: in cross margin ratio " + str(e))
+                            logger.error("Unable to collect positions for " + client + " " + exchange + " " + sub_account)
+
                         return True
                 else:
                     try:
@@ -194,12 +230,21 @@ class Positions:
                         liquidation_buffer = min(liquidation1, liquidation2, liquidation3)
 
                     except ccxt.ExchangeError as e:
-                        logger.warning(client + " " + exchange + " " + sub_account + " positions: in cross margin ratio " + str(e))
+                        if logger == None:
+                            print(client + " " + exchange + " " + sub_account + " positions: in cross margin ratio " + str(e))
+                        else:
+                            logger.warning(client + " " + exchange + " " + sub_account + " positions: in cross margin ratio " + str(e))
+
                         return False
                     
                     except Exception as e:
-                        logger.warning(client + " " + exchange + " " + sub_account + " positions: in cross margin ratio " + str(e))
-                        logger.error("Unable to collect positions for " + client + " " + exchange + " " + sub_account)
+                        if logger == None:
+                            print(client + " " + exchange + " " + sub_account + " positions: in cross margin ratio " + str(e))
+                            print("Unable to collect positions for " + client + " " + exchange + " " + sub_account)
+                        else:
+                            logger.warning(client + " " + exchange + " " + sub_account + " positions: in cross margin ratio " + str(e))
+                            logger.error("Unable to collect positions for " + client + " " + exchange + " " + sub_account)
+
                         return True
 
             for value in position_value:
@@ -228,7 +273,11 @@ class Positions:
                                     tickers,
                                 )
                                 if cross_ratio == 0:
-                                    logger.warning(client + " " + exchange + " " + sub_account + " positions skipped" + value['symbol'] + "as zero ticker price")
+                                    if logger == None:
+                                        print(client + " " + exchange + " " + sub_account + " positions skipped" + value['symbol'] + "as zero ticker price")
+                                    else:
+                                        logger.warning(client + " " + exchange + " " + sub_account + " positions skipped" + value['symbol'] + "as zero ticker price")
+
                                     continue
 
                                 value["notional"] = float(value["notional"]) * cross_ratio
@@ -237,7 +286,10 @@ class Positions:
                         position_info.append(value)
 
                     except Exception as e:
-                        logger.warning(client + " " + exchange + " " + sub_account + " positions " + str(e))
+                        if logger == None:
+                            print(client + " " + exchange + " " + sub_account + " positions " + str(e))
+                        else:
+                            logger.warning(client + " " + exchange + " " + sub_account + " positions " + str(e))
 
                 else:
                     if (float(value["initialMargin"]) != 0.0  if config['clients'][client]['subaccounts'][exchange][sub_account]['margin_mode'] == 'non_portfolio' else True):
@@ -258,7 +310,11 @@ class Positions:
                                     tickers,
                                 )
                                 if cross_ratio == 0:
-                                    logger.warning(client + " " + exchange + " " + sub_account + " positions skipped" + value['symbol'] + "as zero ticker price")
+                                    if logger == None:
+                                        print(client + " " + exchange + " " + sub_account + " positions skipped" + value['symbol'] + "as zero ticker price")
+                                    else:
+                                        logger.warning(client + " " + exchange + " " + sub_account + " positions skipped" + value['symbol'] + "as zero ticker price")
+
                                     continue
                                 
                                 value["notional"] = float(value["notional"]) * cross_ratio
@@ -267,7 +323,10 @@ class Positions:
                             position_info.append(value)
 
                         except Exception as e:
-                            logger.warning(client + " " + exchange + " " + sub_account + " positions " + str(e))
+                            if logger == None:
+                                print(client + " " + exchange + " " + sub_account + " positions " + str(e))
+                            else:
+                                logger.warning(client + " " + exchange + " " + sub_account + " positions " + str(e))
             
             if exchange == "binance":
                 for position in position_info:
@@ -310,15 +369,27 @@ class Positions:
                             
                         position["markPrice"] = mark_price
                     except ccxt.ExchangeError as e:
-                        logger.warning(client + " " + exchange + " " + sub_account + " positions " + str(e))
+                        if logger == None:
+                            print(client + " " + exchange + " " + sub_account + " positions " + str(e))
+                        else:
+                            logger.warning(client + " " + exchange + " " + sub_account + " positions " + str(e))
+
                         pass
 
         except ccxt.ExchangeError as e:
-            logger.warning(client + " " + exchange + " " + sub_account + " positions " + str(e))
+            if logger == None:
+                print(client + " " + exchange + " " + sub_account + " positions " + str(e))
+            else:
+                logger.warning(client + " " + exchange + " " + sub_account + " positions " + str(e))
+
             pass
 
         except Exception as e:
-            logger.warning(client + " " + exchange + " " + sub_account + " positions " + str(e))
+            if logger == None:
+                print(client + " " + exchange + " " + sub_account + " positions " + str(e))
+            else:
+                logger.warning(client + " " + exchange + " " + sub_account + " positions " + str(e))
+
             pass
         
         del position_value
@@ -327,7 +398,10 @@ class Positions:
             try:
                 position['liquidationPriceChange'] = abs(float(position['liquidationPrice']) - float(position['markPrice'])) / float(position['markPrice'])
             except Exception as e:
-                logger.warning(client + " " + exchange + " " + sub_account + " positions in liquidation price change: " + str(e))
+                if logger == None:
+                    print(client + " " + exchange + " " + sub_account + " positions in liquidation price change: " + str(e))
+                else:
+                    logger.warning(client + " " + exchange + " " + sub_account + " positions in liquidation price change: " + str(e))
         
         run_ids = self.runs_db.find({}).sort("_id", -1).limit(1)
         latest_run_id = 0
@@ -358,14 +432,22 @@ class Positions:
                 price_changes.append(price_change)
 
             except Exception as e:
-                logger.warning(client + " " + exchange + " " + sub_account + " price changes " + str(e))
+                if logger == None:
+                    print(client + " " + exchange + " " + sub_account + " price changes " + str(e))
+                else:
+                    logger.warning(client + " " + exchange + " " + sub_account + " price changes " + str(e))
+
                 pass
 
         try:
             self.price_changes_db.insert_many(price_changes)
 
         except Exception as e:
-            logger.warning(client + " " + exchange + " " + sub_account + " price changes " + str(e))
+            if logger == None:
+                print(client + " " + exchange + " " + sub_account + " price changes " + str(e))
+            else:
+                logger.warning(client + " " + exchange + " " + sub_account + " price changes " + str(e))
+
             pass
 
         del price_changes
@@ -630,7 +712,10 @@ class Positions:
                         j += 1
 
             except Exception as e:
-                logger.warning(client + " " + exchange + " " + sub_account + " lifetime fundings " + str(e))
+                if logger == None:
+                    print(client + " " + exchange + " " + sub_account + " lifetime fundings " + str(e))
+                else:
+                    logger.warning(client + " " + exchange + " " + sub_account + " lifetime fundings " + str(e))
 
         for item in fundings:
             try:
@@ -652,7 +737,11 @@ class Positions:
                     upsert=True
                 )
             except Exception as e:
-                logger.warning(client + " " + exchange + " " + sub_account + " lifetime fundings " + str(e))
+                if logger == None:
+                    print(client + " " + exchange + " " + sub_account + " lifetime fundings " + str(e))
+                else:
+                    logger.warning(client + " " + exchange + " " + sub_account + " lifetime fundings " + str(e))
+
                 # print("An error occurred in Lifetime Funding:", e)
 
         # calculate unhedged
@@ -728,7 +817,10 @@ class Positions:
                 split_positions = []
                 split_positions = get_unhedged(position_info, spot_positions)
             except Exception as e:
-                logger.warning(client + " " + exchange + " " + sub_account + " split positions " + str(e))
+                if logger == None:
+                    print(client + " " + exchange + " " + sub_account + " split positions " + str(e))
+                else:
+                    logger.warning(client + " " + exchange + " " + sub_account + " split positions " + str(e))
 
             hedged_exclusion_positive = config['clients'][client]['subaccounts'][exchange][sub_account]['hedged_exclusion_positive']
             hedged_exclusion_negative = config['clients'][client]['subaccounts'][exchange][sub_account]['hedged_exclusion_negative']
@@ -783,8 +875,13 @@ class Positions:
                 self.split_positions_db.insert_one(split_position)
                 
             except Exception as e:
-                logger.error(client + " " + exchange + " " + sub_account + " split positions " + str(e))
-                logger.error("Unable to collect positions for " + client + " " + exchange + " " + sub_account)
+                if logger == None:
+                    print(client + " " + exchange + " " + sub_account + " split positions " + str(e))
+                    print("Unable to collect positions for " + client + " " + exchange + " " + sub_account)
+                else:
+                    logger.error(client + " " + exchange + " " + sub_account + " split positions " + str(e))
+                    logger.error("Unable to collect positions for " + client + " " + exchange + " " + sub_account)
+
                 return True
             
 
@@ -843,12 +940,20 @@ class Positions:
 
             del position
 
-            logger.info("Collected positions for " + client + " " + exchange + " " + sub_account)
+            if logger == None:
+                print("Collected positions for " + client + " " + exchange + " " + sub_account)
+            else:
+                logger.info("Collected positions for " + client + " " + exchange + " " + sub_account)
 
             return True
 
             # return position
         except Exception as e:
-            logger.error(client + " " + exchange + " " + sub_account + " positions " + str(e))
-            logger.error("Unable to collect positions for " + client + " " + exchange + " " + sub_account)
+            if logger == None:
+                print(client + " " + exchange + " " + sub_account + " positions " + str(e))
+                print("Unable to collect positions for " + client + " " + exchange + " " + sub_account)
+            else:
+                logger.error(client + " " + exchange + " " + sub_account + " positions " + str(e))
+                logger.error("Unable to collect positions for " + client + " " + exchange + " " + sub_account)
+
             return True

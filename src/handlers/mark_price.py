@@ -85,11 +85,20 @@ class MarkPrices:
                     markPriceValue = {symbols: res}
             
             except ccxt.ExchangeError as e:
-                logger.warning(exchange +" mark prices " + str(e))
-                logger.error("Unable to collect mark prices for " + exchange)
+                if logger == None:
+                    print(exchange +" mark prices " + str(e))
+                    print("Unable to collect mark prices for " + exchange)
+                else:
+                    logger.warning(exchange +" mark prices " + str(e))
+                    logger.error("Unable to collect mark prices for " + exchange)
+
                 return True
             except ccxt.NetworkError as e:
-                logger.warning(exchange +" mark prices " + str(e))
+                if logger == None:
+                    print(exchange +" mark prices " + str(e))
+                else:
+                    logger.warning(exchange +" mark prices " + str(e))
+
                 return False
 
         run_ids = self.runs_db.find({}).sort("_id", -1).limit(1)
@@ -147,11 +156,19 @@ class MarkPrices:
 
             del mark_price
 
-            logger.info("Collected mark prices for " + exchange)
+            if logger == None:
+                print("Collected mark prices for " + exchange)
+            else:
+                logger.info("Collected mark prices for " + exchange)
 
             return True
 
         except Exception as e:
-            logger.error(exchange +" mark prices " + str(e))
-            logger.error("Unable to collect mark prices for " + exchange)
+            if logger == None:
+                print(exchange +" mark prices " + str(e))
+                print("Unable to collect mark prices for " + exchange)
+            else:
+                logger.error(exchange +" mark prices " + str(e))
+                logger.error("Unable to collect mark prices for " + exchange)
+
             return True

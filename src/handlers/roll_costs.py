@@ -212,10 +212,18 @@ class Roll_Costs:
                 pass
 
           except ccxt.NetworkError as e:
-            logger.warning(exchange +" roll costs " + symbol + " " + prompt + ": " + str(e))
+            if logger == None:
+              print(exchange +" roll costs " + symbol + " " + prompt + ": " + str(e))
+            else:
+              logger.warning(exchange +" roll costs " + symbol + " " + prompt + ": " + str(e))
+
             return False
+
           except Exception as e:
-            logger.warning(exchange +" roll costs " + symbol + " " + prompt + ": " + str(e))
+            if logger == None:
+              print(exchange +" roll costs " + symbol + " " + prompt + ": " + str(e))
+            else:
+              logger.warning(exchange +" roll costs " + symbol + " " + prompt + ": " + str(e))
 
     run_ids = self.runs_db.find({}).sort("_id", -1).limit(1)
 
@@ -254,11 +262,19 @@ class Roll_Costs:
 
       del roll_costs
 
-      logger.info("Collected roll costs for " + exchange)
+      if logger == None:
+        print("Collected roll costs for " + exchange)
+      else:
+        logger.info("Collected roll costs for " + exchange)
 
       return True
     
     except Exception as e:
-      logger.error(exchange +" carry costs " + str(e))
-      logger.error("Unable to collect roll costs for " + exchange)
+      if logger == None:
+        print(exchange +" carry costs " + str(e))
+        print("Unable to collect roll costs for " + exchange)
+      else:
+        logger.error(exchange +" carry costs " + str(e))
+        logger.error("Unable to collect roll costs for " + exchange)
+
       return True

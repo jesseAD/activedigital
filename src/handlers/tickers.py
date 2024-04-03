@@ -77,8 +77,13 @@ class Tickers:
                 tickerValue['USDT/USD'] = CoinbaseHelper().get_usdt2usd_ticker(exch=Exchange(exchange='coinbase').exch())
         
             except ccxt.ExchangeError as e:
-                logger.warning(exchange +" tickers " + str(e))
-                logger.error("Unable to collect tickers for " + exchange)
+                if logger == None:
+                    print(exchange +" tickers " + str(e))
+                    print("Unable to collect tickers for " + exchange)
+                else:
+                    logger.warning(exchange +" tickers " + str(e))
+                    logger.error("Unable to collect tickers for " + exchange)
+
                 return True
         
         ticker = {
@@ -129,11 +134,19 @@ class Tickers:
 
             del ticker
 
-            logger.info("Collected tickers for " + exchange)
+            if logger == None:
+                print("Collected tickers for " + exchange)
+            else:
+                logger.info("Collected tickers for " + exchange)
 
             return True
                 
         except Exception as e:
-            logger.error(exchange +" tickers " + str(e))
-            logger.error("Unable to collect tickers for " + exchange)
+            if logger == None:
+                print(exchange +" tickers " + str(e))
+                print("Unable to collect tickers for " + exchange)
+            else:
+                logger.error(exchange +" tickers " + str(e))
+                logger.error("Unable to collect tickers for " + exchange)
+
             return True

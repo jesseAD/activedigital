@@ -68,8 +68,13 @@ class OpenOrders:
           openOrderValue += BybitHelper().get_open_orders(exch=exch, params={'category': "option"})
 
       except ccxt.ExchangeError as e:
-        logger.warning(client + " " + exchange + " " + sub_account + " open orders " + str(e))
-        logger.error("Unable to collect open orders for " + client + " " + exchange + " " + sub_account)
+        if logger == None:
+          print(client + " " + exchange + " " + sub_account + " open orders " + str(e))
+          print("Unable to collect open orders for " + client + " " + exchange + " " + sub_account)
+        else:
+          logger.warning(client + " " + exchange + " " + sub_account + " open orders " + str(e))
+          logger.error("Unable to collect open orders for " + client + " " + exchange + " " + sub_account)
+           
         return True
 
 
@@ -91,13 +96,19 @@ class OpenOrders:
         try:
           order['current_price'] = Helper().get_ticker(exch=exch, symbol=order['symbol'])['last']
         except Exception as e:
-          logger.warning(client + " " + exchange + " " + sub_account + " open orders " + str(e) + " in fetching ticker")
+          if logger == None:
+            print(client + " " + exchange + " " + sub_account + " open orders " + str(e) + " in fetching ticker")
+          else:
+            logger.warning(client + " " + exchange + " " + sub_account + " open orders " + str(e) + " in fetching ticker")
 
       else:
         try:
           order['current_price'] = ticker_value[order['symbol'].split(":")[0]]['last']
         except Exception as e:
-          logger.warning(client + " " + exchange + " " + sub_account + " open orders " + str(e) + " in reading ticker")
+          if logger == None:
+            print(client + " " + exchange + " " + sub_account + " open orders " + str(e) + " in reading ticker")
+          else:
+            logger.warning(client + " " + exchange + " " + sub_account + " open orders " + str(e) + " in reading ticker")
 
     open_orders = {
         "client": client,
@@ -146,13 +157,21 @@ class OpenOrders:
                 upsert=True,
             )
 
-        logger.info("Collected open orders for " + client + " " + exchange + " " + sub_account)
+        if logger == None:
+          print("Collected open orders for " + client + " " + exchange + " " + sub_account)
+        else:
+          logger.info("Collected open orders for " + client + " " + exchange + " " + sub_account)
         
         return True
     
     except Exception as e:
+      if logger == None:
+        print(client + " " + exchange + " " + sub_account + " open orders " + str(e) + " in persisting to database")
+        print("Unable to collect open orders for " + client + " " + exchange + " " + sub_account)
+      else:
         logger.error(client + " " + exchange + " " + sub_account + " open orders " + str(e) + " in persisting to database")
         logger.error("Unable to collect open orders for " + client + " " + exchange + " " + sub_account)
-        return True
+         
+      return True
 
     

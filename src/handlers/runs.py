@@ -44,7 +44,11 @@ class Runs:
             return True
 
         except Exception as e:
-            logger.error("Error in inserting a run: " + str(e))
+            if logger == None:
+                print("Error in inserting a run: " + str(e))
+            else:
+                logger.error("Error in inserting a run: " + str(e))
+
             return False
 
     def end(self, logger=None):
@@ -67,5 +71,9 @@ class Runs:
             return True
 
         except Exception as e:
-            logger.error("Error in enclosing a run: " + str(e))
+            if logger == None:
+                print("Error in enclosing a run: " + str(e))
+            else:
+                logger.error("Error in enclosing a run: " + str(e))
+
             return False

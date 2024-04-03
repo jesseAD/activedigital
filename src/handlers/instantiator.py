@@ -80,7 +80,10 @@ def collect_positions(client_alias, data_collector, logger, db, secrets, balance
         )
 
     except Exception as e:
-        logger.warning(client_alias + " " + data_collector.exchange + " " + data_collector.account + " Positions " + str(e))
+        if logger == None:
+            print(client_alias + " " + data_collector.exchange + " " + data_collector.account + " Positions " + str(e))
+        else:
+            logger.warning(client_alias + " " + data_collector.exchange + " " + data_collector.account + " Positions " + str(e))
 
     finally:
         attempt = 1
@@ -88,7 +91,12 @@ def collect_positions(client_alias, data_collector, logger, db, secrets, balance
 
         while(not res):
             time.sleep(timeout / 1000)
-            logger.info(client_alias + " " + data_collector.exchange + " " + data_collector.account + " Retrying Positions " + str(attempt))
+
+            if logger == None:
+                print(client_alias + " " + data_collector.exchange + " " + data_collector.account + " Retrying Positions " + str(attempt))
+            else:
+                logger.info(client_alias + " " + data_collector.exchange + " " + data_collector.account + " Retrying Positions " + str(attempt))
+
             timeout *= 2
 
             try:
@@ -102,7 +110,10 @@ def collect_positions(client_alias, data_collector, logger, db, secrets, balance
                     balance_finished = balance_finished
                 )
             except Exception as e:
-                logger.warning(client_alias + " " + data_collector.exchange + " " + data_collector.account + " Positions " + str(e))
+                if logger == None:
+                    print(client_alias + " " + data_collector.exchange + " " + data_collector.account + " Positions " + str(e))
+                else:
+                    logger.warning(client_alias + " " + data_collector.exchange + " " + data_collector.account + " Positions " + str(e))
 
             if attempt == config['ccxt'][data_collector.exchange]['retry']:
                 break
@@ -111,7 +122,10 @@ def collect_positions(client_alias, data_collector, logger, db, secrets, balance
         del positions
 
         if not res:
-            logger.error("Unable to collect positions for " + client_alias + " " + data_collector.exchange + " " + data_collector.account)
+            if logger == None:
+                print("Unable to collect positions for " + client_alias + " " + data_collector.exchange + " " + data_collector.account)
+            else:
+                logger.error("Unable to collect positions for " + client_alias + " " + data_collector.exchange + " " + data_collector.account)
 
         return res
 
@@ -129,7 +143,10 @@ def collect_balances(client_alias, data_collector, logger, db, secrets, balance_
         )
 
     except Exception as e:
-        logger.warning(client_alias + " " + data_collector.exchange + " " + data_collector.account + " Balances " + str(e))
+        if logger == None:
+            print(client_alias + " " + data_collector.exchange + " " + data_collector.account + " Balances " + str(e))
+        else:
+            logger.warning(client_alias + " " + data_collector.exchange + " " + data_collector.account + " Balances " + str(e))
 
     finally:
         attempt = 1
@@ -137,7 +154,12 @@ def collect_balances(client_alias, data_collector, logger, db, secrets, balance_
 
         while(not res):
             time.sleep(timeout / 1000)
-            logger.info(client_alias + " " + data_collector.exchange + " " + data_collector.account + " Retrying Balances " + str(attempt))
+
+            if logger == None:
+                print(client_alias + " " + data_collector.exchange + " " + data_collector.account + " Retrying Balances " + str(attempt))
+            else:
+                logger.info(client_alias + " " + data_collector.exchange + " " + data_collector.account + " Retrying Balances " + str(attempt))
+
             timeout *= 2
 
             try:
@@ -159,7 +181,10 @@ def collect_balances(client_alias, data_collector, logger, db, secrets, balance_
         del balances
 
         if not res:
-            logger.error("Unable to collect balances for " + client_alias + " " + data_collector.exchange + " " + data_collector.account)
+            if logger == None:
+                print("Unable to collect balances for " + client_alias + " " + data_collector.exchange + " " + data_collector.account)
+            else:
+                logger.error("Unable to collect balances for " + client_alias + " " + data_collector.exchange + " " + data_collector.account)
 
         balance_finished[client_alias + "_" + data_collector.exchange + "_" + data_collector.account] = True
 
@@ -179,7 +204,10 @@ def collect_open_orders(client_alias, data_collector, logger, db, secrets):
         )
 
     except Exception as e:
-        logger.warning(client_alias + " " + data_collector.exchange + " " + data_collector.account + " open orders " + str(e))
+        if logger == None:
+            print(client_alias + " " + data_collector.exchange + " " + data_collector.account + " open orders " + str(e))
+        else:
+            logger.warning(client_alias + " " + data_collector.exchange + " " + data_collector.account + " open orders " + str(e))
 
     finally:
         attempt = 1
@@ -187,7 +215,12 @@ def collect_open_orders(client_alias, data_collector, logger, db, secrets):
 
         while(not res):
             time.sleep(timeout / 1000)
-            logger.info(client_alias + " " + data_collector.exchange + " " + data_collector.account + " Retrying open orders " + str(attempt))
+
+            if logger == None:
+                print(client_alias + " " + data_collector.exchange + " " + data_collector.account + " Retrying open orders " + str(attempt))
+            else:
+                logger.info(client_alias + " " + data_collector.exchange + " " + data_collector.account + " Retrying open orders " + str(attempt))
+
             timeout *= 2
 
             try:
@@ -209,7 +242,10 @@ def collect_open_orders(client_alias, data_collector, logger, db, secrets):
         del open_orders
 
         if not res:
-            logger.error("Unable to collect open orders for " + client_alias + " " + data_collector.exchange + " " + data_collector.account)
+            if logger == None:
+                print("Unable to collect open orders for " + client_alias + " " + data_collector.exchange + " " + data_collector.account)
+            else:
+                logger.error("Unable to collect open orders for " + client_alias + " " + data_collector.exchange + " " + data_collector.account)
 
         return res
 
@@ -228,7 +264,10 @@ def collect_transactions(client_alias, data_collector, logger, db, secrets):
         )
 
     except Exception as e:
-        logger.warning(client_alias + " " + data_collector.exchange + " " + data_collector.account + " Transactions " + str(e))
+        if logger == None:
+            print(client_alias + " " + data_collector.exchange + " " + data_collector.account + " Transactions " + str(e))
+        else:
+            logger.warning(client_alias + " " + data_collector.exchange + " " + data_collector.account + " Transactions " + str(e))
 
     finally:
         attempt = 1
@@ -236,7 +275,12 @@ def collect_transactions(client_alias, data_collector, logger, db, secrets):
 
         while(not res):
             time.sleep(timeout / 1000)
-            logger.info(client_alias + " " + data_collector.exchange + " " + data_collector.account + " Retrying Transactions " + str(attempt))
+
+            if logger == None:
+                print(client_alias + " " + data_collector.exchange + " " + data_collector.account + " Retrying Transactions " + str(attempt))
+            else:
+                logger.info(client_alias + " " + data_collector.exchange + " " + data_collector.account + " Retrying Transactions " + str(attempt))
+
             timeout *= 2
 
             try:
@@ -259,7 +303,10 @@ def collect_transactions(client_alias, data_collector, logger, db, secrets):
         del transactions
 
         if not res:
-            logger.error("Unable to collect transactions for " + client_alias + " " + data_collector.exchange + " " + data_collector.account)            
+            if logger == None:
+                print("Unable to collect transactions for " + client_alias + " " + data_collector.exchange + " " + data_collector.account)            
+            else:
+                logger.error("Unable to collect transactions for " + client_alias + " " + data_collector.exchange + " " + data_collector.account)            
 
         return res
 
@@ -277,7 +324,10 @@ def collect_fills(client_alias, data_collector, logger, db, secrets):
         )
 
     except Exception as e:
-        logger.warning(client_alias + " " + data_collector.exchange + " " + data_collector.account + " Fills " + str(e))
+        if logger == None:
+            print(client_alias + " " + data_collector.exchange + " " + data_collector.account + " Fills " + str(e))
+        else:
+            logger.warning(client_alias + " " + data_collector.exchange + " " + data_collector.account + " Fills " + str(e))
 
     finally:
         attempt = 1
@@ -285,7 +335,12 @@ def collect_fills(client_alias, data_collector, logger, db, secrets):
 
         while(not res):
             time.sleep(timeout / 1000)
-            logger.info(client_alias + " " + data_collector.exchange + " " + data_collector.account + " Retrying Fills " + str(attempt))
+
+            if logger == None:
+                print(client_alias + " " + data_collector.exchange + " " + data_collector.account + " Retrying Fills " + str(attempt))
+            else:
+                logger.info(client_alias + " " + data_collector.exchange + " " + data_collector.account + " Retrying Fills " + str(attempt))
+
             timeout *= 2
 
             try:
@@ -307,7 +362,10 @@ def collect_fills(client_alias, data_collector, logger, db, secrets):
         del fills
 
         if not res:
-            logger.error("Unable to collect fills for " + client_alias + " " + data_collector.exchange + " " + data_collector.account)
+            if logger == None:
+                print("Unable to collect fills for " + client_alias + " " + data_collector.exchange + " " + data_collector.account)
+            else:
+                logger.error("Unable to collect fills for " + client_alias + " " + data_collector.exchange + " " + data_collector.account)
 
         return res
 
@@ -323,7 +381,10 @@ def collect_instruments(exch, exchange, logger, db):
         )
 
     except Exception as e:
-        logger.warning(exchange + " Instruments " + str(e))
+        if logger == None:
+            print(exchange + " Instruments " + str(e))
+        else:
+            logger.warning(exchange + " Instruments " + str(e))
 
     finally:
         attempt = 1
@@ -331,7 +392,12 @@ def collect_instruments(exch, exchange, logger, db):
 
         while(not res):
             time.sleep(timeout / 1000)
-            logger.info(exchange + " Retrying Instruments " + str(attempt))
+
+            if logger == None:
+                print(exchange + " Retrying Instruments " + str(attempt))
+            else:
+                logger.info(exchange + " Retrying Instruments " + str(attempt))
+
             timeout *= 2
 
             try:
@@ -350,7 +416,10 @@ def collect_instruments(exch, exchange, logger, db):
         del instruments
 
         if not res:
-            logger.error("Unable to collect instruments for " + exchange)
+            if logger == None:
+                print("Unable to collect instruments for " + exchange)
+            else:
+                logger.error("Unable to collect instruments for " + exchange)
 
         return res
 
@@ -365,7 +434,10 @@ def collect_tickers(exch, exchange, logger, db):
         )
 
     except Exception as e:
-        logger.warning(exchange + " Tickers " + str(e))
+        if logger == None:
+            print(exchange + " Tickers " + str(e))
+        else:
+            logger.warning(exchange + " Tickers " + str(e))
 
     finally:
         attempt = 1
@@ -373,7 +445,12 @@ def collect_tickers(exch, exchange, logger, db):
 
         while(not res):
             time.sleep(timeout / 1000)
-            logger.info(exchange + " Retrying Tickers " + str(attempt))
+
+            if logger == None:
+                print(exchange + " Retrying Tickers " + str(attempt))
+            else:
+                logger.info(exchange + " Retrying Tickers " + str(attempt))
+
             timeout *= 2
 
             try:
@@ -392,7 +469,10 @@ def collect_tickers(exch, exchange, logger, db):
         del tickers
 
         if not res:
-            logger.error("Unable to collect tickers for " + exchange)
+            if logger == None:
+                print("Unable to collect tickers for " + exchange)
+            else:
+                logger.error("Unable to collect tickers for " + exchange)
 
         return res
 
@@ -408,7 +488,10 @@ def collect_index_prices(exch, exchange, symbols, logger, db):
         )
 
     except Exception as e:
-        logger.warning(exchange + " Index Prices " + str(e))
+        if logger == None:
+            print(exchange + " Index Prices " + str(e))
+        else:
+            logger.warning(exchange + " Index Prices " + str(e))
 
     finally:
         attempt = 1
@@ -416,7 +499,12 @@ def collect_index_prices(exch, exchange, symbols, logger, db):
 
         while(not res):
             time.sleep(timeout / 1000)
-            logger.info(exchange + " Retrying Index Prices " + str(attempt))
+
+            if logger == None:
+                print(exchange + " Retrying Index Prices " + str(attempt))
+            else:
+                logger.info(exchange + " Retrying Index Prices " + str(attempt))
+
             timeout *= 2
 
             try:
@@ -436,7 +524,10 @@ def collect_index_prices(exch, exchange, symbols, logger, db):
         del index_prices
 
         if not res:
-            logger.error("Unable to collect index prices for " + exchange)
+            if logger == None:
+                print("Unable to collect index prices for " + exchange)
+            else:
+                logger.error("Unable to collect index prices for " + exchange)
             
         return res
 
@@ -453,7 +544,10 @@ def collect_borrow_rates(exch, exchange, code, logger, db, secrets):
         )
 
     except Exception as e:
-        logger.warning(exchange + " Borrow Rates " + str(e))
+        if logger == None:
+            print(exchange + " Borrow Rates " + str(e))
+        else:
+            logger.warning(exchange + " Borrow Rates " + str(e))
 
     finally:
         attempt = 1
@@ -461,7 +555,12 @@ def collect_borrow_rates(exch, exchange, code, logger, db, secrets):
 
         while(not res):
             time.sleep(timeout / 1000)
-            logger.info(exchange + " Retrying Borrow Rates " + str(attempt))
+
+            if logger == None:
+                print(exchange + " Retrying Borrow Rates " + str(attempt))
+            else:
+                logger.info(exchange + " Retrying Borrow Rates " + str(attempt))
+
             timeout *= 2
 
             try:
@@ -482,7 +581,10 @@ def collect_borrow_rates(exch, exchange, code, logger, db, secrets):
         del borrow_rates
 
         if not res:
-            logger.error("Unable to collect borrow rates for " + exchange)
+            if logger == None:
+                print("Unable to collect borrow rates for " + exchange)
+            else:
+                logger.error("Unable to collect borrow rates for " + exchange)
 
         return res
 
@@ -498,7 +600,10 @@ def collect_funding_rates(exch, exchange, symbol, logger, db):
         )
 
     except Exception as e:
-        logger.warning(exchange + " Funding Rates " + str(e))
+        if logger == None:
+            print(exchange + " Funding Rates " + str(e))
+        else:
+            logger.warning(exchange + " Funding Rates " + str(e))
 
     finally:
         attempt = 1
@@ -506,7 +611,12 @@ def collect_funding_rates(exch, exchange, symbol, logger, db):
 
         while(not res):
             time.sleep(timeout / 1000)
-            logger.info(exchange + " Retrying Funding Rates " + str(attempt))
+
+            if logger == None:
+                print(exchange + " Retrying Funding Rates " + str(attempt))
+            else:
+                logger.info(exchange + " Retrying Funding Rates " + str(attempt))
+
             timeout *= 2
 
             try:
@@ -526,7 +636,10 @@ def collect_funding_rates(exch, exchange, symbol, logger, db):
         del funding_rates
 
         if not res:
-            logger.error("Unable to collect funding rates for " + exchange)
+            if logger == None:
+                print("Unable to collect funding rates for " + exchange)
+            else:
+                logger.error("Unable to collect funding rates for " + exchange)
 
         return res
     
@@ -542,7 +655,10 @@ def collect_bids_asks(exch, exchange, symbol, logger, db):
         )
 
     except Exception as e:
-        logger.warning(exchange + " bids and asks " + str(e))
+        if logger == None:
+            print(exchange + " bids and asks " + str(e))
+        else:
+            logger.warning(exchange + " bids and asks " + str(e))
 
     finally:
         attempt = 1
@@ -550,7 +666,12 @@ def collect_bids_asks(exch, exchange, symbol, logger, db):
 
         while(not res):
             time.sleep(timeout / 1000)
-            logger.info(exchange + " Retrying Bids and Asks " + str(attempt))
+
+            if logger == None:
+                print(exchange + " Retrying Bids and Asks " + str(attempt))
+            else:
+                logger.info(exchange + " Retrying Bids and Asks " + str(attempt))
+
             timeout *= 2
 
             try:
@@ -570,7 +691,10 @@ def collect_bids_asks(exch, exchange, symbol, logger, db):
         del bid_asks
 
         if not res:
-            logger.error("Unable to collect bids and asks for " + exchange)
+            if logger == None:
+                print("Unable to collect bids and asks for " + exchange)
+            else:
+                logger.error("Unable to collect bids and asks for " + exchange)
 
         return res
     
@@ -585,7 +709,10 @@ def collect_roll_costs(exch, exchange, logger, db):
         )
 
     except Exception as e:
-        logger.warning(exchange + " roll costs " + str(e))
+        if logger == None:
+            print(exchange + " roll costs " + str(e))
+        else:
+            logger.warning(exchange + " roll costs " + str(e))
 
     finally:
         attempt = 1
@@ -593,7 +720,12 @@ def collect_roll_costs(exch, exchange, logger, db):
 
         while(not res):
             time.sleep(timeout / 1000)
-            logger.info(exchange + " Retrying Roll Costs " + str(attempt))
+
+            if logger == None:
+                print(exchange + " Retrying Roll Costs " + str(attempt))
+            else:
+                logger.info(exchange + " Retrying Roll Costs " + str(attempt))
+
             timeout *= 2
 
             try:
@@ -612,7 +744,10 @@ def collect_roll_costs(exch, exchange, logger, db):
         del roll_costs
 
         if not res:
-            logger.error("Unable to collect roll costs for " + exchange)
+            if logger == None:
+                print("Unable to collect roll costs for " + exchange)
+            else:
+                logger.error("Unable to collect roll costs for " + exchange)
 
         return res
 
@@ -628,7 +763,10 @@ def collect_mark_prices(exch, exchange, symbols, logger, db):
         )
 
     except Exception as e:
-        logger.warning(exchange + " mark prices " + str(e))
+        if logger == None:
+            print(exchange + " mark prices " + str(e))
+        else:
+            logger.warning(exchange + " mark prices " + str(e))
 
     finally:
         attempt = 1
@@ -636,7 +774,12 @@ def collect_mark_prices(exch, exchange, symbols, logger, db):
 
         while(not res):
             time.sleep(timeout / 1000)
-            logger.info(exchange + " Retrying Mark Prices " + str(attempt))
+
+            if logger == None:
+                print(exchange + " Retrying Mark Prices " + str(attempt))
+            else:
+                logger.info(exchange + " Retrying Mark Prices " + str(attempt))
+
             timeout *= 2
 
             try:
@@ -656,7 +799,10 @@ def collect_mark_prices(exch, exchange, symbols, logger, db):
         del mark_prices
 
         if not res:
-            logger.error("Unable to collect mark prices for " + exchange)
+            if logger == None:
+                print("Unable to collect mark prices for " + exchange)
+            else:
+                logger.error("Unable to collect mark prices for " + exchange)
 
         return res
 
@@ -666,23 +812,29 @@ def insert_runs(logger, db):
 def enclose_runs(logger, db):
     Runs(db, 'runs').end(logger)
 
-def collect_leverages(client_alias, data_collector, logger, db):
+def collect_leverages(client, exchange, account, logger, db):
     res = False
     leverages = Leverages(db, 'leverages')
     try:
         res = leverages.get(
-            client=client_alias,
-            exchange=data_collector.exchange,
-            account=data_collector.account,
+            client=client,
+            exchange=exchange,
+            account=account,
             logger=logger
         )
     finally:
         del leverages
         
         if res:
-            logger.info("Collected leverage for " + client_alias + " " + data_collector.exchange + " " + data_collector.account)
+            if logger == None:
+                print("Collected leverage for " + client + " " + exchange + " " + account)
+            else:
+                logger.info("Collected leverage for " + client + " " + exchange + " " + account)
         else:
-            logger.error("Unable to collect leverage for " + client_alias + " " + data_collector.exchange + " " + data_collector.account)
+            if logger == None:
+                print("Unable to collect leverage for " + client + " " + exchange + " " + account)
+            else:
+                logger.error("Unable to collect leverage for " + client + " " + exchange + " " + account)
 
         return res
 
@@ -757,5 +909,5 @@ def transactions_wrapper(thread_pool, client_alias, data_collector, logger, db, 
 def fills_wrapper(thread_pool, client_alias, data_collector, logger, db, secrets, balance_finished):
     return thread_pool.submit(collect_fills, client_alias, data_collector, logger, db, secrets)
 
-def leverages_wrapper(thread_pool, client_alias, data_collector, logger, db):
-    return thread_pool.submit(collect_leverages, client_alias, data_collector, logger, db)
+def leverages_wrapper(thread_pool, client, exchange, account, logger, db):
+    return thread_pool.submit(collect_leverages, client, exchange, account, logger, db)

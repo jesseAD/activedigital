@@ -368,11 +368,17 @@ class Fills:
                                 # )
             
                 except ccxt.ExchangeError as e:
-                    logger.warning(client + " " + exchange + " " + sub_account + " fills " + str(e) + " on " + symbol)
+                    if logger == None:
+                        print(client + " " + exchange + " " + sub_account + " fills " + str(e) + " on " + symbol)
+                    else:
+                        logger.warning(client + " " + exchange + " " + sub_account + " fills " + str(e) + " on " + symbol)
                     pass
                 
                 except Exception as e:
-                    logger.warning(client + " " + exchange + " " + sub_account + " fills " + str(e) + " on " + symbol)
+                    if logger == None:
+                        print(client + " " + exchange + " " + sub_account + " fills " + str(e) + " on " + symbol)
+                    else:
+                        logger.warning(client + " " + exchange + " " + sub_account + " fills " + str(e) + " on " + symbol)
                
         fills = []
 
@@ -419,11 +425,19 @@ class Fills:
 
             del fills
 
-            logger.info("Collected fills for " + client + " " + exchange + " " + sub_account)
+            if logger == None:
+                print("Collected fills for " + client + " " + exchange + " " + sub_account)
+            else:
+                logger.info("Collected fills for " + client + " " + exchange + " " + sub_account)
 
             return True
 
         except Exception as e:
-            logger.error(client + " " + exchange + " " + sub_account + " fills " + str(e))
-            logger.error("Unable to collect fills for " + client + " " + exchange + " " + sub_account)
+            if logger == None:
+                print(client + " " + exchange + " " + sub_account + " fills " + str(e))
+                print("Unable to collect fills for " + client + " " + exchange + " " + sub_account)
+            else:
+                logger.error("Unable to collect fills for " + client + " " + exchange + " " + sub_account)
+                logger.error(client + " " + exchange + " " + sub_account + " fills " + str(e))
+
             return True

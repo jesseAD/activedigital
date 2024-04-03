@@ -66,7 +66,7 @@ def public_pool(data_collectors, exchanges, symbols):
             pass
     
     for thread in concurrent.futures.as_completed(threads):
-        print(thread.result())
+        # print(thread.result())
         thread.cancel()
 
     db1.client.close()
@@ -86,7 +86,7 @@ def private_pool(data_collectors, accounts_group, balance_finished):
                 threads.append(collector(executors[i], accounts_group[j].client, accounts_group[j], logger, db2, secrets, balance_finished))
     
     for thread in concurrent.futures.as_completed(threads):
-        print(thread.result())
+        # print(thread.result())
         thread.cancel()
     
     db2.client.close()
@@ -100,10 +100,10 @@ def leverage_pool(leverage_collector, accounts_group):
     threads = []
     for i in range(config['dask']['threadPoolsPerWorker']):
         for j in range(int(i * len(accounts_group) / config['dask']['threadPoolsPerWorker']), int((i+1) * len(accounts_group) / config['dask']['threadPoolsPerWorker'])):
-            threads.append(leverage_collector(executors[i], accounts_group[j].client, accounts_group[j], logger, db3))
+            threads.append(leverage_collector(executors[i], accounts_group[j].client, accounts_group[j].exchange, accounts_group[j].account, logger, db3))
     
     for thread in concurrent.futures.as_completed(threads):
-        print(thread.result())
+        # print(thread.result())
         thread.cancel()
     
     db3.client.close()

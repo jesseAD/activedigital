@@ -181,12 +181,20 @@ class BorrowRates:
                             for item in borrowRatesValue:
                                 item['scalar'] = scalar 
                 except ccxt.BadSymbol as e:
-                    logger.warning(exchange +  " borrow rates " + str(e))
-                    logger.error("Unable to collect borrow rates for " + exchange)
+                    if logger == None:
+                        print(exchange +  " borrow rates " + str(e))
+                        print("Unable to collect borrow rates for " + exchange)
+                    else:
+                        logger.warning(exchange +  " borrow rates " + str(e))
+                        logger.error("Unable to collect borrow rates for " + exchange)
+
                     return True
         
             except ccxt.AuthenticationError as e:
-                logger.warning(exchange + " borrow rates " + str(e))
+                if logger == None:
+                    print(exchange + " borrow rates " + str(e))
+                else:
+                    logger.warning(exchange + " borrow rates " + str(e))
 
                 for _client in config['clients']:
                     if exchange in config['clients'][_client]['subaccounts']:
@@ -292,11 +300,20 @@ class BorrowRates:
                                                 item["nextBorrowRate"] = float(borrow_rate) * 24 * 365 / scalar
                                                 item['scalar'] = scalar  
                                 except ccxt.ExchangeError as e:
-                                    logger.warning(exchange + " borrow rates " + str(e))
-                                    logger.error("Unable to collect borrow rates for " + exchange)
+                                    if logger == None:
+                                        print(exchange + " borrow rates " + str(e))
+                                        print("Unable to collect borrow rates for " + exchange)
+                                    else:
+                                        logger.warning(exchange + " borrow rates " + str(e))
+                                        logger.error("Unable to collect borrow rates for " + exchange)
+
                                     return True
                                 except ccxt.NetworkError as e:  
-                                    logger.warning(exchange + " borrow rates " + str(e))
+                                    if logger == None:
+                                        print(exchange + " borrow rates " + str(e))
+                                    else:
+                                        logger.warning(exchange + " borrow rates " + str(e))
+
                                     return False
 
                                 break
@@ -306,11 +323,20 @@ class BorrowRates:
                 pass
 
             except ccxt.ExchangeError as e:
-                logger.warning(exchange + " borrow rates " + str(e))
-                logger.error("Unable to collect borrow rates for " + exchange)
+                if logger == None:
+                    print(exchange + " borrow rates " + str(e))
+                    print("Unable to collect borrow rates for " + exchange)
+                else:
+                    logger.warning(exchange + " borrow rates " + str(e))
+                    logger.error("Unable to collect borrow rates for " + exchange)
+
                 return True
             except ccxt.NetworkError as e:
-                logger.warning(exchange + " borrow rates " + str(e))
+                if logger == None:
+                    print(exchange + " borrow rates " + str(e))
+                else:
+                    logger.warning(exchange + " borrow rates " + str(e))
+
                 return False
         
         if exchange == "okx" and vipLoanRatesValue is None:
@@ -332,17 +358,31 @@ class BorrowRates:
                 vipLoanRatesValue['timestamp'] = int(datetime.timestamp(datetime.now(timezone.utc)) * 1000)
 
             except ccxt.NetworkError as e:
-                logger.warning(exchange + " borrow rates " + str(e))
+                if logger == None:
+                    print(exchange + " borrow rates " + str(e))
+                else:
+                    logger.warning(exchange + " borrow rates " + str(e))
             
             except ccxt.ExchangeError as e:
-                logger.warning(exchange + " borrow rates " + str(e))
+                if logger == None:
+                    print(exchange + " borrow rates " + str(e))
+                else:
+                    logger.warning(exchange + " borrow rates " + str(e))
             
             except Exception as e:
-                logger.warning(exchange + " borrow rates " + str(e))
+                if logger == None:
+                    print(exchange + " borrow rates " + str(e))
+                else:
+                    logger.warning(exchange + " borrow rates " + str(e))
 
         if len(borrowRatesValue) <= 0 and (vipLoanRatesValue == {} or vipLoanRatesValue is None):
-            logger.warning("Empty borrow rates for " + exchange)
-            logger.error("Unable to collect borrow rates for " + exchange)
+            if logger == None:
+                print("Empty borrow rates for " + exchange)
+                print("Unable to collect borrow rates for " + exchange)
+            else:
+                logger.warning("Empty borrow rates for " + exchange)
+                logger.error("Unable to collect borrow rates for " + exchange)
+
             return True
 
         borrow_rates = []
@@ -409,11 +449,19 @@ class BorrowRates:
 
             del borrow_rates
 
-            logger.info("Collected borrow rates for " + exchange)
+            if logger == None:
+                print("Collected borrow rates for " + exchange)
+            else:
+                logger.info("Collected borrow rates for " + exchange)
 
             return True
 
         except Exception as e:
-            logger.error(exchange +" borrow rates " + str(e))
-            logger.error("Unable to collect borrow rates for " + exchange)
+            if logger == None:
+                print(exchange +" borrow rates " + str(e))
+                print("Unable to collect borrow rates for " + exchange)
+            else:
+                logger.error(exchange +" borrow rates " + str(e))
+                logger.error("Unable to collect borrow rates for " + exchange)
+
             return True
