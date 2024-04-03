@@ -47,32 +47,31 @@ def get_expiry_date_from_prompt_month_code(prompt_month_code):
   return get_last_friday_this_month(datetime(year=year, month=month, day=1, tzinfo=timezone.utc))
 
 def get_last_friday_of_next_quarter(date):
-    local_zone = date.tzinfo
-    target_zone = tz.gettz('Hongkong')
+  local_zone = date.tzinfo
+  target_zone = tz.gettz('Hongkong')
 
-    date_hk = date.astimezone(target_zone)
-    date_hk = date_hk.replace(hour=16, minute=0)
+  date_hk = date.astimezone(target_zone)
+  date_hk = date_hk.replace(hour=16, minute=0)
 
-    quarter = (date_hk.month - 1) // 3 + 1
+  quarter = (date_hk.month - 1) // 3 + 1
 
-    next_quarter = (quarter % 4) + 1
+  next_quarter = (quarter % 4) + 1
 
-    start_next_quarter = date_hk.replace(month=3*(next_quarter-1) + 3, day=1)
-    
-    end_next_quarter = start_next_quarter + relativedelta.relativedelta(day=1, months=3)
-    
-    last_friday_next_quarter = end_next_quarter + relativedelta.relativedelta(day=31, weekday=FR(-1))
-    
-    local_time = last_friday_next_quarter.astimezone(local_zone)
-    
-    last_friday_quarter = get_last_friday_of_quarter(date)
-    
-    diff = (local_time - last_friday_quarter).days
+  start_next_quarter = date_hk.replace(month=3*(next_quarter-1) + 3, day=1)
+  
+  last_friday_next_quarter = start_next_quarter + relativedelta.relativedelta(day=31, weekday=FR(-1))
+  
+  local_time = last_friday_next_quarter.astimezone(local_zone)
+  
+  last_friday_quarter = get_last_friday_of_quarter(date)
+  
+  diff = (last_friday_next_quarter - last_friday_quarter).days
 
-    if diff <= 0:
-        local_time = get_last_friday_of_next_quarter(end_next_quarter)
-    
-    return local_time
+  if diff <= 0:
+      next_month = date + relativedelta.relativedelta(months=1)
+      local_time = get_last_friday_of_next_quarter(next_month)
+  
+  return local_time
 
 def get_last_friday_of_quarter(date):
   local_zone = date.tzinfo
