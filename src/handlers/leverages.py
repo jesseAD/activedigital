@@ -41,7 +41,11 @@ class Leverages:
                 try: 
                     latest_ticker = item['ticker_value']
                 except Exception as e:
-                    logger.error(client + " " + exchange + " " + account + " leverages " + str(e))
+                    if logger == None:
+                        print(client + " " + exchange + " " + account + " leverages " + str(e))
+                    else:
+                        logger.error(client + " " + exchange + " " + account + " leverages " + str(e))
+
                     return False  
                 
             if client:
@@ -93,7 +97,11 @@ class Leverages:
                     try:
                         latest_position = item['position_value']
                     except Exception as e:
-                        logger.error(client + " " + exchange + " " + account + " leverages " + str(e))
+                        if logger == None:
+                            print(client + " " + exchange + " " + account + " leverages " + str(e))
+                        else:
+                            logger.error(client + " " + exchange + " " + account + " leverages " + str(e))
+
                         return False
                 
                 try:
@@ -102,7 +110,11 @@ class Leverages:
                     for pair in latest_position:
                         max_notional += max([abs(item['notional']) for item in pair])
                 except Exception as e:
-                    logger.error(client + " " + exchange + " " + account + " leverages " + str(e))
+                    if logger == None:
+                        print(client + " " + exchange + " " + account + " leverages " + str(e))
+                    else:
+                        logger.error(client + " " + exchange + " " + account + " leverages " + str(e))
+
                     return False
                 
             else:
@@ -149,7 +161,11 @@ class Leverages:
                     try:
                         latest_position = item['position_value']
                     except Exception as e:
-                        logger.error(client + " " + exchange + " " + account + " leverages " + str(e))
+                        if logger == None:
+                            print(client + " " + exchange + " " + account + " leverages " + str(e))
+                        else:
+                            logger.error(client + " " + exchange + " " + account + " leverages " + str(e))
+
                         return False
                     
                 try:
@@ -158,7 +174,11 @@ class Leverages:
                     for item in latest_position:
                         max_notional += abs(float(item['notional']))
                 except Exception as e:
-                    logger.error(client + " " + exchange + " " + account + " leverages " + str(e))
+                    if logger == None:
+                        print(client + " " + exchange + " " + account + " leverages " + str(e))
+                    else:
+                        logger.error(client + " " + exchange + " " + account + " leverages " + str(e))
+
                     return False
             
             balance_value = self.balances_db.aggregate([
@@ -204,7 +224,11 @@ class Leverages:
                 try: 
                     latest_balance = item['balance_value']
                 except Exception as e:
-                    logger.error(client + " " + exchange + " " + account + " leverages " + str(e))
+                    if logger == None:
+                        print(client + " " + exchange + " " + account + " leverages " + str(e))
+                    else:
+                        logger.error(client + " " + exchange + " " + account + " leverages " + str(e))
+
                     return False
                 
             base_currency = config["clients"][client]["subaccounts"][exchange]["base_ccy"]
@@ -218,7 +242,11 @@ class Leverages:
                 else:
                     balance_in_base_currency = latest_balance['base'] * (latest_ticker['USDT/USD']['last'] * latest_ticker[base_currency + '/USDT']['last'])
             except Exception as e:
-                logger.error(client + " " + exchange + " " + account + " leverages " + str(e))
+                if logger == None:
+                    print(client + " " + exchange + " " + account + " leverages " + str(e))
+                else:
+                    logger.error(client + " " + exchange + " " + account + " leverages " + str(e))
+
                 return False
 
             leverage_value = {
@@ -235,7 +263,11 @@ class Leverages:
                 else:
                     leverage_value['leverage'] = max_notional / balance_in_base_currency
             except Exception as e:
-                logger.error(client + " " + exchange + " " + account + " leverages " + str(e))
+                if logger == None:
+                    print(client + " " + exchange + " " + account + " leverages " + str(e))
+                else:
+                    logger.error(client + " " + exchange + " " + account + " leverages " + str(e))
+
                 return False
             
             leverage_value["runid"] = latest_run_id
@@ -260,5 +292,9 @@ class Leverages:
             return True
         
         except Exception as e:
-            logger.error(client + " " + exchange + " " + account + " leverages " + str(e))
+            if logger == None:
+                print(client + " " + exchange + " " + account + " leverages " + str(e))
+            else:
+                logger.error(client + " " + exchange + " " + account + " leverages " + str(e))
+
             return False

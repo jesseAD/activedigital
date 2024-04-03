@@ -1018,8 +1018,13 @@ class Transactions:
                             )
     
             except ccxt.ExchangeError as e:
-                logger.error(client + " " + exchange + " " + sub_account + " transactions " + str(e))
-                logger.error("Unable to collect transactions for " + client + " " + exchange + " " + sub_account)
+                if logger == None:
+                    print(client + " " + exchange + " " + sub_account + " transactions " + str(e))
+                    print("Unable to collect transactions for " + client + " " + exchange + " " + sub_account)
+                else:
+                    logger.error(client + " " + exchange + " " + sub_account + " transactions " + str(e))
+                    logger.error("Unable to collect transactions for " + client + " " + exchange + " " + sub_account)
+
                 return True
         
         tickers = list(self.tickers_db.find({"venue": exchange}))[0]['ticker_value']
@@ -1316,7 +1321,10 @@ class Transactions:
                     })
         
         except Exception as e:
-            logger.warning(client + " " + exchange + " " + sub_account + " MTD PnL " + str(e))
+            if logger == None:
+                print(client + " " + exchange + " " + sub_account + " MTD PnL " + str(e))
+            else:
+                logger.warning(client + " " + exchange + " " + sub_account + " MTD PnL " + str(e))
 
         
         del transaction_value
@@ -1347,11 +1355,19 @@ class Transactions:
 
             del transaction
 
-            logger.info("Collected transactions for " + client + " " + exchange + " " + sub_account)
+            if logger == None:
+                print("Collected transactions for " + client + " " + exchange + " " + sub_account)
+            else:
+                logger.info("Collected transactions for " + client + " " + exchange + " " + sub_account)
             
             return True
 
         except Exception as e:
-            logger.error(client + " " + exchange + " " + sub_account + " transactions " + str(e))
-            logger.error("Unable to collect transactions for " + client + " " + exchange + " " + sub_account)
+            if logger == None:
+                print(client + " " + exchange + " " + sub_account + " transactions " + str(e))
+                print("Unable to collect transactions for " + client + " " + exchange + " " + sub_account)
+            else:
+                logger.error(client + " " + exchange + " " + sub_account + " transactions " + str(e))
+                logger.error("Unable to collect transactions for " + client + " " + exchange + " " + sub_account)
+
             return True

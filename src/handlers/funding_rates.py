@@ -376,7 +376,10 @@ class FundingRates:
                         self.short_funding_db.insert_many(short_fundings)
 
                     except Exception as e:
-                        logger.warning(exchange + " spot funding " + str(e))
+                        if logger == None:
+                            print(exchange + " spot funding " + str(e))
+                        else:
+                            logger.warning(exchange + " spot funding " + str(e))
 
                 else:
                     if exchange == "binance":
@@ -434,11 +437,20 @@ class FundingRates:
                     pass
             
             except ccxt.ExchangeError as e:
-                logger.warning(exchange + " funding rates " + str(e))
-                logger.error("Unable to collect funding rates for " + exchange)
+                if logger == None:
+                    print(exchange + " funding rates " + str(e))
+                    print("Unable to collect funding rates for " + exchange)
+                else:
+                    logger.warning(exchange + " funding rates " + str(e))
+                    logger.error("Unable to collect funding rates for " + exchange)
+
                 return True
             except ccxt.NetworkError as e:
-                logger.warning(exchange + " funding rates " + str(e))
+                if logger == None:
+                    print(exchange + " funding rates " + str(e))
+                else:
+                    logger.warning(exchange + " funding rates " + str(e))
+
                 return False
 
         if len(fundingRatesValue) <= 0:
@@ -480,8 +492,13 @@ class FundingRates:
         del fundingRatesValue
 
         if len(funding_rates) <= 0:
-            logger.info("Empty funding rates for " + exchange)
-            logger.error("Unable to collect funding rates for " + exchange)
+            if logger == None:
+                print("Empty funding rates for " + exchange)
+                print("Unable to collect funding rates for " + exchange)
+            else:
+                logger.info("Empty funding rates for " + exchange)
+                logger.error("Unable to collect funding rates for " + exchange)
+
             return True
 
         try:
@@ -489,11 +506,19 @@ class FundingRates:
 
             del funding_rates
 
-            logger.info("Collected funding rates for " + exchange)
+            if logger == None:
+                print("Collected funding rates for " + exchange)
+            else:
+                logger.info("Collected funding rates for " + exchange)
 
             return True
 
         except Exception as e:
-            logger.error(exchange + " funding rates " + str(e))
-            logger.error("Unable to collect funding rates for " + exchange)
+            if logger == None:
+                print(exchange + " funding rates " + str(e))
+                print("Unable to collect funding rates for " + exchange)
+            else:
+                logger.error(exchange + " funding rates " + str(e))
+                logger.error("Unable to collect funding rates for " + exchange)
+
             return True

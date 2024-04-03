@@ -79,11 +79,20 @@ class IndexPrices:
                     indexPriceValue = {symbols: res}
             
             except ccxt.ExchangeError as e:
-                logger.warning(exchange +" index prices " + str(e))
-                logger.error("Unable to collect index prices for " + exchange)
+                if logger == None:
+                    print(exchange +" index prices " + str(e))
+                    print("Unable to collect index prices for " + exchange)
+                else:
+                    logger.warning(exchange +" index prices " + str(e))
+                    logger.error("Unable to collect index prices for " + exchange)
+
                 return True
             except ccxt.NetworkError as e:
-                logger.warning(exchange +" index prices " + str(e))
+                if logger == None:
+                    print(exchange +" index prices " + str(e))
+                else:
+                    logger.warning(exchange +" index prices " + str(e))
+
                 return False
         
         run_ids = self.runs_db.find({}).sort('_id', -1).limit(1)
@@ -122,11 +131,19 @@ class IndexPrices:
 
             del index_price
 
-            logger.info("Collected index prices for " + exchange)
+            if logger == None:
+                print("Collected index prices for " + exchange)
+            else:
+                logger.info("Collected index prices for " + exchange)
 
             return True
                 
         except Exception as e:
-            logger.error(exchange +" index prices " + str(e))
-            logger.error("Unable to collect index prices for " + exchange)
+            if logger == None:
+                print(exchange +" index prices " + str(e))
+                print("Unable to collect index prices for " + exchange)
+            else:
+                logger.error(exchange +" index prices " + str(e))
+                logger.error("Unable to collect index prices for " + exchange)
+
             return True

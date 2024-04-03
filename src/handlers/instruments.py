@@ -77,8 +77,13 @@ class Instruments:
                     instrumentValue = BybitHelper().get_instruments(exch=exch)
             
             except ccxt.ExchangeError as e:
-                logger.warning(exchange +" instruments " + str(e))
-                logger.error("Unable to collect instruments for " + exchange)
+                if logger == None:
+                    print(exchange +" instruments " + str(e))
+                    print("Unable to collect instruments for " + exchange)
+                else:
+                    logger.warning(exchange +" instruments " + str(e))
+                    logger.error("Unable to collect instruments for " + exchange)
+
                 return True
 
         instrument = {
@@ -128,12 +133,20 @@ class Instruments:
 
             del instrument
 
-            logger.info("Collected instruments for " + exchange)
+            if logger == None:
+                print("Collected instruments for " + exchange)
+            else:
+                logger.info("Collected instruments for " + exchange)
 
             return True
 
         except Exception as e:
-            logger.error(exchange +" instruments " + str(e))
-            logger.error("Unable to collect instruments for " + exchange)
+            if logger == None:
+                print(exchange +" instruments " + str(e))
+                print("Unable to collect instruments for " + exchange)
+            else:
+                logger.error(exchange +" instruments " + str(e))
+                logger.error("Unable to collect instruments for " + exchange)
+
             return True
 

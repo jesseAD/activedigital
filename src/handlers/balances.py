@@ -104,8 +104,12 @@ class Balances:
                     balanceValue = BybitHelper().get_balances(exch=exch)
 
             except ccxt.ExchangeError as e:
-                logger.warning(client + " " + exchange + " " + sub_account + " balances " + str(e))
-                logger.error("Unable to collect balances for " + client + " " + exchange + " " + sub_account)
+                if logger == None:
+                    print(client + " " + exchange + " " + sub_account + " balances " + str(e))
+                    print("Unable to collect balances for " + client + " " + exchange + " " + sub_account)
+                else:
+                    logger.warning(client + " " + exchange + " " + sub_account + " balances " + str(e))
+                    logger.error("Unable to collect balances for " + client + " " + exchange + " " + sub_account)
                 return True
 
         balanceValue = {_key: balanceValue[_key] for _key in balanceValue if balanceValue[_key] != 0.0}
@@ -128,13 +132,20 @@ class Balances:
                     )
 
                     if cross_ratio == 0:
-                        logger.error(client + " " + exchange + " " + sub_account + " balances: skipped as zero ticker price")
-                        logger.error("Unable to collect balances for " + client + " " + exchange + " " + sub_account)
+                        if logger == None:
+                            print(client + " " + exchange + " " + sub_account + " balances: skipped as zero ticker price")
+                            print("Unable to collect balances for " + client + " " + exchange + " " + sub_account)
+                        else:
+                            logger.error(client + " " + exchange + " " + sub_account + " balances: skipped as zero ticker price")
+                            logger.error("Unable to collect balances for " + client + " " + exchange + " " + sub_account)
                         return True
                 
                     base_balance += float(item['balance']) * cross_ratio
             except ccxt.ExchangeError as e:
-                logger.warning(client + " " + exchange + " " + sub_account + " balances " + str(e))
+                if logger == None:
+                    print(client + " " + exchange + " " + sub_account + " balances " + str(e))
+                else:
+                    logger.warning(client + " " + exchange + " " + sub_account + " balances " + str(e))
                 pass
         else:
             for _key, _value in balanceValue.items():
@@ -145,8 +156,12 @@ class Balances:
                 )
 
                 if cross_ratio == 0:
-                    logger.error(client + " " + exchange + " " + sub_account + " balances: skipped as zero ticker price")
-                    logger.error("Unable to collect balances for " + client + " " + exchange + " " + sub_account)
+                    if logger == None:
+                        print(client + " " + exchange + " " + sub_account + " balances: skipped as zero ticker price")
+                        print("Unable to collect balances for " + client + " " + exchange + " " + sub_account)
+                    else:
+                        logger.error(client + " " + exchange + " " + sub_account + " balances: skipped as zero ticker price")
+                        logger.error("Unable to collect balances for " + client + " " + exchange + " " + sub_account)
                     return True
                 
                 base_balance += _value * cross_ratio
@@ -266,13 +281,20 @@ class Balances:
                     upsert=True,
                 )
 
-            logger.info("Collected balances for " + client + " " + exchange + " " + sub_account)
+            if logger == None:
+                print("Collected balances for " + client + " " + exchange + " " + sub_account)
+            else:
+                logger.info("Collected balances for " + client + " " + exchange + " " + sub_account)
 
             return True
         
         except Exception as e:
-            logger.error(client + " " + exchange + " " + sub_account + " balances " + str(e))
-            logger.error("Unable to collect balances for " + client + " " + exchange + " " + sub_account)
+            if logger == None:
+                print(client + " " + exchange + " " + sub_account + " balances " + str(e))
+                print("Unable to collect balances for " + client + " " + exchange + " " + sub_account)
+            else:
+                logger.error(client + " " + exchange + " " + sub_account + " balances " + str(e))
+                logger.error("Unable to collect balances for " + client + " " + exchange + " " + sub_account)
             return True
 
     

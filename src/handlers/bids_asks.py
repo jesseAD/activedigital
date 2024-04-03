@@ -98,11 +98,19 @@ class Bids_Asks:
                     } 
         
             except ccxt.ExchangeError as e:
-                logger.warning(exchange +" bids and asks " + str(e))
-                logger.error("Unable to collect bids and asks for " + exchange)
+                if logger == None:
+                    print(exchange +" bids and asks " + str(e))
+                    print("Unable to collect bids and asks for " + exchange)
+                else:
+                    logger.warning(exchange +" bids and asks " + str(e))
+                    logger.error("Unable to collect bids and asks for " + exchange)
                 return True
             except ccxt.NetworkError as e:
-                logger.warning(exchange +" bids and asks " + str(e))
+                if logger == None:
+                    print(exchange +" bids and asks " + str(e))
+                else:
+                    logger.warning(exchange +" bids and asks " + str(e))
+
                 return False
 
         run_ids = self.runs_db.find({}).sort("_id", -1).limit(1)
@@ -136,11 +144,19 @@ class Bids_Asks:
         try:
             self.bid_asks_db.insert_one(new_value)
 
-            logger.info("Collected bids and asks for " + exchange)
+            if logger == None:
+                print("Collected bids and asks for " + exchange)
+            else:
+                logger.info("Collected bids and asks for " + exchange)
 
             return True
         
         except Exception as e:
-            logger.error(exchange +" bids and asks " + str(e))
-            logger.error("Unable to collect bids and asks for " + exchange)
+            if logger == None:
+                print(exchange +" bids and asks " + str(e))
+                print("Unable to collect bids and asks for " + exchange)
+            else:
+                logger.error(exchange +" bids and asks " + str(e))
+                logger.error("Unable to collect bids and asks for " + exchange)
+
             return True
