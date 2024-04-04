@@ -381,10 +381,10 @@ clients:
     split_positions: True
     subaccounts:
       okx:
-        base_ccy: USDT
+        base_ccy: BTC
         subbasis1:
           margin_mode: non_portfolio
-          hedged_exclusion_positive: {'USDT': 0,'BTC': 0}
+          hedged_exclusion_positive: {'BTC': 20.2}
           hedged_exclusion_negative: {'USDT': 0,'BTC': 0}
       bybit:
         base_ccy: USD
@@ -393,10 +393,10 @@ clients:
           hedged_exclusion_positive: {'USDT': 0,'BTC': 0}
           hedged_exclusion_negative: {'USDT': 0,'BTC': 0}
       binance:
-        base_ccy: USDT
+        base_ccy: BTC
         subbasis1:
           margin_mode: portfolio
-          hedged_exclusion_positive: {'USDT': 0,'BTC': 0}
+          hedged_exclusion_positive: {'BTC': 20}
           hedged_exclusion_negative: {'USDT': 0,'BTC': 0}  
   wilbur:
     split_positions: True
