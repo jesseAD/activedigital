@@ -100,7 +100,7 @@ ENV/
 
 
 # vscode
-.vscode
+.vscode/
 
 
 tests/test.py

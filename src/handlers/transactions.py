@@ -1197,6 +1197,18 @@ class Transactions:
                             )
                             item['funding'] = float(item['funding']) * Helper().calc_cross_ccy_ratio(item['currency'], config['transactions']['convert_ccy'], tickers)
 
+                        if item['cashFlow'] != '':
+                            item['cashFlow_origin'] = float(item['cashFlow'])
+                            item['cashFlow_base'] = (
+                                float(item["cashFlow"]) * 
+                                Helper().calc_cross_ccy_ratio(
+                                    item['currency'],
+                                    config["clients"][client]["subaccounts"][exchange]["base_ccy"], 
+                                    tickers
+                                )
+                            )
+                            item['cashFlow'] = float(item['cashFlow']) * Helper().calc_cross_ccy_ratio(item['currency'], config['transactions']['convert_ccy'], tickers)
+
                         new_value = {
                             "client": client,
                             "venue": exchange,
