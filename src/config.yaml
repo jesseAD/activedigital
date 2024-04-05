@@ -422,6 +422,7 @@ clients:
   nifty2:
     split_positions: True
 
+    subaccounts:
       bybit:
         subbasis2:
           base_ccy: BTC
