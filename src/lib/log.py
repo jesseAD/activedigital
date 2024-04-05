@@ -54,7 +54,7 @@ class Log:
                 current_date = datetime.now(timezone.utc)
                 creation_date = datetime.strptime(zip_file, "%Y-%m-%d-%H-%M-%S.zip").replace(tzinfo=timezone.utc)
 
-                if (current_date - creation_date).days > 30:
+                if (current_date - creation_date).days > config['logging']['max_date']:
                     os.remove(zip_file)
 
 
