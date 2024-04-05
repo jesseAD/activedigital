@@ -231,7 +231,7 @@ class Leverages:
 
                     return False
                 
-            base_currency = config["clients"][client]["subaccounts"][exchange]["base_ccy"]
+            base_currency = config["clients"][client]["subaccounts"][exchange][account]["base_ccy"]
 
             balance_in_base_currency = 0
             try:

@@ -1074,7 +1074,7 @@ class Transactions:
                             float(item["fee"]) * 
                             Helper().calc_cross_ccy_ratio(
                                 item['ccy'],
-                                config["clients"][client]["subaccounts"][exchange]["base_ccy"], 
+                                config["clients"][client]["subaccounts"][exchange][sub_account]["base_ccy"], 
                                 tickers
                             )
                         )
@@ -1086,7 +1086,7 @@ class Transactions:
                             float(item["sz"]) * 
                             Helper().calc_cross_ccy_ratio(
                                 item['ccy'],
-                                config["clients"][client]["subaccounts"][exchange]["base_ccy"], 
+                                config["clients"][client]["subaccounts"][exchange][sub_account]["base_ccy"], 
                                 tickers
                             )
                         )
@@ -1098,7 +1098,7 @@ class Transactions:
                             float(item["pnl"]) * 
                             Helper().calc_cross_ccy_ratio(
                                 item['ccy'],
-                                config["clients"][client]["subaccounts"][exchange]["base_ccy"], 
+                                config["clients"][client]["subaccounts"][exchange][sub_account]["base_ccy"], 
                                 tickers
                             )
                         )
@@ -1138,7 +1138,7 @@ class Transactions:
                             float(item["income"]) * 
                             Helper().calc_cross_ccy_ratio(
                                 item['asset'],
-                                config["clients"][client]["subaccounts"][exchange]["base_ccy"], 
+                                config["clients"][client]["subaccounts"][exchange][sub_account]["base_ccy"], 
                                 tickers
                             )
                         )
@@ -1179,7 +1179,7 @@ class Transactions:
                                 float(item["fee"]) * 
                                 Helper().calc_cross_ccy_ratio(
                                     item['currency'],
-                                    config["clients"][client]["subaccounts"][exchange]["base_ccy"], 
+                                    config["clients"][client]["subaccounts"][exchange][sub_account]["base_ccy"], 
                                     tickers
                                 )
                             )
@@ -1191,7 +1191,7 @@ class Transactions:
                                 float(item["funding"]) * 
                                 Helper().calc_cross_ccy_ratio(
                                     item['currency'],
-                                    config["clients"][client]["subaccounts"][exchange]["base_ccy"], 
+                                    config["clients"][client]["subaccounts"][exchange][sub_account]["base_ccy"], 
                                     tickers
                                 )
                             )
@@ -1204,7 +1204,7 @@ class Transactions:
                                     float(item["cashFlow"]) * 
                                     Helper().calc_cross_ccy_ratio(
                                         item['currency'],
-                                        config["clients"][client]["subaccounts"][exchange]["base_ccy"], 
+                                        config["clients"][client]["subaccounts"][exchange][sub_account]["base_ccy"], 
                                         tickers
                                     )
                                 )

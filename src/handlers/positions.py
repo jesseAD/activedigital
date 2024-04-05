@@ -269,7 +269,7 @@ class Positions:
                             if value["quote"] == "USD":
                                 cross_ratio = Helper().calc_cross_ccy_ratio(
                                     value["base"],
-                                    config["clients"][client]["subaccounts"][exchange]["base_ccy"],
+                                    config["clients"][client]["subaccounts"][exchange][sub_account]["base_ccy"],
                                     tickers,
                                 )
                                 if cross_ratio == 0:
@@ -304,9 +304,7 @@ class Positions:
                             if value["quote"] == "USD":
                                 cross_ratio = Helper().calc_cross_ccy_ratio(
                                     value["base"],
-                                    config["clients"][client]["subaccounts"][exchange][
-                                        "base_ccy"
-                                    ],
+                                    config["clients"][client]["subaccounts"][exchange][sub_account]["base_ccy"],
                                     tickers,
                                 )
                                 if cross_ratio == 0:
