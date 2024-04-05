@@ -128,7 +128,7 @@ class Balances:
                 wallet_balances = Helper().get_wallet_balances(exch=exch)
                 for item in wallet_balances:
                     cross_ratio = Helper().calc_cross_ccy_ratio(
-                        "BTC", config["clients"][client]["subaccounts"][exchange]["base_ccy"], ticker_value
+                        "BTC", config["clients"][client]["subaccounts"][exchange][sub_account]["base_ccy"], ticker_value
                     )
 
                     if cross_ratio == 0:
@@ -151,7 +151,7 @@ class Balances:
             for _key, _value in balanceValue.items():
                 cross_ratio = Helper().calc_cross_ccy_ratio(
                     _key,
-                    config["clients"][client]["subaccounts"][exchange]["base_ccy"],
+                    config["clients"][client]["subaccounts"][exchange][sub_account]["base_ccy"],
                     ticker_value,
                 )
 
@@ -218,7 +218,7 @@ class Balances:
             latest_base_ccy = item['base_ccy']
 
         balance_change = 0
-        if latest_base_ccy == config["clients"][client]["subaccounts"][exchange]["base_ccy"]:
+        if latest_base_ccy == config["clients"][client]["subaccounts"][exchange][sub_account]["base_ccy"]:
             balance_change = base_balance - latest_balance
             try:
                 balance_change = balance_change / abs((latest_balance if latest_balance != 0.0 else base_balance))
@@ -233,7 +233,7 @@ class Balances:
             "repayments": repayments,
             "loan_pools": loan_pools,
             "balance_change": balance_change,
-            "base_ccy": config["clients"][client]["subaccounts"][exchange]["base_ccy"],
+            "base_ccy": config["clients"][client]["subaccounts"][exchange][sub_account]["base_ccy"],
             "active": True,
             "entry": False,
             "exit": False,
