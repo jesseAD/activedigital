@@ -394,7 +394,7 @@ clients:
           hedged_exclusion_positive: {'USDT': 0}
           hedged_exclusion_negative: {'USDT': 0}
 
-  nifty1USD:
+  nifty:
     split_positions: True
 
     subaccounts:
@@ -412,22 +412,17 @@ clients:
           hedged_exclusion_positive: {'USDT': 0,'BTC': 0}
           hedged_exclusion_negative: {'USDT': 0,'BTC': 0}
 
+        subbasis2:
+          base_ccy: BTC
+          margin_mode: non_portfolio
+          hedged_exclusion_positive: {'USDT': 0,'BTC': 20}
+          hedged_exclusion_negative: {'USDT': 0,'BTC': 0}
+
       binance:
         subbasis1:
           base_ccy: BTC
           margin_mode: portfolio
           hedged_exclusion_positive: {'BTC': 20}
-          hedged_exclusion_negative: {'USDT': 0,'BTC': 0}  
-
-  nifty2:
-    split_positions: True
-
-    subaccounts:
-      bybit:
-        subbasis2:
-          base_ccy: BTC
-          margin_mode: non_portfolio
-          hedged_exclusion_positive: {'USDT': 0,'BTC': 20}
           hedged_exclusion_negative: {'USDT': 0,'BTC': 0}
 
   wilbur:
