@@ -464,3 +464,13 @@ clients:
           margin_mode: non_portfolio
           hedged_exclusion_positive: {'USDT': 0}
           hedged_exclusion_negative: {'USDT': 0} 
+
+  lumiere:
+    split_positions: True
+    subaccounts:
+      okx:
+        subls1:
+          base_ccy: BTC
+          margin_mode: non_portfolio
+          hedged_exclusion_positive: {'USDT': 0,'BTC': 5}
+          hedged_exclusion_negative: {'USDT': 0} 
