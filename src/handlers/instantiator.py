@@ -1,4 +1,4 @@
-import os, time
+import time
 
 from src.lib.exchange import Exchange
 from src.lib.data_collector import DataCollector
@@ -18,21 +18,19 @@ from src.handlers.bids_asks import Bids_Asks
 from src.handlers.roll_costs import Roll_Costs
 from src.handlers.runs import Runs
 from src.config import read_config_file
-from dotenv import load_dotenv
 
-load_dotenv()
 config = read_config_file()
 
-def instantiate(client, collection, exchange, account=None):
+def instantiate(secrets, client, collection, exchange, account=None):
     config = read_config_file()
     target = config['clients'][client][collection][exchange]
 
     spec = client.upper() + "_" + exchange.upper() + "_" + account.upper() + "_"
-    API_KEY = os.getenv(spec + "API_KEY")
-    API_SECRET = os.getenv(spec + "API_SECRET")
+    API_KEY = secrets[spec + "API_KEY"]
+    API_SECRET = secrets[spec + "API_SECRET"]
     PASSPHRASE = None
     if exchange == "okx":
-        PASSPHRASE = os.getenv(spec + "PASSPHRASE")
+        PASSPHRASE = secrets[spec + "PASSPHRASE"]
 
     exch = Exchange(exchange, account, API_KEY, API_SECRET, PASSPHRASE).exch()
 
@@ -45,7 +43,7 @@ def instantiate(client, collection, exchange, account=None):
     
     return data_collector
 
-def get_data_collectors(client):
+def get_data_collectors(client, secrets):
     config = read_config_file()
     data_collectors = []
 
@@ -58,7 +56,7 @@ def get_data_collectors(client):
                 continue
             exchange_data = config['clients'][client][collection][exchange]
             for account in exchange_data:
-                data_collector = instantiate(client, collection, exchange, account)
+                data_collector = instantiate(secrets, client, collection, exchange, account)
                 data_collectors.append(data_collector)
          
     return data_collectors
