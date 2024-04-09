@@ -253,7 +253,7 @@ else:
 
     accounts = []
     for client in config['clients']:
-        data_collectors = get_data_collectors(client)
+        data_collectors = get_data_collectors(client, secrets)
         accounts += data_collectors
 
     balance_finished = {}

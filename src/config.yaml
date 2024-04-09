@@ -313,17 +313,6 @@ clients:
           hedged_exclusion_positive: {'USDT': 0}
           hedged_exclusion_negative: {'USDT': 0}
 
-  galileo:
-    split_positions: True
-
-    subaccounts:
-      binance:
-        subbasis1:
-          base_ccy: USD
-          margin_mode: portfolio
-          hedged_exclusion_positive: {'USDT': 0}
-          hedged_exclusion_negative: {'USDT': 0}
-
   faraday:
     split_positions: False
 
