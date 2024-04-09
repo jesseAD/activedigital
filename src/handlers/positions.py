@@ -420,7 +420,7 @@ class Positions:
 
         for position in position_info:
             try:
-                position['liquidationPriceChange'] = abs(float(position['liquidationPrice']) - float(position['markPrice'])) / float(position['markPrice'])
+                position['liquidationPriceChange'] = (float(position['liquidationPrice']) - float(position['markPrice'])) / float(position['markPrice'])
             except Exception as e:
                 if logger == None:
                     print(client + " " + exchange + " " + sub_account + " positions in liquidation price change: " + str(e))
