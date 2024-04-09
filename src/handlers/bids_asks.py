@@ -3,13 +3,16 @@ from datetime import datetime, timezone
 import ccxt 
 
 from src.lib.exchange import Exchange
+from src.config import read_config_file
 from src.handlers.helpers import Helper, OKXHelper, BybitHelper
+
+config = read_config_file()
 
 class Bids_Asks:
     def __init__(self, db, collection):
 
-        self.runs_db = db['runs']
-        self.bid_asks_db = db['bid_asks']
+        self.runs_db = db[config['mongodb']['database']]['runs']
+        self.bid_asks_db = db[config['mongodb']['database']]['bid_asks']
 
     # def get(
     #     self,

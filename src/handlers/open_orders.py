@@ -12,9 +12,9 @@ config = read_config_file()
 class OpenOrders:
   def __init__(self, db, collection):
 
-    self.runs_db = db['runs']
-    self.tickers_db = db['tickers']
-    self.open_orders_db = db['open_orders']
+    self.runs_db = db[config['mongodb']['database']]['runs']
+    self.tickers_db = db[config['mongodb']['database']]['tickers']
+    self.open_orders_db = db[config['mongodb']['database']]['open_orders']
 
   def create(
     self,

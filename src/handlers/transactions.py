@@ -13,10 +13,10 @@ config = read_config_file()
 class Transactions:
     def __init__(self, db, collection):
 
-        self.runs_db = db['runs']
-        self.tickers_db = db['tickers']
-        self.transactions_db = db['transactions']
-        self.mtd_pnls_db = db['mtd_pnls']
+        self.runs_db = db[config['mongodb']['database']]['runs']
+        self.tickers_db = db[config['mongodb']['database']]['tickers']
+        self.transactions_db = db[config['mongodb']['database']]['transactions']
+        self.mtd_pnls_db = db[config['mongodb']['database']]['mtd_pnls']
 
     # def get(
     #     self,

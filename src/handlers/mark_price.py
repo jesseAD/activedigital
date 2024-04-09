@@ -11,9 +11,9 @@ config = read_config_file()
 class MarkPrices:
     def __init__(self, db, collection):
 
-        self.runs_db = db['runs']
-        self.positions_db = db['positions']
-        self.mark_prices_db = db['mark_prices']
+        self.runs_db = db[config['mongodb']['database']]['runs']
+        self.positions_db = db[config['mongodb']['database']]['positions']
+        self.mark_prices_db = db[config['mongodb']['database']]['mark_prices']
 
     # def get(
     #     self,

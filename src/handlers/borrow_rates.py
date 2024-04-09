@@ -11,8 +11,8 @@ config = read_config_file()
 class BorrowRates:
     def __init__(self, db, collection):
 
-        self.runs_db = db['runs']
-        self.borrow_rates_db = db['borrow_rates']
+        self.runs_db = db[config['mongodb']['database']]['runs']
+        self.borrow_rates_db = db[config['mongodb']['database']]['borrow_rates']
 
     # def get(
     #     self,

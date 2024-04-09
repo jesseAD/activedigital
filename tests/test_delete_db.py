@@ -10,8 +10,8 @@ collections = ['balances', 'fills', 'positions', 'transactions', 'open_orders', 
 
 for collection in collections:
   db[collection].update_many(
-    {'client': "nifty"},
-    {'$set': {'client': 'nifty1USD'}}
+    {'$or': [{'client': "nifty1USD"}, {'client': "nifty2"}]},
+    {'$set': {'client': 'nifty'}}
   )
 
 # data = list(db['positions_archive'].find())

@@ -11,9 +11,9 @@ config = read_config_file()
 class Roll_Costs:
   def __init__(self, db, collection):
 
-    self.runs_db = db['runs']
-    self.roll_costs_db = db['roll_costs']
-    self.tickers_db = db['tickers']
+    self.runs_db = db[config['mongodb']['database']]['runs']
+    self.roll_costs_db = db[config['mongodb']['database']]['roll_costs']
+    self.tickers_db = db[config['mongodb']['database']]['tickers']
 
   # def get(
   #     self,

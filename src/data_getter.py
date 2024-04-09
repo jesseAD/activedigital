@@ -55,7 +55,7 @@ back_off = {}
 exchs = {}
 
 def public_pool(data_collectors, exchanges, symbols):
-    db1 = pymongo.MongoClient(mongo_uri, maxPoolsize=config['mongodb']['max_pool'])[config['mongodb']['database']]
+    db1 = pymongo.MongoClient(mongo_uri, maxPoolsize=config['mongodb']['max_pool'])
     executors = [concurrent.futures.ThreadPoolExecutor(config['dask']['threadsPerPool']) for i in range(config['dask']['threadPoolsPerWorker'])]
     
     threads = []
@@ -69,14 +69,14 @@ def public_pool(data_collectors, exchanges, symbols):
         # print(thread.result())
         thread.cancel()
 
-    db1.client.close()
+    db1.close()
     gc.collect()
     logger.info("Finished Public")
 
     return "Finished Public"
 
 def private_pool(data_collectors, accounts_group, balance_finished):
-    db2 = pymongo.MongoClient(mongo_uri, maxPoolsize=config['mongodb']['max_pool'])[config['mongodb']['database']]
+    db2 = pymongo.MongoClient(mongo_uri, maxPoolsize=config['mongodb']['max_pool'])
     executors = [concurrent.futures.ThreadPoolExecutor(config['dask']['threadsPerPool']) for i in range(config['dask']['threadPoolsPerWorker'])]
     
     threads = []
@@ -89,7 +89,7 @@ def private_pool(data_collectors, accounts_group, balance_finished):
         # print(thread.result())
         thread.cancel()
     
-    db2.client.close()
+    db2.close()
     gc.collect()   
     return "Finished Private"
 
@@ -129,7 +129,7 @@ public_data_collectors = [
 ]
 
 # private_data_collectors = [
-#     open_orders_wrapper,
+#     balances_wrapper, positions_wrapper,
 # ]
 private_data_collectors = [
     balances_wrapper, positions_wrapper, open_orders_wrapper,

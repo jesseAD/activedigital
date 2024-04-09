@@ -13,9 +13,9 @@ config = read_config_file()
 class Fills:
     def __init__(self, db, collection):
 
-        self.runs_db = db['runs']
-        self.positions_db = db['positions']
-        self.fills_db = db['fills']
+        self.runs_db = db[config['mongodb']['database']]['runs']
+        self.positions_db = db[config['mongodb']['database']]['positions']
+        self.fills_db = db[config['mongodb']['database']]['fills']
 
     # def get(
     #     self,
