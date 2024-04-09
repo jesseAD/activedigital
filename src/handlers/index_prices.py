@@ -2,14 +2,15 @@ from datetime import datetime, timezone
 import ccxt 
 
 from src.lib.exchange import Exchange
+from src.config import read_config_file
 from src.handlers.helpers import Helper, OKXHelper, BybitHelper
 
-
+config = read_config_file()
 class IndexPrices:
     def __init__(self, db, collection):
 
-        self.runs_db = db['runs']
-        self.index_prices_db = db['index_prices']
+        self.runs_db = db[config['mongodb']['database']]['runs']
+        self.index_prices_db = db[config['mongodb']['database']]['index_prices']
 
     # def get(
     #     self,

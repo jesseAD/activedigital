@@ -11,9 +11,9 @@ config = read_config_file()
 class Balances:
     def __init__(self, db, collection):
 
-        self.runs_db = db['runs']
-        self.tickers_db = db['tickers']
-        self.balances_db = db['balances']
+        self.runs_db = db[config['mongodb']['database']]['runs']
+        self.tickers_db = db[config['mongodb']['database']]['tickers']
+        self.balances_db = db[config['mongodb']['database']]['balances']
 
     # def get(
     #     self,

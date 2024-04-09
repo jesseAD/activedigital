@@ -10,8 +10,8 @@ config = read_config_file()
 class Instruments:
     def __init__(self, db, collection):
 
-        self.runs_db = db['runs']
-        self.instruments_db = db['instruments']
+        self.runs_db = db[config['mongodb']['database']]['runs']
+        self.instruments_db = db[config['mongodb']['database']]['instruments']
 
     # def get(
     #     self,

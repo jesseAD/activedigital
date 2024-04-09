@@ -14,15 +14,20 @@ config = read_config_file()
 class Positions:
     def __init__(self, db, collection):
 
-        self.runs_db = db['runs']
-        self.tickers_db = db['tickers']
-        self.balances_db = db['balances']
-        self.funding_rates_db = db['funding_rates']
-        self.lifetime_funding_db = db['lifetime_funding']
-        self.split_positions_db = db['split_positions']
-        self.positions_db = db['positions']
-        self.mark_prices_db = db['mark_prices']
-        self.price_changes_db = db['open_positions_price_change']
+        self.runs_db = db[config['mongodb']['database']]['runs']
+        self.tickers_db = db[config['mongodb']['database']]['tickers']
+        self.balances_db = db[config['mongodb']['database']]['balances']
+        self.funding_rates_db = db[config['mongodb']['database']]['funding_rates']
+        self.lifetime_funding_db = db[config['mongodb']['database']]['lifetime_funding']
+        self.split_positions_db = db[config['mongodb']['database']]['split_positions']
+        self.positions_db = db[config['mongodb']['database']]['positions']
+        self.mark_prices_db = db[config['mongodb']['database']]['mark_prices']
+        self.price_changes_db = db[config['mongodb']['database']]['open_positions_price_change']
+
+        self.session = db.start_session()
+
+    def __del__(self):
+        self.session.end_session()
 
     # def get(
     #     self,
@@ -87,6 +92,8 @@ class Positions:
 
             time.sleep(0.5)
 
+        self.session.start_transaction()
+
         if position_value is None:
             if exch == None:
                 spec = (client.upper() + "_" + exchange.upper() + "_" + sub_account.upper() + "_")
@@ -122,6 +129,8 @@ class Positions:
                 position_value = Mapping().mapping_positions(exchange=exchange, positions=position_value)
 
             except ccxt.ExchangeError as e:
+                self.session.abort_transaction()
+
                 if logger == None:
                     print(client + " " + exchange + " " + sub_account + " positions " + str(e))
                     print("Unable to collect positions for " + client + " " + exchange + " " + sub_account)
@@ -146,13 +155,18 @@ class Positions:
                     )
 
                 except ccxt.ExchangeError as e:
+                    self.session.abort_transaction()
+
                     if logger == None:
                         print(client + " " + exchange + " " + sub_account + " positions: in cross margin ratio " + str(e))
                     else:
                         logger.warning(client + " " + exchange + " " + sub_account + " positions: in cross margin ratio " + str(e))
                         
                     return False
+                
                 except Exception as e:
+                    self.session.abort_transaction()
+
                     if logger == None:
                         print(client + " " + exchange + " " + sub_account + " positions: in cross margin ratio " + str(e))
                         print("Unable to collect positions for " + client + " " + exchange + " " + sub_account)
@@ -172,6 +186,8 @@ class Positions:
                     )
 
                 except ccxt.ExchangeError as e:
+                    self.session.abort_transaction()
+
                     if logger == None:
                         print(client + " " + exchange + " " + sub_account + " positions: in cross margin ratio " + str(e))
                     else:
@@ -180,6 +196,8 @@ class Positions:
                     return False
                 
                 except Exception as e:
+                    self.session.abort_transaction()
+
                     if logger == None:
                         print(client + " " + exchange + " " + sub_account + " positions: in cross margin ratio " + str(e))
                         print("Unable to collect positions for " + client + " " + exchange + " " + sub_account)
@@ -200,6 +218,8 @@ class Positions:
                         )
 
                     except ccxt.ExchangeError as e:
+                        self.session.abort_transaction()
+
                         if logger == None:
                             print(client + " " + exchange + " " + sub_account + " positions: in cross margin ratio " + str(e))
                         else:
@@ -208,6 +228,8 @@ class Positions:
                         return False
                     
                     except Exception as e:
+                        self.session.abort_transaction()
+
                         if logger == None:
                             print(client + " " + exchange + " " + sub_account + " positions: in cross margin ratio " + str(e))
                             print("Unable to collect positions for " + client + " " + exchange + " " + sub_account)
@@ -230,6 +252,8 @@ class Positions:
                         liquidation_buffer = min(liquidation1, liquidation2, liquidation3)
 
                     except ccxt.ExchangeError as e:
+                        self.session.abort_transaction()
+
                         if logger == None:
                             print(client + " " + exchange + " " + sub_account + " positions: in cross margin ratio " + str(e))
                         else:
@@ -238,6 +262,8 @@ class Positions:
                         return False
                     
                     except Exception as e:
+                        self.session.abort_transaction()
+
                         if logger == None:
                             print(client + " " + exchange + " " + sub_account + " positions: in cross margin ratio " + str(e))
                             print("Unable to collect positions for " + client + " " + exchange + " " + sub_account)
@@ -873,6 +899,8 @@ class Positions:
                 self.split_positions_db.insert_one(split_position)
                 
             except Exception as e:
+                self.session.abort_transaction()
+                
                 if logger == None:
                     print(client + " " + exchange + " " + sub_account + " split positions " + str(e))
                     print("Unable to collect positions for " + client + " " + exchange + " " + sub_account)
@@ -936,6 +964,8 @@ class Positions:
 
             # log.debug(f"Position created: {position}")
 
+            self.session.commit_transaction()
+
             del position
 
             if logger == None:
@@ -947,6 +977,8 @@ class Positions:
 
             # return position
         except Exception as e:
+            self.session.abort_transaction()
+
             if logger == None:
                 print(client + " " + exchange + " " + sub_account + " positions " + str(e))
                 print("Unable to collect positions for " + client + " " + exchange + " " + sub_account)
