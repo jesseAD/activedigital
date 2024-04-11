@@ -427,9 +427,9 @@ clients:
 
       bybit:
         subbasis1:
-          base_ccy: USD
+          base_ccy: ETH
           margin_mode: non_portfolio
-          hedged_exclusion_positive: {'USDT': 0}
+          hedged_exclusion_positive: {'USDT': 0,'ETH': 30}
           hedged_exclusion_negative: {'USDT': 0}
 
   vigilant:
