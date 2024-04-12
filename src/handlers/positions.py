@@ -292,22 +292,22 @@ class Positions:
                             value['symbol'] = value['base'] + value['quote'] + "-PERP"
                             value["liquidationBuffer"] = liquidation_buffer
 
-                            if value["quote"] == "USD":
-                                cross_ratio = Helper().calc_cross_ccy_ratio(
-                                    value["base"],
-                                    config["clients"][client]["subaccounts"][exchange][sub_account]["base_ccy"],
-                                    tickers,
-                                )
-                                if cross_ratio == 0:
-                                    if logger == None:
-                                        print(client + " " + exchange + " " + sub_account + " positions skipped" + value['symbol'] + "as zero ticker price")
-                                    else:
-                                        logger.warning(client + " " + exchange + " " + sub_account + " positions skipped" + value['symbol'] + "as zero ticker price")
+                            # if value["quote"] == "USD":
+                            #     cross_ratio = Helper().calc_cross_ccy_ratio(
+                            #         value["base"],
+                            #         config["clients"][client]["subaccounts"][exchange][sub_account]["base_ccy"],
+                            #         tickers,
+                            #     )
+                            #     if cross_ratio == 0:
+                            #         if logger == None:
+                            #             print(client + " " + exchange + " " + sub_account + " positions skipped" + value['symbol'] + "as zero ticker price")
+                            #         else:
+                            #             logger.warning(client + " " + exchange + " " + sub_account + " positions skipped" + value['symbol'] + "as zero ticker price")
 
-                                    continue
+                            #         continue
 
-                                value["notional"] = float(value["notional"]) * cross_ratio
-                                value["unrealizedPnl"] = float(value["unrealizedPnl"]) * cross_ratio
+                            #     value["notional"] = float(value["notional"]) * cross_ratio
+                            #     value["unrealizedPnl"] = float(value["unrealizedPnl"]) * cross_ratio
 
                         position_info.append(value)
 
