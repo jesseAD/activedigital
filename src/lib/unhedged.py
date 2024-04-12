@@ -86,7 +86,7 @@ def get_unhedged(perp=[], spot=[]):
 
         new_position['side'] = position['side'] 
         new_position['base'] = position['base']
-        new_position['symbol'] = position['symbol']
+        new_position['symbol'] = position['info']['symbol']
         new_position['timestamp'] = position['timestamp']
         new_position['marginMode'] = position['marginMode']
 
