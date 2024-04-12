@@ -463,3 +463,12 @@ clients:
           margin_mode: non_portfolio
           hedged_exclusion_positive: {'USDT': 0,'BTC': 5}
           hedged_exclusion_negative: {'USDT': 0} 
+  eloquent:
+    split_positions: True
+    subaccounts:
+      okx:
+        subbasis1:
+          base_ccy: USDT
+          margin_mode: non_portfolio
+          hedged_exclusion_positive: {'USDT': 0}
+          hedged_exclusion_negative: {'USDT': 0} 
