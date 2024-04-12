@@ -424,7 +424,7 @@ class BybitHelper(Helper):
                 item['marginMode'] = "cross"
                 item['side'] = "long" if item['side'] == "Buy" else "short"
                 item['quote'] = coin
-                item['base'] = item['symbol'].split(coin)[0] if coin != "USDC" else item['symbol'].split("PERP")[0]
+                item['base'] = item['symbol'].split(coin)[0] if coin != "USDC" else item['symbol'].split("PERP")[0].split("-")[0]
                 item['positionValue'] = float(item['positionValue']) / float(item['avgPrice']) * float(item['markPrice'])
 
             positions += res
