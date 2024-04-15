@@ -139,10 +139,30 @@ class Positions:
                     logger.error("Unable to collect positions for " + client + " " + exchange + " " + sub_account)
 
                 return True
+            
+            except ccxt.NetworkError as e:
+                self.session.abort_transaction()
+
+                if logger == None:
+                    print(client + " " + exchange + " " + sub_account + " positions " + str(e))
+                else:
+                    logger.error(client + " " + exchange + " " + sub_account + " positions " + str(e))
+
+                return False
+            
+            except Exception as e:
+                self.session.abort_transaction()
+
+                if logger == None:
+                    print(client + " " + exchange + " " + sub_account + " positions " + str(e))
+                else:
+                    logger.error(client + " " + exchange + " " + sub_account + " positions " + str(e))
+
+                return False
                 
         try:
             position_info = []
-            liquidation_buffer = None
+            liquidation_buffer = 1
             tickers = list(self.tickers_db.find({"venue": exchange}))[0]["ticker_value"]
 
             if exchange == "okx":
@@ -162,19 +182,23 @@ class Positions:
                     else:
                         logger.warning(client + " " + exchange + " " + sub_account + " positions: in cross margin ratio " + str(e))
                         
-                    return False
+                    return True
                 
-                except Exception as e:
+                except ccxt.NetworkError as e:
                     self.session.abort_transaction()
 
                     if logger == None:
                         print(client + " " + exchange + " " + sub_account + " positions: in cross margin ratio " + str(e))
-                        print("Unable to collect positions for " + client + " " + exchange + " " + sub_account)
                     else:
                         logger.warning(client + " " + exchange + " " + sub_account + " positions: in cross margin ratio " + str(e))
-                        logger.error("Unable to collect positions for " + client + " " + exchange + " " + sub_account)
-
-                    return True
+                        
+                    return False
+                
+                except Exception as e:
+                    if logger == None:
+                        print(client + " " + exchange + " " + sub_account + " positions: in cross margin ratio " + str(e))
+                    else:
+                        logger.warning(client + " " + exchange + " " + sub_account + " positions: in cross margin ratio " + str(e))
 
             elif exchange == "bybit":
                 try:
@@ -193,19 +217,23 @@ class Positions:
                     else:
                         logger.warning(client + " " + exchange + " " + sub_account + " positions: in cross margin ratio " + str(e))
 
-                    return False
+                    return True
                 
-                except Exception as e:
+                except ccxt.NetworkError as e:
                     self.session.abort_transaction()
 
                     if logger == None:
                         print(client + " " + exchange + " " + sub_account + " positions: in cross margin ratio " + str(e))
-                        print("Unable to collect positions for " + client + " " + exchange + " " + sub_account)
                     else:
                         logger.warning(client + " " + exchange + " " + sub_account + " positions: in cross margin ratio " + str(e))
-                        logger.error("Unable to collect positions for " + client + " " + exchange + " " + sub_account)
-
-                    return True
+                        
+                    return False
+                
+                except Exception as e:
+                    if logger == None:
+                        print(client + " " + exchange + " " + sub_account + " positions: in cross margin ratio " + str(e))
+                    else:
+                        logger.warning(client + " " + exchange + " " + sub_account + " positions: in cross margin ratio " + str(e))
 
             elif exchange == "binance":
                 if config['clients'][client]['subaccounts'][exchange][sub_account]['margin_mode'] == 'portfolio':
@@ -225,19 +253,24 @@ class Positions:
                         else:
                             logger.warning(client + " " + exchange + " " + sub_account + " positions: in cross margin ratio " + str(e))
 
-                        return False
+                        return True
                     
-                    except Exception as e:
+                    except ccxt.NetworkError as e:
                         self.session.abort_transaction()
 
                         if logger == None:
                             print(client + " " + exchange + " " + sub_account + " positions: in cross margin ratio " + str(e))
-                            print("Unable to collect positions for " + client + " " + exchange + " " + sub_account)
                         else:
                             logger.warning(client + " " + exchange + " " + sub_account + " positions: in cross margin ratio " + str(e))
-                            logger.error("Unable to collect positions for " + client + " " + exchange + " " + sub_account)
+                            
+                        return False
+                    
+                    except Exception as e:
+                        if logger == None:
+                            print(client + " " + exchange + " " + sub_account + " positions: in cross margin ratio " + str(e))
+                        else:
+                            logger.warning(client + " " + exchange + " " + sub_account + " positions: in cross margin ratio " + str(e))
 
-                        return True
                 else:
                     try:
                         liquidation1 = Helper().calc_liquidation_buffer(
@@ -259,19 +292,23 @@ class Positions:
                         else:
                             logger.warning(client + " " + exchange + " " + sub_account + " positions: in cross margin ratio " + str(e))
 
-                        return False
+                        return True
                     
-                    except Exception as e:
+                    except ccxt.NetworkError as e:
                         self.session.abort_transaction()
 
                         if logger == None:
                             print(client + " " + exchange + " " + sub_account + " positions: in cross margin ratio " + str(e))
-                            print("Unable to collect positions for " + client + " " + exchange + " " + sub_account)
                         else:
                             logger.warning(client + " " + exchange + " " + sub_account + " positions: in cross margin ratio " + str(e))
-                            logger.error("Unable to collect positions for " + client + " " + exchange + " " + sub_account)
-
-                        return True
+                            
+                        return False
+                    
+                    except Exception as e:
+                        if logger == None:
+                            print(client + " " + exchange + " " + sub_account + " positions: in cross margin ratio " + str(e))
+                        else:
+                            logger.warning(client + " " + exchange + " " + sub_account + " positions: in cross margin ratio " + str(e))
 
             for value in position_value:
                 if exchange != "binance":
