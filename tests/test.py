@@ -23,7 +23,7 @@ params = {
     'secret': "",
     'enableRateLimit': True,
     'requests_trust_env':True,
-    'verbose': True,
+    'verbose': False,
     'options': {
         'adjustForTimeDifference':True,
         'warnOnFetchOpenOrdersWithoutSymbol': False
@@ -32,5 +32,5 @@ params = {
     # 'password': "!"
 }
 
-exchange = ccxt.okx(params)
-print(exchange.fetch_balance())
+exchange = ccxt.bybit(params)
+print(exchange.fetch_markets(params={'category': "inverse", 'symbol': "BTC-28JUN24"}))

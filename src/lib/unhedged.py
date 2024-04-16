@@ -90,6 +90,9 @@ def get_unhedged(perp=[], spot=[]):
         new_position['timestamp'] = position['timestamp']
         new_position['marginMode'] = position['marginMode']
 
+        if 'expiryDatetime' in position:
+            new_position['expiryDatetime'] = position['expiryDatetime']
+
         new_positions.append(new_position)
 
     perp = new_positions

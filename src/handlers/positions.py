@@ -16,6 +16,7 @@ class Positions:
 
         self.runs_db = db[config['mongodb']['database']]['runs']
         self.tickers_db = db[config['mongodb']['database']]['tickers']
+        self.instruments_db = db[config['mongodb']['database']]['instruments']
         self.balances_db = db[config['mongodb']['database']]['balances']
         self.funding_rates_db = db[config['mongodb']['database']]['funding_rates']
         self.lifetime_funding_db = db[config['mongodb']['database']]['lifetime_funding']
@@ -310,23 +311,32 @@ class Positions:
                         else:
                             logger.warning(client + " " + exchange + " " + sub_account + " positions: in cross margin ratio " + str(e))
 
+            try:
+                instruments = list(self.instruments_db.find({'venue': exchange}))[0]['instrument_value']
+            except Exception as e:
+                if logger == None:
+                    print(client + " " + exchange + " " + sub_account + " positions skipped" + "as non instruments")
+                    print("Unable to collect positions for " + client + " " + exchange + " " + sub_account)
+                else:
+                    logger.warning(client + " " + exchange + " " + sub_account + " positions skipped" + "as non instruments")
+                    logger.error("Unable to collect positions for " + client + " " + exchange + " " + sub_account)
+
+                return True
+
             for value in position_value:
+                value['base'] = instruments[value['info']['symbol']]['base']
+                value['quote'] = instruments[value['info']['symbol']]['quote']
+                if instruments[value['info']['symbol']]['expiryDatetime'] != None and instruments[value['info']['symbol']]['expiryDatetime'] != "":
+                    value['expiryDatetime'] = (
+                        datetime.strptime(instruments[value['info']['symbol']]['expiryDatetime'], '%Y-%m-%dT%H:%M:%S.%f%z') - 
+                        datetime.now(timezone.utc)
+                    ).days
+
                 if exchange != "binance":
                     try:
                         if exchange == "bybit":
-                            value['symbol'] = value['base'] + value['quote'] + "-PERP"
                             value["liquidationBuffer"] = liquidation_buffer
                         else:
-                            if ":" in value['symbol']:
-                                value["base"] = value["symbol"].split("/")[0]
-                                value["quote"] = (
-                                    value["symbol"].split("-")[0].split("/")[1].split(":")[0]
-                                )
-                            else:
-                                value['base'] = value["symbol"].split("-")[0].split("/")[0]
-                                value['quote'] = value['symbol'].split("-")[1] if "-" in value['symbol'] else value['symbol'].split("_")[0].split("/")[1]
-
-                            value['symbol'] = value['base'] + value['quote'] + "-PERP"
                             value["liquidationBuffer"] = liquidation_buffer
 
                             if value["quote"] == "USD":
@@ -358,9 +368,6 @@ class Positions:
                 else:
                     if (float(value["initialMargin"]) != 0.0  if config['clients'][client]['subaccounts'][exchange][sub_account]['margin_mode'] == 'non_portfolio' else True):
                         try:
-                            value["base"] = value["symbol"].split("_")[0].split("USD")[0]
-                            value["quote"] = "USD" + value["symbol"].split("_")[0].split("USD")[1]
-                            value['symbol'] = value['base'] + value['quote'] + "-PERP"
                             value['side'] = "long" if float(value['contracts']) > 0 else "short"
                             
                             value["liquidationBuffer"] = liquidation_buffer
