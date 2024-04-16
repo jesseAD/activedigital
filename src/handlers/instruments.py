@@ -71,10 +71,13 @@ class Instruments:
             try:
                 if exchange == "okx":
                     instrumentValue = OKXHelper().get_instruments(exch=exch)
+                    instrumentValue = {item['info']['instId']: item for item in instrumentValue}
                 elif exchange == "binance":
                     instrumentValue = Helper().get_instruments(exch=exch)
+                    instrumentValue = {item['info']['symbol']: item for item in instrumentValue}
                 elif exchange == "bybit":
                     instrumentValue = BybitHelper().get_instruments(exch=exch)
+                    instrumentValue = {item['info']['symbol']: item for item in instrumentValue}
             
             except ccxt.ExchangeError as e:
                 if logger == None:

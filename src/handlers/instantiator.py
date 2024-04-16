@@ -26,11 +26,16 @@ def instantiate(secrets, client, collection, exchange, account=None):
     target = config['clients'][client][collection][exchange]
 
     spec = client.upper() + "_" + exchange.upper() + "_" + account.upper() + "_"
-    API_KEY = secrets[spec + "API_KEY"]
-    API_SECRET = secrets[spec + "API_SECRET"]
+    API_KEY = None
+    API_SECRET = None
     PASSPHRASE = None
-    if exchange == "okx":
-        PASSPHRASE = secrets[spec + "PASSPHRASE"]
+    try:
+        API_KEY = secrets[spec + "API_KEY"]
+        API_SECRET = secrets[spec + "API_SECRET"]
+        if exchange == "okx":
+            PASSPHRASE = secrets[spec + "PASSPHRASE"]
+    except Exception as e:
+        print(client + " " + exchange + " " + account + " " + str(e))
 
     exch = Exchange(exchange, account, API_KEY, API_SECRET, PASSPHRASE).exch()
 
