@@ -1,13 +1,25 @@
 import pymongo
 from datetime import datetime, timezone
+from dotenv import dotenv_values
 
-mongo_uri = 'mongodb+srv://activedigital:pwd@mongodbcluster.nzphth1.mongodb.net/?retryWrites=true&w=majority'
+secrets = dotenv_values()
 
-# mongo_client = pymongo.MongoClient(mongo_uri)
-mongo_client = pymongo.MongoClient(None)
-db = mongo_client['active_digital']
+mongo_uri = 'mongodb+srv://activedigital:' + secrets['CLOUD_MONGO_PASSWORD'] + '@mongodbcluster.nzphth1.mongodb.net/?retryWrites=true&w=majority'
 
-# collections = ['balances', 'fills', 'positions', 'transactions', 'open_orders', 'leverages', 'lifetime_funding', 'mtd_pnls']
+mongo_client = pymongo.MongoClient(mongo_uri)
+# mongo_client = pymongo.MongoClient(None)
+db = mongo_client['active_digita']
+
+collections = [
+  'balances', 'fills', 'positions', 'transactions', 'open_orders', 'leverages', 'lifetime_funding', 'mtd_pnls',
+  'bid_asks', 'borrow_rates', 'funding_rates', 'index_prices', 'instruments', 'long_funding', 'mark_prices',
+  'open_positions_price_change', 'roll_costs', 'runs', 'short_funding', 'split_positions'
+]
+
+for collection in collections:
+  db[collection].delete_many({
+    'runid': {'$lte': 38}
+  })
 
 # for collection in collections:
 #   db[collection].update_many(
@@ -15,7 +27,7 @@ db = mongo_client['active_digital']
 #     {'$set': {'client': 'nifty'}}
 #   )
 
-print(list(db['instruments'].find({'venue': "okx"}))[0]['instrument_value']['BTC-USDT-240628'])
+# print(list(db['instruments'].find({'venue': "okx"}))[0]['instrument_value']['BTC-USDT-240628'])
 
 # data = list(db['positions_archive'].find())
 # print("read")
