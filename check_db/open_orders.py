@@ -19,39 +19,26 @@ accounts = [
   {'client': "quizzical", 'venue': "binance", 'account': "subls"},
 ]
 
-ids = {
-  'binance': "transaction_value.tranId",
-  'okx': "transaction_value.billId",
-  'bybit': ""
-}
-
 mongo_uri = 'mongodb+srv://activedigital:' + secrets['CLOUD_MONGO_PASSWORD'] + '@mongodbcluster.nzphth1.mongodb.net/?retryWrites=true&w=majority'
 
 mongo_client = pymongo.MongoClient(mongo_uri)
 
-active_digital = mongo_client['active_digital']['transactions']
-active_digita = mongo_client['active_digita']['transactions']
+active_digital = mongo_client['active_digital']['open_orders']
+active_digita = mongo_client['active_digita']['open_orders']
 
 for account in accounts:
-  transactions1 = list(
-    active_digital.find(
-      {'client': account['client'], 'venue': account['venue'], 'account': account['account'], 'transaction_value.timestamp': {'$gt': 1713261653423, '$lte': 1713348053423}}
-    ).sort([("transaction_value.timestamp", 1), (ids[account['venue']], 1)])
-  )
-  transactions2 = list(
-    active_digita.find(
-      {'client': account['client'], 'venue': account['venue'], 'account': account['account'], 'transaction_value.timestamp': {'$gt': 1713261653423, '$lte': 1713348053423}}
-    ).sort([("transaction_value.timestamp", 1), (ids[account['venue']], 1)])
-  )
+  try:
+    open_orders1 = list(active_digital.find(
+      {'client': account['client'], 'venue': account['venue'], 'account': account['account']}
+    ).sort("_id", -1).limit(1))[0]['open_orders_value']
+    open_orders2 = list(active_digita.find(
+      {'client': account['client'], 'venue': account['venue'], 'account': account['account']}
+    ).sort("_id", -1).limit(1))[0]['open_orders_value']
+  except:
+    continue
 
   print(account['client'] + " " + account['venue'] + " " + account['account'])
 
-  print(len(transactions1))
-  print(len(transactions2))
-
-  for i in range(len(transactions1)):
-    if transactions1[i]['transaction_value']['info'] != transactions2[i]['transaction_value']['info']:
+  for i in range(len(open_orders1)):
+    if open_orders1[i]['info'] != open_orders2[i]['info']:
       print("Not Same")
-      # print(i)
-      print(transactions1[i]['transaction_value'])
-      print(transactions2[i]['transaction_value'])
