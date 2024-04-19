@@ -113,7 +113,7 @@ class Helper:
         return exch.fetch_markets()
 
     def get_bid_ask(self, exch, symbol):
-        order_book = exch.fetch_order_book(symbol)
+        order_book = exch.fetch_order_book(symbol=symbol, limit=5)
         best_bid = order_book["bids"][0][0]  # price of the highest bid
         best_ask = order_book["asks"][0][0]  # price of the lowest ask
 
@@ -498,6 +498,10 @@ class BybitHelper(Helper):
     def get_cross_margin_ratio(self, exch):
         return exch.private_get_v5_account_wallet_balance(params={'accountType': "UNIFIED"})['result']["list"][0]["accountMMRate"]
 
+
+class HuobiHelper(Helper):
+    def qqq():
+        pass
 
 class CoinbaseHelper:
     def get_usdt2usd_ticker(self, exch):

@@ -32,6 +32,10 @@ ccxt:
     rateLimit: 30
     timeout: 3000
     retry: 3
+  huobi:
+    rateLimit: 30
+    timeout: 3000
+    retry: 3
 
 liquidation:
   threshold: 
@@ -107,6 +111,11 @@ roll_costs:
       BTC_INVERSE: 1
       ETH_LINEAR: 1
       ETH_INVERSE: 1
+    huobi:
+      BTC_LINEAR: 1
+      BTC_INVERSE: 1
+      ETH_LINEAR: 1
+      ETH_INVERSE: 1
 
 leverages:
   store_type: timeseries
@@ -133,6 +142,7 @@ borrow_rates:
     binance: daily # yearly, daily or interval
     okx: yearly # yearly, daily or interval
     bybit: daily # yearly, daily or interval
+    huobi: daily # yearly, daily or interval
 
 funding_rates:
   bybit:
@@ -153,7 +163,8 @@ funding_rates:
   period: interval # yearly, daily or interval
   base_ccy: ["USDT", "ETH", "BTC", ]
 
-exchanges: ["binance", "okx", "bybit", ]
+# exchanges: ["huobi", ]
+exchanges: ["binance", "okx", "bybit", "huobi", ]
 
 clients:
   rundmc:

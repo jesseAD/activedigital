@@ -3,7 +3,7 @@ import ccxt
 
 from src.lib.exchange import Exchange
 from src.config import read_config_file
-from src.handlers.helpers import Helper, OKXHelper, BybitHelper
+from src.handlers.helpers import Helper, OKXHelper, BybitHelper, HuobiHelper
 
 config = read_config_file()
 
@@ -77,6 +77,9 @@ class Instruments:
                     instrumentValue = {item['info']['symbol']: item for item in instrumentValue}
                 elif exchange == "bybit":
                     instrumentValue = BybitHelper().get_instruments(exch=exch)
+                    instrumentValue = {item['info']['symbol']: item for item in instrumentValue}
+                elif exchange == "huobi":
+                    instrumentValue = HuobiHelper().get_instruments(exch=exch)
                     instrumentValue = {item['info']['symbol']: item for item in instrumentValue}
             
             except ccxt.ExchangeError as e:
