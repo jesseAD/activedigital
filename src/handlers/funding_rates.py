@@ -3,7 +3,7 @@ import ccxt
 
 from src.lib.exchange import Exchange
 from src.config import read_config_file
-from src.handlers.helpers import Helper, OKXHelper, BybitHelper
+from src.handlers.helpers import Helper, OKXHelper, BybitHelper, HuobiHelper
 
 config = read_config_file()
 
@@ -136,6 +136,10 @@ class FundingRates:
                         fundingRatesValue = BybitHelper().get_funding_rates(
                             exch=exch, limit=100, symbol=symbol
                         )
+                    elif exchange == "huobi":
+                        fundingRatesValue = HuobiHelper().get_funding_rates(
+                            exch=exch, limit=100, symbol=symbol
+                        )
                 else:
                     last_time = int(current_values['timestamp']) + 1
                     if exchange == "okx":
@@ -166,6 +170,11 @@ class FundingRates:
                     elif exchange == "bybit":
                         fundingRatesValue = BybitHelper().get_funding_rates(
                             exch=exch, limit=100, symbol=symbol, since=last_time #params={'startTime': last_time, 'endTime': datetime.now(timezone.utc).timestamp()}
+                        )
+
+                    elif exchange == "huobi":
+                        fundingRatesValue = HuobiHelper().get_funding_rates(
+                            exch=exch, limit=100, symbol=symbol, since=last_time
                         )
 
                 if len(fundingRatesValue) > 0:
@@ -213,6 +222,28 @@ class FundingRates:
                     
                     elif exchange == "bybit":
                         funding_rate = BybitHelper().get_funding_rate(
+                            exch=exch, symbol=symbol
+                        )
+
+                        scalar = 1
+
+                        if config["funding_rates"]["period"] == "daily":
+                            scalar = 365
+                        elif config["funding_rates"]["period"] == "interval":
+                            scalar = 24 * 365 * 3600000
+                            scalar /= int(funding_rate["fundingTimestamp"]) - int(
+                                fundingRatesValue[-1]["timestamp"]
+                            )
+
+                        for item in fundingRatesValue:
+                            item["nextFundingRate"] = funding_rate["fundingRate"]
+                            item["nextFundingTime"] = funding_rate["fundingTimestamp"]
+                            item["base"] = symbol.split("/")[0]
+                            item["quote"] = symbol.split("/")[1].split(":")[0]
+                            item["scalar"] = scalar
+
+                    elif exchange == "huobi":
+                        funding_rate = HuobiHelper().get_funding_rate(
                             exch=exch, symbol=symbol
                         )
 
@@ -420,6 +451,22 @@ class FundingRates:
                         )
                     elif exchange == "okx":
                         funding_rate = OKXHelper().get_funding_rate(exch=exch, symbol=symbol)
+
+                        self.funding_rates_db.update_one(
+                            {
+                                "venue": exchange,
+                                "symbol": symbol.split(":")[0],
+                                "funding_rates_value.timestamp": current_values['timestamp']
+                            },
+                            {
+                                "$set": {
+                                    "funding_rates_value.nextFundingRate": funding_rate['fundingRate']
+                                }
+                            },
+                            upsert=False
+                        )
+                    elif exchange == "huobi":
+                        funding_rate = HuobiHelper().get_funding_rate(exch=exch, symbol=symbol)
 
                         self.funding_rates_db.update_one(
                             {

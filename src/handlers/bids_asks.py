@@ -4,7 +4,7 @@ import ccxt
 
 from src.lib.exchange import Exchange
 from src.config import read_config_file
-from src.handlers.helpers import Helper, OKXHelper, BybitHelper
+from src.handlers.helpers import Helper, OKXHelper, BybitHelper, HuobiHelper
 
 config = read_config_file()
 
@@ -93,6 +93,16 @@ class Bids_Asks:
                 elif exchange == "bybit":
                     spot_value = BybitHelper().get_bid_ask(exch=exch, symbol=symbol+"/USDT")
                     perp_value = BybitHelper().get_bid_ask(exch=exch, symbol=symbol+"/USDT:USDT")
+
+                    bid_ask_value = {
+                        'spot': spot_value,
+                        'perp': perp_value,
+                        'spread': spot_value['mid_point'] - perp_value['mid_point'],
+                    } 
+
+                elif exchange == "huobi":
+                    spot_value = HuobiHelper().get_bid_ask(exch=exch, symbol=symbol+"/USDT")
+                    perp_value = HuobiHelper().get_bid_ask(exch=exch, symbol=symbol+"/USDT:USDT")
 
                     bid_ask_value = {
                         'spot': spot_value,

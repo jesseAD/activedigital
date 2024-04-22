@@ -3,7 +3,7 @@ import ccxt
 
 from src.lib.exchange import Exchange
 from src.config import read_config_file
-from src.handlers.helpers import Helper, OKXHelper, BybitHelper
+from src.handlers.helpers import Helper, OKXHelper, BybitHelper, HuobiHelper
 
 config = read_config_file()
 
@@ -83,6 +83,10 @@ class MarkPrices:
                 elif exchange == "bybit":
                     res = BybitHelper().get_mark_prices(exch=exch, symbol=symbols+"USDT")
                     markPriceValue = {symbols: res}
+
+                elif exchange == "huobi":
+                    res = HuobiHelper().get_mark_prices(exch=exch, symbol=symbols+"-USDT")
+                    markPriceValue = {symbols: res}
             
             except ccxt.ExchangeError as e:
                 if logger == None:
@@ -93,6 +97,7 @@ class MarkPrices:
                     logger.error("Unable to collect mark prices for " + exchange)
 
                 return True
+            
             except ccxt.NetworkError as e:
                 if logger == None:
                     print(exchange +" mark prices " + str(e))
@@ -100,6 +105,16 @@ class MarkPrices:
                     logger.warning(exchange +" mark prices " + str(e))
 
                 return False
+            
+            except Exception as e:
+                if logger == None:
+                    print(exchange +" mark prices " + str(e))
+                    print("Unable to collect mark prices for " + exchange)
+                else:
+                    logger.warning(exchange +" mark prices " + str(e))
+                    logger.error("Unable to collect mark prices for " + exchange)
+
+                return True
 
         run_ids = self.runs_db.find({}).sort("_id", -1).limit(1)
         latest_run_id = 0

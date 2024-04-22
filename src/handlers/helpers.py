@@ -113,7 +113,7 @@ class Helper:
         return exch.fetch_markets()
 
     def get_bid_ask(self, exch, symbol):
-        order_book = exch.fetch_order_book(symbol)
+        order_book = exch.fetch_order_book(symbol=symbol, limit=5)
         best_bid = order_book["bids"][0][0]  # price of the highest bid
         best_ask = order_book["asks"][0][0]  # price of the lowest ask
 
@@ -498,6 +498,42 @@ class BybitHelper(Helper):
     def get_cross_margin_ratio(self, exch):
         return exch.private_get_v5_account_wallet_balance(params={'accountType': "UNIFIED"})['result']["list"][0]["accountMMRate"]
 
+
+class HuobiHelper(Helper):
+    def get_mark_prices(self, exch, symbol):
+        params = {
+            'contract_code': symbol,
+            'size': 1,
+            'period': "1min"
+        }
+        res = exch.contract_public_get_index_market_history_swap_mark_price_kline(params=params)['data'][0]
+        return {
+            'symbol': symbol,
+            'timestamp': int(res['id']) * 1000,
+            'markPrice': res['open']
+        }
+    
+    def get_index_prices(self, exch, symbol):
+        params = {
+            'contract_code': symbol,
+            'size': 1,
+            'period': "1min"
+        }
+        res = exch.contract_public_get_index_market_history_linear_swap_basis(params=params)['data'][0]
+        return {
+            'symbol': symbol,
+            'timestamp': int(res['id']) * 1000,
+            'indexPrice': res['index_price']
+        }
+    
+    def get_linear_prices(self, exch, symbol):
+        return exch.contract_public_get_linear_swap_ex_market_detail_merged(params={'contract_code': symbol})['tick']
+    
+    def get_inverse_prices(self, exch, symbol):
+        return exch.contract_public_get_market_detail_merged(params={'symbol': symbol})['tick']
+    
+    def get_linear_open_interests(self, exch, symbol=None, params={}):
+        return exch.contract_public_get_linear_swap_api_v1_swap_open_interest(params={**params, 'contract_code': symbol, 'business_type': "futures"})['data'][0]
 
 class CoinbaseHelper:
     def get_usdt2usd_ticker(self, exch):

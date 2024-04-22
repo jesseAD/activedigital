@@ -1,4 +1,4 @@
-import os, sys
+import os, sys, json
 import ccxt
 # import pymongo
 # import pdb
@@ -23,7 +23,7 @@ params = {
     'secret': "",
     'enableRateLimit': True,
     'requests_trust_env':True,
-    'verbose': False,
+    'verbose': True,
     'options': {
         'adjustForTimeDifference':True,
         'warnOnFetchOpenOrdersWithoutSymbol': False
@@ -32,5 +32,18 @@ params = {
     # 'password': "!"
 }
 
-exchange = ccxt.bybit(params)
-print(exchange.fetch_markets(params={'category': "inverse", 'symbol': "BTC-28JUN24"}))
+exchange = ccxt.huobi(params)
+res = exchange.fetch_open_interest(symbol="BTC-USDT-240503")
+# print(res)
+# res = [
+#   {
+#     'id': item['id'],
+#     'symbol': item['symbol'],
+#     'info': item['info'],
+#   }
+#   for item in res
+# ]
+# with open('huobi.txt', 'w') as f:
+#   f.write(json.dumps(res))
+
+# print([item['info']['sn'] for item in res])

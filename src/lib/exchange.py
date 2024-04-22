@@ -43,6 +43,8 @@ class Exchange:
             exchange = ccxt.okx(params)
         elif self.exchange == 'coinbase':
             exchange = ccxt.coinbasepro()
+        elif self.exchange == 'huobi':
+            exchange = ccxt.huobi(params)
         
         return exchange
 
