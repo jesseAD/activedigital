@@ -3,7 +3,7 @@ import ccxt
 
 from src.lib.exchange import Exchange
 from src.lib.expiry_date import get_expiry_date, get_prompt_month_code_from_expiry_date
-from src.handlers.helpers import Helper, OKXHelper, BybitHelper
+from src.handlers.helpers import Helper, OKXHelper, BybitHelper, HuobiHelper
 from src.config import read_config_file
 
 config = read_config_file()
@@ -160,6 +160,75 @@ class Roll_Costs:
                 'expiry': expiry_date,
                 'type': "inverse"
               })
+
+            elif exchange == "huobi":
+              expiry_str = expiry_date.strftime('%y%m%d')
+
+              linear_prices = None
+              try:
+                linear_prices = HuobiHelper().get_linear_prices(exch=exch, symbol=symbol+"-USDT-"+expiry_str)
+              except:
+                if logger == None:
+                  print(exchange +" roll costs " + symbol + " " + prompt + ": " + str(e))
+                else:
+                  logger.warning(exchange +" roll costs " + symbol + " " + prompt + ": " + str(e))
+              spot_bid = HuobiHelper().get_bid_ask(exch=exch, symbol=symbol+"/USDT")['bid']
+              inverse_prices = None
+              try:
+                inverse_prices = HuobiHelper().get_inverse_prices(exch=exch, symbol=symbol+expiry_str)
+              except:
+                if logger == None:
+                  print(exchange +" roll costs " + symbol + " " + prompt + ": " + str(e))
+                else:
+                  logger.warning(exchange +" roll costs " + symbol + " " + prompt + ": " + str(e))
+
+              try:
+                linear_oi = HuobiHelper().get_linear_open_interests(exch=exch, symbol=symbol+"-USDT-"+expiry_str)
+              except:
+                pass
+              try:
+                inverse_oi = HuobiHelper().get_open_interests(exch=exch, symbol=symbol+expiry_str)
+              except:
+                pass
+
+              try:
+                inverse_ticker = HuobiHelper().get_ticker(exch=exch, symbol=symbol+expiry_str)
+              except:
+                pass
+              try:
+                linear_ticker = HuobiHelper().get_ticker(exch=exch, symbol=symbol+"-USDT-"+expiry_str)
+              except:
+                pass
+
+              if linear_prices != None:
+                roll_cost_values.append({
+                  'symbol': symbol,
+                  'contract': symbol+"-USDT-"+expiry_str,
+                  'prompt': prompt,
+                  'carry_cost': (float(linear_prices['ask'][0]) - spot_bid) / spot_bid,
+                  'term_structure': (float(linear_prices['bid'][0]) + float(linear_prices['ask'][0])) / 2,
+                  'open_interests': {
+                    'oi': float(linear_oi['amount']) * config['roll_costs']['contract_values'][exchange][symbol+"_LINEAR"] * linear_ticker['last'],
+                    'volume': config['roll_costs']['contract_values'][exchange][symbol+"_LINEAR"] * linear_ticker['quoteVolume']
+                  },
+                  'expiry': expiry_date,
+                  'type': "linear"
+                })
+              
+              if inverse_prices != None:
+                roll_cost_values.append({
+                  'symbol': symbol,
+                  'contract': symbol+expiry_str,
+                  'prompt': prompt,
+                  'carry_cost': (float(inverse_prices['ask'][0])  - spot_bid) / spot_bid,
+                  'term_structure': (float(inverse_prices['bid'][0]) + float(inverse_prices['ask'][0])) / 2,
+                  'open_interests': {
+                    'oi': inverse_oi['openInterestAmount'] * config['roll_costs']['contract_values'][exchange][symbol+"_INVERSE"],
+                    'volume': config['roll_costs']['contract_values'][exchange][symbol+"_INVERSE"] * inverse_ticker['quoteVolume']
+                  },
+                  'expiry': expiry_date,
+                  'type': "inverse"
+                })
       
             elif exchange == "bybit":
               expiry_str = expiry_date.strftime('%d%b%y').upper()

@@ -23,7 +23,7 @@ params = {
     'secret': "",
     'enableRateLimit': True,
     'requests_trust_env':True,
-    'verbose': False,
+    'verbose': True,
     'options': {
         'adjustForTimeDifference':True,
         'warnOnFetchOpenOrdersWithoutSymbol': False
@@ -33,8 +33,8 @@ params = {
 }
 
 exchange = ccxt.huobi(params)
-res = exchange.fetch_borrow_rate_history()
-print(res)
+res = exchange.fetch_open_interest(symbol="BTC-USDT-240503")
+# print(res)
 # res = [
 #   {
 #     'id': item['id'],

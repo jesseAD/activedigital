@@ -865,7 +865,7 @@ def borrow_rates_wrapper(thread_pool, exch, exchange, symbols, logger, db, secre
 
 def mark_prices_wrapper(thread_pool, exch, exchange, symbols, logger, db, secrets):
     threads = []
-    if exchange == "bybit":
+    if exchange == "bybit" or exchange == "huobi":
         for symbol in symbols:
             threads.append(thread_pool.submit(collect_mark_prices, exch, exchange, symbol, logger, db))
     else:
@@ -875,7 +875,7 @@ def mark_prices_wrapper(thread_pool, exch, exchange, symbols, logger, db, secret
 
 def index_prices_wrapper(thread_pool, exch, exchange, symbols, logger, db, secrets):
     threads = []
-    if exchange == "bybit":
+    if exchange == "bybit" or exchange == "huobi":
         for symbol in symbols:
             threads.append(thread_pool.submit(collect_index_prices, exch, exchange, symbol, logger, db))
     else:

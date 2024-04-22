@@ -120,7 +120,7 @@ print("inserted a new run")
 #  ------------  Dask + Concurrent  ----------------
 
 # public_data_collectors = [
-#     funding_rates_wrapper
+#     roll_costs_wrapper
 # ]
 public_data_collectors = [
     instruments_wrapper, tickers_wrapper, roll_costs_wrapper,
@@ -263,9 +263,9 @@ else:
                 if account != "base_ccy":
                     balance_finished[client + "_" + exchange + "_" + account] = False
 
-    # private_pool(private_data_collectors, accounts, balance_finished)
+    private_pool(private_data_collectors, accounts, balance_finished)
 
-    # leverage_pool(leverages_wrapper, accounts)
+    leverage_pool(leverages_wrapper, accounts)
 
     del accounts
 

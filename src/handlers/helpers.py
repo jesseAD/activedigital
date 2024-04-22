@@ -500,8 +500,40 @@ class BybitHelper(Helper):
 
 
 class HuobiHelper(Helper):
-    def qqq():
-        pass
+    def get_mark_prices(self, exch, symbol):
+        params = {
+            'contract_code': symbol,
+            'size': 1,
+            'period': "1min"
+        }
+        res = exch.contract_public_get_index_market_history_swap_mark_price_kline(params=params)['data'][0]
+        return {
+            'symbol': symbol,
+            'timestamp': int(res['id']) * 1000,
+            'markPrice': res['open']
+        }
+    
+    def get_index_prices(self, exch, symbol):
+        params = {
+            'contract_code': symbol,
+            'size': 1,
+            'period': "1min"
+        }
+        res = exch.contract_public_get_index_market_history_linear_swap_basis(params=params)['data'][0]
+        return {
+            'symbol': symbol,
+            'timestamp': int(res['id']) * 1000,
+            'indexPrice': res['index_price']
+        }
+    
+    def get_linear_prices(self, exch, symbol):
+        return exch.contract_public_get_linear_swap_ex_market_detail_merged(params={'contract_code': symbol})['tick']
+    
+    def get_inverse_prices(self, exch, symbol):
+        return exch.contract_public_get_market_detail_merged(params={'symbol': symbol})['tick']
+    
+    def get_linear_open_interests(self, exch, symbol=None, params={}):
+        return exch.contract_public_get_linear_swap_api_v1_swap_open_interest(params={**params, 'contract_code': symbol, 'business_type': "futures"})['data'][0]
 
 class CoinbaseHelper:
     def get_usdt2usd_ticker(self, exch):
