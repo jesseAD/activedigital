@@ -167,7 +167,7 @@ class Roll_Costs:
               linear_prices = None
               try:
                 linear_prices = HuobiHelper().get_linear_prices(exch=exch, symbol=symbol+"-USDT-"+expiry_str)
-              except:
+              except Exception as e:
                 if logger == None:
                   print(exchange +" roll costs " + symbol + " " + prompt + ": " + str(e))
                 else:
@@ -176,7 +176,7 @@ class Roll_Costs:
               inverse_prices = None
               try:
                 inverse_prices = HuobiHelper().get_inverse_prices(exch=exch, symbol=symbol+expiry_str)
-              except:
+              except Exception as e:
                 if logger == None:
                   print(exchange +" roll costs " + symbol + " " + prompt + ": " + str(e))
                 else:

@@ -534,6 +534,78 @@ class HuobiHelper(Helper):
     
     def get_linear_open_interests(self, exch, symbol=None, params={}):
         return exch.contract_public_get_linear_swap_api_v1_swap_open_interest(params={**params, 'contract_code': symbol, 'business_type': "futures"})['data'][0]
+    
+    def get_borrow_rate(self, exch, code):
+        if code == "USDT":
+            params = {
+                'symbols': "btcusdt"
+            }
+            res = exch.spot_private_get_v1_margin_loan_info(params)['data']
+            if res == None:
+                return res
+            
+            res = res[0]['currencies'][1]
+            return {
+                'code': code,
+                'rate': float(res['interest-rate']),
+                'info': res,
+                'timestamp': int(datetime.now(timezone.utc).timestamp() * 1000)
+            }
+        else:
+            params = {
+                'symbols': code.lower() + "usdt"
+            }
+            res = exch.spot_private_get_v1_margin_loan_info(params)['data']
+            if res == None:
+                return res
+            
+            res = res[0]['currencies'][0]
+            return {
+                'code': code,
+                'rate': float(res['interest-rate']),
+                'info': res,
+                'timestamp': int(datetime.now(timezone.utc).timestamp() * 1000)
+            }
+        
+    def get_cm_balances(self, exch):
+        res = exch.contract_private_post_swap_api_v1_swap_balance_valuation()['data']
+        return {
+            item['valuation_asset']: float(item['balance'])
+            for item in res
+        }
+    
+    def get_um_balances(self, exch):
+        res = exch.contract_private_post_linear_swap_api_v1_swap_balance_valuation()['data']
+        return {
+            item['valuation_asset']: float(item['balance'])
+            for item in res
+        }
+    
+    def get_future_balances(self, exch):
+        res = exch.contract_private_post_api_v1_contract_balance_valuation()['data']
+        return {
+            item['valuation_asset']: float(item['balance'])
+            for item in res
+        }
+    
+    def get_spot_balances(self, exch):
+        res = exch.spot_private_get_v1_account_accounts()['data']
+        accounts = [int(item['id']) for item in res]
+
+        balances = {}
+        for account in accounts:
+            try:
+                res = exch.spot_private_get_v1_account_accounts_account_id_balance(params={'account-id': account})['data']['list']
+                for item in res:
+                    if item['balance'] != "0":
+                        if item['currency'].upper() in balances:
+                            balances[item['currency'].upper()] += float(item['balance'])
+                        else:
+                            balances[item['currency'].upper()] = float(item['balance'])
+            except Exception as e:
+                print("Huobi Spot Balances: " + str(e))
+
+        return balances
 
 class CoinbaseHelper:
     def get_usdt2usd_ticker(self, exch):
