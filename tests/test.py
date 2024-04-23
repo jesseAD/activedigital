@@ -23,7 +23,7 @@ params = {
     'secret': "",
     'enableRateLimit': True,
     'requests_trust_env':True,
-    'verbose': True,
+    'verbose': False,
     'options': {
         'adjustForTimeDifference':True,
         'warnOnFetchOpenOrdersWithoutSymbol': False
@@ -33,8 +33,8 @@ params = {
 }
 
 exchange = ccxt.huobi(params)
-res = exchange.fetch_open_interest(symbol="BTC-USDT-240503")
-# print(res)
+res = exchange.spot_private_get_v1_account_accounts_account_id_balance(params={})
+print(res)
 # res = [
 #   {
 #     'id': item['id'],

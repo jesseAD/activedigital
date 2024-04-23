@@ -3,7 +3,7 @@ import ccxt
 
 from src.lib.exchange import Exchange
 from src.config import read_config_file
-from src.handlers.helpers import Helper, OKXHelper, BybitHelper
+from src.handlers.helpers import Helper, OKXHelper, BybitHelper, HuobiHelper
 
 config = read_config_file()
 
@@ -137,6 +137,14 @@ class BorrowRates:
                                 borrowRatesValue = [res]
                             else:
                                 borrowRatesValue = []
+                        elif exchange == "huobi":
+                            res = HuobiHelper().get_borrow_rate(
+                                exch=exch, code=code
+                            )
+                            if res != None:
+                                borrowRatesValue = [res]
+                            else:
+                                borrowRatesValue = []
                     else:
                         last_time = int(current_values["timestamp"])
                         if exchange == "okx":
@@ -149,6 +157,14 @@ class BorrowRates:
                             )
                         elif exchange == "bybit":                            
                             res = BybitHelper().get_borrow_rate(
+                                exch=exch, code=code
+                            )
+                            if res != None:
+                                borrowRatesValue = [res]
+                            else:
+                                borrowRatesValue = []
+                        elif exchange == "huobi":
+                            res = HuobiHelper().get_borrow_rate(
                                 exch=exch, code=code
                             )
                             if res != None:
@@ -180,6 +196,11 @@ class BorrowRates:
                         elif exchange == "bybit":
                             for item in borrowRatesValue:
                                 item['scalar'] = scalar 
+
+                        elif exchange == "huobi":
+                            for item in borrowRatesValue:
+                                item['scalar'] = scalar 
+
                 except ccxt.BadSymbol as e:
                     if logger == None:
                         print(exchange +  " borrow rates " + str(e))
@@ -264,20 +285,36 @@ class BorrowRates:
                                             borrowRatesValue = OKXHelper().get_borrow_rates(
                                                 exch=exch, limit=92, code=code
                                             )
-                                        else:
+                                        elif exchange == "binance":
                                             borrowRatesValue = Helper().get_borrow_rates(
                                                 exch=exch, limit=92, code=code
                                             )
+                                        elif exchange == "huobi":
+                                            res = HuobiHelper().get_borrow_rate(
+                                                exch=exch, code=code
+                                            )
+                                            if res != None:
+                                                borrowRatesValue = [res]
+                                            else:
+                                                borrowRatesValue = []
                                     else:
                                         last_time = int(current_values["timestamp"])
                                         if exchange == "okx":
                                             borrowRatesValue = OKXHelper().get_borrow_rates(
                                                 exch=exch, limit=92, code=code, since=last_time+1
                                             )
-                                        else:
+                                        elif exchange == "binance":
                                             borrowRatesValue = Helper().get_borrow_rates(
                                                 exch=exch, limit=92, code=code, since=last_time+1
                                             )
+                                        elif exchange == "huobi":
+                                            res = HuobiHelper().get_borrow_rate(
+                                                exch=exch, code=code
+                                            )
+                                            if res != None:
+                                                borrowRatesValue = [res]
+                                            else:
+                                                borrowRatesValue = []
                                     
                                     if len(borrowRatesValue) > 0:
                                         scalar = 1
@@ -299,6 +336,10 @@ class BorrowRates:
                                             for item in borrowRatesValue:
                                                 item["nextBorrowRate"] = float(borrow_rate) * 24 * 365 / scalar
                                                 item['scalar'] = scalar  
+                                        elif exchange == "huobi":
+                                            for item in borrowRatesValue:
+                                                item['scalar'] = scalar 
+                                                
                                 except ccxt.ExchangeError as e:
                                     if logger == None:
                                         print(exchange + " borrow rates " + str(e))
@@ -317,9 +358,7 @@ class BorrowRates:
                                     return False
 
                                 break
-                                                      
                     break
-
                 pass
 
             except ccxt.ExchangeError as e:

@@ -3,7 +3,7 @@ import ccxt
 
 from src.lib.exchange import Exchange
 from src.config import read_config_file
-from src.handlers.helpers import Helper, OKXHelper, BybitHelper
+from src.handlers.helpers import Helper, OKXHelper, BybitHelper, HuobiHelper
 
 config = read_config_file()
 
@@ -102,6 +102,60 @@ class Balances:
                         
                 elif exchange == "bybit":
                     balanceValue = BybitHelper().get_balances(exch=exch)
+
+                elif exchange == "huobi":
+                    cm_balances = {}
+                    try:
+                        cm_balances = HuobiHelper().get_cm_balances(exch=exch)
+                    except Exception as e:
+                        if logger == None:
+                            print(client + " " + exchange + " " + sub_account + " CM balances " + str(e))
+                        else:
+                            logger.warning(client + " " + exchange + " " + sub_account + " CM balances " + str(e))
+                    
+                    um_balances = {}
+                    try:
+                        um_balances = HuobiHelper().get_um_balances(exch=exch)
+                    except Exception as e:
+                        if logger == None:
+                            print(client + " " + exchange + " " + sub_account + " UM balances " + str(e))
+                        else:
+                            logger.warning(client + " " + exchange + " " + sub_account + " UM balances " + str(e))
+
+                    future_balances = {}
+                    try:
+                        future_balances = HuobiHelper().get_future_balances(exch=exch)
+                    except Exception as e:
+                        if logger == None:
+                            print(client + " " + exchange + " " + sub_account + " future balances " + str(e))
+                        else:
+                            logger.warning(client + " " + exchange + " " + sub_account + " future balances " + str(e))
+
+                    spot_balances = {}
+                    try:
+                        spot_balances = HuobiHelper().get_spot_balances(exch=exch)
+                    except Exception as e:
+                        if logger == None:
+                            print(client + " " + exchange + " " + sub_account + " spot balances " + str(e))
+                        else:
+                            logger.warning(client + " " + exchange + " " + sub_account + " spot balances " + str(e))
+
+                    balanceValue = cm_balances
+                    for item in um_balances:
+                        if item in balanceValue:
+                            balanceValue[item] += um_balances[item]
+                        else:
+                            balanceValue[item] = um_balances[item]
+                    for item in future_balances:
+                        if item in balanceValue:
+                            balanceValue[item] += future_balances[item]
+                        else:
+                            balanceValue[item] = future_balances[item]
+                    for item in spot_balances:
+                        if item in balanceValue:
+                            balanceValue[item] += spot_balances[item]
+                        else:
+                            balanceValue[item] = spot_balances[item]
 
             except ccxt.ExchangeError as e:
                 if logger == None:

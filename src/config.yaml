@@ -91,9 +91,6 @@ index_prices:
 
 roll_costs:
   prompts: ["THISWEEK", "NEXTWEEK", "THISMONTH", "NEXTMONTH", "QUARTER", "NEXTQUARTER"]
-    # okx: ["THISWEEK", "NEXTWEEK", "THISMONTH", "NEXTMONTH", "QUARTER", "NEXTQUARTER"]
-    # binance: ["QUARTER", "NEXTQUARTER"]
-    # bybit: ["THISWEEK", "NEXTWEEK", "THISMONTH", "NEXTMONTH", "QUARTER", "NEXTQUARTER"]
   symbols: ["BTC", "ETH"]
   contract_values:
     binance:
@@ -112,10 +109,10 @@ roll_costs:
       ETH_LINEAR: 1
       ETH_INVERSE: 1
     huobi:
-      BTC_LINEAR: 1
-      BTC_INVERSE: 1
-      ETH_LINEAR: 1
-      ETH_INVERSE: 1
+      BTC_LINEAR: 0.01
+      BTC_INVERSE: 100
+      ETH_LINEAR: 0.001
+      ETH_INVERSE: 10
 
 leverages:
   store_type: timeseries
@@ -479,6 +476,16 @@ clients:
     subaccounts:
       okx:
         subbasis1:
+          base_ccy: USDT
+          margin_mode: non_portfolio
+          hedged_exclusion_positive: {'USDT': 0}
+          hedged_exclusion_negative: {'USDT': 0} 
+
+  huobitest:
+    split_positions: True
+    subaccounts:
+      huobi:
+        subhuobi:
           base_ccy: USDT
           margin_mode: non_portfolio
           hedged_exclusion_positive: {'USDT': 0}
