@@ -45,6 +45,7 @@ liquidation:
     binance_pm: 1.7
     okx: 0.95
     bybit: 0.95
+    huobi: 1.2
   scalar:
     binance: 0.53
     binance_cm: 0.5
@@ -52,6 +53,7 @@ liquidation:
     binance_pm: 1
     okx: 0.125
     bybit: -1
+    huobi: 1
 
 funding_payments: &funding_payments
   function: funding_payments.py
@@ -109,10 +111,10 @@ roll_costs:
       ETH_LINEAR: 1
       ETH_INVERSE: 1
     huobi:
-      BTC_LINEAR: 0.01
-      BTC_INVERSE: 100
-      ETH_LINEAR: 0.001
-      ETH_INVERSE: 10
+      BTC_LINEAR: 1
+      BTC_INVERSE: 1
+      ETH_LINEAR: 1
+      ETH_INVERSE: 1
 
 leverages:
   store_type: timeseries

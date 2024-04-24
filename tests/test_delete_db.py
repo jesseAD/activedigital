@@ -8,7 +8,7 @@ mongo_uri = 'mongodb+srv://activedigital:' + secrets['CLOUD_MONGO_PASSWORD'] + '
 
 mongo_client = pymongo.MongoClient(mongo_uri)
 # mongo_client = pymongo.MongoClient(None)
-db = mongo_client['active_digita']
+db = mongo_client['active_digital']
 
 collections = [
   'balances', 'fills', 'positions', 'transactions', 'open_orders', 'leverages', 'lifetime_funding', 'mtd_pnls',
@@ -16,10 +16,10 @@ collections = [
   'open_positions_price_change', 'roll_costs', 'runs', 'short_funding', 'split_positions'
 ]
 
-for collection in collections:
-  db[collection].delete_many({
-    'runid': {'$lte': 38}
-  })
+# for collection in collections:
+#   db[collection].delete_many({
+#     'runid': {'$lte': 38}
+#   })
 
 # for collection in collections:
 #   db[collection].update_many(
@@ -27,7 +27,7 @@ for collection in collections:
 #     {'$set': {'client': 'nifty'}}
 #   )
 
-# print(list(db['instruments'].find({'venue': "okx"}))[0]['instrument_value']['BTC-USDT-240628'])
+print(list(db['instruments'].find({'venue': "huobi"}))[0]['instrument_value'].keys())
 
 # data = list(db['positions_archive'].find())
 # print("read")
