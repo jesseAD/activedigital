@@ -71,7 +71,7 @@ class BorrowRates:
                 if exch == None:
                     exch = Exchange(exchange).exch()
                 
-                borrowRatesValue = {}
+                borrowRatesValue = []
 
                 query = {}
                 if exchange:
@@ -232,7 +232,7 @@ class BorrowRates:
 
                                 exch = Exchange(exchange, _account, API_KEY, API_SECRET, PASSPHRASE).exch()
 
-                                borrowRatesValue = {}
+                                borrowRatesValue = []
 
                                 query = {}
                                 if exchange:
@@ -336,6 +336,7 @@ class BorrowRates:
                                             for item in borrowRatesValue:
                                                 item["nextBorrowRate"] = float(borrow_rate) * 24 * 365 / scalar
                                                 item['scalar'] = scalar  
+
                                         elif exchange == "huobi":
                                             for item in borrowRatesValue:
                                                 item['scalar'] = scalar 
@@ -355,10 +356,19 @@ class BorrowRates:
                                     else:
                                         logger.warning(exchange + " borrow rates " + str(e))
 
-                                    return False
+                                    return False                                
+                                except Exception as e:
+                                    if logger == None:
+                                        print(exchange + " borrow rates " + str(e))
+                                        print("Unable to collect borrow rates for " + exchange)
+                                    else:
+                                        logger.warning(exchange + " borrow rates " + str(e))
+                                        logger.error("Unable to collect borrow rates for " + exchange)
+
+                                    return True
 
                                 break
-                    break
+                        break
                 pass
 
             except ccxt.ExchangeError as e:

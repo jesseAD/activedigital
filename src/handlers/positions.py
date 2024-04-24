@@ -6,7 +6,7 @@ from src.lib.exchange import Exchange
 from src.lib.mapping import Mapping
 from src.lib.unhedged import get_unhedged
 from src.config import read_config_file
-from src.handlers.helpers import Helper, OKXHelper, BybitHelper
+from src.handlers.helpers import Helper, OKXHelper, BybitHelper, HuobiHelper
 
 config = read_config_file()
 
@@ -127,6 +127,9 @@ class Positions:
                 elif exchange == "bybit":
                     position_value = BybitHelper().get_positions(exch=exch)
 
+                elif exchange == "huobi":
+                    position_value = HuobiHelper().get_positions(exch=exch)
+
                 position_value = Mapping().mapping_positions(exchange=exchange, positions=position_value)
 
             except ccxt.ExchangeError as e:
@@ -209,6 +212,42 @@ class Positions:
                     liquidation_buffer = BybitHelper().calc_liquidation_buffer(
                         exchange=exchange, mgnRatio=cross_margin_ratio
                     )
+
+                except ccxt.ExchangeError as e:
+                    self.session.abort_transaction()
+
+                    if logger == None:
+                        print(client + " " + exchange + " " + sub_account + " positions: in cross margin ratio " + str(e))
+                    else:
+                        logger.warning(client + " " + exchange + " " + sub_account + " positions: in cross margin ratio " + str(e))
+
+                    return True
+                
+                except ccxt.NetworkError as e:
+                    self.session.abort_transaction()
+
+                    if logger == None:
+                        print(client + " " + exchange + " " + sub_account + " positions: in cross margin ratio " + str(e))
+                    else:
+                        logger.warning(client + " " + exchange + " " + sub_account + " positions: in cross margin ratio " + str(e))
+                        
+                    return False
+                
+                except Exception as e:
+                    if logger == None:
+                        print(client + " " + exchange + " " + sub_account + " positions: in cross margin ratio " + str(e))
+                    else:
+                        logger.warning(client + " " + exchange + " " + sub_account + " positions: in cross margin ratio " + str(e))
+
+            elif exchange == "huobi":
+                try:
+                    liquidation1 = HuobiHelper().calc_liquidation_buffer(
+                        exchange=exchange, mgnRatio=float(HuobiHelper().get_cm_cross_margin_ratio(exch=exch))
+                    )
+                    liquidation2 = HuobiHelper().calc_liquidation_buffer(
+                        exchange=exchange, mgnRatio=float(HuobiHelper().get_um_cross_margin_ratio(exch=exch))
+                    )
+                    liquidation_buffer = min(liquidation1, liquidation2)
 
                 except ccxt.ExchangeError as e:
                     self.session.abort_transaction()
@@ -332,42 +371,53 @@ class Positions:
                         datetime.now(timezone.utc)
                     ).days
 
-                if exchange != "binance":
-                    try:
-                        if exchange == "bybit":
-                            value["liquidationBuffer"] = liquidation_buffer
-                        else:
-                            value["liquidationBuffer"] = liquidation_buffer
+                try:
+                    if exchange == "bybit":
+                        value["liquidationBuffer"] = liquidation_buffer
+                    elif exchange == "okx":
+                        value["liquidationBuffer"] = liquidation_buffer
 
-                            if value["quote"] == "USD":
-                                cross_ratio = Helper().calc_cross_ccy_ratio(
-                                    value["base"],
-                                    # config["clients"][client]["subaccounts"][exchange][sub_account]["base_ccy"],
-                                    "USD",
-                                    tickers,
-                                )
-                                if cross_ratio == 0:
-                                    if logger == None:
-                                        print(client + " " + exchange + " " + sub_account + " positions skipped" + value['symbol'] + "as zero ticker price")
-                                    else:
-                                        logger.warning(client + " " + exchange + " " + sub_account + " positions skipped" + value['symbol'] + "as zero ticker price")
+                        if value["quote"] == "USD":
+                            cross_ratio = Helper().calc_cross_ccy_ratio(
+                                value["base"],
+                                # config["clients"][client]["subaccounts"][exchange][sub_account]["base_ccy"],
+                                "USD",
+                                tickers,
+                            )
+                            if cross_ratio == 0:
+                                if logger == None:
+                                    print(client + " " + exchange + " " + sub_account + " positions skipped" + value['symbol'] + "as zero ticker price")
+                                else:
+                                    logger.warning(client + " " + exchange + " " + sub_account + " positions skipped" + value['symbol'] + "as zero ticker price")
 
-                                    continue
+                                continue
 
-                                value["notional"] = float(value["notional"]) * cross_ratio
-                                value["unrealizedPnl"] = float(value["unrealizedPnl"]) * cross_ratio
+                            value["notional"] = float(value["notional"]) * cross_ratio
+                            value["unrealizedPnl"] = float(value["unrealizedPnl"]) * cross_ratio
 
-                        position_info.append(value)
+                    elif exchange == "huobi":
+                        value["liquidationBuffer"] = liquidation_buffer
 
-                    except Exception as e:
-                        if logger == None:
-                            print(client + " " + exchange + " " + sub_account + " positions " + str(e))
-                        else:
-                            logger.warning(client + " " + exchange + " " + sub_account + " positions " + str(e))
+                        if value["quote"] == "USD":
+                            cross_ratio = Helper().calc_cross_ccy_ratio(
+                                value["base"],
+                                # config["clients"][client]["subaccounts"][exchange][sub_account]["base_ccy"],
+                                "USD",
+                                tickers,
+                            )
+                            if cross_ratio == 0:
+                                if logger == None:
+                                    print(client + " " + exchange + " " + sub_account + " positions skipped" + value['symbol'] + "as zero ticker price")
+                                else:
+                                    logger.warning(client + " " + exchange + " " + sub_account + " positions skipped" + value['symbol'] + "as zero ticker price")
 
-                else:
-                    if (float(value["initialMargin"]) != 0.0  if config['clients'][client]['subaccounts'][exchange][sub_account]['margin_mode'] == 'non_portfolio' else True):
-                        try:
+                                continue
+
+                            value["notional"] = float(value["notional"]) * cross_ratio
+                            value["unrealizedPnl"] = float(value["unrealizedPnl"]) * cross_ratio
+
+                    elif exchange == "binance":
+                        if (float(value["initialMargin"]) != 0.0  if config['clients'][client]['subaccounts'][exchange][sub_account]['margin_mode'] == 'non_portfolio' else True):
                             value['side'] = "long" if float(value['contracts']) > 0 else "short"
                             
                             value["liquidationBuffer"] = liquidation_buffer
@@ -390,15 +440,15 @@ class Positions:
                                 value["notional"] = float(value["notional"]) * cross_ratio
                                 value["unrealizedPnl"] = float(value["unrealizedPnl"]) * cross_ratio
 
-                            position_info.append(value)
+                    position_info.append(value)
 
-                        except Exception as e:
-                            if logger == None:
-                                print(client + " " + exchange + " " + sub_account + " positions " + str(e))
-                            else:
-                                logger.warning(client + " " + exchange + " " + sub_account + " positions " + str(e))
+                except Exception as e:
+                    if logger == None:
+                        print(client + " " + exchange + " " + sub_account + " positions " + str(e))
+                    else:
+                        logger.warning(client + " " + exchange + " " + sub_account + " positions " + str(e))
             
-            if exchange == "binance":
+            if exchange == "binance" or exchange == "huobi":
                 for position in position_info:
                     try:
                         mark_prices = self.mark_prices_db.aggregate([
@@ -412,7 +462,7 @@ class Positions:
                                                 ]
                                             }, {
                                                 '$eq': [
-                                                    '$symbol', position['base'] + "/" + position['quote']
+                                                    '$symbol', position['base'] + "/USDT"
                                                 ]
                                             }
                                         ]

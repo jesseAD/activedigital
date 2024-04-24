@@ -506,7 +506,7 @@ class HuobiHelper(Helper):
             'size': 1,
             'period': "1min"
         }
-        res = exch.contract_public_get_index_market_history_swap_mark_price_kline(params=params)['data'][0]
+        res = exch.contract_public_get_index_market_history_linear_swap_mark_price_kline(params=params)['data'][0]
         return {
             'symbol': symbol,
             'timestamp': int(res['id']) * 1000,
@@ -568,9 +568,9 @@ class HuobiHelper(Helper):
             }
         
     def get_cm_balances(self, exch):
-        res = exch.contract_private_post_swap_api_v1_swap_balance_valuation()['data']
+        res = exch.contract_private_post_swap_api_v1_swap_account_info()['data']
         return {
-            item['valuation_asset']: float(item['balance'])
+            item['symbol']: float(item['margin_balance'])
             for item in res
         }
     
@@ -606,6 +606,33 @@ class HuobiHelper(Helper):
                 print("Huobi Spot Balances: " + str(e))
 
         return balances
+    
+    def get_positions(self, exch):
+        positions = []
+
+        positions += exch.fetch_positions(params={'marginMode': "cross", 'subType': "linear"})
+        positions += exch.fetch_positions(params={'marginMode': "isolated", 'subType': "linear"})
+        positions += exch.fetch_positions(params={'type': "future", 'subType': "inverse"})
+        positions += exch.fetch_positions(params={'type': "swap", 'subType': "inverse"})
+
+        return positions
+    
+    def get_cm_cross_margin_ratio(self, exch):
+        res = exch.contract_private_post_swap_api_v1_swap_account_info()['data']
+        res = [item for item in res if float(item['new_risk_rate']) != 0]
+        
+        if len(res) <= 0:
+            return 3
+        
+        return min([float(item['new_risk_rate']) for item in res])
+
+    def get_um_cross_margin_ratio(self, exch):
+        res = exch.contract_private_post_linear_swap_api_v1_swap_position_info()['data']
+
+        if len(res) <= 0:
+            return 3
+        
+        return min(float(item['position_margin']) for item in res)
 
 class CoinbaseHelper:
     def get_usdt2usd_ticker(self, exch):

@@ -80,7 +80,7 @@ class Instruments:
                     instrumentValue = {item['info']['symbol']: item for item in instrumentValue}
                 elif exchange == "huobi":
                     instrumentValue = HuobiHelper().get_instruments(exch=exch)
-                    instrumentValue = {item['info']['symbol']: item for item in instrumentValue}
+                    instrumentValue = {item['id']: item for item in instrumentValue}
             
             except ccxt.ExchangeError as e:
                 if logger == None:

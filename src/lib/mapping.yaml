@@ -107,3 +107,10 @@ bybit:
     updatedTime: timestamp
     positionIM: initialMargin
     positionMM: maintenanceMargin
+
+huobi:
+  position:
+    info:
+      contract_code: symbol
+      cost_open: avgPrice
+    unrealizedProfit: unrealizedPnl
