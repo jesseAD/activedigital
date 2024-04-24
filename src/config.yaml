@@ -442,6 +442,13 @@ clients:
           hedged_exclusion_positive: {'USDT': 0,'ETH': 30}
           hedged_exclusion_negative: {'USDT': 0}
 
+      huobi:
+        subbasis1:
+          base_ccy: USDT
+          margin_mode: non_portfolio
+          hedged_exclusion_positive: {'USDT': 0}
+          hedged_exclusion_negative: {'USDT': 0}          
+
   vigilant:
     split_positions: True
 
