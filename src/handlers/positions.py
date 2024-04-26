@@ -374,6 +374,7 @@ class Positions:
                 try:
                     if exchange == "bybit":
                         value["liquidationBuffer"] = liquidation_buffer
+                        position_info.append(value)
                     elif exchange == "okx":
                         value["liquidationBuffer"] = liquidation_buffer
 
@@ -394,6 +395,8 @@ class Positions:
 
                             value["notional"] = float(value["notional"]) * cross_ratio
                             value["unrealizedPnl"] = float(value["unrealizedPnl"]) * cross_ratio
+                        
+                        position_info.append(value)
 
                     elif exchange == "huobi":
                         value["liquidationBuffer"] = liquidation_buffer
@@ -416,8 +419,10 @@ class Positions:
                             value["notional"] = float(value["notional"]) * cross_ratio
                             value["unrealizedPnl"] = float(value["unrealizedPnl"]) * cross_ratio
 
+                        position_info.append(value)
+
                     elif exchange == "binance":
-                        if ((float(value["initialMargin"]) != 0.0 and value["initialMargin"] != "0")  if config['clients'][client]['subaccounts'][exchange][sub_account]['margin_mode'] == 'non_portfolio' else True):
+                        if (float(value["initialMargin"]) != 0.0  if config['clients'][client]['subaccounts'][exchange][sub_account]['margin_mode'] == 'non_portfolio' else True):
                             value['side'] = "long" if float(value['contracts']) > 0 else "short"
                             
                             value["liquidationBuffer"] = liquidation_buffer
@@ -440,7 +445,7 @@ class Positions:
                                 value["notional"] = float(value["notional"]) * cross_ratio
                                 value["unrealizedPnl"] = float(value["unrealizedPnl"]) * cross_ratio
 
-                    position_info.append(value)
+                            position_info.append(value)
 
                 except Exception as e:
                     if logger == None:
