@@ -37,7 +37,7 @@ collections = [
 # query = {'$and': [{'venue': 'bybit'}, {'fills_value.timestamp': {'$gte': 1710028800000}}]}
 # query = {'$and': [{'client': 'lucid'}, {'venue': 'binance'}, {'account': 'subls1'}]}
 
-# db['borrow_rates'].delete_many({'runid': {'$lte': 35963}})
+db['positions'].delete_many({'client': "quizzical", 'venue': "binance", 'account': "subls"})
 
 # db.update_many(
 #     {'runid': {'$lt': 57106}},
