@@ -633,6 +633,23 @@ class HuobiHelper(Helper):
             return 3
         
         return min(float(item['position_margin']) for item in res)
+    
+    def get_cm_open_orders(self, exch, params={}):
+        res = exch.contract_private_post_swap_api_v1_swap_openorders(params=params)['data']['orders']
+        return [
+            {
+                'info': {**order},
+                'symbol': order['contract_code'],
+                'amount': float(order['volume']),
+                'price': float(order['price']),
+                'side': order['direction'],
+                'timestamp': int(order['created_at']),
+                'id': order['order_id'],
+                'filled': 0,
+                'type': order['order_price_type']
+            }
+            for order in res
+        ]
 
 class CoinbaseHelper:
     def get_usdt2usd_ticker(self, exch):

@@ -27,7 +27,7 @@ collections = [
 #     {'$set': {'client': 'nifty'}}
 #   )
 
-print(list(db['instruments'].find({'venue': "huobi"}))[0]['instrument_value'].keys())
+# print(list(db['instruments'].find({'venue': "huobi"}))[0]['instrument_value'].keys())
 
 # data = list(db['positions_archive'].find())
 # print("read")
@@ -37,7 +37,7 @@ print(list(db['instruments'].find({'venue': "huobi"}))[0]['instrument_value'].ke
 # query = {'$and': [{'venue': 'bybit'}, {'fills_value.timestamp': {'$gte': 1710028800000}}]}
 # query = {'$and': [{'client': 'lucid'}, {'venue': 'binance'}, {'account': 'subls1'}]}
 
-# db.delete_many({'runid': {'$lte': 57230}})
+# db['borrow_rates'].delete_many({'runid': {'$lte': 35963}})
 
 # db.update_many(
 #     {'runid': {'$lt': 57106}},
