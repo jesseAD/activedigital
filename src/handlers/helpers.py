@@ -650,6 +650,61 @@ class HuobiHelper(Helper):
             }
             for order in res
         ]
+    
+    def get_future_open_orders(self, exch, params={}):
+        res = exch.contract_private_post_api_v1_contract_openorders(params=params)['data']['orders']
+        return [
+            {
+                'info': {**order},
+                'symbol': order['contract_code'],
+                'amount': float(order['volume']),
+                'price': float(order['price']),
+                'side': order['direction'],
+                'timestamp': int(order['created_at']),
+                'id': order['order_id'],
+                'filled': 0,
+                'type': order['order_price_type']
+            }
+            for order in res
+        ]
+    
+    def get_cross_open_orders(self, exch, params={}):
+        res = exch.contract_private_post_linear_swap_api_v1_swap_cross_openorders(params=params)['data']['orders']
+        return [
+            {
+                'info': {**order},
+                'symbol': order['contract_code'],
+                'amount': float(order['volume']),
+                'price': float(order['price']),
+                'side': order['direction'],
+                'timestamp': int(order['created_at']),
+                'id': order['order_id'],
+                'filled': 0,
+                'type': order['order_price_type']
+            }
+            for order in res
+        ]
+    
+    def get_isolated_open_orders(self, exch, params={}):
+        res = exch.contract_private_post_linear_swap_api_v1_swap_openorders(params=params)['data']['orders']
+        return [
+            {
+                'info': {**order},
+                'symbol': order['contract_code'],
+                'amount': float(order['volume']),
+                'price': float(order['price']),
+                'side': order['direction'],
+                'timestamp': int(order['created_at']),
+                'id': order['order_id'],
+                'filled': 0,
+                'type': order['order_price_type']
+            }
+            for order in res
+        ]
+    
+    def get_cross_transactions(self, exch, params = {}):
+        types = "30,31,5,6,7,8,14,15,34,36,37,38,39"
+        return exch.contract_private_post_linear_swap_api_v3_swap_financial_record(params={**params, 'mar_acct': "USDT", 'type': types})['data']
 
 class CoinbaseHelper:
     def get_usdt2usd_ticker(self, exch):

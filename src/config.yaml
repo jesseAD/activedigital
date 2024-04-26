@@ -45,7 +45,7 @@ liquidation:
     binance_pm: 1.7
     okx: 0.95
     bybit: 0.95
-    huobi: 1.2
+    huobi: 0.8
   scalar:
     binance: 0.53
     binance_cm: 0.5
@@ -53,7 +53,7 @@ liquidation:
     binance_pm: 1
     okx: 0.125
     bybit: -1
-    huobi: 1
+    huobi: -1.8
 
 funding_payments: &funding_payments
   function: funding_payments.py
@@ -485,16 +485,6 @@ clients:
     subaccounts:
       okx:
         subbasis1:
-          base_ccy: USDT
-          margin_mode: non_portfolio
-          hedged_exclusion_positive: {'USDT': 0}
-          hedged_exclusion_negative: {'USDT': 0} 
-
-  huobitest:
-    split_positions: True
-    subaccounts:
-      huobi:
-        subhuobi:
           base_ccy: USDT
           margin_mode: non_portfolio
           hedged_exclusion_positive: {'USDT': 0}
