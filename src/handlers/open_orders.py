@@ -71,6 +71,9 @@ class OpenOrders:
           openOrderValue = []
           openOrderValue += HuobiHelper().get_open_orders(exch=exch)
           openOrderValue += HuobiHelper().get_cm_open_orders(exch=exch)
+          openOrderValue += HuobiHelper().get_future_open_orders(exch=exch)
+          openOrderValue += HuobiHelper().get_cross_open_orders(exch=exch)
+          openOrderValue += HuobiHelper().get_isolated_open_orders(exch=exch)
 
       except ccxt.ExchangeError as e:
         if logger == None:

@@ -23,7 +23,7 @@ params = {
     'secret': "",
     'enableRateLimit': True,
     'requests_trust_env':True,
-    'verbose': False,
+    'verbose': True,
     'options': {
         'adjustForTimeDifference':True,
         'warnOnFetchOpenOrdersWithoutSymbol': False
@@ -33,7 +33,7 @@ params = {
 }
 
 exchange = ccxt.huobi(params)
-res = exchange.fetch_open_orders(params={})
+res = exchange.contract_private_post_linear_swap_api_v3_swap_financial_record(params={'mar_acct': "USDT", 'type': "30,31,5,6,7,8,14,15,34,36,37,38,39"})
 # res = exchange.fetch_positions(params={'marginMode': "cross", 'subType': "linear"})
 print(res)
 # res = [
