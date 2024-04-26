@@ -622,7 +622,7 @@ class HuobiHelper(Helper):
         res = [item for item in res if float(item['new_risk_rate']) != 0]
         
         if len(res) <= 0:
-            return 3
+            return 0
         
         return min([float(item['new_risk_rate']) for item in res])
 
@@ -630,7 +630,7 @@ class HuobiHelper(Helper):
         res = exch.contract_private_post_linear_swap_api_v1_swap_position_info()['data']
 
         if len(res) <= 0:
-            return 3
+            return 0
         
         return min(float(item['position_margin']) for item in res)
     

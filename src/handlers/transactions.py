@@ -5,7 +5,7 @@ import time
 from src.lib.exchange import Exchange
 from src.lib.mapping import Mapping
 from src.config import read_config_file
-from src.handlers.helpers import Helper, OKXHelper, BybitHelper
+from src.handlers.helpers import Helper, OKXHelper, BybitHelper, HuobiHelper
 
 config = read_config_file()
 
@@ -1016,6 +1016,111 @@ class Transactions:
                             transaction_value['borrow'] = Mapping().mapping_transactions(
                                 exchange=exchange, transactions=transactions
                             )
+
+                    # elif exchange == "huobi":
+                    #     transaction_value = {}
+
+                    #     transactions_values = self.transactions_db.aggregate([
+                    #         {
+                    #             '$match': {
+                    #                 '$expr': {
+                    #                     '$and': [
+                    #                         {
+                    #                             '$eq': [
+                    #                                 '$client', client
+                    #                             ]
+                    #                         }, {
+                    #                             '$eq': [
+                    #                                 '$venue', exchange
+                    #                             ]
+                    #                         }, {
+                    #                             '$eq': [
+                    #                                 '$account', sub_account
+                    #                             ]
+                    #                         }, {
+                    #                             '$eq': [
+                    #                                 '$trade_type', 'cross'
+                    #                             ]
+                    #                         }
+                    #                     ]
+                    #                 }
+                    #             }
+                    #         }, {
+                    #             '$project': {
+                    #                 'transaction_value': 1
+                    #             }
+                    #         }, {
+                    #             '$sort': {
+                    #                 'transaction_value.timestamp': 1
+                    #             }
+                    #         }, {
+                    #             '$group': {
+                    #                 '_id': None, 
+                    #                 'transaction_value': {
+                    #                     '$last': '$transaction_value'
+                    #                 }
+                    #             }
+                    #         }
+                    #     ])
+
+                    #     current_value = None
+                    #     for item in transactions_values:
+                    #         current_value = item["transaction_value"]
+
+                    #     if current_value is None:
+                    #         transactions = []
+
+                    #         while(True):
+                    #             last_time = int(datetime.timestamp(datetime(datetime.now(timezone.utc).year, datetime.now(timezone.utc).month, 1)) * 1000)
+                    #             end_time = int(transactions[0]['transactionTime']) - 1 if len(transactions) > 0 else int(datetime.timestamp(datetime.now(timezone.utc)) * 1000)
+                                
+                    #             try:
+                    #                 res = BybitHelper().get_commissions(exch=exch, params={'startTime': max(last_time, end_time - 518400000), "endTime": end_time})
+                    #             except:
+                    #                 break
+
+                    #             if len(res) == 0:
+                    #                 break
+
+                    #             res.sort(key = lambda x: x['transactionTime'])
+                    #             transactions = res + transactions
+
+                    #             time.sleep(0.5)
+
+                    #         for item in transactions:
+                    #             item['info'] = {**item}
+
+                    #         transaction_value['cross'] = Mapping().mapping_transactions(
+                    #             exchange=exchange, transactions=transactions
+                    #         )
+                    #     else:
+                    #         last_time = int(current_value['timestamp']) + 1 + config['transactions']['time_slack']
+
+                    #         transactions = []
+
+                    #         while(True):
+                    #             end_time = int(transactions[0]['transactionTime']) - 1 if len(transactions) > 0 else int(datetime.timestamp(datetime.now(timezone.utc)) * 1000)
+                                
+                    #             try:
+                    #                 res = BybitHelper().get_commissions(exch=exch, params={'startTime': max(last_time, end_time - 518400000), "endTime": end_time})
+                    #             except:
+                    #                 break
+
+
+                    #             if len(res) == 0:
+                    #                 break
+
+                    #             res.sort(key = lambda x: x['transactionTime'])
+                    #             transactions = res + transactions
+
+                    #             time.sleep(0.5)
+
+                    #         for item in transactions:
+                    #             item['info'] = {**item}
+
+                    #         transaction_value['cross'] = Mapping().mapping_transactions(
+                    #             exchange=exchange, transactions=transactions
+                    #         )
     
             except ccxt.ExchangeError as e:
                 if logger == None:
@@ -1143,6 +1248,46 @@ class Transactions:
                             )
                         )
                         item['income'] = float(item["income"]) * Helper().calc_cross_ccy_ratio(item['asset'], config['transactions']['convert_ccy'], tickers)
+
+                        new_value = {
+                            "client": client,
+                            "venue": exchange,
+                            "account": "Main Account",
+                            "transaction_value": item,
+                            "trade_type": _type,
+                            "convert_ccy": config['transactions']['convert_ccy'],
+                            "runid": latest_run_id,
+                            "active": True,
+                            "entry": False,
+                            "exit": False,
+                            "timestamp": current_time,
+                        }
+                        if sub_account:
+                            new_value["account"] = sub_account
+                        if spot:
+                            new_value["spotMarket"] = spot
+                        if future:
+                            new_value["futureMarket"] = future
+                        if perp:
+                            new_value["perpMarket"] = perp
+
+                        transaction.append(new_value)   
+
+            elif exchange == "huobi":
+                for _type in transaction_value:
+                    for item in transaction_value[_type]:
+                        item['timestamp'] = int(item["timestamp"]) - config['transactions']['time_slack']
+
+                        item['amount_origin'] = float(item['amount'])
+                        item['amount_base'] = (
+                            float(item["amount"]) * 
+                            Helper().calc_cross_ccy_ratio(
+                                item['asset'],
+                                config["clients"][client]["subaccounts"][exchange][sub_account]["base_ccy"], 
+                                tickers
+                            )
+                        )
+                        item['amount'] = float(item["amount"]) * Helper().calc_cross_ccy_ratio(item['asset'], config['transactions']['convert_ccy'], tickers)
 
                         new_value = {
                             "client": client,

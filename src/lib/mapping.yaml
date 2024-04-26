@@ -114,3 +114,7 @@ huobi:
       contract_code: symbol
       cost_open: avgPrice
     unrealizedProfit: unrealizedPnl
+  transaction:
+    ts: timestamp
+    createdTime: timestamp
+    borrowCost: fee
