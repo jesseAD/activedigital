@@ -417,7 +417,7 @@ class Positions:
                             value["unrealizedPnl"] = float(value["unrealizedPnl"]) * cross_ratio
 
                     elif exchange == "binance":
-                        if (float(value["initialMargin"]) != 0.0  if config['clients'][client]['subaccounts'][exchange][sub_account]['margin_mode'] == 'non_portfolio' else True):
+                        if ((float(value["initialMargin"]) != 0.0 and value["initialMargin"] != "0")  if config['clients'][client]['subaccounts'][exchange][sub_account]['margin_mode'] == 'non_portfolio' else True):
                             value['side'] = "long" if float(value['contracts']) > 0 else "short"
                             
                             value["liquidationBuffer"] = liquidation_buffer
