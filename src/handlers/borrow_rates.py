@@ -341,6 +341,13 @@ class BorrowRates:
                                             for item in borrowRatesValue:
                                                 item['scalar'] = scalar 
                                                 
+                                except ccxt.AuthenticationError as e:
+                                    if logger == None:
+                                        print(exchange + " borrow rates " + str(e))
+                                    else:
+                                        logger.warning(exchange + " borrow rates " + str(e))
+                                    continue
+                                
                                 except ccxt.ExchangeError as e:
                                     if logger == None:
                                         print(exchange + " borrow rates " + str(e))

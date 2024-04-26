@@ -33,7 +33,7 @@ params = {
 }
 
 exchange = ccxt.huobi(params)
-res = exchange.contract_private_post_linear_swap_api_v1_swap_position_info(params={})
+res = exchange.fetch_open_orders(params={})
 # res = exchange.fetch_positions(params={'marginMode': "cross", 'subType': "linear"})
 print(res)
 # res = [

@@ -3,7 +3,7 @@ import ccxt
 
 from src.lib.exchange import Exchange
 from src.config import read_config_file
-from src.handlers.helpers import Helper, OKXHelper, BybitHelper
+from src.handlers.helpers import Helper, OKXHelper, BybitHelper, HuobiHelper
 from src.lib.mapping import Mapping
 
 config = read_config_file()
@@ -67,6 +67,11 @@ class OpenOrders:
           openOrderValue += BybitHelper().get_open_orders(exch=exch, params={'category': "spot"})
           openOrderValue += BybitHelper().get_open_orders(exch=exch, params={'category': "option"})
 
+        elif exchange == "huobi":
+          openOrderValue = []
+          openOrderValue += HuobiHelper().get_open_orders(exch=exch)
+          openOrderValue += HuobiHelper().get_cm_open_orders(exch=exch)
+
       except ccxt.ExchangeError as e:
         if logger == None:
           print(client + " " + exchange + " " + sub_account + " open orders " + str(e))
@@ -95,6 +100,15 @@ class OpenOrders:
       if exchange == "binance":
         try:
           order['current_price'] = Helper().get_ticker(exch=exch, symbol=order['symbol'])['last']
+        except Exception as e:
+          if logger == None:
+            print(client + " " + exchange + " " + sub_account + " open orders " + str(e) + " in fetching ticker")
+          else:
+            logger.warning(client + " " + exchange + " " + sub_account + " open orders " + str(e) + " in fetching ticker")
+
+      elif exchange == "huobi":
+        try:
+          order['current_price'] = HuobiHelper().get_ticker(exch=exch, symbol=order['symbol'])['last']
         except Exception as e:
           if logger == None:
             print(client + " " + exchange + " " + sub_account + " open orders " + str(e) + " in fetching ticker")
