@@ -613,7 +613,10 @@ class HuobiHelper(Helper):
         positions += exch.fetch_positions(params={'marginMode': "cross", 'subType': "linear"})
         positions += exch.fetch_positions(params={'marginMode': "isolated", 'subType': "linear"})
         positions += exch.fetch_positions(params={'type': "future", 'subType': "inverse"})
-        positions += exch.fetch_positions(params={'type': "swap", 'subType': "inverse"})
+        cm_positions = exch.fetch_positions(params={'type': "swap", 'subType': "inverse"})
+        for position in cm_positions:
+            position['liquidationPrice'] = exch.contract_private_post_swap_api_v1_swap_account_position_info(params={'contract_code': position['info']['symbol']})['data'][0]['liquidation_price']
+        positions += cm_positions
 
         return positions
     
@@ -705,6 +708,56 @@ class HuobiHelper(Helper):
     def get_cross_transactions(self, exch, params = {}):
         types = "30,31,5,6,7,8,14,15,34,36,37,38,39"
         return exch.contract_private_post_linear_swap_api_v3_swap_financial_record(params={**params, 'mar_acct': "USDT", 'type': types})['data']
+    
+    def get_isolated_transactions(self, exch, params = {}):
+        types = "30,31,5,6,7,8,14,15,34,36,37,38,39"
+
+        res = exch.contract_private_post_linear_swap_api_v1_swap_position_info()['data']
+        contracts = [item['contract_code'] for item in res]
+
+        transactions = []
+        for contract in contracts:
+            transactions += exch.contract_private_post_linear_swap_api_v3_swap_financial_record(params={**params, 'mar_acct': contract, 'type': types})['data']
+
+        return transactions
+    
+    def get_cm_transactions(self, exch, params = {}):
+        types = "30,31,5,6,7,8,14,15,34,36,37"
+
+        res = exch.contract_private_post_swap_api_v1_swap_position_info()['data']
+        contracts = [item['contract_code'] for item in res]
+
+        transactions = []
+        for contract in contracts:
+            transactions += exch.contract_private_post_swap_api_v3_swap_financial_record(params={**params, 'contract': contract, 'type': types})['data']
+
+        return transactions
+    
+    def get_future_transactions(self, exch, params = {}):
+        types = "5,6,7,8,14,15,34,36,37"
+
+        res = exch.contract_private_post_api_v1_contract_position_info()['data']
+        contracts = [item['symbol'] for item in res]
+        contracts = list(set(contracts))
+
+        transactions = []
+        for contract in contracts:
+            transactions += exch.contract_private_post_api_v3_contract_financial_record(params={**params, 'symbol': contract, 'type': types})['data']
+
+        return transactions
+    
+    def get_spot_transactions(self, exch):
+        res = exch.spot_private_get_v1_account_accounts()['data']
+        accounts = [int(item['id']) for item in res]
+
+        transactions = []
+        for account in accounts:
+            transactions += exch.spot_private_get_v1_account_history(params={'account-id': account, 'transact-types': "other-types"})['data']
+
+        for transaction in transactions:
+            transaction['currency'] = transaction['currency'].upper()
+
+        return transactions
 
 class CoinbaseHelper:
     def get_usdt2usd_ticker(self, exch):

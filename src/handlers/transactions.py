@@ -1017,110 +1017,518 @@ class Transactions:
                                 exchange=exchange, transactions=transactions
                             )
 
-                    # elif exchange == "huobi":
-                    #     transaction_value = {}
+                    elif exchange == "huobi":
+                        transaction_value = {}
 
-                    #     transactions_values = self.transactions_db.aggregate([
-                    #         {
-                    #             '$match': {
-                    #                 '$expr': {
-                    #                     '$and': [
-                    #                         {
-                    #                             '$eq': [
-                    #                                 '$client', client
-                    #                             ]
-                    #                         }, {
-                    #                             '$eq': [
-                    #                                 '$venue', exchange
-                    #                             ]
-                    #                         }, {
-                    #                             '$eq': [
-                    #                                 '$account', sub_account
-                    #                             ]
-                    #                         }, {
-                    #                             '$eq': [
-                    #                                 '$trade_type', 'cross'
-                    #                             ]
-                    #                         }
-                    #                     ]
-                    #                 }
-                    #             }
-                    #         }, {
-                    #             '$project': {
-                    #                 'transaction_value': 1
-                    #             }
-                    #         }, {
-                    #             '$sort': {
-                    #                 'transaction_value.timestamp': 1
-                    #             }
-                    #         }, {
-                    #             '$group': {
-                    #                 '_id': None, 
-                    #                 'transaction_value': {
-                    #                     '$last': '$transaction_value'
-                    #                 }
-                    #             }
-                    #         }
-                    #     ])
+                        transactions_values = self.transactions_db.aggregate([
+                            {
+                                '$match': {
+                                    '$expr': {
+                                        '$and': [
+                                            {
+                                                '$eq': [
+                                                    '$client', client
+                                                ]
+                                            }, {
+                                                '$eq': [
+                                                    '$venue', exchange
+                                                ]
+                                            }, {
+                                                '$eq': [
+                                                    '$account', sub_account
+                                                ]
+                                            }, {
+                                                '$eq': [
+                                                    '$trade_type', 'cross'
+                                                ]
+                                            }
+                                        ]
+                                    }
+                                }
+                            }, {
+                                '$project': {
+                                    'transaction_value': 1
+                                }
+                            }, {
+                                '$sort': {
+                                    'transaction_value.timestamp': 1
+                                }
+                            }, {
+                                '$group': {
+                                    '_id': None, 
+                                    'transaction_value': {
+                                        '$last': '$transaction_value'
+                                    }
+                                }
+                            }
+                        ])
 
-                    #     current_value = None
-                    #     for item in transactions_values:
-                    #         current_value = item["transaction_value"]
+                        current_value = None
+                        for item in transactions_values:
+                            current_value = item["transaction_value"]
 
-                    #     if current_value is None:
-                    #         transactions = []
+                        if current_value is None:
+                            transactions = []
 
-                    #         while(True):
-                    #             last_time = int(datetime.timestamp(datetime(datetime.now(timezone.utc).year, datetime.now(timezone.utc).month, 1)) * 1000)
-                    #             end_time = int(transactions[0]['transactionTime']) - 1 if len(transactions) > 0 else int(datetime.timestamp(datetime.now(timezone.utc)) * 1000)
+                            while(True):
+                                last_time = int(datetime.timestamp(datetime(datetime.now(timezone.utc).year, datetime.now(timezone.utc).month, 1)) * 1000)
+                                end_time = int(transactions[0]['ts']) - 1 if len(transactions) > 0 else int(datetime.timestamp(datetime.now(timezone.utc)) * 1000)
                                 
-                    #             try:
-                    #                 res = BybitHelper().get_commissions(exch=exch, params={'startTime': max(last_time, end_time - 518400000), "endTime": end_time})
-                    #             except:
-                    #                 break
+                                try:
+                                    res = HuobiHelper().get_cross_transactions(exch=exch, params={'start_time': max(last_time, end_time - 169200000), "end_time": end_time})
+                                except:
+                                    break
 
-                    #             if len(res) == 0:
-                    #                 break
+                                if len(res) == 0:
+                                    break
 
-                    #             res.sort(key = lambda x: x['transactionTime'])
-                    #             transactions = res + transactions
+                                res.sort(key = lambda x: x['ts'])
+                                transactions = res + transactions
 
-                    #             time.sleep(0.5)
+                                time.sleep(0.5)
 
-                    #         for item in transactions:
-                    #             item['info'] = {**item}
+                            for item in transactions:
+                                item['info'] = {**item}
 
-                    #         transaction_value['cross'] = Mapping().mapping_transactions(
-                    #             exchange=exchange, transactions=transactions
-                    #         )
-                    #     else:
-                    #         last_time = int(current_value['timestamp']) + 1 + config['transactions']['time_slack']
+                            transaction_value['cross'] = Mapping().mapping_transactions(
+                                exchange=exchange, transactions=transactions
+                            )
+                        else:
+                            last_time = int(current_value['timestamp']) + 1 + config['transactions']['time_slack']
 
-                    #         transactions = []
+                            transactions = []
 
-                    #         while(True):
-                    #             end_time = int(transactions[0]['transactionTime']) - 1 if len(transactions) > 0 else int(datetime.timestamp(datetime.now(timezone.utc)) * 1000)
+                            while(True):
+                                end_time = int(transactions[0]['ts']) - 1 if len(transactions) > 0 else int(datetime.timestamp(datetime.now(timezone.utc)) * 1000)
                                 
-                    #             try:
-                    #                 res = BybitHelper().get_commissions(exch=exch, params={'startTime': max(last_time, end_time - 518400000), "endTime": end_time})
-                    #             except:
-                    #                 break
+                                try:
+                                    res = HuobiHelper().get_cross_transactions(exch=exch, params={'start_time': max(last_time, end_time - 169200000), "end_time": end_time})
+                                except:
+                                    break
 
 
-                    #             if len(res) == 0:
-                    #                 break
+                                if len(res) == 0:
+                                    break
 
-                    #             res.sort(key = lambda x: x['transactionTime'])
-                    #             transactions = res + transactions
+                                res.sort(key = lambda x: x['ts'])
+                                transactions = res + transactions
 
-                    #             time.sleep(0.5)
+                                time.sleep(0.5)
 
-                    #         for item in transactions:
-                    #             item['info'] = {**item}
+                            for item in transactions:
+                                item['info'] = {**item}
 
-                    #         transaction_value['cross'] = Mapping().mapping_transactions(
-                    #             exchange=exchange, transactions=transactions
-                    #         )
+                            transaction_value['cross'] = Mapping().mapping_transactions(
+                                exchange=exchange, transactions=transactions
+                            )
+
+                        transactions_values = self.transactions_db.aggregate([
+                            {
+                                '$match': {
+                                    '$expr': {
+                                        '$and': [
+                                            {
+                                                '$eq': [
+                                                    '$client', client
+                                                ]
+                                            }, {
+                                                '$eq': [
+                                                    '$venue', exchange
+                                                ]
+                                            }, {
+                                                '$eq': [
+                                                    '$account', sub_account
+                                                ]
+                                            }, {
+                                                '$eq': [
+                                                    '$trade_type', 'isolated'
+                                                ]
+                                            }
+                                        ]
+                                    }
+                                }
+                            }, {
+                                '$project': {
+                                    'transaction_value': 1
+                                }
+                            }, {
+                                '$sort': {
+                                    'transaction_value.timestamp': 1
+                                }
+                            }, {
+                                '$group': {
+                                    '_id': None, 
+                                    'transaction_value': {
+                                        '$last': '$transaction_value'
+                                    }
+                                }
+                            }
+                        ])
+
+                        current_value = None
+                        for item in transactions_values:
+                            current_value = item["transaction_value"]
+
+                        if current_value is None:
+                            transactions = []
+
+                            while(True):
+                                last_time = int(datetime.timestamp(datetime(datetime.now(timezone.utc).year, datetime.now(timezone.utc).month, 1)) * 1000)
+                                end_time = int(transactions[0]['ts']) - 1 if len(transactions) > 0 else int(datetime.timestamp(datetime.now(timezone.utc)) * 1000)
+                                
+                                try:
+                                    res = HuobiHelper().get_isolated_transactions(exch=exch, params={'start_time': max(last_time, end_time - 169200000), "end_time": end_time})
+                                except:
+                                    break
+
+                                if len(res) == 0:
+                                    break
+
+                                res.sort(key = lambda x: x['ts'])
+                                transactions = res + transactions
+
+                                time.sleep(0.5)
+
+                            for item in transactions:
+                                item['info'] = {**item}
+
+                            transaction_value['isolated'] = Mapping().mapping_transactions(
+                                exchange=exchange, transactions=transactions
+                            )
+                        else:
+                            last_time = int(current_value['timestamp']) + 1 + config['transactions']['time_slack']
+
+                            transactions = []
+
+                            while(True):
+                                end_time = int(transactions[0]['ts']) - 1 if len(transactions) > 0 else int(datetime.timestamp(datetime.now(timezone.utc)) * 1000)
+                                
+                                try:
+                                    res = HuobiHelper().get_isolated_transactions(exch=exch, params={'start_time': max(last_time, end_time - 169200000), "end_time": end_time})
+                                except:
+                                    break
+
+
+                                if len(res) == 0:
+                                    break
+
+                                res.sort(key = lambda x: x['ts'])
+                                transactions = res + transactions
+
+                                time.sleep(0.5)
+
+                            for item in transactions:
+                                item['info'] = {**item}
+
+                            transaction_value['isolated'] = Mapping().mapping_transactions(
+                                exchange=exchange, transactions=transactions
+                            )
+
+                        transactions_values = self.transactions_db.aggregate([
+                            {
+                                '$match': {
+                                    '$expr': {
+                                        '$and': [
+                                            {
+                                                '$eq': [
+                                                    '$client', client
+                                                ]
+                                            }, {
+                                                '$eq': [
+                                                    '$venue', exchange
+                                                ]
+                                            }, {
+                                                '$eq': [
+                                                    '$account', sub_account
+                                                ]
+                                            }, {
+                                                '$eq': [
+                                                    '$trade_type', 'cm'
+                                                ]
+                                            }
+                                        ]
+                                    }
+                                }
+                            }, {
+                                '$project': {
+                                    'transaction_value': 1
+                                }
+                            }, {
+                                '$sort': {
+                                    'transaction_value.timestamp': 1
+                                }
+                            }, {
+                                '$group': {
+                                    '_id': None, 
+                                    'transaction_value': {
+                                        '$last': '$transaction_value'
+                                    }
+                                }
+                            }
+                        ])
+
+                        current_value = None
+                        for item in transactions_values:
+                            current_value = item["transaction_value"]
+
+                        if current_value is None:
+                            transactions = []
+
+                            while(True):
+                                last_time = int(datetime.timestamp(datetime(datetime.now(timezone.utc).year, datetime.now(timezone.utc).month, 1)) * 1000)
+                                end_time = int(transactions[0]['ts']) - 1 if len(transactions) > 0 else int(datetime.timestamp(datetime.now(timezone.utc)) * 1000)
+                                
+                                try:
+                                    res = HuobiHelper().get_cm_transactions(exch=exch, params={'start_time': max(last_time, end_time - 169200000), "end_time": end_time})
+                                except:
+                                    break
+
+                                if len(res) == 0:
+                                    break
+
+                                res.sort(key = lambda x: x['ts'])
+                                transactions = res + transactions
+
+                                time.sleep(0.5)
+
+                            for item in transactions:
+                                item['info'] = {**item}
+
+                            transaction_value['cm'] = Mapping().mapping_transactions(
+                                exchange=exchange, transactions=transactions
+                            )
+                        else:
+                            last_time = int(current_value['timestamp']) + 1 + config['transactions']['time_slack']
+
+                            transactions = []
+
+                            while(True):
+                                end_time = int(transactions[0]['ts']) - 1 if len(transactions) > 0 else int(datetime.timestamp(datetime.now(timezone.utc)) * 1000)
+                                
+                                try:
+                                    res = HuobiHelper().get_cm_transactions(exch=exch, params={'start_time': max(last_time, end_time - 169200000), "end_time": end_time})
+                                except:
+                                    break
+
+
+                                if len(res) == 0:
+                                    break
+
+                                res.sort(key = lambda x: x['ts'])
+                                transactions = res + transactions
+
+                                time.sleep(0.5)
+
+                            for item in transactions:
+                                item['info'] = {**item}
+
+                            transaction_value['cm'] = Mapping().mapping_transactions(
+                                exchange=exchange, transactions=transactions
+                            )
+
+                        transactions_values = self.transactions_db.aggregate([
+                            {
+                                '$match': {
+                                    '$expr': {
+                                        '$and': [
+                                            {
+                                                '$eq': [
+                                                    '$client', client
+                                                ]
+                                            }, {
+                                                '$eq': [
+                                                    '$venue', exchange
+                                                ]
+                                            }, {
+                                                '$eq': [
+                                                    '$account', sub_account
+                                                ]
+                                            }, {
+                                                '$eq': [
+                                                    '$trade_type', 'future'
+                                                ]
+                                            }
+                                        ]
+                                    }
+                                }
+                            }, {
+                                '$project': {
+                                    'transaction_value': 1
+                                }
+                            }, {
+                                '$sort': {
+                                    'transaction_value.timestamp': 1
+                                }
+                            }, {
+                                '$group': {
+                                    '_id': None, 
+                                    'transaction_value': {
+                                        '$last': '$transaction_value'
+                                    }
+                                }
+                            }
+                        ])
+
+                        current_value = None
+                        for item in transactions_values:
+                            current_value = item["transaction_value"]
+
+                        if current_value is None:
+                            transactions = []
+
+                            while(True):
+                                last_time = int(datetime.timestamp(datetime(datetime.now(timezone.utc).year, datetime.now(timezone.utc).month, 1)) * 1000)
+                                end_time = int(transactions[0]['ts']) - 1 if len(transactions) > 0 else int(datetime.timestamp(datetime.now(timezone.utc)) * 1000)
+                                
+                                try:
+                                    res = HuobiHelper().get_future_transactions(exch=exch, params={'start_time': max(last_time, end_time - 169200000), "end_time": end_time})
+                                except:
+                                    break
+
+                                if len(res) == 0:
+                                    break
+
+                                res.sort(key = lambda x: x['ts'])
+                                transactions = res + transactions
+
+                                time.sleep(0.5)
+
+                            for item in transactions:
+                                item['info'] = {**item}
+
+                            transaction_value['future'] = Mapping().mapping_transactions(
+                                exchange=exchange, transactions=transactions
+                            )
+                        else:
+                            last_time = int(current_value['timestamp']) + 1 + config['transactions']['time_slack']
+
+                            transactions = []
+
+                            while(True):
+                                end_time = int(transactions[0]['ts']) - 1 if len(transactions) > 0 else int(datetime.timestamp(datetime.now(timezone.utc)) * 1000)
+                                
+                                try:
+                                    res = HuobiHelper().get_future_transactions(exch=exch, params={'start_time': max(last_time, end_time - 169200000), "end_time": end_time})
+                                except:
+                                    break
+
+
+                                if len(res) == 0:
+                                    break
+
+                                res.sort(key = lambda x: x['ts'])
+                                transactions = res + transactions
+
+                                time.sleep(0.5)
+
+                            for item in transactions:
+                                item['info'] = {**item}
+
+                            transaction_value['future'] = Mapping().mapping_transactions(
+                                exchange=exchange, transactions=transactions
+                            )
+
+                        transactions_values = self.transactions_db.aggregate([
+                            {
+                                '$match': {
+                                    '$expr': {
+                                        '$and': [
+                                            {
+                                                '$eq': [
+                                                    '$client', client
+                                                ]
+                                            }, {
+                                                '$eq': [
+                                                    '$venue', exchange
+                                                ]
+                                            }, {
+                                                '$eq': [
+                                                    '$account', sub_account
+                                                ]
+                                            }, {
+                                                '$eq': [
+                                                    '$trade_type', 'spot'
+                                                ]
+                                            }
+                                        ]
+                                    }
+                                }
+                            }, {
+                                '$project': {
+                                    'transaction_value': 1
+                                }
+                            }, {
+                                '$sort': {
+                                    'transaction_value.timestamp': 1
+                                }
+                            }, {
+                                '$group': {
+                                    '_id': None, 
+                                    'transaction_value': {
+                                        '$last': '$transaction_value'
+                                    }
+                                }
+                            }
+                        ])
+
+                        current_value = None
+                        for item in transactions_values:
+                            current_value = item["transaction_value"]
+
+                        if current_value is None:
+                            transactions = []
+
+                            while(True):
+                                last_time = int(datetime.timestamp(datetime(datetime.now(timezone.utc).year, datetime.now(timezone.utc).month, 1)) * 1000)
+                                end_time = int(transactions[0]['ts']) - 1 if len(transactions) > 0 else int(datetime.timestamp(datetime.now(timezone.utc)) * 1000)
+                                
+                                try:
+                                    res = HuobiHelper().get_spot_transactions(exch=exch, params={'start_time': max(last_time, end_time - 169200000), "end_time": end_time})
+                                except:
+                                    break
+
+                                if len(res) == 0:
+                                    break
+
+                                res.sort(key = lambda x: x['ts'])
+                                transactions = res + transactions
+
+                                time.sleep(0.5)
+
+                            for item in transactions:
+                                item['info'] = {**item}
+
+                            transaction_value['spot'] = Mapping().mapping_transactions(
+                                exchange=exchange, transactions=transactions
+                            )
+                        else:
+                            last_time = int(current_value['timestamp']) + 1 + config['transactions']['time_slack']
+
+                            transactions = []
+
+                            while(True):
+                                end_time = int(transactions[0]['ts']) - 1 if len(transactions) > 0 else int(datetime.timestamp(datetime.now(timezone.utc)) * 1000)
+                                
+                                try:
+                                    res = HuobiHelper().get_spot_transactions(exch=exch, params={'start_time': max(last_time, end_time - 169200000), "end_time": end_time})
+                                except:
+                                    break
+
+
+                                if len(res) == 0:
+                                    break
+
+                                res.sort(key = lambda x: x['ts'])
+                                transactions = res + transactions
+
+                                time.sleep(0.5)
+
+                            for item in transactions:
+                                item['info'] = {**item}
+
+                            transaction_value['spot'] = Mapping().mapping_transactions(
+                                exchange=exchange, transactions=transactions
+                            )
     
             except ccxt.ExchangeError as e:
                 if logger == None:
@@ -1242,12 +1650,12 @@ class Transactions:
                         item['income_base'] = (
                             float(item["income"]) * 
                             Helper().calc_cross_ccy_ratio(
-                                item['asset'],
+                                item['currency'],
                                 config["clients"][client]["subaccounts"][exchange][sub_account]["base_ccy"], 
                                 tickers
                             )
                         )
-                        item['income'] = float(item["income"]) * Helper().calc_cross_ccy_ratio(item['asset'], config['transactions']['convert_ccy'], tickers)
+                        item['income'] = float(item["income"]) * Helper().calc_cross_ccy_ratio(item['currency'], config['transactions']['convert_ccy'], tickers)
 
                         new_value = {
                             "client": client,
@@ -1282,12 +1690,12 @@ class Transactions:
                         item['amount_base'] = (
                             float(item["amount"]) * 
                             Helper().calc_cross_ccy_ratio(
-                                item['asset'],
+                                item['currency'],
                                 config["clients"][client]["subaccounts"][exchange][sub_account]["base_ccy"], 
                                 tickers
                             )
                         )
-                        item['amount'] = float(item["amount"]) * Helper().calc_cross_ccy_ratio(item['asset'], config['transactions']['convert_ccy'], tickers)
+                        item['amount'] = float(item["amount"]) * Helper().calc_cross_ccy_ratio(item['currency'], config['transactions']['convert_ccy'], tickers)
 
                         new_value = {
                             "client": client,

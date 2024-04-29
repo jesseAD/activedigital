@@ -112,9 +112,11 @@ huobi:
   position:
     info:
       contract_code: symbol
-      cost_open: avgPrice
+      cost_hold: avgPrice
     unrealizedProfit: unrealizedPnl
   transaction:
     ts: timestamp
-    createdTime: timestamp
-    borrowCost: fee
+    transact-time: timestamp
+    transact-amt: amount
+    symbol: currency
+    asset: currency
