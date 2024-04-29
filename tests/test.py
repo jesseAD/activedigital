@@ -33,7 +33,19 @@ params = {
 }
 
 exchange = ccxt.huobi(params)
-res = exchange.contract_private_post_linear_swap_api_v3_swap_financial_record(params={'mar_acct': "USDT", 'type': "30,31,5,6,7,8,14,15,34,36,37,38,39"})
+
+res = exchange.contract_private_post_swap_api_v1_swap_account_position_info(params={'contract_code': "DOGE-USD"})['data']
+# contracts = [item['contract_code'] for item in res]
+
+# transactions = []
+# for contract in contracts:
+#     transactions += exchange.contract_private_post_linear_swap_api_v3_swap_financial_record(params={**params, 'mar_acct': contract})['data']
+
+# accounts = [int(item['id']) for item in res]
+
+# transactions = []
+# for account in accounts:
+#     transactions += exchange.spot_private_get_v1_account_history(params={'account-id': account})['data']
 # res = exchange.fetch_positions(params={'marginMode': "cross", 'subType': "linear"})
 print(res)
 # res = [
