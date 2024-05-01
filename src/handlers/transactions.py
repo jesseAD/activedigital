@@ -1650,12 +1650,12 @@ class Transactions:
                         item['income_base'] = (
                             float(item["income"]) * 
                             Helper().calc_cross_ccy_ratio(
-                                item['currency'],
+                                item['asset'],
                                 config["clients"][client]["subaccounts"][exchange][sub_account]["base_ccy"], 
                                 tickers
                             )
                         )
-                        item['income'] = float(item["income"]) * Helper().calc_cross_ccy_ratio(item['currency'], config['transactions']['convert_ccy'], tickers)
+                        item['income'] = float(item["income"]) * Helper().calc_cross_ccy_ratio(item['asset'], config['transactions']['convert_ccy'], tickers)
 
                         new_value = {
                             "client": client,
