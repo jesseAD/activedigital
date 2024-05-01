@@ -34,7 +34,7 @@ params = {
 
 exchange = ccxt.huobi(params)
 
-res = exchange.contract_private_post_swap_api_v1_swap_account_position_info(params={'contract_code': "DOGE-USD"})['data']
+res = exchange.fetch_positions(params={'type': "swap", 'subType': "inverse"})
 # contracts = [item['contract_code'] for item in res]
 
 # transactions = []

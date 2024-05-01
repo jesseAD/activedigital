@@ -615,7 +615,7 @@ class HuobiHelper(Helper):
         positions += exch.fetch_positions(params={'type': "future", 'subType': "inverse"})
         cm_positions = exch.fetch_positions(params={'type': "swap", 'subType': "inverse"})
         for position in cm_positions:
-            position['liquidationPrice'] = exch.contract_private_post_swap_api_v1_swap_account_position_info(params={'contract_code': position['info']['symbol']})['data'][0]['liquidation_price']
+            position['liquidationPrice'] = exch.contract_private_post_swap_api_v1_swap_account_position_info(params={'contract_code': position['info']['contract_code']})['data'][0]['liquidation_price']
         positions += cm_positions
 
         return positions
