@@ -872,145 +872,134 @@ class Positions:
         # calculate unhedged
 
         if config['clients'][client]['split_positions'] == True:
-            balance_values = self.balances_db.aggregate([
-                {
-                    '$match': {
-                        '$expr': {
-                            '$and': [
-                                {
-                                    '$eq': [
-                                        '$client', client
-                                    ]
-                                }, {
-                                    '$eq': [
-                                        '$venue', exchange
-                                    ]
-                                }, {
-                                    '$eq': [
-                                        '$account', sub_account
-                                    ]
-                                }
-                            ]
-                        }
-                    }
-                }, {
-                    '$project': {
-                        'balance_value': 1,
-                        'timestamp': 1
-                    }
-                }, {
-                    '$group': {
-                        '_id': None, 
-                        'balance_value': {
-                            '$last': '$balance_value'
-                        },
-                        'timestamp': {
-                            '$last': '$timestamp'
-                        }
-                    }
-                }
-            ])
-
-            balance = None
-            for item in balance_values:
-                timestamp = item['timestamp']
-                balance = item["balance_value"]
-
-            spot_positions = []
-
-            if balance != None:
-                for _key, _val in balance.items():
-                    if _key != "base":
-                        spot_position = {}
-                        spot_position['base'] = _key
-                        spot_position['quote'] = _key
-                        spot_position['symbol'] = _key
-                        spot_position['contracts'] = _val
-                        spot_position['avgPrice'] = 0
-                        spot_position['leverage'] = 0
-                        spot_position['unrealizedPnl'] = 0
-                        spot_position['lifetime_funding_rates'] = 0
-                        spot_position['marginMode'] = None
-                        spot_position['timestamp'] = int(timestamp.timestamp() * 1000)
-                        spot_position['side'] = "long" if _val > 0 else "short"
-                        spot_position['markPrice'] = 1 if _key == "USDT" else (0 if (_key + "/USDT") not in tickers else tickers[_key + "/USDT"]['last'])
-                        spot_position['notional'] = spot_position['markPrice'] * spot_position['contracts']
-
-                        spot_positions.append(spot_position)
-
             try:
+                balance_values = self.balances_db.aggregate([
+                    {
+                        '$match': {
+                            '$expr': {
+                                '$and': [
+                                    {
+                                        '$eq': [
+                                            '$client', client
+                                        ]
+                                    }, {
+                                        '$eq': [
+                                            '$venue', exchange
+                                        ]
+                                    }, {
+                                        '$eq': [
+                                            '$account', sub_account
+                                        ]
+                                    }
+                                ]
+                            }
+                        }
+                    }, {
+                        '$project': {
+                            'balance_value': 1,
+                            'timestamp': 1
+                        }
+                    }, {
+                        '$group': {
+                            '_id': None, 
+                            'balance_value': {
+                                '$last': '$balance_value'
+                            },
+                            'timestamp': {
+                                '$last': '$timestamp'
+                            }
+                        }
+                    }
+                ])
+
+                balance = None
+                for item in balance_values:
+                    timestamp = item['timestamp']
+                    balance = item["balance_value"]
+
+                spot_positions = []
+
+                if balance != None:
+                    for _key, _val in balance.items():
+                        if _key != "base":
+                            spot_position = {}
+                            spot_position['base'] = _key
+                            spot_position['quote'] = _key
+                            spot_position['symbol'] = _key
+                            spot_position['contracts'] = _val
+                            spot_position['avgPrice'] = 0
+                            spot_position['leverage'] = 0
+                            spot_position['unrealizedPnl'] = 0
+                            spot_position['lifetime_funding_rates'] = 0
+                            spot_position['marginMode'] = None
+                            spot_position['timestamp'] = int(timestamp.timestamp() * 1000)
+                            spot_position['side'] = "long" if _val > 0 else "short"
+                            spot_position['markPrice'] = 1 if _key == "USDT" else tickers[_key + "/USDT"]['last']
+                            spot_position['notional'] = spot_position['markPrice'] * spot_position['contracts']
+
+                            spot_positions.append(spot_position)
+
                 split_positions = []
                 split_positions = get_unhedged(position_info, spot_positions)
-            except Exception as e:
-                if logger == None:
-                    print(client + " " + exchange + " " + sub_account + " split positions " + str(e))
-                else:
-                    logger.warning(client + " " + exchange + " " + sub_account + " split positions " + str(e))
 
-            hedged_exclusion_positive = config['clients'][client]['subaccounts'][exchange][sub_account]['hedged_exclusion_positive']
-            hedged_exclusion_negative = config['clients'][client]['subaccounts'][exchange][sub_account]['hedged_exclusion_negative']
-            i = 0
-            while i < len(split_positions):
-                if len(split_positions[i]) == 1:
-                    if split_positions[i][0]['position'] > 0 and split_positions[i][0]['base'] in hedged_exclusion_positive:
-                        if hedged_exclusion_positive[split_positions[i][0]['base']] == 0:
-                            split_positions.pop(i)
-                            i -= 1
-                        else:
-                            split_positions[i][0]['notional'] *= (1 - hedged_exclusion_positive[split_positions[i][0]['base']] / split_positions[i][0]['position'])
-                            split_positions[i][0]['unrealizedPnl'] *= (1 - hedged_exclusion_positive[split_positions[i][0]['base']] / split_positions[i][0]['position'])
-                            split_positions[i][0]['unhedgedAmount'] *= (1 - hedged_exclusion_positive[split_positions[i][0]['base']] / split_positions[i][0]['position'])
-                            split_positions[i][0]['position'] -= hedged_exclusion_positive[split_positions[i][0]['base']]
+                hedged_exclusion_positive = config['clients'][client]['subaccounts'][exchange][sub_account]['hedged_exclusion_positive']
+                hedged_exclusion_negative = config['clients'][client]['subaccounts'][exchange][sub_account]['hedged_exclusion_negative']
+                i = 0
+                while i < len(split_positions):
+                    if len(split_positions[i]) == 1:
+                        if split_positions[i][0]['position'] > 0 and split_positions[i][0]['base'] in hedged_exclusion_positive:
+                            if hedged_exclusion_positive[split_positions[i][0]['base']] == 0:
+                                split_positions.pop(i)
+                                i -= 1
+                            else:
+                                split_positions[i][0]['notional'] *= (1 - hedged_exclusion_positive[split_positions[i][0]['base']] / split_positions[i][0]['position'])
+                                split_positions[i][0]['unrealizedPnl'] *= (1 - hedged_exclusion_positive[split_positions[i][0]['base']] / split_positions[i][0]['position'])
+                                split_positions[i][0]['unhedgedAmount'] *= (1 - hedged_exclusion_positive[split_positions[i][0]['base']] / split_positions[i][0]['position'])
+                                split_positions[i][0]['position'] -= hedged_exclusion_positive[split_positions[i][0]['base']]
 
-                    elif split_positions[i][0]['position'] < 0 and split_positions[i][0]['base'] in hedged_exclusion_negative:
-                        if hedged_exclusion_negative[split_positions[i][0]['base']] == 0:
-                            split_positions.pop(i)
-                            i -= 1
-                        else:
-                            split_positions[i][0]['notional'] *= (1 + hedged_exclusion_negative[split_positions[i][0]['base']] / split_positions[i][0]['position'])
-                            split_positions[i][0]['unrealizedPnl'] *= (1 + hedged_exclusion_negative[split_positions[i][0]['base']] / split_positions[i][0]['position'])
-                            split_positions[i][0]['unhedgedAmount'] *= (1 + hedged_exclusion_negative[split_positions[i][0]['base']] / split_positions[i][0]['position'])
-                            split_positions[i][0]['position'] += hedged_exclusion_negative[split_positions[i][0]['base']]
+                        elif split_positions[i][0]['position'] < 0 and split_positions[i][0]['base'] in hedged_exclusion_negative:
+                            if hedged_exclusion_negative[split_positions[i][0]['base']] == 0:
+                                split_positions.pop(i)
+                                i -= 1
+                            else:
+                                split_positions[i][0]['notional'] *= (1 + hedged_exclusion_negative[split_positions[i][0]['base']] / split_positions[i][0]['position'])
+                                split_positions[i][0]['unrealizedPnl'] *= (1 + hedged_exclusion_negative[split_positions[i][0]['base']] / split_positions[i][0]['position'])
+                                split_positions[i][0]['unhedgedAmount'] *= (1 + hedged_exclusion_negative[split_positions[i][0]['base']] / split_positions[i][0]['position'])
+                                split_positions[i][0]['position'] += hedged_exclusion_negative[split_positions[i][0]['base']]
 
-                i += 1
-            
-            current_time = datetime.now(timezone.utc)
-            split_position = {
-                "client": client,
-                "venue": exchange,
-                "account": "Main Account",
-                "position_value": split_positions,
-                "active": True,
-                "entry": False,
-                "exit": False,
-                "timestamp": current_time,
-            }
-            if sub_account:
-                split_position["account"] = sub_account
-            if spot:
-                split_position["spotMarket"] = spot
-            if future:
-                split_position["futureMarket"] = future
-            if perp:
-                split_position["perpMarket"] = perp
-            
-            split_position["runid"] = latest_run_id
+                    i += 1
+                
+                current_time = datetime.now(timezone.utc)
+                split_position = {
+                    "client": client,
+                    "venue": exchange,
+                    "account": "Main Account",
+                    "position_value": split_positions,
+                    "active": True,
+                    "entry": False,
+                    "exit": False,
+                    "timestamp": current_time,
+                }
+                if sub_account:
+                    split_position["account"] = sub_account
+                if spot:
+                    split_position["spotMarket"] = spot
+                if future:
+                    split_position["futureMarket"] = future
+                if perp:
+                    split_position["perpMarket"] = perp
+                
+                split_position["runid"] = latest_run_id
 
-            try:
                 self.split_positions_db.insert_one(split_position)
                 
             except Exception as e:
-                self.session.abort_transaction()
-                
                 if logger == None:
                     print(client + " " + exchange + " " + sub_account + " split positions " + str(e))
                     print("Unable to collect positions for " + client + " " + exchange + " " + sub_account)
                 else:
                     logger.error(client + " " + exchange + " " + sub_account + " split positions " + str(e))
                     logger.error("Unable to collect positions for " + client + " " + exchange + " " + sub_account)
-
-                return True
-            
 
         current_time = datetime.now(timezone.utc)
         position = {
