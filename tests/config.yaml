@@ -1,131 +1,491 @@
-mongo_host: 127.0.0.1
-mongo_db: 'active_digital'
-mongo_db_collection: 'test'
-mongo_port: 27017
+mongodb:
+  host: 127.0.0.1
+  database: 'active_digital'
+  port: 27017
+  max_pool: 1
 
 dask:
   back_off: 100
-  parallelization: 4
+  memory: '1GB'
+  workers: 0
+  threadPoolsPerWorker: 1
+  threadsPerPool: 20
+
+logging:
+  max_size: 300 # in KB
+  max_date: 5 # in days
+
+ccxt:
+  binance:
+    rateLimit: 30
+    timeout: 3000
+    retry: 3
+  okx:
+    rateLimit: 30
+    timeout: 3000
+    retry: 3
+  bybit:
+    rateLimit: 30
+    timeout: 3000
+    retry: 3
+  coinbase:
+    rateLimit: 30
+    timeout: 3000
+    retry: 3
+  huobi:
+    rateLimit: 30
+    timeout: 3000
+    retry: 3
 
 liquidation:
   threshold: 
-    binance: 1.05
+    binance: 1.1
+    binance_cm: 1
+    binance_um: 1
+    binance_pm: 1.7
     okx: 0.95
+    bybit: 0.95
+    huobi: 0.8
   scalar:
+    binance: 0.53
+    binance_cm: 0.5
+    binance_um: 0.5
+    binance_pm: 1
     okx: 0.125
+    bybit: -1
+    huobi: -1.8
 
 funding_payments: &funding_payments
   function: funding_payments.py
   scheduler: [continuous,external,5 4 * * *]
-  base_ccy: USDT
-  store_type: timeseries
-
-instruments: 
-  store_type: snapshot
-
-positions:
-  store_type: timeseries
-
-tickers:
-  store_type: timeseries
-
-leverages:
-  store_type: timeseries
+  base_ccy: USD
 
 balances: &balances
   function: balance.py
   scheduler: [continuous,external,5 4 * * * ]
   base_ccy: USDT
+  store_type: timeseries
+
+symbols: ['BTC', 'ETH', 'USDT', 'XRP', 'BNB', 'DOGE', 'SOL', 'LTC', 'BCH', 'DOT', 'ARB', 'ADA', 'OP', 
+    'SUI', 'APT', 'EOS', 'FIL', 'DYDX', 'ATOM', 'APE', 'CRV', 'TRX', 'RUNE', 'UNI', 'GALA', 'NEAR', 
+    '1000PEPE', 'PEPE', 'XMR', 'SAND', 'AAVE', 'USDC', 'AXS', 'COMP', 'GMT', 'ICP', 'MANA', 'ALGO', 'SHIB', 'SUSHI', 
+    'GRT', '1INCH', 'CHZ', 'NEO', 'KNC', 'XTZ', 'THETA', 'DASH', 'PEOPLE', 'LRC', 'ZIL', 'OMG', 'ROSE', 'AR', 'COTI', 'ICX', 
+    'BIGTIME', 'ORDI', 'FTM', '1000BONK', ]
+
+instruments:
+  store_type: snapshot
+
+positions:
+  store_type: timeseries
+  margin_mode: non_portfolio
+  bybit_coins: ["BTC", "ETH", "XRP", "ADA", "DOT", "LTC", "EOS", "MANA", "USDT", "USDC", ]
+  alert_threshold: 1000
+
+open_orders:
+  timeout: 120
+  store_type: snapshot
+
+tickers:
+  store_type: snapshot
+
+index_prices:
+  store_type: timeseries
+
+roll_costs:
+  prompts: ["THISWEEK", "NEXTWEEK", "THISMONTH", "NEXTMONTH", "QUARTER", "NEXTQUARTER"]
+  symbols: ["BTC", "ETH"]
+  contract_values:
+    binance:
+      BTC_LINEAR: 1
+      BTC_INVERSE: 100
+      ETH_LINEAR: 1
+      ETH_INVERSE: 10
+    okx:
+      BTC_LINEAR: 0.01
+      BTC_INVERSE: 100
+      ETH_LINEAR: 0.001
+      ETH_INVERSE: 10
+    bybit:
+      BTC_LINEAR: 1
+      BTC_INVERSE: 1
+      ETH_LINEAR: 1
+      ETH_INVERSE: 1
+    huobi:
+      BTC_LINEAR: 1
+      BTC_INVERSE: 1
+      ETH_LINEAR: 1
+      ETH_INVERSE: 1
+
+leverages:
+  store_type: timeseries
+
+transactions:
+  store_type: timeseries
+  fetch_type: time # time, id
+  time_slack: 600000 # in ms
+  convert_ccy: USDT
+
+fills:
+  store_type: timeseries
+  fetch_type: time # time, id
+
+mark_prices:
+  store_type: timeseries
+
+vip_loan_rates:
+  client: blackburn
+  account: submn1
+
+borrow_rates:
+  period: 
+    binance: daily # yearly, daily or interval
+    okx: yearly # yearly, daily or interval
+    bybit: daily # yearly, daily or interval
+    huobi: daily # yearly, daily or interval
 
 funding_rates:
   bybit:
     helper: bybithelper.py
-    instruments:  
+    instruments:
       ["BTC.USDT.PERP","ETH.USDT.PERP"]
   binance:
-    helper: binancehelper.py
+    helper: helper.py
     instruments:  
       ["BTC.USDT.PERP","ETH.USDT.PERP"]
+    valid: valid_from # valid_to, valid_from
   okx:
     helper: okxhelper.py
-    instruments:  
+    instruments:
       ["BTC.USDT.PERP","ETH.USDT.PERP"]
+    valid: valid_to
+
+  period: interval # yearly, daily or interval
+  base_ccy: ["USDT", "ETH", "BTC", ]
+
+# exchanges: ["huobi", ]
+exchanges: ["binance", "okx", "bybit", "huobi", ]
+
+clients:
+  rundmc:
+    split_positions: True
+
+    subaccounts:
+      binance:
+        subaccount4:
+          base_ccy: BTC
+          margin_mode: non_portfolio
+          hedged_exclusion_positive: {'USDT': 0}
+          hedged_exclusion_negative: {'USDT': 0}
+        
+        subaccount6:
+          base_ccy: BTC
+          margin_mode: non_portfolio
+          hedged_exclusion_positive: {'USDT': 0}
+          hedged_exclusion_negative: {'USDT': 0}
+        
+        subbinancepm1:
+          base_ccy: BTC
+          margin_mode: portfolio
+          hedged_exclusion_negative: {'USDT': 0}
+          hedged_exclusion_positive: {'USDT': 0}
+
+      okx:
+        subaccount1:
+          base_ccy: USD
+          margin_mode: non_portfolio
+          hedged_exclusion_positive: {'USDT': 0}
+          hedged_exclusion_negative: {'USDT': 0}
+
+  besttrader:
+    split_positions: True
+
+    subaccounts:
+      okx:
+        sub1ap:
+          base_ccy: USD
+          margin_mode: non_portfolio
+          hedged_exclusion_positive: {'USDT': 0}
+          hedged_exclusion_negative: {'USDT': 0}
+        
+        sub2aa:
+          base_ccy: USD
+          margin_mode: non_portfolio
+          hedged_exclusion_positive: {'USDT': 0}
+          hedged_exclusion_negative: {'USDT': 0}
+
+      bybit:
+        sub1:
+          base_ccy: USD
+          margin_mode: non_portfolio
+          hedged_exclusion_positive: {'USDT': 0}
+          hedged_exclusion_negative: {'USDT': 0}
+
+        sub4:
+          base_ccy: USD
+          margin_mode: non_portfolio
+          hedged_exclusion_positive: {'USDT': 0}
+          hedged_exclusion_negative: {'USDT': 0}
+
+  wizardly:
+    split_positions: True
+
+    subaccounts:
+      okx:
+        submn:
+          base_ccy: USDT
+          margin_mode: non_portfolio
+          hedged_exclusion_positive: {'USDT': 0}
+          hedged_exclusion_negative: {'USDT': 0}
+
+        subbasis:
+          base_ccy: USDT
+          margin_mode: non_portfolio
+          hedged_exclusion_positive: {'USDT': 0}
+          hedged_exclusion_negative: {'USDT': 0}
+          
+      binance:
+        submn:
+          base_ccy: USDT
+          margin_mode: portfolio
+          hedged_exclusion_positive: {'USDT': 0}
+          hedged_exclusion_negative: {'USDT': 0}
+
+      bybit:
+        subbasis:
+          base_ccy: USD
+          margin_mode: non_portfolio
+          hedged_exclusion_positive: {'USDT': 0}
+          hedged_exclusion_negative: {'USDT': 0}
+          
+        
+  jess:
+    split_positions: True
+
+    subaccounts:
+      okx:
+        subandyactivedigital:
+          base_ccy: USD
+          margin_mode: non_portfolio
+          hedged_exclusion_positive: {'USDT': 0}
+          hedged_exclusion_negative: {'USDT': 0}
+        
+        subandypants:
+          base_ccy: USD
+          margin_mode: non_portfolio
+          hedged_exclusion_positive: {'USDT': 0}
+          hedged_exclusion_negative: {'USDT': 0}
+        
+        subjessetf:
+          base_ccy: USD
+          margin_mode: non_portfolio
+          hedged_exclusion_positive: {'USDT': 0}
+          hedged_exclusion_negative: {'USDT': 0}
+        
+        subadtest2:
+          base_ccy: USD
+          margin_mode: non_portfolio
+          hedged_exclusion_positive: {'USDT': 0}
+          hedged_exclusion_negative: {'USDT': 0}
+
+  blackburn:
+    split_positions: True
+
+    subaccounts:
+      okx:
+        submn1:
+          base_ccy: USDT
+          margin_mode: non_portfolio
+          hedged_exclusion_positive: {'USDT': 0}
+          hedged_exclusion_negative: {'USDT': 0}
+
+      binance:
+        submn1:
+          base_ccy: USDT
+          margin_mode: portfolio
+          hedged_exclusion_positive: {'USDT': 0}
+          hedged_exclusion_negative: {'USDT': 0}    
+
+      bybit:
+        submn1:
+          base_ccy: USD
+          margin_mode: non_portfolio
+          hedged_exclusion_positive: {'USDT': 0}
+          hedged_exclusion_negative: {'USDT': 0}
+          
+  quizzical:
+    split_positions: True
+
+    subaccounts:
+      binance:
+        subls:
+          base_ccy: USD
+          margin_mode: non_portfolio
+          hedged_exclusion_positive: {'USDT': 0}
+          hedged_exclusion_negative: {'USDT': 0}
+
+  faraday:
+    split_positions: False
+
+    subaccounts:
+      okx:
+        subls:
+          base_ccy: USDT
+          margin_mode: non_portfolio
+          hedged_exclusion_positive: {'USDT': 0, 'SOL': 347,'ETH': 14 }
+          hedged_exclusion_negative: {'USDT': 0}
+          
+  edison:
+    split_positions: True
+
+    subaccounts:
+      okx:
+        submn1:
+          base_ccy: USDT
+          margin_mode: non_portfolio
+          hedged_exclusion_positive: {'USDT': 0, 'SOL': 347,'ETH': 14 }
+          hedged_exclusion_negative: {'USDT': 0}
+
+        payment:
+          base_ccy: USDT
+          margin_mode: non_portfolio
+          hedged_exclusion_positive: {'USDT': 0}
+          hedged_exclusion_negative: {'USDT': 0}
+          
+  edisonhedge:
+    split_positions: True
+
+    subaccounts:
+      okx:
+        synswap:
+          base_ccy: BTC
+          margin_mode: non_portfolio
+          hedged_exclusion_positive: {'USDT': 0}
+          hedged_exclusion_negative: {'USDT': 0}
+
+      bybit:
+        subbasis1:
+          base_ccy: BTC
+          margin_mode: non_portfolio
+          hedged_exclusion_positive: {'USDT': 0}
+          hedged_exclusion_negative: {'USDT': 0}
+        
+  kepler:
+    split_positions: True
+
+    subaccounts:
+      okx:
+        subbasis1:
+          base_ccy: USDT
+          margin_mode: non_portfolio
+          hedged_exclusion_positive: {'USDT': 0}
+          hedged_exclusion_negative: {'USDT': 0}
+
+        subbasis2:
+          base_ccy: USDT
+          margin_mode: non_portfolio
+          hedged_exclusion_positive: {'USDT': 0}
+          hedged_exclusion_negative: {'USDT': 0}          
+
+      bybit:
+        subbasis1:
+          base_ccy: USD
+          margin_mode: non_portfolio
+          hedged_exclusion_positive: {'USDT': 0}
+          hedged_exclusion_negative: {'USDT': 0}
+
+  nifty:
+    split_positions: True
+
+    subaccounts:
+      okx:
+        subbasis1:
+          base_ccy: BTC
+          margin_mode: non_portfolio
+          hedged_exclusion_positive: {'BTC': 20.2}
+          hedged_exclusion_negative: {'USDT': 0,'BTC': 0}
+
+      bybit:
+        subbasis1:
+          base_ccy: USD
+          margin_mode: non_portfolio
+          hedged_exclusion_positive: {'USDT': 0,'BTC': 0}
+          hedged_exclusion_negative: {'USDT': 0,'BTC': 0}
+
+        subbasis2:
+          base_ccy: BTC
+          margin_mode: non_portfolio
+          hedged_exclusion_positive: {'USDT': 0,'BTC': 20}
+          hedged_exclusion_negative: {'USDT': 0,'BTC': 0}
+
+      binance:
+        subbasis1:
+          base_ccy: BTC
+          margin_mode: portfolio
+          hedged_exclusion_positive: {'BTC': 20}
+          hedged_exclusion_negative: {'USDT': 0,'BTC': 0}
+
+  wilbur:
+    split_positions: True
+
+    subaccounts:
+      okx:
+        subls1:
+          base_ccy: USDT
+          margin_mode: non_portfolio
+          hedged_exclusion_positive: {'USDT': 0}
+          hedged_exclusion_negative: {'USDT': 0}
+
+      bybit:
+        subbasis1:
+          base_ccy: ETH
+          margin_mode: non_portfolio
+          hedged_exclusion_positive: {'USDT': 0}
+          hedged_exclusion_negative: {'USDT': 0}
+
+      huobi:
+        subbasis1:
+          base_ccy: USDT
+          margin_mode: non_portfolio
+          hedged_exclusion_positive: {'USDT': 0}
+          hedged_exclusion_negative: {'USDT': 0}          
+
+  vigilant:
+    split_positions: True
+
+    subaccounts:
+      bybit:
+        subbasis1:
+          base_ccy: ETH
+          margin_mode: non_portfolio
+          hedged_exclusion_positive: {'ETH': 101.99}
+          hedged_exclusion_negative: {'ETH': 0, 'USDT': 0} 
   
-deepspace:
-  bybit_subaccount1: &bybit_subaccount1
-    apikey: xyz
-    apisecret: zyx
-  binance_subaccount1: &binance_subaccount1
-    apikey: xyz
-    apisecret: xyz
-  binance_subaccount2: &binance_subaccount2
-    apikey: xyz
-    apisecret: xyz
-  okx_subaccount1: &okx_subaccount1
-    apikey: zyx
-    apisecret: xyz
-  
-  funding_payments:
-    bybit:
-      <<: *funding_payments
-      helper: bybithelper.py
-      subaccount1: *bybit_subaccount1
-    binance:
-      <<: *funding_payments
-      helper: binancehelper.py
-      subaccount1: *binance_subaccount1
-      subaccount2: *binance_subaccount2
-    okx:
-      <<: *funding_payments
-      helper: okxhelper.py
-      subaccount1: *okx_subaccount1
+  sanderson:
+    split_positions: True
 
-  balances:    
-    function: balance.py
-    scheduler: [continuous,external,5 4 * * * ]
-    bybit:
-      <<: *balances
-      helper: bybithelper.py
-      subaccount1: *bybit_subaccount1
-    binance:
-      <<: *balances
-      helper: binancehelper.py
-      subaccount1: *binance_subaccount1
-      subaccount2: *binance_subaccount2
-    okx:
-      <<: *balances
-      helper: okxhelper.py
-      subaccount1: *okx_subaccount1
+    subaccounts:
+      okx:
+        subbasis1:
+          base_ccy: USDT
+          margin_mode: non_portfolio
+          hedged_exclusion_positive: {'USDT': 0}
+          hedged_exclusion_negative: {'USDT': 0} 
 
-highsky:  
-  funding_payments:
-    bybit:
-      <<: *funding_payments
-      helper: bybithelper.py
-      subaccount1: *bybit_subaccount1
-    binance:
-      <<: *funding_payments
-      helper: binancehelper.py
-      subaccount1: *binance_subaccount1
-      subaccount2: *binance_subaccount2
-    okx:
-      <<: *funding_payments
-      helper: okxhelper.py
-      subaccount1: *okx_subaccount1
-
-  balances:    
-    function: balance.py
-    scheduler: [continuous,external,5 4 * * * ]
-    bybit:
-      <<: *balances
-      helper: bybithelper.py
-      subaccount1: *bybit_subaccount1
-    binance:
-      <<: *balances
-      helper: binancehelper.py
-      subaccount1: *binance_subaccount1
-      subaccount2: *binance_subaccount2
-    okx:
-      <<: *balances
-      helper: okxhelper.py
-      subaccount1: *okx_subaccount1
+  lumiere:
+    split_positions: True
+    subaccounts:
+      okx:
+        subls1:
+          base_ccy: BTC
+          margin_mode: non_portfolio
+          hedged_exclusion_positive: {'USDT': 0,'BTC': 5}
+          hedged_exclusion_negative: {'USDT': 0} 
+  eloquent:
+    split_positions: True
+    subaccounts:
+      okx:
+        subbasis1:
+          base_ccy: USDT
+          margin_mode: non_portfolio
+          hedged_exclusion_positive: {'USDT': 0}
+          hedged_exclusion_negative: {'USDT': 0} 

@@ -15,7 +15,7 @@ class Fills:
 
         self.runs_db = db[config['mongodb']['database']]['runs']
         self.positions_db = db[config['mongodb']['database']]['positions']
-        self.fills_db = db[config['mongodb']['database']]['fills']
+        self.fills_db = db[config['mongodb']['database']][collection]
 
     # def get(
     #     self,

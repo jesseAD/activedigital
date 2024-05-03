@@ -12,7 +12,7 @@ class FundingRates:
     def __init__(self, db, collection):
 
         self.runs_db = db[config['mongodb']['database']]['runs']
-        self.funding_rates_db = db[config['mongodb']['database']]['funding_rates']
+        self.funding_rates_db = db[config['mongodb']['database']][collection]
         self.borrow_rates_db = db[config['mongodb']['database']]['borrow_rates']
         self.long_funding_db = db[config['mongodb']['database']]['long_funding']
         self.short_funding_db = db[config['mongodb']['database']]['short_funding']

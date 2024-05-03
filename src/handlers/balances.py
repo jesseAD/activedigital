@@ -13,48 +13,48 @@ class Balances:
 
         self.runs_db = db[config['mongodb']['database']]['runs']
         self.tickers_db = db[config['mongodb']['database']]['tickers']
-        self.balances_db = db[config['mongodb']['database']]['balances']
+        self.balances_db = db[config['mongodb']['database']][collection]
 
-    # def get(
-    #     self,
-    #     active: bool = None,
-    #     spot: str = None,
-    #     future: str = None,
-    #     perp: str = None,
-    #     position_type: str = None,
-    #     client: str = None,
-    #     exchange: str = None,
-    #     account: str = None,
-    # ):
-    #     results = []
+    def get(
+        self,
+        active: bool = None,
+        spot: str = None,
+        future: str = None,
+        perp: str = None,
+        position_type: str = None,
+        client: str = None,
+        exchange: str = None,
+        account: str = None,
+    ):
+        results = []
 
-    #     pipeline = [
-    #         {"$sort": {"_id": -1}},
-    #     ]
+        pipeline = [
+            {"$sort": {"_id": -1}},
+        ]
 
-    #     if active is not None:
-    #         pipeline.append({"$match": {"active": active}})
-    #     if spot:
-    #         pipeline.append({"$match": {"spotMarket": spot}})
-    #     if future:
-    #         pipeline.append({"$match": {"futureMarket": future}})
-    #     if perp:
-    #         pipeline.append({"$match": {"perpMarket": perp}})
-    #     if position_type:
-    #         pipeline.append({"$match": {"positionType": position_type}})
-    #     if client:
-    #         pipeline.append({"$match": {"client": client}})
-    #     if exchange:
-    #         pipeline.append({"$match": {"venue": exchange}})
-    #     if account:
-    #         pipeline.append({"$match": {"account": account}})
+        if active is not None:
+            pipeline.append({"$match": {"active": active}})
+        if spot:
+            pipeline.append({"$match": {"spotMarket": spot}})
+        if future:
+            pipeline.append({"$match": {"futureMarket": future}})
+        if perp:
+            pipeline.append({"$match": {"perpMarket": perp}})
+        if position_type:
+            pipeline.append({"$match": {"positionType": position_type}})
+        if client:
+            pipeline.append({"$match": {"client": client}})
+        if exchange:
+            pipeline.append({"$match": {"venue": exchange}})
+        if account:
+            pipeline.append({"$match": {"account": account}})
 
-    #     try:
-    #         results = self.balances_db.aggregate(pipeline)
-    #         return results
+        try:
+            results = self.balances_db.aggregate(pipeline)
+            return results
 
-    #     except Exception as e:
-    #         log.error(e)
+        except Exception as e:
+            print(e)
 
     def create(
         self,
@@ -69,6 +69,12 @@ class Balances:
         logger=None,
         secrets={},
     ):
+        repayments = {}
+        loan_pools = {
+            'vip_loan': 0,
+            'market_loan': 0
+        }
+    
         if balanceValue is None:
             if exch == None:
                 spec = (client.upper() + "_" + exchange.upper() + "_" + sub_account.upper() + "_")
@@ -81,12 +87,6 @@ class Balances:
                 exch = Exchange(
                     exchange, sub_account, API_KEY, API_SECRET, PASSPHRASE
                 ).exch()
-
-            repayments = {}
-            loan_pools = {
-                'vip_loan': 0,
-                'market_loan': 0
-            }
 
             try:
                 if exchange == "okx":
@@ -166,23 +166,47 @@ class Balances:
                     logger.error("Unable to collect balances for " + client + " " + exchange + " " + sub_account)
                 return True
 
-        balanceValue = {_key: balanceValue[_key] for _key in balanceValue if balanceValue[_key] != 0.0}
+            balanceValue = {_key: balanceValue[_key] for _key in balanceValue if balanceValue[_key] != 0.0}
 
-        query = {}
-        if exchange:
-            query["venue"] = exchange
-        ticker_values = self.tickers_db.find(query)
+            query = {}
+            if exchange:
+                query["venue"] = exchange
+            ticker_values = self.tickers_db.find(query)
 
-        for item in ticker_values:
-            ticker_value = item["ticker_value"]
+            for item in ticker_values:
+                ticker_value = item["ticker_value"]
 
-        base_balance = 0
-        if exchange == "binance":
-            try:
-                wallet_balances = Helper().get_wallet_balances(exch=exch)
-                for item in wallet_balances:
+            base_balance = 0
+            if exchange == "binance":
+                try:
+                    wallet_balances = Helper().get_wallet_balances(exch=exch)
+                    for item in wallet_balances:
+                        cross_ratio = Helper().calc_cross_ccy_ratio(
+                            "BTC", config["clients"][client]["subaccounts"][exchange][sub_account]["base_ccy"], ticker_value
+                        )
+
+                        if cross_ratio == 0:
+                            if logger == None:
+                                print(client + " " + exchange + " " + sub_account + " balances: skipped as zero ticker price")
+                                print("Unable to collect balances for " + client + " " + exchange + " " + sub_account)
+                            else:
+                                logger.error(client + " " + exchange + " " + sub_account + " balances: skipped as zero ticker price")
+                                logger.error("Unable to collect balances for " + client + " " + exchange + " " + sub_account)
+                            return True
+                    
+                        base_balance += float(item['balance']) * cross_ratio
+                except ccxt.ExchangeError as e:
+                    if logger == None:
+                        print(client + " " + exchange + " " + sub_account + " balances " + str(e))
+                    else:
+                        logger.warning(client + " " + exchange + " " + sub_account + " balances " + str(e))
+                    pass
+            else:
+                for _key, _value in balanceValue.items():
                     cross_ratio = Helper().calc_cross_ccy_ratio(
-                        "BTC", config["clients"][client]["subaccounts"][exchange][sub_account]["base_ccy"], ticker_value
+                        _key,
+                        config["clients"][client]["subaccounts"][exchange][sub_account]["base_ccy"],
+                        ticker_value,
                     )
 
                     if cross_ratio == 0:
@@ -193,34 +217,10 @@ class Balances:
                             logger.error(client + " " + exchange + " " + sub_account + " balances: skipped as zero ticker price")
                             logger.error("Unable to collect balances for " + client + " " + exchange + " " + sub_account)
                         return True
-                
-                    base_balance += float(item['balance']) * cross_ratio
-            except ccxt.ExchangeError as e:
-                if logger == None:
-                    print(client + " " + exchange + " " + sub_account + " balances " + str(e))
-                else:
-                    logger.warning(client + " " + exchange + " " + sub_account + " balances " + str(e))
-                pass
-        else:
-            for _key, _value in balanceValue.items():
-                cross_ratio = Helper().calc_cross_ccy_ratio(
-                    _key,
-                    config["clients"][client]["subaccounts"][exchange][sub_account]["base_ccy"],
-                    ticker_value,
-                )
+                    
+                    base_balance += _value * cross_ratio
 
-                if cross_ratio == 0:
-                    if logger == None:
-                        print(client + " " + exchange + " " + sub_account + " balances: skipped as zero ticker price")
-                        print("Unable to collect balances for " + client + " " + exchange + " " + sub_account)
-                    else:
-                        logger.error(client + " " + exchange + " " + sub_account + " balances: skipped as zero ticker price")
-                        logger.error("Unable to collect balances for " + client + " " + exchange + " " + sub_account)
-                    return True
-                
-                base_balance += _value * cross_ratio
-
-        balanceValue["base"] = base_balance
+            balanceValue["base"] = base_balance
 
         balance_values = self.balances_db.aggregate([
             {

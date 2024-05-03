@@ -1,5 +1,13 @@
 import json
 import os
+import sys
+
+current_file = os.path.abspath(__file__)
+current_directory = os.path.dirname(current_file)
+target_dir = os.path.abspath(os.path.join(current_directory, os.pardir))
+
+sys.path.append(target_dir)
+
 import unittest
 from unittest import mock
 from pymongo import MongoClient
@@ -7,8 +15,6 @@ from datetime import datetime, timezone
 
 from src.handlers.helpers import Helper
 from src.config import read_config_file
-from src.handlers.database_connector import database_connector
-from src.lib.db import MongoDB
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -16,12 +22,13 @@ load_dotenv()
 
 class TestCrossCcyRatio(unittest.TestCase):
     def setUp(self):
-        self.config = read_config_file("tests/config.yaml")
+        self.config = read_config_file('tests/config.yaml')
 
-        if os.getenv("mode") == "testing":
-            self.tickers_db = MongoDB(self.config["mongo_db"], "tickers")
-        else:
-            self.tickers_db = database_connector("tickers")
+        mongo_uri = None
+
+        if os.getenv("mode") == "prod":
+            mongo_uri = 'mongodb+srv://activedigital:'+os.getenv("CLOUD_MONGO_PASSWORD")+'@mongodbcluster.nzphth1.mongodb.net/?retryWrites=true&w=majority'
+        self.tickers_db = MongoClient(mongo_uri)['active_digital']['tickers']
 
     @mock.patch("src.handlers.helpers.Helper", autospec=True)
     def test_SameBaseAndQuote(self, mock_helper):
