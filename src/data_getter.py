@@ -37,7 +37,6 @@ from src.handlers.instantiator import enclose_runs
 from src.handlers.instantiator import get_data_collectors
 from src.config import read_config_file
 from lib.log import Log
-from lib.db import MongoDB
 
 config = read_config_file()
 secrets = dotenv_values()
