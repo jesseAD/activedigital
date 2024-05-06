@@ -13,14 +13,15 @@ class Leverages:
         self.split_positions_db = db['split_positions']
         self.balances_db = db['balances']
         self.tickers_db = db['tickers']
-        self.leverages_db = db['leverages']
+        self.leverages_db = db[collection]
 
     def get(
         self,
         client,
         exchange: str = None,
         account: str = None,
-        logger=None
+        logger=None,
+        leverage=None
     ):        
         run_ids = self.runs_db.find({}).sort('_id', -1).limit(1)
         latest_run_id = 0
@@ -30,7 +31,7 @@ class Leverages:
             except:
                 pass
         
-        try:
+        if leverage is None:
             query = {}
             if exchange:
                 query["venue"] = exchange
@@ -248,20 +249,14 @@ class Leverages:
                     logger.error(client + " " + exchange + " " + account + " leverages " + str(e))
 
                 return False
-
-            leverage_value = {
-                "client": client,
-                "venue": exchange,
-                "account": account,
-                "timestamp": datetime.now(timezone.utc),
-            }
+            
             try:
                 if max_notional == 0.0 and balance_in_base_currency == 0.0:
-                    leverage_value['leverage'] = 0
+                    leverage = 0
                 elif balance_in_base_currency == 0.0:
-                    leverage_value['leverage'] = sys.float_info.max
+                    leverage = sys.float_info.max
                 else:
-                    leverage_value['leverage'] = max_notional / balance_in_base_currency
+                    leverage = max_notional / balance_in_base_currency
             except Exception as e:
                 if logger == None:
                     print(client + " " + exchange + " " + account + " leverages " + str(e))
@@ -269,9 +264,19 @@ class Leverages:
                     logger.error(client + " " + exchange + " " + account + " leverages " + str(e))
 
                 return False
-            
-            leverage_value["runid"] = latest_run_id
-            
+
+        leverage_value = {
+            "client": client,
+            "venue": exchange,
+            "account": account,
+            "leverage": leverage,
+            "timestamp": datetime.now(timezone.utc),
+        }
+        
+        
+        leverage_value["runid"] = latest_run_id
+        
+        try:
             if config['leverages']['store_type'] == "timeseries":
                 self.leverages_db.insert_one(leverage_value)
             elif config['leverages']['store_type'] == "snapshot":
@@ -290,7 +295,7 @@ class Leverages:
                 )
 
             return True
-        
+    
         except Exception as e:
             if logger == None:
                 print(client + " " + exchange + " " + account + " leverages " + str(e))

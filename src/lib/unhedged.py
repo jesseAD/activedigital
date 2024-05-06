@@ -46,7 +46,11 @@ def get_unhedged(perp=[], spot=[]):
         new_position['symbol'] = position['symbol']
         new_position['timestamp'] = position['timestamp']
         new_position['marginMode'] = position['marginMode']
-        new_position['lifetime_funding_rates'] = position['lifetime_funding_rates']
+
+        if 'lifetime_funding_rates' in position:
+            new_position['lifetime_funding_rates'] = position['lifetime_funding_rates']
+        else:
+            new_position['lifetime_funding_rates'] = 0
 
         new_positions.append(new_position)
 
@@ -59,7 +63,10 @@ def get_unhedged(perp=[], spot=[]):
         new_position['position_decimal'] = get_decimal_places(position['contracts'])
         new_position['position'] = float(position['contracts'])
         new_position['markPrice'] = float(position['markPrice'])
-        new_position['lifetime_funding_rates'] = position['lifetime_funding_rates']
+        if 'lifetime_funding_rates' in position:
+            new_position['lifetime_funding_rates'] = position['lifetime_funding_rates']
+        else:
+            new_position['lifetime_funding_rates'] = 0
 
         if 'avgPrice' in position:
             if position['avgPrice'] != None:

@@ -21,7 +21,7 @@ class Positions:
         self.funding_rates_db = db[config['mongodb']['database']]['funding_rates']
         self.lifetime_funding_db = db[config['mongodb']['database']]['lifetime_funding']
         self.split_positions_db = db[config['mongodb']['database']]['split_positions']
-        self.positions_db = db[config['mongodb']['database']]['positions']
+        self.positions_db = db[config['mongodb']['database']][collection]
         self.mark_prices_db = db[config['mongodb']['database']]['mark_prices']
         self.price_changes_db = db[config['mongodb']['database']]['open_positions_price_change']
 
@@ -85,17 +85,17 @@ class Positions:
         secrets={},
         balance_finished={},
     ):
-        while(not balance_finished[client + "_" + exchange + "_" + sub_account]):
-            if logger == None:
-                print(client + " " + exchange + " " + sub_account + " positions: balances was not finished")
-            else:
-                logger.info(client + " " + exchange + " " + sub_account + " positions: balances was not finished")
-
-            time.sleep(0.5)
-
         self.session.start_transaction()
 
         if position_value is None:
+            while(not balance_finished[client + "_" + exchange + "_" + sub_account]):
+                if logger == None:
+                    print(client + " " + exchange + " " + sub_account + " positions: balances was not finished")
+                else:
+                    logger.info(client + " " + exchange + " " + sub_account + " positions: balances was not finished")
+
+                time.sleep(0.5)
+
             if exch == None:
                 spec = (client.upper() + "_" + exchange.upper() + "_" + sub_account.upper() + "_")
                 API_KEY = secrets[spec + "API_KEY"]
@@ -164,124 +164,52 @@ class Positions:
 
                 return False
                 
-        try:
-            position_info = []
-            liquidation_buffer = 1
-            tickers = list(self.tickers_db.find({"venue": exchange}))[0]["ticker_value"]
+            try:
+                position_info = []
+                liquidation_buffer = 1
+                tickers = list(self.tickers_db.find({"venue": exchange}))[0]["ticker_value"]
 
-            if exchange == "okx":
-                try:
-                    cross_margin_ratio = float(
-                        OKXHelper().get_cross_margin_ratio(exch=exch)
-                    )
-                    liquidation_buffer = OKXHelper().calc_liquidation_buffer(
-                        exchange=exchange, mgnRatio=cross_margin_ratio
-                    )
-
-                except ccxt.ExchangeError as e:
-                    self.session.abort_transaction()
-
-                    if logger == None:
-                        print(client + " " + exchange + " " + sub_account + " positions: in cross margin ratio " + str(e))
-                    else:
-                        logger.warning(client + " " + exchange + " " + sub_account + " positions: in cross margin ratio " + str(e))
-                        
-                    return True
-                
-                except ccxt.NetworkError as e:
-                    self.session.abort_transaction()
-
-                    if logger == None:
-                        print(client + " " + exchange + " " + sub_account + " positions: in cross margin ratio " + str(e))
-                    else:
-                        logger.warning(client + " " + exchange + " " + sub_account + " positions: in cross margin ratio " + str(e))
-                        
-                    return False
-                
-                except Exception as e:
-                    if logger == None:
-                        print(client + " " + exchange + " " + sub_account + " positions: in cross margin ratio " + str(e))
-                    else:
-                        logger.warning(client + " " + exchange + " " + sub_account + " positions: in cross margin ratio " + str(e))
-
-            elif exchange == "bybit":
-                try:
-                    cross_margin_ratio = float(
-                        BybitHelper().get_cross_margin_ratio(exch=exch)
-                    )
-                    liquidation_buffer = BybitHelper().calc_liquidation_buffer(
-                        exchange=exchange, mgnRatio=cross_margin_ratio
-                    )
-
-                except ccxt.ExchangeError as e:
-                    self.session.abort_transaction()
-
-                    if logger == None:
-                        print(client + " " + exchange + " " + sub_account + " positions: in cross margin ratio " + str(e))
-                    else:
-                        logger.warning(client + " " + exchange + " " + sub_account + " positions: in cross margin ratio " + str(e))
-
-                    return True
-                
-                except ccxt.NetworkError as e:
-                    self.session.abort_transaction()
-
-                    if logger == None:
-                        print(client + " " + exchange + " " + sub_account + " positions: in cross margin ratio " + str(e))
-                    else:
-                        logger.warning(client + " " + exchange + " " + sub_account + " positions: in cross margin ratio " + str(e))
-                        
-                    return False
-                
-                except Exception as e:
-                    if logger == None:
-                        print(client + " " + exchange + " " + sub_account + " positions: in cross margin ratio " + str(e))
-                    else:
-                        logger.warning(client + " " + exchange + " " + sub_account + " positions: in cross margin ratio " + str(e))
-
-            elif exchange == "huobi":
-                try:
-                    liquidation1 = HuobiHelper().calc_liquidation_buffer(
-                        exchange=exchange, mgnRatio=float(HuobiHelper().get_cm_cross_margin_ratio(exch=exch))
-                    )
-                    liquidation2 = HuobiHelper().calc_liquidation_buffer(
-                        exchange=exchange, mgnRatio=float(HuobiHelper().get_um_cross_margin_ratio(exch=exch))
-                    )
-                    liquidation_buffer = min(liquidation1, liquidation2)
-
-                except ccxt.ExchangeError as e:
-                    self.session.abort_transaction()
-
-                    if logger == None:
-                        print(client + " " + exchange + " " + sub_account + " positions: in cross margin ratio " + str(e))
-                    else:
-                        logger.warning(client + " " + exchange + " " + sub_account + " positions: in cross margin ratio " + str(e))
-
-                    return True
-                
-                except ccxt.NetworkError as e:
-                    self.session.abort_transaction()
-
-                    if logger == None:
-                        print(client + " " + exchange + " " + sub_account + " positions: in cross margin ratio " + str(e))
-                    else:
-                        logger.warning(client + " " + exchange + " " + sub_account + " positions: in cross margin ratio " + str(e))
-                        
-                    return False
-                
-                except Exception as e:
-                    if logger == None:
-                        print(client + " " + exchange + " " + sub_account + " positions: in cross margin ratio " + str(e))
-                    else:
-                        logger.warning(client + " " + exchange + " " + sub_account + " positions: in cross margin ratio " + str(e))
-
-            elif exchange == "binance":
-                if config['clients'][client]['subaccounts'][exchange][sub_account]['margin_mode'] == 'portfolio':
+                if exchange == "okx":
                     try:
                         cross_margin_ratio = float(
-                            Helper().get_pm_cross_margin_ratio(exch=exch)
+                            OKXHelper().get_cross_margin_ratio(exch=exch)
                         )
-                        liquidation_buffer = Helper().calc_liquidation_buffer(
+                        liquidation_buffer = OKXHelper().calc_liquidation_buffer(
+                            exchange=exchange, mgnRatio=cross_margin_ratio
+                        )
+
+                    except ccxt.ExchangeError as e:
+                        self.session.abort_transaction()
+
+                        if logger == None:
+                            print(client + " " + exchange + " " + sub_account + " positions: in cross margin ratio " + str(e))
+                        else:
+                            logger.warning(client + " " + exchange + " " + sub_account + " positions: in cross margin ratio " + str(e))
+                            
+                        return True
+                    
+                    except ccxt.NetworkError as e:
+                        self.session.abort_transaction()
+
+                        if logger == None:
+                            print(client + " " + exchange + " " + sub_account + " positions: in cross margin ratio " + str(e))
+                        else:
+                            logger.warning(client + " " + exchange + " " + sub_account + " positions: in cross margin ratio " + str(e))
+                            
+                        return False
+                    
+                    except Exception as e:
+                        if logger == None:
+                            print(client + " " + exchange + " " + sub_account + " positions: in cross margin ratio " + str(e))
+                        else:
+                            logger.warning(client + " " + exchange + " " + sub_account + " positions: in cross margin ratio " + str(e))
+
+                elif exchange == "bybit":
+                    try:
+                        cross_margin_ratio = float(
+                            BybitHelper().get_cross_margin_ratio(exch=exch)
+                        )
+                        liquidation_buffer = BybitHelper().calc_liquidation_buffer(
                             exchange=exchange, mgnRatio=cross_margin_ratio
                         )
 
@@ -311,18 +239,15 @@ class Positions:
                         else:
                             logger.warning(client + " " + exchange + " " + sub_account + " positions: in cross margin ratio " + str(e))
 
-                else:
+                elif exchange == "huobi":
                     try:
-                        liquidation1 = Helper().calc_liquidation_buffer(
-                            exchange=exchange, mgnRatio=Helper().get_cross_margin_ratio(exch=exch)
+                        liquidation1 = HuobiHelper().calc_liquidation_buffer(
+                            exchange=exchange, mgnRatio=float(HuobiHelper().get_cm_cross_margin_ratio(exch=exch))
                         )
-                        liquidation2 = Helper().calc_liquidation_buffer(
-                            exchange=exchange+"_cm", mgnRatio=Helper().get_cm_margin_ratio(exch=exch)
+                        liquidation2 = HuobiHelper().calc_liquidation_buffer(
+                            exchange=exchange, mgnRatio=float(HuobiHelper().get_um_cross_margin_ratio(exch=exch))
                         )
-                        liquidation3 = Helper().calc_liquidation_buffer(
-                            exchange=exchange+"_um", mgnRatio=Helper().get_um_margin_ratio(exch=exch)
-                        )
-                        liquidation_buffer = min(liquidation1, liquidation2, liquidation3)
+                        liquidation_buffer = min(liquidation1, liquidation2)
 
                     except ccxt.ExchangeError as e:
                         self.session.abort_transaction()
@@ -350,81 +275,107 @@ class Positions:
                         else:
                             logger.warning(client + " " + exchange + " " + sub_account + " positions: in cross margin ratio " + str(e))
 
-            try:
-                instruments = list(self.instruments_db.find({'venue': exchange}))[0]['instrument_value']
-            except Exception as e:
-                if logger == None:
-                    print(client + " " + exchange + " " + sub_account + " positions skipped" + "as non instruments")
-                    print("Unable to collect positions for " + client + " " + exchange + " " + sub_account)
-                else:
-                    logger.warning(client + " " + exchange + " " + sub_account + " positions skipped" + "as non instruments")
-                    logger.error("Unable to collect positions for " + client + " " + exchange + " " + sub_account)
+                elif exchange == "binance":
+                    if config['clients'][client]['subaccounts'][exchange][sub_account]['margin_mode'] == 'portfolio':
+                        try:
+                            cross_margin_ratio = float(
+                                Helper().get_pm_cross_margin_ratio(exch=exch)
+                            )
+                            liquidation_buffer = Helper().calc_liquidation_buffer(
+                                exchange=exchange, mgnRatio=cross_margin_ratio
+                            )
 
-                return True
+                        except ccxt.ExchangeError as e:
+                            self.session.abort_transaction()
 
-            for value in position_value:
-                value['base'] = instruments[value['info']['symbol']]['base']
-                value['quote'] = instruments[value['info']['symbol']]['quote']
-                if instruments[value['info']['symbol']]['expiryDatetime'] != None and instruments[value['info']['symbol']]['expiryDatetime'] != "":
-                    value['expiryDatetime'] = (
-                        datetime.strptime(instruments[value['info']['symbol']]['expiryDatetime'], '%Y-%m-%dT%H:%M:%S.%f%z') - 
-                        datetime.now(timezone.utc)
-                    ).days
+                            if logger == None:
+                                print(client + " " + exchange + " " + sub_account + " positions: in cross margin ratio " + str(e))
+                            else:
+                                logger.warning(client + " " + exchange + " " + sub_account + " positions: in cross margin ratio " + str(e))
+
+                            return True
+                        
+                        except ccxt.NetworkError as e:
+                            self.session.abort_transaction()
+
+                            if logger == None:
+                                print(client + " " + exchange + " " + sub_account + " positions: in cross margin ratio " + str(e))
+                            else:
+                                logger.warning(client + " " + exchange + " " + sub_account + " positions: in cross margin ratio " + str(e))
+                                
+                            return False
+                        
+                        except Exception as e:
+                            if logger == None:
+                                print(client + " " + exchange + " " + sub_account + " positions: in cross margin ratio " + str(e))
+                            else:
+                                logger.warning(client + " " + exchange + " " + sub_account + " positions: in cross margin ratio " + str(e))
+
+                    else:
+                        try:
+                            liquidation1 = Helper().calc_liquidation_buffer(
+                                exchange=exchange, mgnRatio=Helper().get_cross_margin_ratio(exch=exch)
+                            )
+                            liquidation2 = Helper().calc_liquidation_buffer(
+                                exchange=exchange+"_cm", mgnRatio=Helper().get_cm_margin_ratio(exch=exch)
+                            )
+                            liquidation3 = Helper().calc_liquidation_buffer(
+                                exchange=exchange+"_um", mgnRatio=Helper().get_um_margin_ratio(exch=exch)
+                            )
+                            liquidation_buffer = min(liquidation1, liquidation2, liquidation3)
+
+                        except ccxt.ExchangeError as e:
+                            self.session.abort_transaction()
+
+                            if logger == None:
+                                print(client + " " + exchange + " " + sub_account + " positions: in cross margin ratio " + str(e))
+                            else:
+                                logger.warning(client + " " + exchange + " " + sub_account + " positions: in cross margin ratio " + str(e))
+
+                            return True
+                        
+                        except ccxt.NetworkError as e:
+                            self.session.abort_transaction()
+
+                            if logger == None:
+                                print(client + " " + exchange + " " + sub_account + " positions: in cross margin ratio " + str(e))
+                            else:
+                                logger.warning(client + " " + exchange + " " + sub_account + " positions: in cross margin ratio " + str(e))
+                                
+                            return False
+                        
+                        except Exception as e:
+                            if logger == None:
+                                print(client + " " + exchange + " " + sub_account + " positions: in cross margin ratio " + str(e))
+                            else:
+                                logger.warning(client + " " + exchange + " " + sub_account + " positions: in cross margin ratio " + str(e))
 
                 try:
-                    if exchange == "bybit":
-                        value["liquidationBuffer"] = liquidation_buffer
-                        position_info.append(value)
-                    elif exchange == "okx":
-                        value["liquidationBuffer"] = liquidation_buffer
+                    instruments = list(self.instruments_db.find({'venue': exchange}))[0]['instrument_value']
+                except Exception as e:
+                    if logger == None:
+                        print(client + " " + exchange + " " + sub_account + " positions skipped" + "as non instruments")
+                        print("Unable to collect positions for " + client + " " + exchange + " " + sub_account)
+                    else:
+                        logger.warning(client + " " + exchange + " " + sub_account + " positions skipped" + "as non instruments")
+                        logger.error("Unable to collect positions for " + client + " " + exchange + " " + sub_account)
 
-                        if value["quote"] == "USD":
-                            cross_ratio = Helper().calc_cross_ccy_ratio(
-                                value["base"],
-                                # config["clients"][client]["subaccounts"][exchange][sub_account]["base_ccy"],
-                                "USD",
-                                tickers,
-                            )
-                            if cross_ratio == 0:
-                                if logger == None:
-                                    print(client + " " + exchange + " " + sub_account + " positions skipped" + value['symbol'] + "as zero ticker price")
-                                else:
-                                    logger.warning(client + " " + exchange + " " + sub_account + " positions skipped" + value['symbol'] + "as zero ticker price")
+                    return True
 
-                                continue
+                for value in position_value:
+                    value['base'] = instruments[value['info']['symbol']]['base']
+                    value['quote'] = instruments[value['info']['symbol']]['quote']
+                    if instruments[value['info']['symbol']]['expiryDatetime'] != None and instruments[value['info']['symbol']]['expiryDatetime'] != "":
+                        value['expiryDatetime'] = (
+                            datetime.strptime(instruments[value['info']['symbol']]['expiryDatetime'], '%Y-%m-%dT%H:%M:%S.%f%z') - 
+                            datetime.now(timezone.utc)
+                        ).days
 
-                            value["notional"] = float(value["notional"]) * cross_ratio
-                            value["unrealizedPnl"] = float(value["unrealizedPnl"]) * cross_ratio
-                        
-                        position_info.append(value)
-
-                    elif exchange == "huobi":
-                        value["liquidationBuffer"] = liquidation_buffer
-
-                        if value["quote"] == "USD":
-                            cross_ratio = Helper().calc_cross_ccy_ratio(
-                                value["base"],
-                                # config["clients"][client]["subaccounts"][exchange][sub_account]["base_ccy"],
-                                "USD",
-                                tickers,
-                            )
-                            if cross_ratio == 0:
-                                if logger == None:
-                                    print(client + " " + exchange + " " + sub_account + " positions skipped" + value['symbol'] + "as zero ticker price")
-                                else:
-                                    logger.warning(client + " " + exchange + " " + sub_account + " positions skipped" + value['symbol'] + "as zero ticker price")
-
-                                continue
-
-                            value["notional"] = float(value["notional"]) * cross_ratio
-                            value["unrealizedPnl"] = float(value["unrealizedPnl"]) * cross_ratio
-
-                        position_info.append(value)
-
-                    elif exchange == "binance":
-                        if (float(value["initialMargin"]) != 0.0  if config['clients'][client]['subaccounts'][exchange][sub_account]['margin_mode'] == 'non_portfolio' else True):
-                            value['side'] = "long" if float(value['contracts']) > 0 else "short"
-                            
+                    try:
+                        if exchange == "bybit":
+                            value["liquidationBuffer"] = liquidation_buffer
+                            position_info.append(value)
+                        elif exchange == "okx":
                             value["liquidationBuffer"] = liquidation_buffer
 
                             if value["quote"] == "USD":
@@ -441,120 +392,180 @@ class Positions:
                                         logger.warning(client + " " + exchange + " " + sub_account + " positions skipped" + value['symbol'] + "as zero ticker price")
 
                                     continue
-                                
+
+                                value["notional"] = float(value["notional"]) * cross_ratio
+                                value["unrealizedPnl"] = float(value["unrealizedPnl"]) * cross_ratio
+                            
+                            position_info.append(value)
+
+                        elif exchange == "huobi":
+                            value["liquidationBuffer"] = liquidation_buffer
+
+                            if value["quote"] == "USD":
+                                cross_ratio = Helper().calc_cross_ccy_ratio(
+                                    value["base"],
+                                    # config["clients"][client]["subaccounts"][exchange][sub_account]["base_ccy"],
+                                    "USD",
+                                    tickers,
+                                )
+                                if cross_ratio == 0:
+                                    if logger == None:
+                                        print(client + " " + exchange + " " + sub_account + " positions skipped" + value['symbol'] + "as zero ticker price")
+                                    else:
+                                        logger.warning(client + " " + exchange + " " + sub_account + " positions skipped" + value['symbol'] + "as zero ticker price")
+
+                                    continue
+
                                 value["notional"] = float(value["notional"]) * cross_ratio
                                 value["unrealizedPnl"] = float(value["unrealizedPnl"]) * cross_ratio
 
                             position_info.append(value)
 
-                except Exception as e:
-                    if logger == None:
-                        print(client + " " + exchange + " " + sub_account + " positions " + str(e))
-                    else:
-                        logger.warning(client + " " + exchange + " " + sub_account + " positions " + str(e))
-            
-            if exchange == "binance" or exchange == "huobi":
-                for position in position_info:
-                    try:
-                        mark_prices = self.mark_prices_db.aggregate([
-                            {
-                                '$match': {
-                                    '$expr': {
-                                        '$and': [
-                                            {
-                                                '$eq': [
-                                                    '$venue', exchange
-                                                ]
-                                            }, {
-                                                '$eq': [
-                                                    '$symbol', position['base'] + "/USDT"
-                                                ]
-                                            }
-                                        ]
-                                    }
-                                }
-                            }, {
-                                '$project': {
-                                    'mark_price_value': 1
-                                }
-                            }, {
-                                '$group': {
-                                    '_id': None, 
-                                    'mark_price_value': {
-                                        '$last': '$mark_price_value'
-                                    }
-                                }
-                            }
-                        ])
-                        for item in mark_prices:
-                            try:
-                                mark_price = item['mark_price_value']['markPrice']
-                            except:
-                                pass
-                            
-                        position["markPrice"] = mark_price
-                    except ccxt.ExchangeError as e:
+                        elif exchange == "binance":
+                            if (float(value["initialMargin"]) != 0.0  if config['clients'][client]['subaccounts'][exchange][sub_account]['margin_mode'] == 'non_portfolio' else True):
+                                value['side'] = "long" if float(value['contracts']) > 0 else "short"
+                                
+                                value["liquidationBuffer"] = liquidation_buffer
+
+                                if value["quote"] == "USD":
+                                    cross_ratio = Helper().calc_cross_ccy_ratio(
+                                        value["base"],
+                                        # config["clients"][client]["subaccounts"][exchange][sub_account]["base_ccy"],
+                                        "USD",
+                                        tickers,
+                                    )
+                                    if cross_ratio == 0:
+                                        if logger == None:
+                                            print(client + " " + exchange + " " + sub_account + " positions skipped" + value['symbol'] + "as zero ticker price")
+                                        else:
+                                            logger.warning(client + " " + exchange + " " + sub_account + " positions skipped" + value['symbol'] + "as zero ticker price")
+
+                                        continue
+                                    
+                                    value["notional"] = float(value["notional"]) * cross_ratio
+                                    value["unrealizedPnl"] = float(value["unrealizedPnl"]) * cross_ratio
+
+                                position_info.append(value)
+
+                    except Exception as e:
                         if logger == None:
                             print(client + " " + exchange + " " + sub_account + " positions " + str(e))
                         else:
                             logger.warning(client + " " + exchange + " " + sub_account + " positions " + str(e))
+                
+                if exchange == "binance" or exchange == "huobi":
+                    for position in position_info:
+                        try:
+                            mark_prices = self.mark_prices_db.aggregate([
+                                {
+                                    '$match': {
+                                        '$expr': {
+                                            '$and': [
+                                                {
+                                                    '$eq': [
+                                                        '$venue', exchange
+                                                    ]
+                                                }, {
+                                                    '$eq': [
+                                                        '$symbol', position['base'] + "/USDT"
+                                                    ]
+                                                }
+                                            ]
+                                        }
+                                    }
+                                }, {
+                                    '$project': {
+                                        'mark_price_value': 1
+                                    }
+                                }, {
+                                    '$group': {
+                                        '_id': None, 
+                                        'mark_price_value': {
+                                            '$last': '$mark_price_value'
+                                        }
+                                    }
+                                }
+                            ])
+                            for item in mark_prices:
+                                try:
+                                    mark_price = item['mark_price_value']['markPrice']
+                                except:
+                                    pass
+                                
+                            position["markPrice"] = mark_price
+                        except ccxt.ExchangeError as e:
+                            if logger == None:
+                                print(client + " " + exchange + " " + sub_account + " positions " + str(e))
+                            else:
+                                logger.warning(client + " " + exchange + " " + sub_account + " positions " + str(e))
 
-                        pass
+                            pass
 
-        except ccxt.ExchangeError as e:
-            if logger == None:
-                print(client + " " + exchange + " " + sub_account + " positions " + str(e))
-            else:
-                logger.warning(client + " " + exchange + " " + sub_account + " positions " + str(e))
-
-            pass
-
-        except Exception as e:
-            if logger == None:
-                print(client + " " + exchange + " " + sub_account + " positions " + str(e))
-            else:
-                logger.warning(client + " " + exchange + " " + sub_account + " positions " + str(e))
-
-            pass
-        
-        del position_value
-
-        for position in position_info:
-            try:
-                position['liquidationPriceChange'] = (float(position['liquidationPrice']) - float(position['markPrice'])) / float(position['markPrice'])
-            except Exception as e:
+            except ccxt.ExchangeError as e:
                 if logger == None:
-                    print(client + " " + exchange + " " + sub_account + " positions in liquidation price change: " + str(e))
+                    print(client + " " + exchange + " " + sub_account + " positions " + str(e))
                 else:
-                    logger.warning(client + " " + exchange + " " + sub_account + " positions in liquidation price change: " + str(e))
-        
-        run_ids = self.runs_db.find({}).sort("_id", -1).limit(1)
-        latest_run_id = 0
-        for item in run_ids:
-            try:
-                latest_run_id = item["runid"]
-            except:
+                    logger.warning(client + " " + exchange + " " + sub_account + " positions " + str(e))
+
                 pass
 
-        # open positions price changes
+            except Exception as e:
+                if logger == None:
+                    print(client + " " + exchange + " " + sub_account + " positions " + str(e))
+                else:
+                    logger.warning(client + " " + exchange + " " + sub_account + " positions " + str(e))
 
-        price_changes = []
-        for position in position_info:
+                pass
+            
+            del position_value
+
+            for position in position_info:
+                try:
+                    position['liquidationPriceChange'] = (float(position['liquidationPrice']) - float(position['markPrice'])) / float(position['markPrice'])
+                except Exception as e:
+                    if logger == None:
+                        print(client + " " + exchange + " " + sub_account + " positions in liquidation price change: " + str(e))
+                    else:
+                        logger.warning(client + " " + exchange + " " + sub_account + " positions in liquidation price change: " + str(e))
+            
+            run_ids = self.runs_db.find({}).sort("_id", -1).limit(1)
+            latest_run_id = 0
+            for item in run_ids:
+                try:
+                    latest_run_id = item["runid"]
+                except:
+                    pass
+
+            # open positions price changes
+
+            price_changes = []
+            for position in position_info:
+                try:
+                    ticker = float(tickers[position['base'] + "/USDT"]['last'])
+                    mark_klines = exch.fetch_mark_ohlcv(symbol = position['base'] + "/USDT", timeframe = '2h', limit=1)
+
+                    price_change = {
+                        'client': client,
+                        'venue': exchange,
+                        'account': sub_account,
+                        'base': position['base'],
+                        'symbol': position['symbol'],
+                        'price_change': (ticker - mark_klines[0][1]) / mark_klines[0][1] * 100,
+                        'runid': latest_run_id,
+                        'timestamp': datetime.now(timezone.utc)
+                    }
+                    price_changes.append(price_change)
+
+                except Exception as e:
+                    if logger == None:
+                        print(client + " " + exchange + " " + sub_account + " price changes " + str(e))
+                    else:
+                        logger.warning(client + " " + exchange + " " + sub_account + " price changes " + str(e))
+
+                    pass
+
             try:
-                ticker = float(tickers[position['base'] + "/USDT"]['last'])
-                mark_klines = exch.fetch_mark_ohlcv(symbol = position['base'] + "/USDT", timeframe = '2h', limit=1)
-
-                price_change = {
-                    'client': client,
-                    'venue': exchange,
-                    'account': sub_account,
-                    'base': position['base'],
-                    'symbol': position['symbol'],
-                    'price_change': (ticker - mark_klines[0][1]) / mark_klines[0][1] * 100,
-                    'runid': latest_run_id,
-                    'timestamp': datetime.now(timezone.utc)
-                }
-                price_changes.append(price_change)
+                self.price_changes_db.insert_many(price_changes)
 
             except Exception as e:
                 if logger == None:
@@ -564,219 +575,28 @@ class Positions:
 
                 pass
 
-        try:
-            self.price_changes_db.insert_many(price_changes)
+            del price_changes
 
-        except Exception as e:
-            if logger == None:
-                print(client + " " + exchange + " " + sub_account + " price changes " + str(e))
-            else:
-                logger.warning(client + " " + exchange + " " + sub_account + " price changes " + str(e))
+            # life time funding rates
 
-            pass
+            query = {}
+            query['client'] = client
+            query['venue'] = exchange
+            query['account'] = sub_account
 
-        del price_changes
+            lifetime_funding_values = list(self.lifetime_funding_db.find(query))
+            lifetime_funding_values.sort(key = lambda x: x['symbol'])
+            position_info.sort(key = lambda x: x['symbol'])
 
-        # life time funding rates
-
-        query = {}
-        query['client'] = client
-        query['venue'] = exchange
-        query['account'] = sub_account
-
-        lifetime_funding_values = list(self.lifetime_funding_db.find(query))
-        lifetime_funding_values.sort(key = lambda x: x['symbol'])
-        position_info.sort(key = lambda x: x['symbol'])
-
-        fundings = []
-        current_time = int(datetime.now(timezone.utc).timestamp() * 1000)
-        i = 0
-        j = 0
-        while True:
-            try:
-                if i == len(position_info) and j == len(lifetime_funding_values):
-                    break
-                if i == len(position_info):
-                    funding = {
-                        'client': client,
-                        'venue': exchange,
-                        'account': sub_account,
-                        'symbol': lifetime_funding_values[j]['symbol'],
-                        'funding': lifetime_funding_values[j]['funding'],
-                        'state': "closed",
-                        'open_close_time': lifetime_funding_values[j]['open_close_time'],
-                        'last_time': lifetime_funding_values[j]['last_time'],
-                        'base': lifetime_funding_values[j]['base'],
-                        'quote': lifetime_funding_values[j]['quote'],
-                    }
-                    if lifetime_funding_values[j]['state'] == "closed":
-                        if lifetime_funding_values[j]['open_close_time'] > lifetime_funding_values[j]['last_time']:
-                            funding_rates = self.funding_rates_db.aggregate([
-                                {
-                                    '$match': {
-                                        '$expr': {
-                                            '$and': [
-                                                {
-                                                    '$eq': [
-                                                        '$venue', exchange
-                                                    ]
-                                                }, {
-                                                    '$eq': [
-                                                        '$symbol', lifetime_funding_values[j]['base'] + "/USDT" if lifetime_funding_values[j]['quote'] == "USDT" else lifetime_funding_values[j]['base'] + "/USD"
-                                                    ]
-                                                }
-                                            ]
-                                        }
-                                    }
-                                }, {
-                                    '$project': {
-                                        'funding_rates_value': 1
-                                    }
-                                }, {
-                                    '$group': {
-                                        '_id': None, 
-                                        'funding_rates_value': {
-                                            '$last': '$funding_rates_value'
-                                        }
-                                    }
-                                }
-                            ])
-                            funding_rate = 0.0
-                            funding_time = 0
-                            for item in funding_rates:
-                                funding_rate = item['funding_rates_value']['fundingRate']
-                                funding_time = item['funding_rates_value']['timestamp']
-
-                            if funding_time > lifetime_funding_values[j]['last_time']:
-                                funding['last_time'] = lifetime_funding_values[j]['open_close_time']
-                                funding['funding'] += (funding_rate * (lifetime_funding_values[j]['open_close_time'] - lifetime_funding_values[j]['last_time']) / 28800000)
-                    else:
-                        funding['open_close_time'] = current_time
-
-                    fundings.append(funding)
-                    j += 1
-
-                elif j == len(lifetime_funding_values):
-                    fundings.append({
-                        'client': client,
-                        'venue': exchange,
-                        'account': sub_account,
-                        'symbol': position_info[i]['symbol'],
-                        'funding': 0.0,
-                        'state': "open",
-                        'open_close_time': current_time,
-                        'last_time': current_time,
-                        'base': position_info[i]['base'],
-                        'quote': position_info[i]['quote']
-                    })
-                    position_info[i]['lifetime_funding_rates'] = 0.0
-                    i += 1
-
-                else:
-                    if position_info[i]['symbol'] == lifetime_funding_values[j]['symbol']:
-                        if lifetime_funding_values[j]['state'] == "closed":
-                            if lifetime_funding_values[j]['open_close_time'] > lifetime_funding_values[j]['last_time']:
-                                fundings.append({
-                                    'client': client,
-                                    'venue': exchange,
-                                    'account': sub_account,
-                                    'symbol': lifetime_funding_values[j]['symbol'],
-                                    'funding': lifetime_funding_values[j]['funding'],
-                                    'state': "open",
-                                    'open_close_time': current_time - lifetime_funding_values[j]['open_close_time'] + lifetime_funding_values[j]['last_time'],
-                                    'last_time': lifetime_funding_values[j]['last_time'],
-                                    'base': lifetime_funding_values[j]['base'],
-                                    'quote': lifetime_funding_values[j]['quote']
-                                })
-                            else:
-                                fundings.append({
-                                    'client': client,
-                                    'venue': exchange,
-                                    'account': sub_account,
-                                    'symbol': lifetime_funding_values[j]['symbol'],
-                                    'funding': lifetime_funding_values[j]['funding'],
-                                    'state': "open",
-                                    'open_close_time': current_time,
-                                    'last_time': current_time,
-                                    'base': lifetime_funding_values[j]['base'],
-                                    'quote': lifetime_funding_values[j]['quote']
-                                })
-                            position_info[i]['lifetime_funding_rates'] = lifetime_funding_values[j]['funding']
-                        else:
-                            funding_rates = self.funding_rates_db.aggregate([
-                                {
-                                    '$match': {
-                                        '$expr': {
-                                            '$and': [
-                                                {
-                                                    '$eq': [
-                                                        '$venue', exchange
-                                                    ]
-                                                }, {
-                                                    '$eq': [
-                                                        '$symbol', position_info[i]['base'] + "/USDT" if position_info[i]['quote'] == "USDT" else position_info[i]['base'] + "/USD"
-                                                    ]
-                                                }
-                                            ]
-                                        }
-                                    }
-                                }, {
-                                    '$project': {
-                                        'funding_rates_value': 1
-                                    }
-                                }, {
-                                    '$group': {
-                                        '_id': None, 
-                                        'funding_rates_value': {
-                                            '$last': '$funding_rates_value'
-                                        }
-                                    }
-                                }
-                            ])
-                            funding_rate = 0.0
-                            funding_time = 0
-                            for item in funding_rates:
-                                funding_rate = item['funding_rates_value']['fundingRate']
-                                funding_time = item['funding_rates_value']['timestamp']
-
-                            if lifetime_funding_values[j]['open_close_time'] < funding_time and lifetime_funding_values[j]['last_time'] < funding_time:
-                                fundings.append({
-                                    'client': client,
-                                    'venue': exchange,
-                                    'account': sub_account,
-                                    'symbol': position_info[i]['symbol'],
-                                    'funding': (lifetime_funding_values[j]['funding'] + funding_rate 
-                                                * (funding_time - max(lifetime_funding_values[j]['open_close_time'], lifetime_funding_values[j]['last_time'])) / 28800000),
-                                    'state': "open",
-                                    'open_close_time': lifetime_funding_values[j]['open_close_time'],
-                                    'last_time': funding_time,
-                                    'base': lifetime_funding_values[j]['base'],
-                                    'quote': lifetime_funding_values[j]['quote']
-                                })
-                                position_info[i]['lifetime_funding_rates'] = fundings[-1]['funding']
-                            else:
-                                position_info[i]['lifetime_funding_rates'] = lifetime_funding_values[j]['funding']
-
-                        i += 1
-                        j += 1
-
-                    elif position_info[i]['symbol'] < lifetime_funding_values[j]['symbol']:
-                        fundings.append({
-                            'client': client,
-                            'venue': exchange,
-                            'account': sub_account,
-                            'symbol': position_info[i]['symbol'],
-                            'funding': 0.0,
-                            'state': "open",
-                            'open_close_time': current_time,
-                            'last_time': current_time,
-                            'base': position_info[i]['base'],
-                            'quote': position_info[i]['quote']
-                        })
-                        position_info[i]['lifetime_funding_rates'] = 0.0
-                        i += 1
-
-                    elif position_info[i]['symbol'] > lifetime_funding_values[j]['symbol']:
+            fundings = []
+            current_time = int(datetime.now(timezone.utc).timestamp() * 1000)
+            i = 0
+            j = 0
+            while True:
+                try:
+                    if i == len(position_info) and j == len(lifetime_funding_values):
+                        break
+                    if i == len(position_info):
                         funding = {
                             'client': client,
                             'venue': exchange,
@@ -836,170 +656,361 @@ class Positions:
                         fundings.append(funding)
                         j += 1
 
-            except Exception as e:
-                if logger == None:
-                    print(client + " " + exchange + " " + sub_account + " lifetime fundings " + str(e))
-                else:
-                    logger.warning(client + " " + exchange + " " + sub_account + " lifetime fundings " + str(e))
+                    elif j == len(lifetime_funding_values):
+                        fundings.append({
+                            'client': client,
+                            'venue': exchange,
+                            'account': sub_account,
+                            'symbol': position_info[i]['symbol'],
+                            'funding': 0.0,
+                            'state': "open",
+                            'open_close_time': current_time,
+                            'last_time': current_time,
+                            'base': position_info[i]['base'],
+                            'quote': position_info[i]['quote']
+                        })
+                        position_info[i]['lifetime_funding_rates'] = 0.0
+                        i += 1
 
-        for item in fundings:
-            try:
-                self.lifetime_funding_db.update_one(
-                    {
-                        'client': client,
-                        'venue': exchange,
-                        'account': sub_account,
-                        'symbol': item['symbol']
-                    },
-                    {"$set": {
-                        'state': item['state'],
-                        'funding': item['funding'],
-                        'open_close_time': item['open_close_time'],
-                        'last_time': item['last_time'],
-                        'base': item['base'],
-                        'quote': item['quote']
-                    }},
-                    upsert=True
-                )
-            except Exception as e:
-                if logger == None:
-                    print(client + " " + exchange + " " + sub_account + " lifetime fundings " + str(e))
-                else:
-                    logger.warning(client + " " + exchange + " " + sub_account + " lifetime fundings " + str(e))
-
-                # print("An error occurred in Lifetime Funding:", e)
-
-        # calculate unhedged
-
-        if config['clients'][client]['split_positions'] == True:
-            try:
-                balance_values = self.balances_db.aggregate([
-                    {
-                        '$match': {
-                            '$expr': {
-                                '$and': [
+                    else:
+                        if position_info[i]['symbol'] == lifetime_funding_values[j]['symbol']:
+                            if lifetime_funding_values[j]['state'] == "closed":
+                                if lifetime_funding_values[j]['open_close_time'] > lifetime_funding_values[j]['last_time']:
+                                    fundings.append({
+                                        'client': client,
+                                        'venue': exchange,
+                                        'account': sub_account,
+                                        'symbol': lifetime_funding_values[j]['symbol'],
+                                        'funding': lifetime_funding_values[j]['funding'],
+                                        'state': "open",
+                                        'open_close_time': current_time - lifetime_funding_values[j]['open_close_time'] + lifetime_funding_values[j]['last_time'],
+                                        'last_time': lifetime_funding_values[j]['last_time'],
+                                        'base': lifetime_funding_values[j]['base'],
+                                        'quote': lifetime_funding_values[j]['quote']
+                                    })
+                                else:
+                                    fundings.append({
+                                        'client': client,
+                                        'venue': exchange,
+                                        'account': sub_account,
+                                        'symbol': lifetime_funding_values[j]['symbol'],
+                                        'funding': lifetime_funding_values[j]['funding'],
+                                        'state': "open",
+                                        'open_close_time': current_time,
+                                        'last_time': current_time,
+                                        'base': lifetime_funding_values[j]['base'],
+                                        'quote': lifetime_funding_values[j]['quote']
+                                    })
+                                position_info[i]['lifetime_funding_rates'] = lifetime_funding_values[j]['funding']
+                            else:
+                                funding_rates = self.funding_rates_db.aggregate([
                                     {
-                                        '$eq': [
-                                            '$client', client
-                                        ]
+                                        '$match': {
+                                            '$expr': {
+                                                '$and': [
+                                                    {
+                                                        '$eq': [
+                                                            '$venue', exchange
+                                                        ]
+                                                    }, {
+                                                        '$eq': [
+                                                            '$symbol', position_info[i]['base'] + "/USDT" if position_info[i]['quote'] == "USDT" else position_info[i]['base'] + "/USD"
+                                                        ]
+                                                    }
+                                                ]
+                                            }
+                                        }
                                     }, {
-                                        '$eq': [
-                                            '$venue', exchange
-                                        ]
+                                        '$project': {
+                                            'funding_rates_value': 1
+                                        }
                                     }, {
-                                        '$eq': [
-                                            '$account', sub_account
-                                        ]
+                                        '$group': {
+                                            '_id': None, 
+                                            'funding_rates_value': {
+                                                '$last': '$funding_rates_value'
+                                            }
+                                        }
                                     }
-                                ]
+                                ])
+                                funding_rate = 0.0
+                                funding_time = 0
+                                for item in funding_rates:
+                                    funding_rate = item['funding_rates_value']['fundingRate']
+                                    funding_time = item['funding_rates_value']['timestamp']
+
+                                if lifetime_funding_values[j]['open_close_time'] < funding_time and lifetime_funding_values[j]['last_time'] < funding_time:
+                                    fundings.append({
+                                        'client': client,
+                                        'venue': exchange,
+                                        'account': sub_account,
+                                        'symbol': position_info[i]['symbol'],
+                                        'funding': (lifetime_funding_values[j]['funding'] + funding_rate 
+                                                    * (funding_time - max(lifetime_funding_values[j]['open_close_time'], lifetime_funding_values[j]['last_time'])) / 28800000),
+                                        'state': "open",
+                                        'open_close_time': lifetime_funding_values[j]['open_close_time'],
+                                        'last_time': funding_time,
+                                        'base': lifetime_funding_values[j]['base'],
+                                        'quote': lifetime_funding_values[j]['quote']
+                                    })
+                                    position_info[i]['lifetime_funding_rates'] = fundings[-1]['funding']
+                                else:
+                                    position_info[i]['lifetime_funding_rates'] = lifetime_funding_values[j]['funding']
+
+                            i += 1
+                            j += 1
+
+                        elif position_info[i]['symbol'] < lifetime_funding_values[j]['symbol']:
+                            fundings.append({
+                                'client': client,
+                                'venue': exchange,
+                                'account': sub_account,
+                                'symbol': position_info[i]['symbol'],
+                                'funding': 0.0,
+                                'state': "open",
+                                'open_close_time': current_time,
+                                'last_time': current_time,
+                                'base': position_info[i]['base'],
+                                'quote': position_info[i]['quote']
+                            })
+                            position_info[i]['lifetime_funding_rates'] = 0.0
+                            i += 1
+
+                        elif position_info[i]['symbol'] > lifetime_funding_values[j]['symbol']:
+                            funding = {
+                                'client': client,
+                                'venue': exchange,
+                                'account': sub_account,
+                                'symbol': lifetime_funding_values[j]['symbol'],
+                                'funding': lifetime_funding_values[j]['funding'],
+                                'state': "closed",
+                                'open_close_time': lifetime_funding_values[j]['open_close_time'],
+                                'last_time': lifetime_funding_values[j]['last_time'],
+                                'base': lifetime_funding_values[j]['base'],
+                                'quote': lifetime_funding_values[j]['quote'],
+                            }
+                            if lifetime_funding_values[j]['state'] == "closed":
+                                if lifetime_funding_values[j]['open_close_time'] > lifetime_funding_values[j]['last_time']:
+                                    funding_rates = self.funding_rates_db.aggregate([
+                                        {
+                                            '$match': {
+                                                '$expr': {
+                                                    '$and': [
+                                                        {
+                                                            '$eq': [
+                                                                '$venue', exchange
+                                                            ]
+                                                        }, {
+                                                            '$eq': [
+                                                                '$symbol', lifetime_funding_values[j]['base'] + "/USDT" if lifetime_funding_values[j]['quote'] == "USDT" else lifetime_funding_values[j]['base'] + "/USD"
+                                                            ]
+                                                        }
+                                                    ]
+                                                }
+                                            }
+                                        }, {
+                                            '$project': {
+                                                'funding_rates_value': 1
+                                            }
+                                        }, {
+                                            '$group': {
+                                                '_id': None, 
+                                                'funding_rates_value': {
+                                                    '$last': '$funding_rates_value'
+                                                }
+                                            }
+                                        }
+                                    ])
+                                    funding_rate = 0.0
+                                    funding_time = 0
+                                    for item in funding_rates:
+                                        funding_rate = item['funding_rates_value']['fundingRate']
+                                        funding_time = item['funding_rates_value']['timestamp']
+
+                                    if funding_time > lifetime_funding_values[j]['last_time']:
+                                        funding['last_time'] = lifetime_funding_values[j]['open_close_time']
+                                        funding['funding'] += (funding_rate * (lifetime_funding_values[j]['open_close_time'] - lifetime_funding_values[j]['last_time']) / 28800000)
+                            else:
+                                funding['open_close_time'] = current_time
+
+                            fundings.append(funding)
+                            j += 1
+
+                except Exception as e:
+                    if logger == None:
+                        print(client + " " + exchange + " " + sub_account + " lifetime fundings " + str(e))
+                    else:
+                        logger.warning(client + " " + exchange + " " + sub_account + " lifetime fundings " + str(e))
+
+            for item in fundings:
+                try:
+                    self.lifetime_funding_db.update_one(
+                        {
+                            'client': client,
+                            'venue': exchange,
+                            'account': sub_account,
+                            'symbol': item['symbol']
+                        },
+                        {"$set": {
+                            'state': item['state'],
+                            'funding': item['funding'],
+                            'open_close_time': item['open_close_time'],
+                            'last_time': item['last_time'],
+                            'base': item['base'],
+                            'quote': item['quote']
+                        }},
+                        upsert=True
+                    )
+                except Exception as e:
+                    if logger == None:
+                        print(client + " " + exchange + " " + sub_account + " lifetime fundings " + str(e))
+                    else:
+                        logger.warning(client + " " + exchange + " " + sub_account + " lifetime fundings " + str(e))
+
+                    # print("An error occurred in Lifetime Funding:", e)
+
+            # calculate unhedged
+
+            if config['clients'][client]['split_positions'] == True:
+                try:
+                    balance_values = self.balances_db.aggregate([
+                        {
+                            '$match': {
+                                '$expr': {
+                                    '$and': [
+                                        {
+                                            '$eq': [
+                                                '$client', client
+                                            ]
+                                        }, {
+                                            '$eq': [
+                                                '$venue', exchange
+                                            ]
+                                        }, {
+                                            '$eq': [
+                                                '$account', sub_account
+                                            ]
+                                        }
+                                    ]
+                                }
+                            }
+                        }, {
+                            '$project': {
+                                'balance_value': 1,
+                                'timestamp': 1
+                            }
+                        }, {
+                            '$group': {
+                                '_id': None, 
+                                'balance_value': {
+                                    '$last': '$balance_value'
+                                },
+                                'timestamp': {
+                                    '$last': '$timestamp'
+                                }
                             }
                         }
-                    }, {
-                        '$project': {
-                            'balance_value': 1,
-                            'timestamp': 1
-                        }
-                    }, {
-                        '$group': {
-                            '_id': None, 
-                            'balance_value': {
-                                '$last': '$balance_value'
-                            },
-                            'timestamp': {
-                                '$last': '$timestamp'
-                            }
-                        }
+                    ])
+
+                    balance = None
+                    for item in balance_values:
+                        timestamp = item['timestamp']
+                        balance = item["balance_value"]
+
+                    spot_positions = []
+
+                    if balance != None:
+                        for _key, _val in balance.items():
+                            if _key != "base":
+                                spot_position = {}
+                                spot_position['base'] = _key
+                                spot_position['quote'] = _key
+                                spot_position['symbol'] = _key
+                                spot_position['contracts'] = _val
+                                spot_position['avgPrice'] = 0
+                                spot_position['leverage'] = 0
+                                spot_position['unrealizedPnl'] = 0
+                                spot_position['lifetime_funding_rates'] = 0
+                                spot_position['marginMode'] = None
+                                spot_position['timestamp'] = int(timestamp.timestamp() * 1000)
+                                spot_position['side'] = "long" if _val > 0 else "short"
+                                spot_position['markPrice'] = 1 if _key == "USDT" else tickers[_key + "/USDT"]['last']
+                                spot_position['notional'] = spot_position['markPrice'] * spot_position['contracts']
+
+                                spot_positions.append(spot_position)
+
+                    split_positions = []
+                    split_positions = get_unhedged(position_info, spot_positions)
+
+                    hedged_exclusion_positive = config['clients'][client]['subaccounts'][exchange][sub_account]['hedged_exclusion_positive']
+                    hedged_exclusion_negative = config['clients'][client]['subaccounts'][exchange][sub_account]['hedged_exclusion_negative']
+                    i = 0
+                    while i < len(split_positions):
+                        if len(split_positions[i]) == 1:
+                            if split_positions[i][0]['position'] > 0 and split_positions[i][0]['base'] in hedged_exclusion_positive:
+                                if hedged_exclusion_positive[split_positions[i][0]['base']] == 0:
+                                    split_positions.pop(i)
+                                    i -= 1
+                                else:
+                                    split_positions[i][0]['notional'] *= (1 - hedged_exclusion_positive[split_positions[i][0]['base']] / split_positions[i][0]['position'])
+                                    split_positions[i][0]['unrealizedPnl'] *= (1 - hedged_exclusion_positive[split_positions[i][0]['base']] / split_positions[i][0]['position'])
+                                    split_positions[i][0]['unhedgedAmount'] *= (1 - hedged_exclusion_positive[split_positions[i][0]['base']] / split_positions[i][0]['position'])
+                                    split_positions[i][0]['position'] -= hedged_exclusion_positive[split_positions[i][0]['base']]
+
+                            elif split_positions[i][0]['position'] < 0 and split_positions[i][0]['base'] in hedged_exclusion_negative:
+                                if hedged_exclusion_negative[split_positions[i][0]['base']] == 0:
+                                    split_positions.pop(i)
+                                    i -= 1
+                                else:
+                                    split_positions[i][0]['notional'] *= (1 + hedged_exclusion_negative[split_positions[i][0]['base']] / split_positions[i][0]['position'])
+                                    split_positions[i][0]['unrealizedPnl'] *= (1 + hedged_exclusion_negative[split_positions[i][0]['base']] / split_positions[i][0]['position'])
+                                    split_positions[i][0]['unhedgedAmount'] *= (1 + hedged_exclusion_negative[split_positions[i][0]['base']] / split_positions[i][0]['position'])
+                                    split_positions[i][0]['position'] += hedged_exclusion_negative[split_positions[i][0]['base']]
+
+                        i += 1
+                    
+                    current_time = datetime.now(timezone.utc)
+                    split_position = {
+                        "client": client,
+                        "venue": exchange,
+                        "account": "Main Account",
+                        "position_value": split_positions,
+                        "active": True,
+                        "entry": False,
+                        "exit": False,
+                        "timestamp": current_time,
                     }
-                ])
+                    if sub_account:
+                        split_position["account"] = sub_account
+                    if spot:
+                        split_position["spotMarket"] = spot
+                    if future:
+                        split_position["futureMarket"] = future
+                    if perp:
+                        split_position["perpMarket"] = perp
+                    
+                    split_position["runid"] = latest_run_id
 
-                balance = None
-                for item in balance_values:
-                    timestamp = item['timestamp']
-                    balance = item["balance_value"]
+                    self.split_positions_db.insert_one(split_position)
+                    
+                except Exception as e:
+                    if logger == None:
+                        print(client + " " + exchange + " " + sub_account + " split positions " + str(e))
+                        print("Unable to collect positions for " + client + " " + exchange + " " + sub_account)
+                    else:
+                        logger.error(client + " " + exchange + " " + sub_account + " split positions " + str(e))
+                        logger.error("Unable to collect positions for " + client + " " + exchange + " " + sub_account)
 
-                spot_positions = []
+        else:
+            position_info = position_value
 
-                if balance != None:
-                    for _key, _val in balance.items():
-                        if _key != "base":
-                            spot_position = {}
-                            spot_position['base'] = _key
-                            spot_position['quote'] = _key
-                            spot_position['symbol'] = _key
-                            spot_position['contracts'] = _val
-                            spot_position['avgPrice'] = 0
-                            spot_position['leverage'] = 0
-                            spot_position['unrealizedPnl'] = 0
-                            spot_position['lifetime_funding_rates'] = 0
-                            spot_position['marginMode'] = None
-                            spot_position['timestamp'] = int(timestamp.timestamp() * 1000)
-                            spot_position['side'] = "long" if _val > 0 else "short"
-                            spot_position['markPrice'] = 1 if _key == "USDT" else tickers[_key + "/USDT"]['last']
-                            spot_position['notional'] = spot_position['markPrice'] * spot_position['contracts']
-
-                            spot_positions.append(spot_position)
-
-                split_positions = []
-                split_positions = get_unhedged(position_info, spot_positions)
-
-                hedged_exclusion_positive = config['clients'][client]['subaccounts'][exchange][sub_account]['hedged_exclusion_positive']
-                hedged_exclusion_negative = config['clients'][client]['subaccounts'][exchange][sub_account]['hedged_exclusion_negative']
-                i = 0
-                while i < len(split_positions):
-                    if len(split_positions[i]) == 1:
-                        if split_positions[i][0]['position'] > 0 and split_positions[i][0]['base'] in hedged_exclusion_positive:
-                            if hedged_exclusion_positive[split_positions[i][0]['base']] == 0:
-                                split_positions.pop(i)
-                                i -= 1
-                            else:
-                                split_positions[i][0]['notional'] *= (1 - hedged_exclusion_positive[split_positions[i][0]['base']] / split_positions[i][0]['position'])
-                                split_positions[i][0]['unrealizedPnl'] *= (1 - hedged_exclusion_positive[split_positions[i][0]['base']] / split_positions[i][0]['position'])
-                                split_positions[i][0]['unhedgedAmount'] *= (1 - hedged_exclusion_positive[split_positions[i][0]['base']] / split_positions[i][0]['position'])
-                                split_positions[i][0]['position'] -= hedged_exclusion_positive[split_positions[i][0]['base']]
-
-                        elif split_positions[i][0]['position'] < 0 and split_positions[i][0]['base'] in hedged_exclusion_negative:
-                            if hedged_exclusion_negative[split_positions[i][0]['base']] == 0:
-                                split_positions.pop(i)
-                                i -= 1
-                            else:
-                                split_positions[i][0]['notional'] *= (1 + hedged_exclusion_negative[split_positions[i][0]['base']] / split_positions[i][0]['position'])
-                                split_positions[i][0]['unrealizedPnl'] *= (1 + hedged_exclusion_negative[split_positions[i][0]['base']] / split_positions[i][0]['position'])
-                                split_positions[i][0]['unhedgedAmount'] *= (1 + hedged_exclusion_negative[split_positions[i][0]['base']] / split_positions[i][0]['position'])
-                                split_positions[i][0]['position'] += hedged_exclusion_negative[split_positions[i][0]['base']]
-
-                    i += 1
-                
-                current_time = datetime.now(timezone.utc)
-                split_position = {
-                    "client": client,
-                    "venue": exchange,
-                    "account": "Main Account",
-                    "position_value": split_positions,
-                    "active": True,
-                    "entry": False,
-                    "exit": False,
-                    "timestamp": current_time,
-                }
-                if sub_account:
-                    split_position["account"] = sub_account
-                if spot:
-                    split_position["spotMarket"] = spot
-                if future:
-                    split_position["futureMarket"] = future
-                if perp:
-                    split_position["perpMarket"] = perp
-                
-                split_position["runid"] = latest_run_id
-
-                self.split_positions_db.insert_one(split_position)
-                
-            except Exception as e:
-                if logger == None:
-                    print(client + " " + exchange + " " + sub_account + " split positions " + str(e))
-                    print("Unable to collect positions for " + client + " " + exchange + " " + sub_account)
-                else:
-                    logger.error(client + " " + exchange + " " + sub_account + " split positions " + str(e))
-                    logger.error("Unable to collect positions for " + client + " " + exchange + " " + sub_account)
+            run_ids = self.runs_db.find({}).sort("_id", -1).limit(1)
+            latest_run_id = 0
+            for item in run_ids:
+                try:
+                    latest_run_id = item["runid"]
+                except:
+                    pass
 
         current_time = datetime.now(timezone.utc)
         position = {
@@ -1029,7 +1040,6 @@ class Positions:
         position["runid"] = latest_run_id
 
         try:
-
             if config["positions"]["store_type"] == "timeseries":
                 self.positions_db.insert_one(position)
             elif config["positions"]["store_type"] == "snapshot":
@@ -1052,8 +1062,6 @@ class Positions:
                     upsert=True,
                 )
 
-            # log.debug(f"Position created: {position}")
-
             self.session.commit_transaction()
 
             del position
@@ -1065,7 +1073,6 @@ class Positions:
 
             return True
 
-            # return position
         except Exception as e:
             self.session.abort_transaction()
 
