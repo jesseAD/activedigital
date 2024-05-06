@@ -8,7 +8,7 @@ config = read_config_file()
 class Runs:
     def __init__(self, db, collection):
 
-        self.runs_db = db['runs']
+        self.runs_db = db[collection]
 
     def get(self):
         try:
