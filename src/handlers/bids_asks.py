@@ -74,41 +74,23 @@ class Bids_Asks:
                     spot_value = OKXHelper().get_bid_ask(exch=exch, symbol=symbol+"/USDT")
                     perp_value = OKXHelper().get_bid_ask(exch=exch, symbol=symbol+"/USDT:USDT")
 
-                    bid_ask_value = {
-                        'spot': spot_value,
-                        'perp': perp_value,
-                        'spread': spot_value['mid_point'] - perp_value['mid_point'],
-                    }
-
                 elif exchange == "binance":
                     spot_value = Helper().get_bid_ask(exch=exch, symbol=symbol+"/USDT")
                     perp_value = Helper().get_bid_ask(exch=exch, symbol=symbol+"/USDT:USDT")
-
-                    bid_ask_value = {
-                        'spot': spot_value,
-                        'perp': perp_value,
-                        'spread': spot_value['mid_point'] - perp_value['mid_point'],
-                    }   
                 
                 elif exchange == "bybit":
                     spot_value = BybitHelper().get_bid_ask(exch=exch, symbol=symbol+"/USDT")
                     perp_value = BybitHelper().get_bid_ask(exch=exch, symbol=symbol+"/USDT:USDT")
 
-                    bid_ask_value = {
-                        'spot': spot_value,
-                        'perp': perp_value,
-                        'spread': spot_value['mid_point'] - perp_value['mid_point'],
-                    } 
-
                 elif exchange == "huobi":
                     spot_value = HuobiHelper().get_bid_ask(exch=exch, symbol=symbol+"/USDT")
                     perp_value = HuobiHelper().get_bid_ask(exch=exch, symbol=symbol+"/USDT:USDT")
 
-                    bid_ask_value = {
-                        'spot': spot_value,
-                        'perp': perp_value,
-                        'spread': spot_value['mid_point'] - perp_value['mid_point'],
-                    } 
+                bid_ask_value = {
+                    'spot': spot_value,
+                    'perp': perp_value,
+                    'spread': spot_value['mid_point'] - perp_value['mid_point'],
+                } 
         
             except ccxt.ExchangeError as e:
                 if logger == None:

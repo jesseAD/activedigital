@@ -1,0 +1,267 @@
+{
+  "okx": [
+    {
+      "bal" : "-25.0037661703341209",
+      "balChg" : "0.0021214063018468",
+      "billId" : "650486315750273036",
+      "ccy" : "USDT",
+      "clOrdId" : "",
+      "execType" : "",
+      "fee" : 0.0,
+      "fillFwdPx" : "",
+      "fillIdxPx" : "",
+      "fillMarkPx" : "",
+      "fillMarkVol" : "",
+      "fillPxUsd" : "",
+      "fillPxVol" : "",
+      "fillTime" : "1701360023126",
+      "from" : "",
+      "instId" : "BTC-USDT-SWAP",
+      "instType" : "SWAP",
+      "interest" : "0",
+      "mgnMode" : "cross",
+      "notes" : "",
+      "ordId" : "",
+      "pnl" : 0.0021218730112332065,
+      "posBal" : "0",
+      "posBalChg" : "0",
+      "px" : "37623.2",
+      "subType" : "174",
+      "sz" : 1.00022,
+      "tag" : "",
+      "to" : "",
+      "tradeId" : "",
+      "timestamp" : 1701359423126,
+      "type" : "8"
+    },
+    {
+      "bal" : "-24.991819988502374",
+      "balChg" : "0.0128603438398376",
+      "billId" : "650607083121291270",
+      "ccy" : "USDT",
+      "clOrdId" : "",
+      "execType" : "",
+      "fee" : 0.0,
+      "fillFwdPx" : "",
+      "fillIdxPx" : "",
+      "fillMarkPx" : "",
+      "fillMarkVol" : "",
+      "fillPxUsd" : "",
+      "fillPxVol" : "",
+      "fillTime" : "1701388816311",
+      "from" : "",
+      "instId" : "BTC-USDT-SWAP",
+      "instType" : "SWAP",
+      "interest" : "0",
+      "mgnMode" : "cross",
+      "notes" : "",
+      "ordId" : "",
+      "pnl" : 0.012863173115482365,
+      "posBal" : "0",
+      "posBalChg" : "0",
+      "px" : "37728.2",
+      "subType" : "174",
+      "sz" : 1.00022,
+      "tag" : "",
+      "to" : "",
+      "tradeId" : "",
+      "timestamp" : 1701388216311,
+      "type" : "8"
+    },
+    {
+      "bal" : "-25.0050876529150632",
+      "balChg" : "-0.0001144252279876",
+      "billId" : "650366994801766403",
+      "ccy" : "USDT",
+      "clOrdId" : "",
+      "execType" : "",
+      "fee" : 0.0,
+      "fillFwdPx" : "",
+      "fillIdxPx" : "",
+      "fillMarkPx" : "",
+      "fillMarkVol" : "",
+      "fillPxUsd" : "",
+      "fillPxVol" : "",
+      "fillTime" : "1701331574801",
+      "from" : "",
+      "instId" : "",
+      "instType" : "MARGIN",
+      "interest" : "0.0001144252279876",
+      "mgnMode" : "cross",
+      "notes" : "",
+      "ordId" : "",
+      "pnl" : 0.0,
+      "posBal" : "0",
+      "posBalChg" : "0",
+      "px" : "",
+      "subType" : "9",
+      "sz" : -0.00011445040153775727,
+      "tag" : "",
+      "to" : "",
+      "tradeId" : "",
+      "timestamp" : 1701330974795,
+      "type" : "7"
+    }
+  ],
+  "binance": {
+    "um": [
+      {
+        "symbol" : "BNBUSDT",
+        "incomeType" : "COMMISSION",
+        "income" : 0.0,
+        "asset" : "USDT",
+        "timestamp" : 1701406977000,
+        "info" : {
+          "symbol" : "BNBUSDT",
+          "incomeType" : "COMMISSION",
+          "income" : "-0.00316682",
+          "asset" : "USDT",
+          "time" : "1701407577000",
+          "info" : "1095600141",
+          "tranId" : "903301095600141",
+          "tradeId" : "1095600141"
+        },
+        "tranId" : "903301095600141",
+        "tradeId" : "1095600141"
+      }    
+    ],
+    "borrow": [
+      {
+        "txId" : "1603556456920877935",
+        "timestamp" : 1701413400000,
+        "asset" : "BNB",
+        "rawAsset" : "FIL",
+        "principal" : "0.02",
+        "income" : -0.0,
+        "interestRate" : "0.00036899",
+        "incomeType" : "PERIODIC_CONVERTED",
+        "info" : {
+          "txId" : "1603556456920877935",
+          "interestAccuredTime" : "1701414000000",
+          "asset" : "BNB",
+          "rawAsset" : "FIL",
+          "principal" : "0.02",
+          "interest" : "0.000000010",
+          "interestRate" : "0.00036899",
+          "type" : "PERIODIC_CONVERTED"
+        }
+      }
+    ],
+    "future": [
+      {
+        "symbol" : "BTCUSDT",
+        "incomeType" : "REALIZED_PNL",
+        "income" : -0.0,
+        "asset" : "USDT",
+        "timestamp" : 1701261460000,
+        "info" : {
+          "symbol" : "BTCUSDT",
+          "incomeType" : "REALIZED_PNL",
+          "income" : "-0.12919714",
+          "asset" : "USDT",
+          "time" : "1701262060000",
+          "info" : "4331763088",
+          "tranId" : "900314331763088",
+          "tradeId" : "4331763088"
+        },
+        "tranId" : "900314331763088",
+        "tradeId" : "4331763088"
+      }
+    ]
+  },
+  "bybit": {
+    "commission": [
+      {
+        "symbol" : "SOLPERP",
+        "side" : "Sell",
+        "funding" : 0.0,
+        "orderLinkId" : "",
+        "orderId" : "0df283f9-542d-453d-ad5c-c1ae5ff9ea1c",
+        "fee" : 0.0,
+        "change" : "0.0136148",
+        "cashFlow" : "0.0",
+        "timestamp" : 1701371801968,
+        "type" : "TRADE",
+        "feeRate" : "0.0002",
+        "bonusChange" : "0",
+        "size" : "1.6",
+        "qty" : "0.2",
+        "cashBalance" : "67.80648347",
+        "currency" : "USDC",
+        "id" : "59254992_SOLPERP_41894786070",
+        "category" : "linear",
+        "tradePrice" : "59.63",
+        "tradeId" : "b496a89a-d313-54f1-9d0a-3b7ec6e07fd7",
+        "info" : {
+          "symbol" : "SOLPERP",
+          "side" : "Sell",
+          "funding" : "0",
+          "orderLinkId" : "",
+          "orderId" : "0df283f9-542d-453d-ad5c-c1ae5ff9ea1c",
+          "fee" : "0.0023852",
+          "change" : "0.0136148",
+          "cashFlow" : "0.016",
+          "transactionTime" : "1701372401968",
+          "type" : "TRADE",
+          "feeRate" : "0.0002",
+          "bonusChange" : "0",
+          "size" : "1.6",
+          "qty" : "0.2",
+          "cashBalance" : "67.80648347",
+          "currency" : "USDC",
+          "id" : "59254992_SOLPERP_41894786070",
+          "category" : "linear",
+          "tradePrice" : "59.63",
+          "tradeId" : "b496a89a-d313-54f1-9d0a-3b7ec6e07fd7"
+        }
+      }    
+    ],
+    "borrow": [
+      {
+        "borrowAmount" : "351.695317743750974327",
+        "costExemption" : "0.000218287641077",
+        "freeBorrowedAmount" : "14.107",
+        "timestamp" : 1701384900573,
+        "InterestBearingBorrowSize" : "337.588317743750974327",
+        "currency" : "USDT",
+        "unrealisedLoss" : "14.107",
+        "hourlyBorrowRate" : "0.000015473711",
+        "fee" : -0.0,
+        "info" : {
+          "borrowAmount" : "351.695317743750974327",
+          "costExemption" : "0.000218287641077",
+          "freeBorrowedAmount" : "14.107",
+          "createdTime" : "1701385500573",
+          "InterestBearingBorrowSize" : "337.588317743750974327",
+          "currency" : "USDT",
+          "unrealisedLoss" : "14.107",
+          "hourlyBorrowRate" : "0.000015473711",
+          "borrowCost" : "0.00522374"
+        },
+        "funding" : 0.0
+      }
+    ]
+  },
+  "huobi": {
+    "cm": [
+      {
+        "id" : "1842712893",
+        "amount" : "0.0",
+        "query_id" : "1842712893",
+        "currency" : "ETH",
+        "type" : "14",
+        "timestamp" : 1713004165000,
+        "contract_code" : "ETH-USD",
+        "info" : {
+            "id" : "1842712893",
+            "amount" : "0.300000000000000000",
+            "query_id" : "1842712893",
+            "symbol" : "ETH",
+            "type" : "14",
+            "ts" : "1713004765000",
+            "contract_code" : "ETH-USD"
+        }
+      }
+    ]
+  }
+}

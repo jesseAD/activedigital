@@ -15,7 +15,7 @@ class Transactions:
 
         self.runs_db = db[config['mongodb']['database']]['runs']
         self.tickers_db = db[config['mongodb']['database']]['tickers']
-        self.transactions_db = db[config['mongodb']['database']]['transactions']
+        self.transactions_db = db[config['mongodb']['database']][collection]
         self.mtd_pnls_db = db[config['mongodb']['database']]['mtd_pnls']
 
     # def get(
