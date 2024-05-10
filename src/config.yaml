@@ -274,6 +274,7 @@ clients:
           margin_mode: non_portfolio
           hedged_exclusion_positive: {'USDT': 0}
           hedged_exclusion_negative: {'USDT': 0}
+          collateral: {'BTC': 1}
         
         subjessetf:
           base_ccy: USD

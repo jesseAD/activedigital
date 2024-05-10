@@ -74,6 +74,7 @@ class Balances:
             'vip_loan': 0,
             'market_loan': 0
         }
+        collateral = 0
     
         if balanceValue is None:
             if exch == None:
@@ -168,6 +169,8 @@ class Balances:
 
             balanceValue = {_key: balanceValue[_key] for _key in balanceValue if balanceValue[_key] != 0.0}
 
+            # calculate base balance
+            
             query = {}
             if exchange:
                 query["venue"] = exchange
@@ -222,6 +225,29 @@ class Balances:
 
             balanceValue["base"] = base_balance
 
+            # calculate collateral
+
+            if "collateral" in config["clients"][client]["subaccounts"][exchange][sub_account]:
+                for _key, _value in config["clients"][client]["subaccounts"][exchange][sub_account]['collateral'].items():
+                    cross_ratio = Helper().calc_cross_ccy_ratio(
+                        _key,
+                        config["clients"][client]["subaccounts"][exchange][sub_account]["base_ccy"],
+                        ticker_value
+                    )
+                    
+                    if cross_ratio == 0:
+                        if logger == None:
+                            print(client + " " + exchange + " " + sub_account + " balances: skipped as zero ticker price")
+                            print("Unable to collect balances for " + client + " " + exchange + " " + sub_account)
+                        else:
+                            logger.error(client + " " + exchange + " " + sub_account + " balances: skipped as zero ticker price")
+                            logger.error("Unable to collect balances for " + client + " " + exchange + " " + sub_account)
+                        return True
+                    
+                    collateral += _value * cross_ratio
+
+        # calculate balance change
+        
         balance_values = self.balances_db.aggregate([
             {
                 '$match': {
@@ -279,6 +305,8 @@ class Balances:
             except:
                 pass
 
+        
+        
         balance = {
             "client": client,
             "venue": exchange,
@@ -287,6 +315,7 @@ class Balances:
             "repayments": repayments,
             "loan_pools": loan_pools,
             "balance_change": balance_change,
+            "collateral": collateral,
             "base_ccy": config["clients"][client]["subaccounts"][exchange][sub_account]["base_ccy"],
             "active": True,
             "entry": False,
