@@ -155,31 +155,31 @@ class OpenOrders:
     open_orders["runid"] = latest_run_id
 
     try:
-        if config["open_orders"]["store_type"] == "timeseries":
-            self.open_orders_db.insert_one(open_orders)
-        elif config["open_orders"]["store_type"] == "snapshot":
-            self.open_orders_db.update_one(
-                {
-                    "client": open_orders["client"],
-                    "venue": open_orders["venue"],
-                    "account": open_orders["account"],
-                },
-                {
-                    "$set": {
-                        "open_orders_value": open_orders["open_orders_value"],
-                        "timestamp": open_orders["timestamp"],
-                        "runid": open_orders["runid"],
-                    }
-                },
-                upsert=True,
-            )
+      if config["open_orders"]["store_type"] == "timeseries":
+        self.open_orders_db.insert_one(open_orders)
+      elif config["open_orders"]["store_type"] == "snapshot":
+        self.open_orders_db.update_one(
+          {
+            "client": open_orders["client"],
+            "venue": open_orders["venue"],
+            "account": open_orders["account"],
+          },
+          {
+            "$set": {
+              "open_orders_value": open_orders["open_orders_value"],
+              "timestamp": open_orders["timestamp"],
+              "runid": open_orders["runid"],
+            }
+          },
+          upsert=True,
+        )
 
-        if logger == None:
-          print("Collected open orders for " + client + " " + exchange + " " + sub_account)
-        else:
-          logger.info("Collected open orders for " + client + " " + exchange + " " + sub_account)
-        
-        return True
+      if logger == None:
+        print("Collected open orders for " + client + " " + exchange + " " + sub_account)
+      else:
+        logger.info("Collected open orders for " + client + " " + exchange + " " + sub_account)
+      
+      return True
     
     except Exception as e:
       if logger == None:

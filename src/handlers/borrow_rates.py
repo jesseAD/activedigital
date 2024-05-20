@@ -500,6 +500,16 @@ class BorrowRates:
 
             borrow_rates.append(new_value)
 
+        if len(borrow_rates) <= 0:
+            if logger == None:
+                print(exchange +" empty borrow rates")
+                print("Unable to collect borrow rates for " + exchange)
+            else:
+                logger.error(exchange +" empty borrow rates")
+                logger.error("Unable to collect borrow rates for " + exchange)
+
+            return True
+        
         try:
             self.borrow_rates_db.insert_many(borrow_rates)
 

@@ -550,7 +550,13 @@ class Positions:
           pass
 
       try:
-        self.price_changes_db.insert_many(price_changes)
+        if len(price_changes) > 0:
+          self.price_changes_db.insert_many(price_changes)
+        else:
+          if logger == None:
+            print(client + " " + exchange + " " + sub_account + " empty price changes")
+          else:
+            logger.warning(client + " " + exchange + " " + sub_account + " empty price changes")
 
       except Exception as e:
         if logger == None:

@@ -326,6 +326,16 @@ class Roll_Costs:
 
     del roll_cost_values
 
+    if len(roll_costs) <= 0:
+      if logger == None:
+        print(exchange +" empty carry costs")
+        print("Unable to collect roll costs for " + exchange)
+      else:
+        logger.error(exchange +" empty carry costs")
+        logger.error("Unable to collect roll costs for " + exchange)
+
+      return True
+
     try:
       self.roll_costs_db.insert_many(roll_costs)
 

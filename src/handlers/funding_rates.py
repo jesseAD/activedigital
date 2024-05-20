@@ -346,7 +346,8 @@ class FundingRates:
                                         'timestamp': datetime.now(timezone.utc)
                                     })
 
-                        self.long_funding_db.insert_many(long_fundings)
+                        if len(long_fundings) > 0:
+                            self.long_funding_db.insert_many(long_fundings)
 
                         borrow_rates = list(self.borrow_rates_db.find({
                             "$and": [
@@ -404,7 +405,8 @@ class FundingRates:
                                     'timestamp': datetime.now(timezone.utc)
                                 })
 
-                        self.short_funding_db.insert_many(short_fundings)
+                        if len(short_fundings) > 0:
+                            self.short_funding_db.insert_many(short_fundings)
 
                     except Exception as e:
                         if logger == None:
@@ -548,6 +550,16 @@ class FundingRates:
 
             return True
 
+        if len(funding_rates) <= 0:
+            if logger == None:
+                print(exchange + " empty funding rates")
+                print("Unable to collect funding rates for " + exchange)
+            else:
+                logger.error(exchange + " empty funding rates")
+                logger.error("Unable to collect funding rates for " + exchange)
+
+            return True
+        
         try:
             self.funding_rates_db.insert_many(funding_rates)
 

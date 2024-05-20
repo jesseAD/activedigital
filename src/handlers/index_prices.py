@@ -143,6 +143,16 @@ class IndexPrices:
 
             index_prices.append(index_price)
         
+        if len(index_prices) <= 0:
+            if logger == None:
+                print(exchange +" empty index prices")
+                print("Unable to collect index prices for " + exchange)
+            else:
+                logger.error(exchange +" empty index prices")
+                logger.error("Unable to collect index prices for " + exchange)
+
+            return True
+
         try:
             self.index_prices_db.insert_many(index_prices)
 

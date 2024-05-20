@@ -147,6 +147,16 @@ class MarkPrices:
 
             mark_prices.append(mark_price)
 
+        if len(mark_prices) <= 0:
+            if logger == None:
+                print(exchange +" empty mark prices")
+                print("Unable to collect mark prices for " + exchange)
+            else:
+                logger.error(exchange +" empty mark prices")
+                logger.error("Unable to collect mark prices for " + exchange)
+
+            return True
+        
         try:
             if config["mark_prices"]["store_type"] == "timeseries":
                 self.mark_prices_db.insert_many(mark_prices)
