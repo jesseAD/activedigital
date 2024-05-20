@@ -1895,6 +1895,16 @@ class Transactions:
         
         del transaction_value
 
+        if len(transaction) <= 0:
+            if logger == None:
+                print(client + " " + exchange + " " + sub_account + " empty transactions")
+                print("Unable to collect transactions for " + client + " " + exchange + " " + sub_account)
+            else:
+                logger.error(client + " " + exchange + " " + sub_account + " empty transactions")
+                logger.error("Unable to collect transactions for " + client + " " + exchange + " " + sub_account)
+
+            return True
+
         try:
             if config["transactions"]["store_type"] == "snapshot":
                 self.transactions_db.update_one(
