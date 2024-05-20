@@ -511,46 +511,35 @@ class Positions:
 
               pass
         
-        # del position_value
+      # del position_value
 
-        run_ids = self.runs_db.find({}).sort("_id", -1).limit(1)
-        latest_run_id = 0
-        for item in run_ids:
-          try:
-            latest_run_id = item["runid"]
-          except:
-            pass
-
-        # open positions price changes
-
-        price_changes = []
-        for position in position_info:
-          try:
-            ticker = float(tickers[position['base'] + "/USDT"]['last'])
-            mark_klines = exch.fetch_mark_ohlcv(symbol = position['base'] + "/USDT", timeframe = '2h', limit=1)
-
-            price_change = {
-              'client': client,
-              'venue': exchange,
-              'account': sub_account,
-              'base': position['base'],
-              'symbol': position['symbol'],
-              'price_change': (ticker - mark_klines[0][1]) / mark_klines[0][1] * 100,
-              'runid': latest_run_id,
-              'timestamp': datetime.now(timezone.utc)
-            }
-            price_changes.append(price_change)
-
-          except Exception as e:
-            if logger == None:
-              print(client + " " + exchange + " " + sub_account + " price changes " + str(e))
-            else:
-              logger.warning(client + " " + exchange + " " + sub_account + " price changes " + str(e))
-
-            pass
-
+      run_ids = self.runs_db.find({}).sort("_id", -1).limit(1)
+      latest_run_id = 0
+      for item in run_ids:
         try:
-          self.price_changes_db.insert_many(price_changes)
+          latest_run_id = item["runid"]
+        except:
+          pass
+
+      # open positions price changes
+
+      price_changes = []
+      for position in position_info:
+        try:
+          ticker = float(tickers[position['base'] + "/USDT"]['last'])
+          mark_klines = exch.fetch_mark_ohlcv(symbol = position['base'] + "/USDT", timeframe = '2h', limit=1)
+
+          price_change = {
+            'client': client,
+            'venue': exchange,
+            'account': sub_account,
+            'base': position['base'],
+            'symbol': position['symbol'],
+            'price_change': (ticker - mark_klines[0][1]) / mark_klines[0][1] * 100,
+            'runid': latest_run_id,
+            'timestamp': datetime.now(timezone.utc)
+          }
+          price_changes.append(price_change)
 
         except Exception as e:
           if logger == None:
@@ -560,7 +549,18 @@ class Positions:
 
           pass
 
-        del price_changes
+      try:
+        self.price_changes_db.insert_many(price_changes)
+
+      except Exception as e:
+        if logger == None:
+          print(client + " " + exchange + " " + sub_account + " price changes " + str(e))
+        else:
+          logger.warning(client + " " + exchange + " " + sub_account + " price changes " + str(e))
+
+        pass
+
+      del price_changes
 
     else:
       position_info = position_value
