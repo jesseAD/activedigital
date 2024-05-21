@@ -1,4 +1,4 @@
-from datetime import datetime, timezone
+from datetime import datetime, timezone, timedelta
 import time
 import ccxt
 # import pdb
@@ -906,6 +906,10 @@ class Positions:
                   }, {
                     '$eq': [
                       '$account', sub_account
+                    ]
+                  }, {
+                    '$gt': [
+                      '$timestamp', datetime.now(timezone.utc) - timedelta(days=1)
                     ]
                   }
                 ]
