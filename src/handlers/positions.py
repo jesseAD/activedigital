@@ -479,6 +479,10 @@ class Positions:
                           '$eq': [
                             '$symbol', position['base'] + "/USDT"
                           ]
+                        }, {
+                          '$gt': [
+                            '$timestamp', datetime.now(timezone.utc) - timedelta(days=1)
+                          ]
                         }
                       ]
                     }
@@ -641,6 +645,10 @@ class Positions:
                           '$eq': [
                             '$symbol', lifetime_funding_values[j]['base'] + "/USDT" if lifetime_funding_values[j]['quote'] == "USDT" else lifetime_funding_values[j]['base'] + "/USD"
                           ]
+                        }, {
+                          '$gt': [
+                            '$timestamp', datetime.now(timezone.utc) - timedelta(days=1)
+                          ]
                         }
                       ]
                     }
@@ -733,6 +741,10 @@ class Positions:
                           '$eq': [
                             '$symbol', position_info[i]['base'] + "/USDT" if position_info[i]['quote'] == "USDT" else position_info[i]['base'] + "/USD"
                           ]
+                        }, {
+                          '$gt': [
+                            '$timestamp', datetime.now(timezone.utc) - timedelta(days=1)
+                          ]
                         }
                       ]
                     }
@@ -820,6 +832,10 @@ class Positions:
                           }, {
                             '$eq': [
                               '$symbol', lifetime_funding_values[j]['base'] + "/USDT" if lifetime_funding_values[j]['quote'] == "USDT" else lifetime_funding_values[j]['base'] + "/USD"
+                            ]
+                          }, {
+                            '$gt': [
+                              '$timestamp', datetime.now(timezone.utc) - timedelta(days=1)
                             ]
                           }
                         ]
