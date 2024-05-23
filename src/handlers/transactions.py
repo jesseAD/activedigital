@@ -159,6 +159,10 @@ class Transactions:
                         '$eq': [
                           '$account', sub_account
                         ]
+                      }, {
+                        '$gt': [
+                          '$timestamp', datetime.now(timezone.utc) - timedelta(days=2)
+                        ]
                       }
                     ]
                   }
@@ -288,6 +292,10 @@ class Transactions:
                           '$eq': [
                             '$trade_type', 'cm'
                           ]
+                        }, {
+                          '$gt': [
+                            '$timestamp', datetime.now(timezone.utc) - timedelta(days=2)
+                          ]
                         }
                       ]
                     }
@@ -393,6 +401,10 @@ class Transactions:
                           '$eq': [
                             '$trade_type', 'um'
                           ]
+                        }, {
+                          '$gt': [
+                            '$timestamp', datetime.now(timezone.utc) - timedelta(days=2)
+                          ]
                         }
                       ]
                     }
@@ -496,6 +508,10 @@ class Transactions:
                         }, {
                           '$eq': [
                             '$trade_type', 'borrow'
+                          ]
+                        }, {
+                          '$gt': [
+                            '$timestamp', datetime.now(timezone.utc) - timedelta(days=2)
                           ]
                         }
                       ]
@@ -607,6 +623,10 @@ class Transactions:
                           '$eq': [
                             '$trade_type', 'future'
                           ]
+                        }, {
+                          '$gt': [
+                            '$timestamp', datetime.now(timezone.utc) - timedelta(days=2)
+                          ]
                         }
                       ]
                     }
@@ -710,6 +730,10 @@ class Transactions:
                         }, {
                           '$eq': [
                             '$trade_type', 'spot'
+                          ]
+                        }, {
+                          '$gt': [
+                            '$timestamp', datetime.now(timezone.utc) - timedelta(days=2)
                           ]
                         }
                       ]
@@ -831,6 +855,10 @@ class Transactions:
                         '$eq': [
                           '$trade_type', 'commission'
                         ]
+                      }, {
+                        '$gt': [
+                          '$timestamp', datetime.now(timezone.utc) - timedelta(days=2)
+                        ]
                       }
                     ]
                   }
@@ -932,6 +960,10 @@ class Transactions:
                       }, {
                         '$eq': [
                           '$trade_type', 'borrow'
+                        ]
+                      }, {
+                        '$gt': [
+                          '$timestamp', datetime.now(timezone.utc) - timedelta(days=2)
                         ]
                       }
                     ]
@@ -1041,6 +1073,10 @@ class Transactions:
                         '$eq': [
                           '$trade_type', 'cross'
                         ]
+                      }, {
+                        '$gt': [
+                          '$timestamp', datetime.now(timezone.utc) - timedelta(days=2)
+                        ]
                       }
                     ]
                   }
@@ -1142,6 +1178,10 @@ class Transactions:
                       }, {
                         '$eq': [
                           '$trade_type', 'isolated'
+                        ]
+                      }, {
+                        '$gt': [
+                          '$timestamp', datetime.now(timezone.utc) - timedelta(days=2)
                         ]
                       }
                     ]
@@ -1245,6 +1285,10 @@ class Transactions:
                         '$eq': [
                           '$trade_type', 'cm'
                         ]
+                      }, {
+                        '$gt': [
+                          '$timestamp', datetime.now(timezone.utc) - timedelta(days=2)
+                        ]
                       }
                     ]
                   }
@@ -1347,6 +1391,10 @@ class Transactions:
                         '$eq': [
                           '$trade_type', 'future'
                         ]
+                      }, {
+                        '$gt': [
+                          '$timestamp', datetime.now(timezone.utc) - timedelta(days=2)
+                        ]
                       }
                     ]
                   }
@@ -1448,6 +1496,10 @@ class Transactions:
                       }, {
                         '$eq': [
                           '$trade_type', 'spot'
+                        ]
+                      }, {
+                        '$gt': [
+                          '$timestamp', datetime.now(timezone.utc) - timedelta(days=2)
                         ]
                       }
                     ]
