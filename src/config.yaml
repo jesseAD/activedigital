@@ -162,40 +162,10 @@ funding_rates:
   period: interval # yearly, daily or interval
   base_ccy: ["USDT", "ETH", "BTC", ]
 
-# exchanges: ["huobi", ]
+# exchanges: ["okx", ]
 exchanges: ["binance", "okx", "bybit", "huobi", ]
 
 clients:
-  rundmc:
-    split_positions: True
-
-    subaccounts:
-      binance:
-        subaccount4:
-          base_ccy: BTC
-          margin_mode: non_portfolio
-          hedged_exclusion_positive: {'USDT': 0}
-          hedged_exclusion_negative: {'USDT': 0}
-        
-        subaccount6:
-          base_ccy: BTC
-          margin_mode: non_portfolio
-          hedged_exclusion_positive: {'USDT': 0}
-          hedged_exclusion_negative: {'USDT': 0}
-        
-        subbinancepm1:
-          base_ccy: BTC
-          margin_mode: portfolio
-          hedged_exclusion_negative: {'USDT': 0}
-          hedged_exclusion_positive: {'USDT': 0}
-
-      okx:
-        subaccount1:
-          base_ccy: USD
-          margin_mode: non_portfolio
-          hedged_exclusion_positive: {'USDT': 0}
-          hedged_exclusion_negative: {'USDT': 0}
-
   besttrader:
     split_positions: True
 
@@ -221,6 +191,36 @@ clients:
           hedged_exclusion_negative: {'USDT': 0}
 
         sub4:
+          base_ccy: USD
+          margin_mode: non_portfolio
+          hedged_exclusion_positive: {'USDT': 0}
+          hedged_exclusion_negative: {'USDT': 0}
+
+  rundmc:
+    split_positions: True
+
+    subaccounts:
+      binance:
+        subaccount4:
+          base_ccy: BTC
+          margin_mode: non_portfolio
+          hedged_exclusion_positive: {'USDT': 0}
+          hedged_exclusion_negative: {'USDT': 0}
+        
+        subaccount6:
+          base_ccy: BTC
+          margin_mode: non_portfolio
+          hedged_exclusion_positive: {'USDT': 0}
+          hedged_exclusion_negative: {'USDT': 0}
+        
+        subbinancepm1:
+          base_ccy: BTC
+          margin_mode: portfolio
+          hedged_exclusion_negative: {'USDT': 0}
+          hedged_exclusion_positive: {'USDT': 0}
+
+      okx:
+        subaccount1:
           base_ccy: USD
           margin_mode: non_portfolio
           hedged_exclusion_positive: {'USDT': 0}

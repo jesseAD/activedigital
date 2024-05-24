@@ -119,97 +119,96 @@ class BorrowRates:
         for item in borrow_rate_values:
           current_values = item["borrow_rates_value"]
 
-        try:
-          if current_values is None:
-            if exchange == "okx":
-              borrowRatesValue = OKXHelper().get_borrow_rates(
-                exch=exch, limit=92, code=code
-              )
-            elif exchange == "binance":
-              borrowRatesValue = Helper().get_borrow_rates(
-                exch=exch, limit=92, code=code
-              )
-            elif exchange == "bybit":
-              res = BybitHelper().get_borrow_rate(
-                exch=exch, code=code
-              )
-              if res != None:
-                borrowRatesValue = [res]
-              else:
-                borrowRatesValue = []
-            elif exchange == "huobi":
-              res = HuobiHelper().get_borrow_rate(
-                exch=exch, code=code
-              )
-              if res != None:
-                borrowRatesValue = [res]
-              else:
-                borrowRatesValue = []
-          else:
-            last_time = int(current_values["timestamp"])
-            if exchange == "okx":
-              borrowRatesValue = OKXHelper().get_borrow_rates(
-                exch=exch, limit=92, code=code, since=last_time+1
-              )
-            elif exchange == "binance":
-              borrowRatesValue = Helper().get_borrow_rates(
-                exch=exch, limit=92, code=code, since=last_time+1
-              )
-            elif exchange == "bybit":              
-              res = BybitHelper().get_borrow_rate(
-                exch=exch, code=code
-              )
-              if res != None:
-                borrowRatesValue = [res]
-              else:
-                borrowRatesValue = []
-            elif exchange == "huobi":
-              res = HuobiHelper().get_borrow_rate(
-                exch=exch, code=code
-              )
-              if res != None:
-                borrowRatesValue = [res]
-              else:
-                borrowRatesValue = []
-          
-          if len(borrowRatesValue) > 0:
-            scalar = 1
-            if config['borrow_rates']['period'][exchange] != "yearly":
-              scalar = 365
+        if current_values is None:
+          if exchange == "okx":
+            borrowRatesValue = OKXHelper().get_borrow_rates(
+              exch=exch, limit=92, code=code
+            )
+          elif exchange == "binance":
+            borrowRatesValue = Helper().get_borrow_rates(
+              exch=exch, limit=92, code=code
+            )
+          elif exchange == "bybit":
+            res = BybitHelper().get_borrow_rate(
+              exch=exch, code=code
+            )
+            if res != None:
+              borrowRatesValue = [res]
+            else:
+              borrowRatesValue = []
+          elif exchange == "huobi":
+            res = HuobiHelper().get_borrow_rate(
+              exch=exch, code=code
+            )
+            if res != None:
+              borrowRatesValue = [res]
+            else:
+              borrowRatesValue = []
+        else:
+          last_time = int(current_values["timestamp"])
+          if exchange == "okx":
+            borrowRatesValue = OKXHelper().get_borrow_rates(
+              exch=exch, limit=92, code=code, since=last_time+1
+            )
+          elif exchange == "binance":
+            borrowRatesValue = Helper().get_borrow_rates(
+              exch=exch, limit=92, code=code, since=last_time+1
+            )
+          elif exchange == "bybit":              
+            res = BybitHelper().get_borrow_rate(
+              exch=exch, code=code
+            )
+            if res != None:
+              borrowRatesValue = [res]
+            else:
+              borrowRatesValue = []
+          elif exchange == "huobi":
+            res = HuobiHelper().get_borrow_rate(
+              exch=exch, code=code
+            )
+            if res != None:
+              borrowRatesValue = [res]
+            else:
+              borrowRatesValue = []
+        
+        if len(borrowRatesValue) > 0:
+          scalar = 1
+          if config['borrow_rates']['period'][exchange] != "yearly":
+            scalar = 365
 
-            if exchange == "okx":
-              borrow_rate = OKXHelper().get_borrow_rate(
-                exch=exch, params={"ccy": code}
-              )["data"][0]["interestRate"]
-              for item in borrowRatesValue:
-                item["nextBorrowRate"] = float(borrow_rate) * 24 * 365 / scalar
-                item['scalar'] = scalar
+          if exchange == "okx":
+            borrow_rate = OKXHelper().get_borrow_rate(
+              exch=exch, params={"ccy": code}
+            )["data"][0]["interestRate"]
+            for item in borrowRatesValue:
+              item["nextBorrowRate"] = float(borrow_rate) * 24 * 365 / scalar
+              item['scalar'] = scalar
 
-            elif exchange == "binance":
-              borrow_rate = Helper().get_borrow_rate(
-                exch=exch, params={"assets": code, "isIsolated": False}
-              )[0]["nextHourlyInterestRate"]
-              for item in borrowRatesValue:
-                item["nextBorrowRate"] = float(borrow_rate) * 24 * 365 / scalar
-                item['scalar'] = scalar    
+          elif exchange == "binance":
+            borrow_rate = Helper().get_borrow_rate(
+              exch=exch, params={"assets": code, "isIsolated": False}
+            )[0]["nextHourlyInterestRate"]
+            for item in borrowRatesValue:
+              item["nextBorrowRate"] = float(borrow_rate) * 24 * 365 / scalar
+              item['scalar'] = scalar    
 
-            elif exchange == "bybit":
-              for item in borrowRatesValue:
-                item['scalar'] = scalar 
+          elif exchange == "bybit":
+            for item in borrowRatesValue:
+              item['scalar'] = scalar 
 
-            elif exchange == "huobi":
-              for item in borrowRatesValue:
-                item['scalar'] = scalar 
+          elif exchange == "huobi":
+            for item in borrowRatesValue:
+              item['scalar'] = scalar 
 
-        except ccxt.BadSymbol as e:
-          if logger == None:
-            print(exchange +  " borrow rates " + str(e))
-            print("Unable to collect borrow rates for " + exchange)
-          else:
-            logger.warning(exchange +  " borrow rates " + str(e))
-            logger.error("Unable to collect borrow rates for " + exchange)
+      except ccxt.BadSymbol as e:
+        if logger == None:
+          print(exchange +  " borrow rates " + str(e))
+          print("Unable to collect borrow rates for " + exchange)
+        else:
+          logger.warning(exchange +  " borrow rates " + str(e))
+          logger.error("Unable to collect borrow rates for " + exchange)
 
-          return True
+        return True
     
       except ccxt.AuthenticationError as e:
         if logger == None:
@@ -220,161 +219,165 @@ class BorrowRates:
         for _client in config['clients']:
           if exchange in config['clients'][_client]['subaccounts']:
             for _account in config['clients'][_client]['subaccounts'][exchange]:
-              print(_client + exchange + _account)
+
+              if logger == None:
+                print(_client + " " + exchange + " " + _account)
+              else:
+                logger.warning(_client + " " + exchange + " " + _account)
               
-              if _account != "base_ccy":
-                spec = _client.upper() + "_" + exchange.upper() + "_" + _account.upper() + "_"
-                API_KEY = secrets[spec + "API_KEY"]
-                API_SECRET = secrets[spec + "API_SECRET"]
-                PASSPHRASE = None
-                if exchange == "okx":
-                  PASSPHRASE = secrets[spec + "PASSPHRASE"]
+              spec = _client.upper() + "_" + exchange.upper() + "_" + _account.upper() + "_"
+              API_KEY = secrets[spec + "API_KEY"]
+              API_SECRET = secrets[spec + "API_SECRET"]
+              PASSPHRASE = None
+              if exchange == "okx":
+                PASSPHRASE = secrets[spec + "PASSPHRASE"]
 
-                exch = Exchange(exchange, _account, API_KEY, API_SECRET, PASSPHRASE).exch()
+              exch = Exchange(exchange, _account, API_KEY, API_SECRET, PASSPHRASE).exch()
 
-                borrowRatesValue = []
+              borrowRatesValue = []
 
-                query = {}
-                if exchange:
-                  query["venue"] = exchange
-                query["code"] = code
-                query["market/vip"] = "market"
+              # query = {}
+              # if exchange:
+              #   query["venue"] = exchange
+              # query["code"] = code
+              # query["market/vip"] = "market"
 
-                try:
-                  borrow_rate_values = self.borrow_rates_db.aggregate([
-                    {
-                      '$match': {
-                        '$expr': {
-                          '$and': [
-                            {
-                              '$eq': [
-                                '$venue', exchange
-                              ]
-                            }, {
-                              '$eq': [
-                                '$code', code
-                              ]
-                            }, {
-                              '$eq': [
-                                '$market/vip', 'market'
-                              ]
-                            }
-                          ]
-                        }
-                      }
-                    }, {
-                      '$project': {
-                        'borrow_rates_value': 1
-                      }
-                    }, {
-                      '$group': {
-                        '_id': None, 
-                        'borrow_rates_value': {
-                          '$last': '$borrow_rates_value'
-                        }
-                      }
-                    }
-                  ])
+              try:
+                # borrow_rate_values = self.borrow_rates_db.aggregate([
+                #   {
+                #     '$match': {
+                #       '$expr': {
+                #         '$and': [
+                #           {
+                #             '$eq': [
+                #               '$venue', exchange
+                #             ]
+                #           }, {
+                #             '$eq': [
+                #               '$code', code
+                #             ]
+                #           }, {
+                #             '$eq': [
+                #               '$market/vip', 'market'
+                #             ]
+                #           }
+                #         ]
+                #       }
+                #     }
+                #   }, {
+                #     '$project': {
+                #       'borrow_rates_value': 1
+                #     }
+                #   }, {
+                #     '$group': {
+                #       '_id': None, 
+                #       'borrow_rates_value': {
+                #         '$last': '$borrow_rates_value'
+                #       }
+                #     }
+                #   }
+                # ])
 
-                  current_values = None
-                  for item in borrow_rate_values:
-                    current_values = item["borrow_rates_value"]
+                # current_values = None
+                # for item in borrow_rate_values:
+                #   current_values = item["borrow_rates_value"]
 
-                  if current_values is None:
-                    if exchange == "okx":
-                      borrowRatesValue = OKXHelper().get_borrow_rates(
-                        exch=exch, limit=92, code=code
-                      )
-                    elif exchange == "binance":
-                      borrowRatesValue = Helper().get_borrow_rates(
-                        exch=exch, limit=92, code=code
-                      )
-                    elif exchange == "huobi":
-                      res = HuobiHelper().get_borrow_rate(
-                        exch=exch, code=code
-                      )
-                      if res != None:
-                        borrowRatesValue = [res]
-                      else:
-                        borrowRatesValue = []
-                  else:
-                    last_time = int(current_values["timestamp"])
-                    if exchange == "okx":
-                      borrowRatesValue = OKXHelper().get_borrow_rates(
-                        exch=exch, limit=92, code=code, since=last_time+1
-                      )
-                    elif exchange == "binance":
-                      borrowRatesValue = Helper().get_borrow_rates(
-                        exch=exch, limit=92, code=code, since=last_time+1
-                      )
-                    elif exchange == "huobi":
-                      res = HuobiHelper().get_borrow_rate(
-                        exch=exch, code=code
-                      )
-                      if res != None:
-                        borrowRatesValue = [res]
-                      else:
-                        borrowRatesValue = []
-                  
-                  if len(borrowRatesValue) > 0:
-                    scalar = 1
-                    if config['borrow_rates']['period'][exchange] != "yearly":
-                      scalar = 365
-
-                    if exchange == "okx":
-                      borrow_rate = OKXHelper().get_borrow_rate(
-                        exch=exch, params={"ccy": code}
-                      )["data"][0]["interestRate"]
-                      for item in borrowRatesValue:
-                        item["nextBorrowRate"] = float(borrow_rate) * 24 * 365 / scalar
-                        item['scalar'] = scalar
-
-                    elif exchange == "binance":
-                      borrow_rate = Helper().get_borrow_rate(
-                        exch=exch, params={"assets": code, "isIsolated": False}
-                      )[0]["nextHourlyInterestRate"]
-                      for item in borrowRatesValue:
-                        item["nextBorrowRate"] = float(borrow_rate) * 24 * 365 / scalar
-                        item['scalar'] = scalar  
-
-                    elif exchange == "huobi":
-                      for item in borrowRatesValue:
-                        item['scalar'] = scalar 
-                        
-                except ccxt.AuthenticationError as e:
-                  if logger == None:
-                    print(exchange + " borrow rates " + str(e))
-                  else:
-                    logger.warning(exchange + " borrow rates " + str(e))
-                  continue
+                if current_values is None:
+                  if exchange == "okx":
+                    borrowRatesValue = OKXHelper().get_borrow_rates(
+                      exch=exch, limit=92, code=code
+                    )
+                  elif exchange == "binance":
+                    borrowRatesValue = Helper().get_borrow_rates(
+                      exch=exch, limit=92, code=code
+                    )
+                  elif exchange == "huobi":
+                    res = HuobiHelper().get_borrow_rate(
+                      exch=exch, code=code
+                    )
+                    if res != None:
+                      borrowRatesValue = [res]
+                    else:
+                      borrowRatesValue = []
+                else:
+                  last_time = int(current_values["timestamp"])
+                  if exchange == "okx":
+                    borrowRatesValue = OKXHelper().get_borrow_rates(
+                      exch=exch, limit=92, code=code, since=last_time+1
+                    )
+                  elif exchange == "binance":
+                    borrowRatesValue = Helper().get_borrow_rates(
+                      exch=exch, limit=92, code=code, since=last_time+1
+                    )
+                  elif exchange == "huobi":
+                    res = HuobiHelper().get_borrow_rate(
+                      exch=exch, code=code
+                    )
+                    if res != None:
+                      borrowRatesValue = [res]
+                    else:
+                      borrowRatesValue = []
                 
-                except ccxt.ExchangeError as e:
-                  if logger == None:
-                    print(exchange + " borrow rates " + str(e))
-                    print("Unable to collect borrow rates for " + exchange)
-                  else:
-                    logger.warning(exchange + " borrow rates " + str(e))
-                    logger.error("Unable to collect borrow rates for " + exchange)
+                if len(borrowRatesValue) > 0:
+                  scalar = 1
+                  if config['borrow_rates']['period'][exchange] != "yearly":
+                    scalar = 365
 
-                  return True
-                except ccxt.NetworkError as e:  
-                  if logger == None:
-                    print(exchange + " borrow rates " + str(e))
-                  else:
-                    logger.warning(exchange + " borrow rates " + str(e))
+                  if exchange == "okx":
+                    borrow_rate = OKXHelper().get_borrow_rate(
+                      exch=exch, params={"ccy": code}
+                    )["data"][0]["interestRate"]
+                    for item in borrowRatesValue:
+                      item["nextBorrowRate"] = float(borrow_rate) * 24 * 365 / scalar
+                      item['scalar'] = scalar
 
-                  return False                
-                except Exception as e:
-                  if logger == None:
-                    print(exchange + " borrow rates " + str(e))
-                    print("Unable to collect borrow rates for " + exchange)
-                  else:
-                    logger.warning(exchange + " borrow rates " + str(e))
-                    logger.error("Unable to collect borrow rates for " + exchange)
+                  elif exchange == "binance":
+                    borrow_rate = Helper().get_borrow_rate(
+                      exch=exch, params={"assets": code, "isIsolated": False}
+                    )[0]["nextHourlyInterestRate"]
+                    for item in borrowRatesValue:
+                      item["nextBorrowRate"] = float(borrow_rate) * 24 * 365 / scalar
+                      item['scalar'] = scalar  
 
-                  return True
+                  elif exchange == "huobi":
+                    for item in borrowRatesValue:
+                      item['scalar'] = scalar 
 
                 break
+                      
+              except ccxt.AuthenticationError as e:
+                if logger == None:
+                  print(exchange + " borrow rates " + str(e))
+                else:
+                  logger.warning(exchange + " borrow rates " + str(e))
+                continue
+              
+              except ccxt.ExchangeError as e:
+                if logger == None:
+                  print(exchange + " borrow rates " + str(e))
+                  print("Unable to collect borrow rates for " + exchange)
+                else:
+                  logger.warning(exchange + " borrow rates " + str(e))
+                  logger.error("Unable to collect borrow rates for " + exchange)
+
+                return True
+              except ccxt.NetworkError as e:  
+                if logger == None:
+                  print(exchange + " borrow rates " + str(e))
+                else:
+                  logger.warning(exchange + " borrow rates " + str(e))
+
+                return False                
+              except Exception as e:
+                if logger == None:
+                  print(exchange + " borrow rates " + str(e))
+                  print("Unable to collect borrow rates for " + exchange)
+                else:
+                  logger.warning(exchange + " borrow rates " + str(e))
+                  logger.error("Unable to collect borrow rates for " + exchange)
+
+                return True
+
             break
         pass
 
@@ -394,6 +397,16 @@ class BorrowRates:
           logger.warning(exchange + " borrow rates " + str(e))
 
         return False
+      
+      except Exception as e:
+        if logger == None:
+          print(exchange + " borrow rates " + str(e))
+          print("Unable to collect borrow rates for " + exchange)
+        else:
+          logger.warning(exchange + " borrow rates " + str(e))
+          logger.error("Unable to collect borrow rates for " + exchange)
+
+        return True
     
     if exchange == "okx" and vipLoanRatesValue is None:
       try:
@@ -415,21 +428,21 @@ class BorrowRates:
 
       except ccxt.NetworkError as e:
         if logger == None:
-          print(exchange + " borrow rates " + str(e))
+          print(exchange + " VIP loan rates " + str(e))
         else:
-          logger.warning(exchange + " borrow rates " + str(e))
+          logger.warning(exchange + " VIP loan rates " + str(e))
       
       except ccxt.ExchangeError as e:
         if logger == None:
-          print(exchange + " borrow rates " + str(e))
+          print(exchange + " VIP loan rates " + str(e))
         else:
-          logger.warning(exchange + " borrow rates " + str(e))
+          logger.warning(exchange + " VIP loan rates " + str(e))
       
       except Exception as e:
         if logger == None:
-          print(exchange + " borrow rates " + str(e))
+          print(exchange + " VIP loan rates " + str(e))
         else:
-          logger.warning(exchange + " borrow rates " + str(e))
+          logger.warning(exchange + " VIP loan rates " + str(e))
 
     if len(borrowRatesValue) <= 0 and (vipLoanRatesValue == {} or vipLoanRatesValue is None):
       if logger == None:

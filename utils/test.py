@@ -23,7 +23,7 @@ params = {
     'secret': "",
     'enableRateLimit': True,
     'requests_trust_env':True,
-    'verbose': True,
+    'verbose': False,
     'options': {
         'adjustForTimeDifference':True,
         'warnOnFetchOpenOrdersWithoutSymbol': False
@@ -32,9 +32,11 @@ params = {
     # 'password': "!"
 }
 
-exchange = ccxt.huobi(params)
+exchange = ccxt.okx(params)
+res = exchange.private_get_account_interest_rate(params={"ccy": "THETA"})
+print(res)
 
-res = exchange.fetch_positions(params={'type': "swap", 'subType': "inverse"})
+# res = exchange.fetch_positions(params={'type': "swap", 'subType': "inverse"})
 # contracts = [item['contract_code'] for item in res]
 
 # transactions = []
@@ -47,7 +49,7 @@ res = exchange.fetch_positions(params={'type': "swap", 'subType': "inverse"})
 # for account in accounts:
 #     transactions += exchange.spot_private_get_v1_account_history(params={'account-id': account})['data']
 # res = exchange.fetch_positions(params={'marginMode': "cross", 'subType': "linear"})
-print(res)
+# print(res)
 # res = [
 #   {
 #     'id': item['id'],
