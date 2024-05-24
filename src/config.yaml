@@ -489,4 +489,13 @@ clients:
           base_ccy: USDT
           margin_mode: non_portfolio
           hedged_exclusion_positive: {'USDT': 0}
-          hedged_exclusion_negative: {'USDT': 0} 
+          hedged_exclusion_negative: {'USDT': 0}
+  galileo:
+    split_positions: True
+    subaccounts:
+      bybit:
+        subbasis1:
+          base_ccy: USDT
+          margin_mode: non_portfolio
+          hedged_exclusion_positive: {'USDT': 0}
+          hedged_exclusion_negative: {'USDT': 0}
