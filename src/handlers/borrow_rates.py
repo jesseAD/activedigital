@@ -200,15 +200,15 @@ class BorrowRates:
             for item in borrowRatesValue:
               item['scalar'] = scalar 
 
-      except ccxt.BadSymbol as e:
-        if logger == None:
-          print(exchange +  " borrow rates " + str(e))
-          print("Unable to collect borrow rates for " + exchange)
-        else:
-          logger.warning(exchange +  " borrow rates " + str(e))
-          logger.error("Unable to collect borrow rates for " + exchange)
+      # except ccxt.BadSymbol as e:
+      #   if logger == None:
+      #     print(exchange +  " borrow rates " + str(e))
+      #     print("Unable to collect borrow rates for " + exchange)
+      #   else:
+      #     logger.warning(exchange +  " borrow rates " + str(e))
+      #     logger.error("Unable to collect borrow rates for " + exchange)
 
-        return True
+      #   return True
     
       except ccxt.AuthenticationError as e:
         if logger == None:

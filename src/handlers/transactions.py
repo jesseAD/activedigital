@@ -159,27 +159,18 @@ class Transactions:
                         '$eq': [
                           '$account', sub_account
                         ]
-                      }, {
-                        '$gt': [
-                          '$timestamp', datetime.now(timezone.utc) - timedelta(days=2)
-                        ]
                       }
                     ]
                   }
                 }
               }, {
-                '$project': {
-                  'transaction_value': 1
-                }
-              }, {
-                '$sort': {
-                  'transaction_value.timestamp': 1
-                }
-              }, {
                 '$group': {
                   '_id': None, 
-                  'transaction_value': {
-                    '$last': '$transaction_value'
+                  'timestamp': {
+                    '$max': '$transaction_value.timestamp'
+                  },
+                  'billId': {
+                    '$max': "$transaction_value.billId"
                   }
                 }
               }
@@ -187,7 +178,7 @@ class Transactions:
 
             current_value = None
             for item in transactions_values:
-              current_value = item["transaction_value"]
+              current_value = item
 
             if current_value is None:
               transactions = []
@@ -292,27 +283,15 @@ class Transactions:
                           '$eq': [
                             '$trade_type', 'cm'
                           ]
-                        }, {
-                          '$gt': [
-                            '$timestamp', datetime.now(timezone.utc) - timedelta(days=2)
-                          ]
                         }
                       ]
                     }
                   }
                 }, {
-                  '$project': {
-                    'transaction_value': 1
-                  }
-                }, {
-                  '$sort': {
-                    'transaction_value.timestamp': 1
-                  }
-                }, {
                   '$group': {
                     '_id': None, 
-                    'transaction_value': {
-                      '$last': '$transaction_value'
+                    'timestamp': {
+                      '$max': '$transaction_value.timestamp'
                     }
                   }
                 }
@@ -320,7 +299,7 @@ class Transactions:
 
               current_value = None
               for item in transactions_values:
-                current_value = item["transaction_value"]
+                current_value = item
 
               if current_value is None:
                 cm_trades = []
@@ -401,27 +380,15 @@ class Transactions:
                           '$eq': [
                             '$trade_type', 'um'
                           ]
-                        }, {
-                          '$gt': [
-                            '$timestamp', datetime.now(timezone.utc) - timedelta(days=2)
-                          ]
                         }
                       ]
                     }
                   }
                 }, {
-                  '$project': {
-                    'transaction_value': 1
-                  }
-                }, {
-                  '$sort': {
-                    'transaction_value.timestamp': 1
-                  }
-                }, {
                   '$group': {
                     '_id': None, 
-                    'transaction_value': {
-                      '$last': '$transaction_value'
+                    'timestamp': {
+                      '$max': '$transaction_value.timestamp'
                     }
                   }
                 }
@@ -429,7 +396,7 @@ class Transactions:
 
               current_value = None
               for item in transactions_values:
-                current_value = item["transaction_value"]
+                current_value = item
 
               if current_value is None:
                 um_trades = []
@@ -509,27 +476,15 @@ class Transactions:
                           '$eq': [
                             '$trade_type', 'borrow'
                           ]
-                        }, {
-                          '$gt': [
-                            '$timestamp', datetime.now(timezone.utc) - timedelta(days=2)
-                          ]
                         }
                       ]
                     }
                   }
                 }, {
-                  '$project': {
-                    'transaction_value': 1
-                  }
-                }, {
-                  '$sort': {
-                    'transaction_value.timestamp': 1
-                  }
-                }, {
                   '$group': {
                     '_id': None, 
-                    'transaction_value': {
-                      '$last': '$transaction_value'
+                    'timestamp': {
+                      '$max': '$transaction_value.timestamp'
                     }
                   }
                 }
@@ -537,7 +492,7 @@ class Transactions:
 
               current_value = None
               for item in transactions_values:
-                current_value = item["transaction_value"]
+                current_value = item
 
               if current_value is None:
                 borrow_trades = []
@@ -623,27 +578,15 @@ class Transactions:
                           '$eq': [
                             '$trade_type', 'future'
                           ]
-                        }, {
-                          '$gt': [
-                            '$timestamp', datetime.now(timezone.utc) - timedelta(days=2)
-                          ]
                         }
                       ]
                     }
                   }
                 }, {
-                  '$project': {
-                    'transaction_value': 1
-                  }
-                }, {
-                  '$sort': {
-                    'transaction_value.timestamp': 1
-                  }
-                }, {
                   '$group': {
                     '_id': None, 
-                    'transaction_value': {
-                      '$last': '$transaction_value'
+                    'timestamp': {
+                      '$max': '$transaction_value.timestamp'
                     }
                   }
                 }
@@ -651,7 +594,7 @@ class Transactions:
 
               current_value = None
               for item in transactions_values:
-                current_value = item["transaction_value"]
+                current_value = item
 
               if current_value is None:
                 futures_trades = []
@@ -731,27 +674,15 @@ class Transactions:
                           '$eq': [
                             '$trade_type', 'spot'
                           ]
-                        }, {
-                          '$gt': [
-                            '$timestamp', datetime.now(timezone.utc) - timedelta(days=2)
-                          ]
                         }
                       ]
                     }
                   }
                 }, {
-                  '$project': {
-                    'transaction_value': 1
-                  }
-                }, {
-                  '$sort': {
-                    'transaction_value.timestamp': 1
-                  }
-                }, {
                   '$group': {
                     '_id': None, 
-                    'transaction_value': {
-                      '$last': '$transaction_value'
+                    'timestamp': {
+                      '$max': '$transaction_value.timestamp'
                     }
                   }
                 }
@@ -759,7 +690,7 @@ class Transactions:
 
               current_value = None
               for item in transactions_values:
-                current_value = item["transaction_value"]
+                current_value = item
 
               if current_value is None:
                 spot_trades = []
@@ -855,27 +786,15 @@ class Transactions:
                         '$eq': [
                           '$trade_type', 'commission'
                         ]
-                      }, {
-                        '$gt': [
-                          '$timestamp', datetime.now(timezone.utc) - timedelta(days=2)
-                        ]
                       }
                     ]
                   }
                 }
               }, {
-                '$project': {
-                  'transaction_value': 1
-                }
-              }, {
-                '$sort': {
-                  'transaction_value.timestamp': 1
-                }
-              }, {
                 '$group': {
                   '_id': None, 
-                  'transaction_value': {
-                    '$last': '$transaction_value'
+                  'timestamp': {
+                    '$max': '$transaction_value.timestamp'
                   }
                 }
               }
@@ -883,7 +802,7 @@ class Transactions:
 
             current_value = None
             for item in transactions_values:
-              current_value = item["transaction_value"]
+              current_value = item
 
             if current_value is None:
               transactions = []
@@ -961,27 +880,15 @@ class Transactions:
                         '$eq': [
                           '$trade_type', 'borrow'
                         ]
-                      }, {
-                        '$gt': [
-                          '$timestamp', datetime.now(timezone.utc) - timedelta(days=2)
-                        ]
                       }
                     ]
                   }
                 }
               }, {
-                '$project': {
-                  'transaction_value': 1
-                }
-              }, {
-                '$sort': {
-                  'transaction_value.timestamp': 1
-                }
-              }, {
                 '$group': {
                   '_id': None, 
-                  'transaction_value': {
-                    '$last': '$transaction_value'
+                  'timestamp': {
+                    '$max': '$transaction_value.timestamp'
                   }
                 }
               }
@@ -989,7 +896,7 @@ class Transactions:
 
             current_value = None
             for item in transactions_values:
-              current_value = item["transaction_value"]
+              current_value = item
 
             if current_value is None:
               transactions = []
@@ -1073,27 +980,15 @@ class Transactions:
                         '$eq': [
                           '$trade_type', 'cross'
                         ]
-                      }, {
-                        '$gt': [
-                          '$timestamp', datetime.now(timezone.utc) - timedelta(days=2)
-                        ]
                       }
                     ]
                   }
                 }
               }, {
-                '$project': {
-                  'transaction_value': 1
-                }
-              }, {
-                '$sort': {
-                  'transaction_value.timestamp': 1
-                }
-              }, {
                 '$group': {
                   '_id': None, 
-                  'transaction_value': {
-                    '$last': '$transaction_value'
+                  'timestamp': {
+                    '$max': '$transaction_value.timestamp'
                   }
                 }
               }
@@ -1101,7 +996,7 @@ class Transactions:
 
             current_value = None
             for item in transactions_values:
-              current_value = item["transaction_value"]
+              current_value = item
 
             if current_value is None:
               transactions = []
@@ -1179,27 +1074,15 @@ class Transactions:
                         '$eq': [
                           '$trade_type', 'isolated'
                         ]
-                      }, {
-                        '$gt': [
-                          '$timestamp', datetime.now(timezone.utc) - timedelta(days=2)
-                        ]
                       }
                     ]
                   }
                 }
               }, {
-                '$project': {
-                  'transaction_value': 1
-                }
-              }, {
-                '$sort': {
-                  'transaction_value.timestamp': 1
-                }
-              }, {
                 '$group': {
                   '_id': None, 
-                  'transaction_value': {
-                    '$last': '$transaction_value'
+                  'timestamp': {
+                    '$max': '$transaction_value.timestamp'
                   }
                 }
               }
@@ -1207,7 +1090,7 @@ class Transactions:
 
             current_value = None
             for item in transactions_values:
-              current_value = item["transaction_value"]
+              current_value = item
 
             if current_value is None:
               transactions = []
@@ -1285,27 +1168,15 @@ class Transactions:
                         '$eq': [
                           '$trade_type', 'cm'
                         ]
-                      }, {
-                        '$gt': [
-                          '$timestamp', datetime.now(timezone.utc) - timedelta(days=2)
-                        ]
                       }
                     ]
                   }
                 }
               }, {
-                '$project': {
-                  'transaction_value': 1
-                }
-              }, {
-                '$sort': {
-                  'transaction_value.timestamp': 1
-                }
-              }, {
                 '$group': {
                   '_id': None, 
-                  'transaction_value': {
-                    '$last': '$transaction_value'
+                  'timestamp': {
+                    '$max': '$transaction_value.timestamp'
                   }
                 }
               }
@@ -1313,7 +1184,7 @@ class Transactions:
 
             current_value = None
             for item in transactions_values:
-              current_value = item["transaction_value"]
+              current_value = item
 
             if current_value is None:
               transactions = []
@@ -1391,27 +1262,15 @@ class Transactions:
                         '$eq': [
                           '$trade_type', 'future'
                         ]
-                      }, {
-                        '$gt': [
-                          '$timestamp', datetime.now(timezone.utc) - timedelta(days=2)
-                        ]
                       }
                     ]
                   }
                 }
               }, {
-                '$project': {
-                  'transaction_value': 1
-                }
-              }, {
-                '$sort': {
-                  'transaction_value.timestamp': 1
-                }
-              }, {
                 '$group': {
                   '_id': None, 
-                  'transaction_value': {
-                    '$last': '$transaction_value'
+                  'timestamp': {
+                    '$max': '$transaction_value.timestamp'
                   }
                 }
               }
@@ -1497,27 +1356,15 @@ class Transactions:
                         '$eq': [
                           '$trade_type', 'spot'
                         ]
-                      }, {
-                        '$gt': [
-                          '$timestamp', datetime.now(timezone.utc) - timedelta(days=2)
-                        ]
                       }
                     ]
                   }
                 }
               }, {
-                '$project': {
-                  'transaction_value': 1
-                }
-              }, {
-                '$sort': {
-                  'transaction_value.timestamp': 1
-                }
-              }, {
                 '$group': {
                   '_id': None, 
-                  'transaction_value': {
-                    '$last': '$transaction_value'
+                  'timestamp': {
+                    '$max': '$transaction_value.timestamp'
                   }
                 }
               }
