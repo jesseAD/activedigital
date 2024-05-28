@@ -102,22 +102,15 @@ class BorrowRates:
               }
             }
           }, {
-            '$project': {
-              'borrow_rates_value': 1
-            }
+            '$sort': {"borrow_rates_value.timestamp": -1}
           }, {
-            '$group': {
-              '_id': None, 
-              'borrow_rates_value': {
-                '$last': '$borrow_rates_value'
-              }
-            }
+            '$limit': 1
           }
         ])
 
         current_values = None
         for item in borrow_rate_values:
-          current_values = item["borrow_rates_value"]
+          current_values = item['borrow_rates_value']
 
         if current_values is None:
           if exchange == "okx":

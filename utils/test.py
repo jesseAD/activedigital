@@ -10,7 +10,7 @@ current_directory = os.path.dirname(current_file)
 target_dir = os.path.abspath(os.path.join(current_directory, os.pardir))
 sys.path.append(target_dir)
 
-# from src.handlers.positions import Positions
+from src.handlers.borrow_rates import BorrowRates
 # from src.lib.log import Log
 
 # logger = Log()
@@ -23,7 +23,7 @@ params = {
     'secret': "",
     'enableRateLimit': True,
     'requests_trust_env':True,
-    'verbose': False,
+    'verbose': True,
     'options': {
         'adjustForTimeDifference':True,
         'warnOnFetchOpenOrdersWithoutSymbol': False
@@ -33,7 +33,8 @@ params = {
 }
 
 exchange = ccxt.okx(params)
-res = exchange.private_get_account_interest_rate(params={"ccy": "THETA"})
+# res = exchange.private_get_account_interest_rate(params={"ccy": "LRC"})
+res = exchange.fetch_borrow_rate_history(code="LRC", limit=92)
 print(res)
 
 # res = exchange.fetch_positions(params={'type': "swap", 'subType': "inverse"})
