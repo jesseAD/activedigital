@@ -67,10 +67,10 @@ balances: &balances
   store_type: timeseries
 
 symbols: ['BTC', 'ETH', 'USDT', 'XRP', 'BNB', 'DOGE', 'SOL', 'LTC', 'BCH', 'DOT', 'ARB', 'ADA', 'OP', 
-    'SUI', 'APT', 'EOS', 'FIL', 'DYDX', 'ATOM', 'APE', 'CRV', 'TRX', 'RUNE', 'UNI', 'GALA', 'NEAR', 
-    '1000PEPE', 'PEPE', 'XMR', 'SAND', 'AAVE', 'USDC', 'AXS', 'COMP', 'GMT', 'ICP', 'MANA', 'ALGO', 'SHIB', 'SUSHI', 
-    'GRT', '1INCH', 'CHZ', 'NEO', 'KNC', 'XTZ', 'THETA', 'DASH', 'PEOPLE', 'LRC', 'ZIL', 'OMG', 'ROSE', 'AR', 'COTI', 'ICX', 
-    'BIGTIME', 'ORDI', 'FTM', '1000BONK', ]
+  'SUI', 'APT', 'EOS', 'FIL', 'DYDX', 'ATOM', 'APE', 'CRV', 'TRX', 'RUNE', 'UNI', 'GALA', 'NEAR', 
+  '1000PEPE', 'PEPE', 'XMR', 'SAND', 'AAVE', 'USDC', 'AXS', 'COMP', 'GMT', 'ICP', 'MANA', 'ALGO', 'SHIB', 'SUSHI',
+  'GRT', '1INCH', 'CHZ', 'NEO', 'KNC', 'XTZ', 'THETA', 'DASH', 'PEOPLE', 'LRC', 'ZIL', 'OMG', 'ROSE', 'AR', 'COTI', 'ICX', 
+  'BIGTIME', 'ORDI', 'FTM', '1000BONK', ]
 
 instruments:
   store_type: snapshot

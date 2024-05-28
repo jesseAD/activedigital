@@ -72,13 +72,6 @@ class BorrowRates:
           exch = Exchange(exchange).exch()
         
         borrowRatesValue = []
-
-        query = {}
-        if exchange:
-          query["venue"] = exchange
-        query["code"] = code
-        query["market/vip"] = "market"
-
       
         borrow_rate_values = self.borrow_rates_db.aggregate([
           {
@@ -227,7 +220,7 @@ class BorrowRates:
 
               exch = Exchange(exchange, _account, API_KEY, API_SECRET, PASSPHRASE).exch()
 
-              borrowRatesValue = []
+              # borrowRatesValue = []
 
               # query = {}
               # if exchange:
@@ -275,41 +268,42 @@ class BorrowRates:
                 # for item in borrow_rate_values:
                 #   current_values = item["borrow_rates_value"]
 
-                if current_values is None:
-                  if exchange == "okx":
-                    borrowRatesValue = OKXHelper().get_borrow_rates(
-                      exch=exch, limit=92, code=code
-                    )
-                  elif exchange == "binance":
-                    borrowRatesValue = Helper().get_borrow_rates(
-                      exch=exch, limit=92, code=code
-                    )
-                  elif exchange == "huobi":
-                    res = HuobiHelper().get_borrow_rate(
-                      exch=exch, code=code
-                    )
-                    if res != None:
-                      borrowRatesValue = [res]
-                    else:
-                      borrowRatesValue = []
-                else:
-                  last_time = int(current_values["timestamp"])
-                  if exchange == "okx":
-                    borrowRatesValue = OKXHelper().get_borrow_rates(
-                      exch=exch, limit=92, code=code, since=last_time+1
-                    )
-                  elif exchange == "binance":
-                    borrowRatesValue = Helper().get_borrow_rates(
-                      exch=exch, limit=92, code=code, since=last_time+1
-                    )
-                  elif exchange == "huobi":
-                    res = HuobiHelper().get_borrow_rate(
-                      exch=exch, code=code
-                    )
-                    if res != None:
-                      borrowRatesValue = [res]
-                    else:
-                      borrowRatesValue = []
+                if len(borrowRatesValue) <= 0:
+                  if current_values is None:
+                    if exchange == "okx":
+                      borrowRatesValue = OKXHelper().get_borrow_rates(
+                        exch=exch, limit=92, code=code
+                      )
+                    elif exchange == "binance":
+                      borrowRatesValue = Helper().get_borrow_rates(
+                        exch=exch, limit=92, code=code
+                      )
+                    elif exchange == "huobi":
+                      res = HuobiHelper().get_borrow_rate(
+                        exch=exch, code=code
+                      )
+                      if res != None:
+                        borrowRatesValue = [res]
+                      else:
+                        borrowRatesValue = []
+                  else:
+                    last_time = int(current_values["timestamp"])
+                    if exchange == "okx":
+                      borrowRatesValue = OKXHelper().get_borrow_rates(
+                        exch=exch, limit=92, code=code, since=last_time+1
+                      )
+                    elif exchange == "binance":
+                      borrowRatesValue = Helper().get_borrow_rates(
+                        exch=exch, limit=92, code=code, since=last_time+1
+                      )
+                    elif exchange == "huobi":
+                      res = HuobiHelper().get_borrow_rate(
+                        exch=exch, code=code
+                      )
+                      if res != None:
+                        borrowRatesValue = [res]
+                      else:
+                        borrowRatesValue = []
                 
                 if len(borrowRatesValue) > 0:
                   scalar = 1
