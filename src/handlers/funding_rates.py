@@ -91,16 +91,9 @@ class FundingRates:
               }
             }
           }, {
-            '$project': {
-              'funding_rates_value': 1
-            }
+            '$sort': {'funding_rates_value.timestamp': -1}
           }, {
-            '$group': {
-              '_id': None, 
-              'funding_rates_value': {
-                '$last': '$funding_rates_value'
-              }
-            }
+            '$limit': 1
           }
         ])
 

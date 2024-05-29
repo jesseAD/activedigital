@@ -164,21 +164,15 @@ class Transactions:
                   }
                 }
               }, {
-                '$group': {
-                  '_id': None, 
-                  'timestamp': {
-                    '$max': '$transaction_value.timestamp'
-                  },
-                  'billId': {
-                    '$max': "$transaction_value.billId"
-                  }
-                }
+                '$sort': {'transaction_value.timestamp': -1}
+              }, {
+                '$limit': 1
               }
             ])
 
             current_value = None
             for item in transactions_values:
-              current_value = item
+              current_value = item['transaction_value']
 
             if current_value is None:
               transactions = []
@@ -288,18 +282,15 @@ class Transactions:
                     }
                   }
                 }, {
-                  '$group': {
-                    '_id': None, 
-                    'timestamp': {
-                      '$max': '$transaction_value.timestamp'
-                    }
-                  }
+                  '$sort': {'transaction_value.timestamp': -1}
+                }, {
+                  '$limit': 1
                 }
               ])
 
               current_value = None
               for item in transactions_values:
-                current_value = item
+                current_value = item['transaction_value']
 
               if current_value is None:
                 cm_trades = []
@@ -385,18 +376,15 @@ class Transactions:
                     }
                   }
                 }, {
-                  '$group': {
-                    '_id': None, 
-                    'timestamp': {
-                      '$max': '$transaction_value.timestamp'
-                    }
-                  }
+                  '$sort': {'transaction_value.timestamp': -1}
+                }, {
+                  '$limit': 1
                 }
               ])
 
               current_value = None
               for item in transactions_values:
-                current_value = item
+                current_value = item['transaction_value']
 
               if current_value is None:
                 um_trades = []
@@ -481,18 +469,15 @@ class Transactions:
                     }
                   }
                 }, {
-                  '$group': {
-                    '_id': None, 
-                    'timestamp': {
-                      '$max': '$transaction_value.timestamp'
-                    }
-                  }
+                  '$sort': {'transaction_value.timestamp': -1}
+                }, {
+                  '$limit': 1
                 }
               ])
 
               current_value = None
               for item in transactions_values:
-                current_value = item
+                current_value = item['transaction_value']
 
               if current_value is None:
                 borrow_trades = []
@@ -583,18 +568,15 @@ class Transactions:
                     }
                   }
                 }, {
-                  '$group': {
-                    '_id': None, 
-                    'timestamp': {
-                      '$max': '$transaction_value.timestamp'
-                    }
-                  }
+                  '$sort': {'transaction_value.timestamp': -1}
+                }, {
+                  '$limit': 1
                 }
               ])
 
               current_value = None
               for item in transactions_values:
-                current_value = item
+                current_value = item['transaction_value']
 
               if current_value is None:
                 futures_trades = []
@@ -679,18 +661,15 @@ class Transactions:
                     }
                   }
                 }, {
-                  '$group': {
-                    '_id': None, 
-                    'timestamp': {
-                      '$max': '$transaction_value.timestamp'
-                    }
-                  }
+                  '$sort': {'transaction_value.timestamp': -1}
+                }, {
+                  '$limit': 1
                 }
               ])
 
               current_value = None
               for item in transactions_values:
-                current_value = item
+                current_value = item['transaction_value']
 
               if current_value is None:
                 spot_trades = []
@@ -791,18 +770,15 @@ class Transactions:
                   }
                 }
               }, {
-                '$group': {
-                  '_id': None, 
-                  'timestamp': {
-                    '$max': '$transaction_value.timestamp'
-                  }
-                }
+                '$sort': {'transaction_value.timestamp': -1}
+              }, {
+                '$limit': 1
               }
             ])
 
             current_value = None
             for item in transactions_values:
-              current_value = item
+              current_value = item['transaction_value']
 
             if current_value is None:
               transactions = []
@@ -885,18 +861,15 @@ class Transactions:
                   }
                 }
               }, {
-                '$group': {
-                  '_id': None, 
-                  'timestamp': {
-                    '$max': '$transaction_value.timestamp'
-                  }
-                }
+                '$sort': {'transaction_value.timestamp': -1}
+              }, {
+                '$limit': 1
               }
             ])
 
             current_value = None
             for item in transactions_values:
-              current_value = item
+              current_value = item['transaction_value']
 
             if current_value is None:
               transactions = []
@@ -985,18 +958,15 @@ class Transactions:
                   }
                 }
               }, {
-                '$group': {
-                  '_id': None, 
-                  'timestamp': {
-                    '$max': '$transaction_value.timestamp'
-                  }
-                }
+                '$sort': {'transaction_value.timestamp': -1}
+              }, {
+                '$limit': 1
               }
             ])
 
             current_value = None
             for item in transactions_values:
-              current_value = item
+              current_value = item['transaction_value']
 
             if current_value is None:
               transactions = []
@@ -1079,18 +1049,15 @@ class Transactions:
                   }
                 }
               }, {
-                '$group': {
-                  '_id': None, 
-                  'timestamp': {
-                    '$max': '$transaction_value.timestamp'
-                  }
-                }
+                '$sort': {'transaction_value.timestamp': -1}
+              }, {
+                '$limit': 1
               }
             ])
 
             current_value = None
             for item in transactions_values:
-              current_value = item
+              current_value = item['transaction_value']
 
             if current_value is None:
               transactions = []
@@ -1173,18 +1140,15 @@ class Transactions:
                   }
                 }
               }, {
-                '$group': {
-                  '_id': None, 
-                  'timestamp': {
-                    '$max': '$transaction_value.timestamp'
-                  }
-                }
+                '$sort': {'transaction_value.timestamp': -1}
+              }, {
+                '$limit': 1
               }
             ])
 
             current_value = None
             for item in transactions_values:
-              current_value = item
+              current_value = item['transaction_value']
 
             if current_value is None:
               transactions = []
@@ -1267,12 +1231,9 @@ class Transactions:
                   }
                 }
               }, {
-                '$group': {
-                  '_id': None, 
-                  'timestamp': {
-                    '$max': '$transaction_value.timestamp'
-                  }
-                }
+                '$sort': {'transaction_value.timestamp': -1}
+              }, {
+                '$limit': 1
               }
             ])
 
@@ -1361,12 +1322,9 @@ class Transactions:
                   }
                 }
               }, {
-                '$group': {
-                  '_id': None, 
-                  'timestamp': {
-                    '$max': '$transaction_value.timestamp'
-                  }
-                }
+                '$sort': {'transaction_value.timestamp': -1}
+              }, {
+                '$limit': 1
               }
             ])
 
@@ -1724,18 +1682,9 @@ class Transactions:
             }
           }
         }, {
-          '$group': {
-            '_id': None, 
-            'date': {
-              '$last': '$date'
-            }, 
-            'pnl': {
-              '$last': '$pnl'
-            }, 
-            'cumulative_pnl': {
-              '$last': '$cumulative_pnl'
-            }
-          }
+          '$sort': {'date': -1}
+        }, {
+          '$limit': 1
         }
       ])
 

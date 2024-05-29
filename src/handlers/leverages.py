@@ -81,16 +81,9 @@ class Leverages:
               }
             }
           }, {
-            '$project': {
-              'position_value': 1
-            }
+            '$sort': {'timestamp': -1}
           }, {
-            '$group': {
-              '_id': None, 
-              'position_value': {
-                '$last': '$position_value'
-              }
-            }
+            '$limit': 1
           }
         ])
 
@@ -145,16 +138,9 @@ class Leverages:
               }
             }
           }, {
-            '$project': {
-              'position_value': 1
-            }
+            '$sort': {'timestamp': -1}
           }, {
-            '$group': {
-              '_id': None, 
-              'position_value': {
-                '$last': '$position_value'
-              }
-            }
+            '$limit': 1
           }
         ])
         
@@ -208,16 +194,9 @@ class Leverages:
             }
           }
         }, {
-          '$project': {
-            'balance_value': 1,
-          }
+          '$sort': {'timestamp': -1}
         }, {
-          '$group': {
-            '_id': None, 
-            'balance_value': {
-              '$last': '$balance_value'
-            }
-          }
+          '$limit': 1
         }
       ])
 

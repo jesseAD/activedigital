@@ -479,25 +479,14 @@ class Positions:
                           '$eq': [
                             '$symbol', position['base'] + "/USDT"
                           ]
-                        }, {
-                          '$gt': [
-                            '$timestamp', datetime.now(timezone.utc) - timedelta(days=1)
-                          ]
                         }
                       ]
                     }
                   }
                 }, {
-                  '$project': {
-                    'mark_price_value': 1
-                  }
+                  '$sort': {'timestamp': -1}
                 }, {
-                  '$group': {
-                    '_id': None, 
-                    'mark_price_value': {
-                      '$last': '$mark_price_value'
-                    }
-                  }
+                  '$limit': 1
                 }
               ])
               for item in mark_prices:
@@ -645,25 +634,14 @@ class Positions:
                           '$eq': [
                             '$symbol', lifetime_funding_values[j]['base'] + "/USDT" if lifetime_funding_values[j]['quote'] == "USDT" else lifetime_funding_values[j]['base'] + "/USD"
                           ]
-                        }, {
-                          '$gt': [
-                            '$timestamp', datetime.now(timezone.utc) - timedelta(days=1)
-                          ]
                         }
                       ]
                     }
                   }
                 }, {
-                  '$project': {
-                    'funding_rates_value': 1
-                  }
+                  '$sort': {'funding_rates_value.timestamp': -1}
                 }, {
-                  '$group': {
-                    '_id': None, 
-                    'funding_rates_value': {
-                      '$last': '$funding_rates_value'
-                    }
-                  }
+                  '$limit': 1
                 }
               ])
               funding_rate = 0.0
@@ -741,25 +719,14 @@ class Positions:
                           '$eq': [
                             '$symbol', position_info[i]['base'] + "/USDT" if position_info[i]['quote'] == "USDT" else position_info[i]['base'] + "/USD"
                           ]
-                        }, {
-                          '$gt': [
-                            '$timestamp', datetime.now(timezone.utc) - timedelta(days=1)
-                          ]
                         }
                       ]
                     }
                   }
                 }, {
-                  '$project': {
-                    'funding_rates_value': 1
-                  }
+                  '$sort': {'funding_rates_value.timestamp': -1}
                 }, {
-                  '$group': {
-                    '_id': None, 
-                    'funding_rates_value': {
-                      '$last': '$funding_rates_value'
-                    }
-                  }
+                  '$limit': 1
                 }
               ])
               funding_rate = 0.0
@@ -833,25 +800,14 @@ class Positions:
                             '$eq': [
                               '$symbol', lifetime_funding_values[j]['base'] + "/USDT" if lifetime_funding_values[j]['quote'] == "USDT" else lifetime_funding_values[j]['base'] + "/USD"
                             ]
-                          }, {
-                            '$gt': [
-                              '$timestamp', datetime.now(timezone.utc) - timedelta(days=1)
-                            ]
                           }
                         ]
                       }
                     }
                   }, {
-                    '$project': {
-                      'funding_rates_value': 1
-                    }
+                    '$sort': {'funding_rates_value.timestamp': -1}
                   }, {
-                    '$group': {
-                      '_id': None, 
-                      'funding_rates_value': {
-                        '$last': '$funding_rates_value'
-                      }
-                    }
+                    '$limit': 1
                   }
                 ])
                 funding_rate = 0.0
@@ -932,20 +888,9 @@ class Positions:
               }
             }
           }, {
-            '$project': {
-              'balance_value': 1,
-              'timestamp': 1
-            }
+            '$sort': {'timestamp': -1}
           }, {
-            '$group': {
-              '_id': None, 
-              'balance_value': {
-                '$last': '$balance_value'
-              },
-              'timestamp': {
-                '$last': '$timestamp'
-              }
-            }
+            '$limit': 1
           }
         ])
 
