@@ -281,29 +281,14 @@ class Balances:
                 '$eq': [
                   '$account', sub_account
                 ]
-              }, {
-                '$gt': [
-                  '$timestamp', datetime.now(timezone.utc) - timedelta(days=1)
-                ]
               }
             ]
           }
         }
       }, {
-        '$project': {
-          'balance_value': 1,
-          'base_ccy': 1
-        }
+        '$sort': {'timestamp': -1}
       }, {
-        '$group': {
-          '_id': None, 
-          'balance_value': {
-            '$last': '$balance_value'
-          },
-          'base_ccy': {
-            '$last': '$base_ccy'
-          }
-        }
+        '$limit': 1
       }
     ])
 

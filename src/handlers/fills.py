@@ -102,16 +102,9 @@ class Fills:
             }
           }
         }, {
-          '$project': {
-            'position_value': 1
-          }
+          '$sort': {'timestamp': -1}
         }, {
-          '$group': {
-            '_id': None, 
-            'position_value': {
-              '$last': '$position_value'
-            }
-          }
+          '$limit': 1
         }
       ])
 
@@ -169,19 +162,10 @@ class Fills:
               }
             }
           }, {
-            '$project': {
-              'fills_value': 1
-            }
-          }, {
-            '$sort': {'fills_value.timestamp': 1}
+            '$sort': {'fills_value.timestamp': -1}
           },
           {
-            '$group': {
-              '_id': None, 
-              'fills_value': {
-                '$last': '$fills_value'
-              }
-            }
+            '$limit': 1
           }
         ])
 
