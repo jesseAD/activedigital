@@ -133,7 +133,7 @@ public_data_collectors = [
 # ]
 private_data_collectors = [
   balances_wrapper, positions_wrapper, open_orders_wrapper,
-  fills_wrapper, transactions_wrapper
+  fills_wrapper, transactions_wrapper, daily_returns_wrapper
 ]
 
 if config['dask']['workers'] > 0:
