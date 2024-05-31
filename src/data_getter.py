@@ -32,6 +32,7 @@ from src.handlers.instantiator import mark_prices_wrapper
 from src.handlers.instantiator import fills_wrapper
 from src.handlers.instantiator import bids_asks_wrapper
 from src.handlers.instantiator import roll_costs_wrapper
+from src.handlers.instantiator import daily_returns_wrapper
 from src.handlers.instantiator import insert_runs
 from src.handlers.instantiator import enclose_runs
 from src.handlers.instantiator import get_data_collectors
@@ -128,7 +129,7 @@ public_data_collectors = [
 ]
 
 # private_data_collectors = [
-#   balances_wrapper, positions_wrapper,
+#   balances_wrapper, daily_returns_wrapper
 # ]
 private_data_collectors = [
   balances_wrapper, positions_wrapper, open_orders_wrapper,

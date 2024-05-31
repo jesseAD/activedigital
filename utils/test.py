@@ -2,7 +2,7 @@ import os, sys, json
 import ccxt
 # import pymongo
 # import pdb
-from datetime import datetime, timezone
+from datetime import datetime, timezone, timedelta
 import time
 
 current_file = os.path.abspath(__file__)
@@ -32,10 +32,10 @@ params = {
     # 'password': "!"
 }
 
-exchange = ccxt.okx(params)
+# exchange = ccxt.okx(params)
 # res = exchange.private_get_account_interest_rate(params={"ccy": "LRC"})
-res = exchange.fetch_borrow_rate_history(code="LRC", limit=92)
-print(res)
+# res = exchange.fetch_borrow_rate_history(code="LRC", limit=92)
+# print(res)
 
 # res = exchange.fetch_positions(params={'type': "swap", 'subType': "inverse"})
 # contracts = [item['contract_code'] for item in res]
