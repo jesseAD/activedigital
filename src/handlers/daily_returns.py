@@ -22,19 +22,20 @@ class DailyReturns():
     exch = None,
     exchange: str = None,
     account: str = None,
-    dailyReturnsValue: str = None,
     logger=None,
+    session=None,
     secrets={},
     balance_finished={}
   ):
-    if dailyReturnsValue == None:
-      while(not balance_finished[client + "_" + exchange + "_" + account]):
-        if logger == None:
-          print(client + " " + exchange + " " + account + " daily returns: balances was not finished")
-        else:
-          logger.info(client + " " + exchange + " " + account + " daily returns: balances was not finished")
+    try:
+      if session == None:
+        while(not balance_finished[client + "_" + exchange + "_" + account]):
+          if logger == None:
+            print(client + " " + exchange + " " + account + " daily returns: balances was not finished")
+          else:
+            logger.info(client + " " + exchange + " " + account + " daily returns: balances was not finished")
 
-        time.sleep(0.5)
+          time.sleep(0.5)
 
       prev_returns = self.daily_returns_db.aggregate([
         {
@@ -62,7 +63,7 @@ class DailyReturns():
         }, {
           '$limit': 1
         }
-      ])
+      ], session=session)
       prev_return = None
       for item in prev_returns:
         prev_return = item
@@ -85,79 +86,110 @@ class DailyReturns():
 
         return True
 
-      last_balances = self.balances_db.aggregate([
-        {
-          '$match': {
-            '$expr': {
-              '$and': [
-                {
-                  '$eq': ['$client', client]
-                }, {
-                  '$eq': ['$venue', exchange]
-                }, {
-                  '$eq': ['$account', account]
-                }
-              ]
+      base_time = datetime(
+        prev_return['timestamp'].year, 
+        prev_return['timestamp'].month, 
+        prev_return['timestamp'].day,
+        int(prev_return['timestamp'].hour / config['daily_returns']['period']) * config['daily_returns']['period']
+      ).replace(tzinfo=timezone.utc) + timedelta(hours=config['daily_returns']['period'])
+
+      dailyReturnsValue = []
+
+      while(base_time <= now):
+        print(base_time)
+        last_balances = self.balances_db.aggregate([
+          {
+            '$match': {
+              '$expr': {
+                '$and': [
+                  {
+                    '$eq': ['$client', client]
+                  }, {
+                    '$eq': ['$venue', exchange]
+                  }, {
+                    '$eq': ['$account', account]
+                  }, {
+                    '$lte': ['$timestamp', base_time]
+                  }
+                ]
+              }
             }
+          }, {
+            '$sort': {'timestamp': -1}
+          }, {
+            '$limit': 1
           }
-        }, {
-          '$sort': {'timestamp': -1}
-        }, {
-          '$limit': 1
-        }
-      ])
-      last_balance = 1
-      for item in last_balances:
-        last_balance = item['balance_value']['base']
+        ], session=session)
+        last_balance = 1
+        for item in last_balances:
+          last_balance = item['balance_value']['base']
 
-      prev_balances = self.balances_db.aggregate([
-        {
-          '$match': {
-            '$expr': {
-              '$and': [
-                {
-                  '$eq': ['$client', client]
-                }, {
-                  '$eq': ['$venue', exchange]
-                }, {
-                  '$eq': ['$account', account]
-                }, {
-                  '$lte': ['$timestamp', now - timedelta(hours=config['daily_returns']['period'])]
-                }
-              ]
+        prev_balances = self.balances_db.aggregate([
+          {
+            '$match': {
+              '$expr': {
+                '$and': [
+                  {
+                    '$eq': ['$client', client]
+                  }, {
+                    '$eq': ['$venue', exchange]
+                  }, {
+                    '$eq': ['$account', account]
+                  }, {
+                    '$lte': ['$timestamp', base_time - timedelta(hours=config['daily_returns']['period'])]
+                  }
+                ]
+              }
             }
+          }, {
+            '$sort': {'timestamp': -1}
+          }, {
+            '$limit': 1
           }
-        }, {
-          '$sort': {'timestamp': -1}
-        }, {
-          '$limit': 1
-        }
-      ])
-      prev_balance = None
-      for item in prev_balances:
-        prev_balance = item
+        ], session=session)
+        prev_balance = None
+        for item in prev_balances:
+          prev_balance = item
 
-      transfers = self.transactions_db.find({
-        '$and': [
-          {'client': client},
-          {'venue': exchange},
-          {'account': account},
-          {'$or': [
-            {"incomeType": "COIN_SWAP_WITHDRAW"},
-            {"incomeType": "COIN_SWAP_DEPOSIT"}
-          ]},
-          {'timestamp': {
-            '$gte': int(prev_return['timestamp'].timestamp() * 1000) - config['transactions']['time_slack'],
-            '$lt': int(now.timestamp() * 1000) - config['transactions']['time_slack']
-          }}
-        ]
-      })
-      transfer = sum([item['income'] for item in transfers])
+        transfers = self.transactions_db.find({
+          '$and': [
+            {'client': client},
+            {'venue': exchange},
+            {'account': account},
+            {'$or': [
+              {"incomeType": "COIN_SWAP_WITHDRAW"},
+              {"incomeType": "COIN_SWAP_DEPOSIT"}
+            ]},
+            {'timestamp': {
+              '$gte': int((base_time - timedelta(hours=config['daily_returns']['period'])).timestamp() * 1000) - config['transactions']['time_slack'],
+              '$lt': int(base_time.timestamp() * 1000) - config['transactions']['time_slack']
+            }}
+          ]
+        }, session=session)
+        transfer = sum([item['income'] for item in transfers])
 
-      if prev_balance == None:
-        dailyReturnsValue = 0
+        if prev_balance == None:
+          dailyReturnsValue.append({
+            'return': 0,
+            'timestamp': base_time
+          })
+        else:
+          dailyReturnsValue.append({
+            'return': log(last_balance - transfer) - log(prev_balance['balance_value']['base']),
+            'timestamp': base_time
+          })
+
+        base_time = base_time + timedelta(hours=config['daily_returns']['period'])
+
+    except Exception as e:
+      if logger == None:
+        print(client + " " + exchange + " " + account + " daily returns " + str(e))
+        print("Unable to collect daily returns for " + client + " " + exchange + " " + account)
       else:
-        dailyReturnsValue = log(last_balance - transfer) - log(prev_balance['balance_value']['base'])
+        logger.error(client + " " + exchange + " " + account + " daily returns " + str(e))
+        logger.error("Unable to collect daily returns for " + client + " " + exchange + " " + account)
+
+      return True
 
     run_ids = self.runs_db.find({}).sort("_id", -1).limit(1)
     latest_run_id = 0
@@ -167,17 +199,17 @@ class DailyReturns():
       except:
         pass
     
-    daily_return = {
+    daily_return = [{
       'client': client,
       'venue': exchange,
       'account': account,
-      'return': dailyReturnsValue,
-      'timestamp': now,
+      'return': item['return'],
+      'timestamp': item['timestamp'],
       'runid': latest_run_id
-    }
+    } for item in dailyReturnsValue]
 
     try:
-      self.daily_returns_db.insert_one(daily_return)
+      self.daily_returns_db.insert_many(daily_return, session=session)
 
       if logger == None:
         print("Collected daily returns for " + client + " " + exchange + " " + account)

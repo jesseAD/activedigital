@@ -1,6 +1,6 @@
 import os, sys, json
 import ccxt
-# import pymongo
+import pymongo
 # import pdb
 from datetime import datetime, timezone, timedelta
 import time
@@ -16,7 +16,7 @@ from src.handlers.borrow_rates import BorrowRates
 # logger = Log()
 
 # mongo_uri = 'mongodb+srv://activedigital:'+'pwd'+'@mongodbcluster.nzphth1.mongodb.net/?retryWrites=true&w=majority'
-# db = pymongo.MongoClient(mongo_uri, maxPoolsize=1)['active_digital']
+db = pymongo.MongoClient(None)
 
 params = {
     'apiKey': "",
@@ -63,3 +63,29 @@ params = {
 #   f.write(json.dumps(res))
 
 # print([item['info']['sn'] for item in res])
+
+session = db.start_session()
+session.start_transaction()
+
+db['active_digital']['runs'].insert_many(
+  [{
+    'runid': 10000,
+    'start_time': datetime.now(timezone.utc)
+  },
+  {
+    'runid': 10000,
+    'start_time': datetime.now(timezone.utc)
+  }],
+  session=session
+)
+
+runs = session.client.active_digital.runs.aggregate(
+  [
+    {'$match': {'runid': 10000}}
+  ], 
+  session=session)
+print(runs)
+for item in runs:
+  print(item)
+
+session.abort_transaction()

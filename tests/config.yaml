@@ -162,6 +162,9 @@ funding_rates:
   period: interval # yearly, daily or interval
   base_ccy: ["USDT", "ETH", "BTC", ]
 
+daily_returns:
+  period: 8
+
 # exchanges: ["huobi", ]
 exchanges: ["binance", "okx", "bybit", "huobi", ]
 
