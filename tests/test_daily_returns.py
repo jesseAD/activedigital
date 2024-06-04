@@ -36,6 +36,78 @@ def db_session():
 
 config = read_config_file('tests/config.yaml')
 
+def test_ZeroReturnCalculatedWhenBalancesLessThanIntervalPeriod(db_session):
+  db_session = db_session
+  now = datetime.now(timezone.utc)
+  base_time = datetime(now.year, now.month, now.day, int(now.hour / config['daily_returns']['period']) * config['daily_returns']['period']).replace(tzinfo=timezone.utc)
+  db_session.client.active_digital.daily_returns.insert_one(
+    {
+      'client': "vadym",
+      'venue': "okx",
+      'account': "subaccount",
+      'return': 1.0,
+      'runid': 0,
+      'timestamp': base_time
+    },
+    session=db_session
+  )
+
+  DailyReturns(db_session.client, "daily_returns").create(
+    client="vadym", exch=None, exchange="okx", account="subaccount", session=db_session
+  )
+  assert(
+    len(list(db_session.client.active_digital.daily_returns.find(
+      {'client': "vadym"}, 
+      session=db_session)
+    )) == 1
+  )
+
+def test_SingleRetrunCalculatedWhenBalancesGenerated24HoursWith24IntervalPeriod(db_session):
+  db_session = db_session
+  db_session.client.active_digital.daily_returns.insert_one(
+    {
+      'client': "vadym",
+      'venue': "okx",
+      'account': "subaccount",
+      'return': 1.0,
+      'runid': 0,
+      'timestamp': datetime.now(timezone.utc) - timedelta(hours=8)
+    },
+    session=db_session
+  )
+  db_session.client.active_digital.balances.insert_one(
+    {
+      'client': "vadym",
+      'venue': "okx",
+      'account': "subaccount",
+      'balance_value': {'base': 10},
+      'runid': 0,
+      'timestamp': datetime.now(timezone.utc) - timedelta(hours=17)
+    },
+    session=db_session
+  )
+  db_session.client.active_digital.balances.insert_one(
+    {
+      'client': "vadym",
+      'venue': "okx",
+      'account': "subaccount",
+      'balance_value': {'base': 11},
+      'runid': 0,
+      'timestamp': datetime.now(timezone.utc)
+    },
+    session=db_session
+  )
+
+  DailyReturns(db_session.client, "daily_returns").create(
+    client="vadym", exch=None, exchange="okx", account="subaccount", session=db_session
+  )
+  assert(
+    len(list(db_session.client.active_digital.daily_returns.find(
+      {'client': "vadym"}, 
+      session=db_session)
+    )) == 2
+  )
+
 def test_TwoRetrunCalculatedWhenBalancesWithWithdrawlGenerated48HoursWith24IntervalPeriod(db_session):
   db_session = db_session
   db_session.client.active_digital.daily_returns.insert_one(

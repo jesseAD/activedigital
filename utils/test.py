@@ -64,28 +64,4 @@ params = {
 
 # print([item['info']['sn'] for item in res])
 
-session = db.start_session()
-session.start_transaction()
-
-db['active_digital']['runs'].insert_many(
-  [{
-    'runid': 10000,
-    'start_time': datetime.now(timezone.utc)
-  },
-  {
-    'runid': 10000,
-    'start_time': datetime.now(timezone.utc)
-  }],
-  session=session
-)
-
-runs = session.client.active_digital.runs.aggregate(
-  [
-    {'$match': {'runid': 10000}}
-  ], 
-  session=session)
-print(runs)
-for item in runs:
-  print(item)
-
-session.abort_transaction()
+print(datetime.now() + datetime.now())
