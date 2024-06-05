@@ -163,7 +163,7 @@ funding_rates:
   base_ccy: ["USDT", "ETH", "BTC", ]
 
 daily_returns:
-  period: 8
+  period: 24
 
 # exchanges: ["huobi", ]
 exchanges: ["binance", "okx", "bybit", "huobi", ]

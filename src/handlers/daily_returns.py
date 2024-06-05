@@ -147,6 +147,8 @@ class DailyReturns():
                     '$eq': ['$account', account]
                   }, {
                     '$lte': ['$timestamp', base_time]
+                  }, {
+                    '$gt': ['$timestamp', prev_time]
                   }
                 ]
               }
@@ -157,7 +159,7 @@ class DailyReturns():
             '$limit': 1
           }
         ], session=session)
-        last_balance = 1
+        last_balance = None
         for item in last_balances:
           last_balance = item
 
@@ -248,6 +250,7 @@ class DailyReturns():
       'venue': exchange,
       'account': account,
       'return': item['return'],
+      'prev_balance': item['prev_balance'],
       'timestamp': item['timestamp'],
       'runid': latest_run_id
     } for item in dailyReturnsValue]
