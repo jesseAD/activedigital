@@ -255,14 +255,15 @@ class DailyReturns():
               'base_ccy': last_balance['base_ccy']
             })
             prev_return['cum_return'] = dailyReturnsValue[-1]['cum_return']
-            prev_time = base_time
-            base_time = base_time + timedelta(hours=config['daily_returns']['period'])
 
           except Exception as e:
             if logger == None:
               print(client + " " + exchange + " " + account + " daily returns " + str(e))
             else:
               logger.warning(client + " " + exchange + " " + account + " daily returns " + str(e))
+
+          prev_time = base_time
+          base_time = base_time + timedelta(hours=config['daily_returns']['period'])
 
     except Exception as e:
       if logger == None:
@@ -274,6 +275,7 @@ class DailyReturns():
 
       return True
 
+    print(dailyReturnsValue)
     run_ids = self.runs_db.find({}).sort("_id", -1).limit(1)
     latest_run_id = 0
     for item in run_ids:
