@@ -112,14 +112,16 @@ def test_SingleRetrunCalculatedWhenBalancesGenerated24HoursWith24IntervalPeriod(
 
 def test_TwoRetrunCalculatedWhenBalancesWithWithdrawlGenerated48HoursWith24IntervalPeriod(db_session):
   db_session = db_session
+  now = datetime.now(timezone.utc)
   db_session.client.active_digital.daily_returns.insert_one(
     {
       'client': "vadym",
       'venue': "okx",
       'account': "subaccount",
       'return': 1.0,
+      'cum_return': 0,
       'runid': 0,
-      'timestamp': datetime.now(timezone.utc) - timedelta(hours=50)
+      'timestamp': now - timedelta(hours=48)
     },
     session=db_session
   )
@@ -131,7 +133,7 @@ def test_TwoRetrunCalculatedWhenBalancesWithWithdrawlGenerated48HoursWith24Inter
       'balance_value': {'base': 10},
       'base_ccy': "USDT",
       'runid': 0,
-      'timestamp': datetime.now(timezone.utc) - timedelta(hours=49)
+      'timestamp': now - timedelta(hours=49)
     },
     session=db_session
   )
@@ -143,19 +145,7 @@ def test_TwoRetrunCalculatedWhenBalancesWithWithdrawlGenerated48HoursWith24Inter
       'balance_value': {'base': 11},
       'base_ccy': "USDT",
       'runid': 0,
-      'timestamp': datetime.now(timezone.utc) - timedelta(hours=25)
-    },
-    session=db_session
-  )
-  db_session.client.active_digital.balances.insert_one(
-    {
-      'client': "vadym",
-      'venue': "okx",
-      'account': "subaccount",
-      'balance_value': {'base': 9},
-      'base_ccy': "USDT",
-      'runid': 0,
-      'timestamp': datetime.now(timezone.utc)
+      'timestamp': now - timedelta(hours=25)
     },
     session=db_session
   )
@@ -166,7 +156,7 @@ def test_TwoRetrunCalculatedWhenBalancesWithWithdrawlGenerated48HoursWith24Inter
       'account': "subaccount",
       'incomeType': "COIN_SWAP_WITHDRAW",
       'income_base': -1,
-      'timestamp': int((datetime.now(timezone.utc) - timedelta(hours=10)).timestamp() * 1000)
+      'timestamp': int((now - timedelta(hours=40)).timestamp() * 1000)
     },
     session=db_session
   )
@@ -189,6 +179,7 @@ def test_ThreeRetrunCalculatedWhenBalancesWithDepositlGenerated72HoursWith24Inte
       'venue': "okx",
       'account': "subaccount",
       'return': 1.0,
+      'cum_return': 1.0,
       'runid': 0,
       'timestamp': datetime.now(timezone.utc) - timedelta(hours=73)
     },
@@ -272,6 +263,7 @@ def test_TwoRetrunCalculatedWhenBalancesWithCollateralCorrectionGenerated48Hours
       'venue': "okx",
       'account': "subaccount",
       'return': 1.0,
+      'cum_return': 1.0,
       'runid': 0,
       'timestamp': datetime.now(timezone.utc) - timedelta(hours=50)
     },
@@ -334,6 +326,7 @@ def test_ThreeRetrunCalculatedWhenBalancesWithDepositWithdrawlAndWithCollateralC
       'venue': "okx",
       'account': "subaccount",
       'return': 1.0,
+      'cum_return': 1.0,
       'runid': 0,
       'timestamp': datetime.now(timezone.utc) - timedelta(hours=73)
     },
@@ -431,6 +424,7 @@ def test_TwoRetrunOneOfWhichIsZeroCalculatedWhenBalancesWithCollateralCorrection
       'venue': "okx",
       'account': "subaccount",
       'return': 1.0,
+      'cum_return': 1.0,
       'runid': 0,
       'timestamp': datetime.now(timezone.utc) - timedelta(hours=48)
     },
@@ -573,6 +567,7 @@ def test_SingleRetrunCalculatedWhenDelayedBalancesGenerated48HoursApartWith24Int
       'venue': "okx",
       'account': "subaccount",
       'return': 1.0,
+      'cum_return': 1.0,
       'runid': 0,
       'timestamp': datetime.now(timezone.utc) - timedelta(hours=49)
     },
@@ -623,6 +618,7 @@ def test_SingleRetrunCalculatedAndTimeStampedWithLastBalanceDataWhenBalancesGene
       'venue': "okx",
       'account': "subaccount",
       'return': 1.0,
+      'cum_return': 1.0,
       'runid': 0,
       'timestamp': datetime.now(timezone.utc) - timedelta(hours=24)
     },
