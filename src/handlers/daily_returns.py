@@ -13,6 +13,7 @@ class DailyReturns():
   def __init__(self, db, collection):
     self.runs_db = db[config['mongodb']['database']]['runs']
     self.balances_db = db[config['mongodb']['database']]['balances']
+    self.tickers_db = db[config['mongodb']['database']]['tickers']
     self.transactions_db = db[config['mongodb']['database']]['transaction_union']
     self.daily_returns_db = db[config['mongodb']['database']][collection]
 
@@ -70,7 +71,7 @@ class DailyReturns():
       ], session=session)
       prev_return = None
       for item in prev_returns:
-        prev_return = item['timestamp']
+        prev_return = item
 
       if prev_return == None:
         prev_balances = self.balances_db.aggregate([
@@ -108,12 +109,16 @@ class DailyReturns():
 
           return True
         
-        prev_return = prev_balance['timestamp']
+        prev_return = {
+          'return': 0,
+          'cum_return': 0,
+          'timestamp': prev_balance['timestamp']
+        }
 
       now = datetime.now(timezone.utc)
       base_time = datetime(now.year, now.month, now.day, int(now.hour / config['daily_returns']['period']) * config['daily_returns']['period']).replace(tzinfo=timezone.utc)
 
-      if(prev_return.replace(tzinfo=timezone.utc) >= base_time):
+      if(prev_return['timestamp'].replace(tzinfo=timezone.utc) >= base_time):
         if logger == None:
           print(client + " " + exchange + " " + account + " daily returns: didn't reach the period")
           print("Unable to collect daily returns for " + client + " " + exchange + " " + account)
@@ -124,10 +129,10 @@ class DailyReturns():
         return True
 
       prev_time = datetime(
-        prev_return.year, 
-        prev_return.month, 
-        prev_return.day,
-        int(prev_return.hour / config['daily_returns']['period']) * config['daily_returns']['period']
+        prev_return['timestamp'].year, 
+        prev_return['timestamp'].month, 
+        prev_return['timestamp'].day,
+        int(prev_return['timestamp'].hour / config['daily_returns']['period']) * config['daily_returns']['period']
       ).replace(tzinfo=timezone.utc)
       base_time = prev_time + timedelta(hours=config['daily_returns']['period'])
 
@@ -205,27 +210,59 @@ class DailyReturns():
             }}
           ]
         }, session=session)
-        transfer = sum([item['income'] for item in transfers])
+        transfer = sum([item['income_base'] for item in transfers])
 
         if last_balance == None:
-          pass
+          base_time = base_time + timedelta(hours=config['daily_returns']['period'])
+          
         elif prev_balance == None:
           dailyReturnsValue.append({
             'return': 0,
+            'cum_return': 0,
             'timestamp': base_time,
-            'prev_balance': last_balance['balance_value']['base']
+            'prev_balance': last_balance['balance_value']['base'],
+            'base_ccy': last_balance['base_ccy']
           })
           prev_time = prev_time + timedelta(hours=config['daily_returns']['period'])
-        else:
-          collateral = (last_balance['collateral'] if 'collateral' in last_balance else 0) - (prev_balance['collateral'] if 'collateral' in prev_balance else 0)
-          dailyReturnsValue.append({
-            'return': log(last_balance['balance_value']['base'] - transfer - collateral) - log(prev_balance['balance_value']['base']),
-            'timestamp': base_time,
-            'prev_balance': last_balance['balance_value']['base']
-          })
-          prev_time = prev_time + timedelta(hours=config['daily_returns']['period'])
+          base_time = base_time + timedelta(hours=config['daily_returns']['period'])
 
-        base_time = base_time + timedelta(hours=config['daily_returns']['period'])
+        else:
+          ticker = 1
+          if last_balance['base_ccy'] != prev_balance['base_ccy']:
+            tickers = self.tickers_db.find({'venue': exchange})
+            for item in tickers:
+              ticker_value = item
+
+            ticker = Helper().calc_cross_ccy_ratio(prev_balance['base_ccy'], last_balance['base_ccy'], ticker_value)
+
+            if ticker == 0:
+              if logger == None:
+                print(client + " " + exchange + " " + account + " daily returns: skipped as zero ticker price")
+                print("Unable to collect daily returns for " + client + " " + exchange + " " + account)
+              else:
+                logger.error(client + " " + exchange + " " + account + " daily returns: skipped as zero ticker price")
+                logger.error("Unable to collect daily returns for " + client + " " + exchange + " " + account)
+              return True
+
+          try:
+            collateral = (last_balance['collateral'] if 'collateral' in last_balance else 0) - (prev_balance['collateral'] if 'collateral' in prev_balance else 0)
+            ret = log(last_balance['balance_value']['base'] - transfer - collateral) - log(ticker * prev_balance['balance_value']['base'])
+            dailyReturnsValue.append({
+              'return': ret,
+              'cum_return': ret + prev_return['cum_return'],
+              'timestamp': base_time,
+              'prev_balance': last_balance['balance_value']['base'],
+              'base_ccy': last_balance['base_ccy']
+            })
+            prev_return['cum_return'] = dailyReturnsValue[-1]['cum_return']
+            prev_time = base_time
+            base_time = base_time + timedelta(hours=config['daily_returns']['period'])
+
+          except Exception as e:
+            if logger == None:
+              print(client + " " + exchange + " " + account + " daily returns " + str(e))
+            else:
+              logger.warning(client + " " + exchange + " " + account + " daily returns " + str(e))
 
     except Exception as e:
       if logger == None:
@@ -250,7 +287,9 @@ class DailyReturns():
       'venue': exchange,
       'account': account,
       'return': item['return'],
+      'cum_return': item['cum_return'],
       'prev_balance': item['prev_balance'],
+      'base_ccy': item['base_ccy'],
       'timestamp': item['timestamp'],
       'runid': latest_run_id
     } for item in dailyReturnsValue]
