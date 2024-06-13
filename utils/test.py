@@ -1,7 +1,9 @@
 import os, sys, json
 import ccxt
 import pymongo
+import math
 # import pdb
+import numpy as np
 from datetime import datetime, timezone, timedelta
 import time
 
@@ -64,4 +66,4 @@ params = {
 
 # print([item['info']['sn'] for item in res])
 
-print(datetime.now() + datetime.now())
+print(datetime.now()> datetime.fromtimestamp(1717487622))

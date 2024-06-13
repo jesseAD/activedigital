@@ -164,6 +164,9 @@ funding_rates:
 
 daily_returns:
   period: 24
+  resampling: 1
+  span: 4
+  overlap: 8
 
 # exchanges: ["okx", ]
 exchanges: ["binance", "okx", "bybit", "huobi", ]

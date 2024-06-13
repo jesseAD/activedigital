@@ -37,7 +37,17 @@ collections = [
 # query = {'$and': [{'venue': 'bybit'}, {'fills_value.timestamp': {'$gte': 1710028800000}}]}
 # query = {'$and': [{'client': 'lucid'}, {'venue': 'binance'}, {'account': 'subls1'}]}
 
-db['transactions'].delete_many({'client': "kepler", 'venue': "bybit", 'account': "subbasis1", 'runid': 65312})
+# db['transactions'].delete_many({'client': "kepler", 'venue': "bybit", 'account': "subbasis1", 'runid': 65312})
+balances = db['balances'].find({
+  'client': "nifty",
+  'account': "subbasis2",
+  'venue': "bybit",
+  'timestamp': {
+    '$gte': datetime(2024, 5, 13, 23, 50),
+    '$lte': datetime(2024, 5, 15, 0)
+  }
+})
+print([item['balance_value']['base'] for item in balances])
 
 # db.update_many(
 #     {'runid': {'$lt': 57106}},

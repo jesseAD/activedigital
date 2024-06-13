@@ -3,129 +3,12 @@ import ccxt
 import time
 from math import log
 import numpy as np
-import pandas as pd
 
 from src.lib.exchange import Exchange
 from src.config import read_config_file
 from src.handlers.helpers import Helper, OKXHelper, BybitHelper, HuobiHelper
 
-# pd.set_option('future.no_silent_downcasting', True)
 config = read_config_file()
-
-def cals_return(row):
-  if row["prior_bals"] == 0:
-    return 0
-  else:
-    if row["outlier"] == 1:
-      #ln(row["balance_value"]-row["balance_change"]-row["prior_bals"])-ln(row["prior_bals"])
-      # return (row["balance_value"]-row["balance_change"]-row["prior_bals"])/row["prior_bals"]
-      return log(row["balance_value"]-row["balance_change"]+0.00001) - log(row["prior_bals"])
-    else:
-      #ln(row["balance_value"])-ln(row["prior_bals"])
-      # return  (row["balance_value"]-row["prior_bals"])/row["prior_bals"]
-      return  log(row["balance_value"]+0.00001) - log(row["prior_bals"])
-    
-def cal_ewma(data):
-  decay=2/(config['daily_returns']['span']+1)
-  #display(len(data[['balance_value','outlier']]))
-  priorewma=0
-  ewma=0
-  for index, row in data[['balance_value','outlier']].iterrows():
-    #display(row)
-    if row['outlier'] == 0:
-      if ewma == 0:
-        ewma = row['balance_value']
-      else:
-        ewma=(row['balance_value']*decay)+((1-decay)*priorewma)
-      priorewma=ewma
-    else:
-      if ewma==0 :
-        ewma=row['balance_value']
-      break
-  return ewma
-
-def get_ewmas(client_val,exchange_val,account_val,start_date, end_date, balances_db, transaction_union_db, session=None):
-  global balances_all
-  global balances_df
-  global transfers_df
-  global balances_1d_all
-  pipeline =  [
-  {"$match": {"$expr": {"$and": [
-    {"$gte": ["$timestamp", {"$toDate":  int(start_date.timestamp()) * 1000}]},
-    {"$lte": ["$timestamp", {"$toDate":  int(end_date.timestamp()) * 1000}]},
-    {  "$eq": ["$client", client_val ] }  ,
-    {  "$eq": ["$venue", exchange_val] },
-    {  "$eq": ["$account", account_val] },
-  ]}}},
-  {"$project": {
-    "_id":0,"client": "$client", "venue": "$venue", "account": "$account", "base_ccy":"$base_ccy", "balance_value": "$balance_value.base", "timestamp": 1
-  }},
-  {"$group": {
-    "_id": {"client": "$client", "venue": "$venue", "account": "$account", "base_ccy": "$base_ccy","timestamp":"$timestamp"},  
-    "client": {"$last": "$client"},
-    "venue": {"$last": "$venue"},
-    "account": {"$last": "$account"},
-    "balance_value": {"$last": "$balance_value"},
-    "base_ccy": {"$last": "$base_ccy"},
-    "timestamp": {"$last": "$timestamp"},
-  }},
-  {"$project": {"timestamp": 1, "_id": 0, "client": "$client", "venue": "$venue", "account": "$account","base":"$base_ccy", "balance_value": {"$ifNull": ["$balance_value", 0]}}},
-  ]
-  balances=balances_db.aggregate(pipeline, session=session)
-  balances_df = pd.json_normalize(balances)
-  if balances_df.empty:
-    dictionary={"timestamp":[datetime.now()], "client":[client_val], "venue":[exchange_val], "account":[account_val],"base":["USDT"],"balance_value":[0]}
-    balances_df=pd.DataFrame(dictionary)
-
-  balances_df.set_index('timestamp',inplace=True)
-  balances_df.sort_index(inplace=True)
-  #display(balances_df.head())
-  transfers = transaction_union_db.find({
-    "$and": [
-      {"timestamp" : {"$gte":int(start_date.timestamp()) * 1000, "$lt":int(end_date.timestamp()) * 1000}},
-      {
-        "$or": [
-          {"incomeType": "COIN_SWAP_WITHDRAW"}, 
-          {"incomeType": "COIN_SWAP_DEPOSIT"}
-        ]
-      },
-      {"client":client_val}
-      ,
-      {"venue":exchange_val}
-      ,
-      {"account":account_val}
-    ]                                                                       
-  }, session=session)
-  transfers_df = pd.json_normalize(transfers)
-  if transfers_df.empty:
-      transfers_df=pd.DataFrame( columns=["_id","client","venue","account","convert_ccy","incomeType","symbol","trade_type","income_base","asset","timestamp","billId","ordId"])
-
-  transfers_df=transfers_df.sort_values(by='timestamp')
-  transfers_df['datetime'] = pd.to_datetime(transfers_df['timestamp'], unit='ms')
-  transfers_df.set_index('datetime',inplace=True) 
-  transfers_df.sort_index(inplace=True)
-
-  balances_all = pd.merge_asof(balances_df,transfers_df, left_index = True, right_index = True,  allow_exact_matches=True,tolerance=pd.Timedelta("240Min"), suffixes=('bals', 'trans'),direction='backward')
-
-  balances_all['income_base'].fillna(0, inplace=True)
-  balances_all['balance_change']=balances_all['balance_value']-balances_all['balance_value'].shift(1)
-  balances_all['balance_change'].fillna(0, inplace=True)
-  Q1 = balances_all[balances_all['incomeType'].isnull()]['balance_change'].quantile(0.25)
-  Q3 = balances_all[balances_all['incomeType'].isnull()]['balance_change'].quantile(0.75)
-  IQR = Q3 - Q1
-  lower = Q1 - 1.5*IQR
-  upper = Q3 + 1.5*IQR
-  balances_all['outlier']=np.where((balances_all['balance_change'] > upper) | (balances_all['balance_change'] < lower),1,0)
-
-  adj_upper_array = np.where((balances_all['outlier'] >= 1) & (balances_all['income_base']==0 ))[0]
-  balances_all.drop(index=balances_all.iloc[adj_upper_array].index, inplace=True)
-  balances_all['balance_change']=balances_all['balance_value']-balances_all['balance_value'].shift(1)
-
-  balances_all['prior_bals']=balances_all["balance_value"].shift(1)
-  balances_1d=balances_all.resample(str(config['daily_returns']['resampling']) + 'h').apply(cal_ewma).to_frame()
-  balances_1d = balances_1d.rename(columns= {0: 'balance_value'})
-
-  return balances_1d
 
 class DailyReturns():
   def __init__(self, db, collection):
@@ -229,8 +112,7 @@ class DailyReturns():
         
         prev_return = {
           'return': 0,
-          'start_balance': 0,
-          'end_balance': 0,
+          'prev_balance': 0,
           'timestamp': prev_balance['timestamp']
         }
 
@@ -322,50 +204,113 @@ class DailyReturns():
         elif prev_balance == None:
           dailyReturnsValue.append({
             'return': 0,
+            'cum_return': 0,
             'timestamp': base_time,
-            'start_balance': 0,
-            'end_balance': last_balance['balance_value']['base'],
-            'transfer': 0,
+            'prev_balance': last_balance['balance_value']['base'],
             'base_ccy': last_balance['base_ccy']
           })
           prev_time = prev_time + timedelta(hours=config['daily_returns']['period'])
           base_time = base_time + timedelta(hours=config['daily_returns']['period'])
 
         else:
-          try:
-            transfers = self.transactions_db.find({
-              '$and': [
-                {'client': client},
-                {'venue': exchange},
-                {'account': account},
-                {'$or': [
-                  {"incomeType": "COIN_SWAP_WITHDRAW"},
-                  {"incomeType": "COIN_SWAP_DEPOSIT"}
-                ]},
-                {'timestamp': {
-                  '$gte': int(prev_time.timestamp() * 1000),
-                  '$lt': int(base_time.timestamp() * 1000)
-                }}
-              ]
-            }, session=session)
-            transfer = sum([item['income_base'] for item in transfers])
+          ticker = 1
+          if last_balance['base_ccy'] != prev_balance['base_ccy']:
+            tickers = self.tickers_db.find({'venue': exchange})
+            for item in tickers:
+              ticker_value = item['ticker_value']
 
-            collateral = (last_balance['collateral'] if 'collateral' in last_balance else 0) - (prev_balance['collateral'] if 'collateral' in prev_balance else 0)
+            ticker = Helper().calc_cross_ccy_ratio(prev_balance['base_ccy'], last_balance['base_ccy'], ticker_value)
 
-            ewmas = get_ewmas(client, exchange, account, prev_time - timedelta(hours=config['daily_returns']['overlap']), base_time, self.balances_db, self.transactions_db, session).to_dict(orient='records')
-            start_balance = prev_return['end_balance'] if prev_return['end_balance'] > 0 else ewmas[0]['balance_value']
-            ret = log(ewmas[-1]['balance_value'] - transfer - collateral) - log(start_balance)
+            if ticker == 0:
+              if logger == None:
+                print(client + " " + exchange + " " + account + " daily returns: skipped as zero ticker price")
+                print("Unable to collect daily returns for " + client + " " + exchange + " " + account)
+              else:
+                logger.error(client + " " + exchange + " " + account + " daily returns: skipped as zero ticker price")
+                logger.error("Unable to collect daily returns for " + client + " " + exchange + " " + account)
+              return True
+            
+          transfers = self.transactions_db.find({
+            '$and': [
+              {'client': client},
+              {'venue': exchange},
+              {'account': account},
+              {'$or': [
+                {"incomeType": "COIN_SWAP_WITHDRAW"},
+                {"incomeType": "COIN_SWAP_DEPOSIT"}
+              ]},
+              {'timestamp': {
+                '$gte': int(prev_time.timestamp() * 1000) - config['transactions']['time_slack'],
+                '$lt': int(base_time.timestamp() * 1000) - config['transactions']['time_slack']
+              }}
+            ]
+          }, session=session)
 
-            prev_return = {
-              'return': ret,
-              'timestamp': base_time,
-              'start_balance': start_balance,
-              'end_balance': ewmas[-1]['balance_value'],
-              'transfer': transfer,
-              'base_ccy': last_balance['base_ccy']
-            }
-            dailyReturnsValue.append(prev_return)
+          transfers = [{
+            **item,
+            'timestamp': datetime.fromtimestamp((item['timestamp'] + config['transactions']['time_slack']) / 1000).replace(tzinfo=timezone.utc)
+          } for item in transfers]
+          # transfer = sum([item['income_base'] for item in transfers])
+
+          balances = list(self.balances_db.find({
+            'client': client,
+            'venue': exchange,
+            'account': account,
+            'timestamp': {'$gt': prev_time, '$lte': base_time}
+          }, session=session))
+
+          for transfer in transfers:
+            for balance in balances:
+              if balance['timestamp'].replace(tzinfo=timezone.utc) >= transfer['timestamp']:
+                balance['balance_value']['base'] = balance['balance_value']['base'] - transfer['income_base']
+
+          for i in range(len(balances)):
+            if i == 0:
+              balances[i]['balance_change'] = balances[i]['balance_value']['base'] - prev_balance['balance_value']['base']
+            else:
+              balances[i]['balance_change'] = balances[i]['balance_value']['base'] - balances[i - 1]['balance_value']['base']
+
+          Q1 = np.quantile([item['balance_change'] for item in balances], 0.25)
+          Q3 = np.quantile([item['balance_change'] for item in balances], 0.75)
+          IQR = Q3 - Q1
+          lower = Q1 - 1.5 * IQR
+          upper = Q3 + 1.5 * IQR
+          for balance in balances:
+            balance['outlier'] = (balance['balance_change'] > upper or balance['balance_change'] < lower)
+
+          decay = 2 / ((len(balances) / 8) + 1)
+          priorewma = 0
+          ewma = 0
+          for balance in balances:
+            if balance['outlier']:
+              if ewma == 0:
+                ewma = balance['balance_value']['base']
+              break
+
+            else:
+              ewma = (balance['balance_value']['base'] * decay) + ((1 - decay) * priorewma)
+              priorewma = ewma
           
+          balances[-1]['balance_value']['base'] = ewma
+
+          # if balances[-1]['outlier']:
+          #   for balance in balances:
+          #     if not balance['outlier']:
+          #       balances[-1]['balance_value']['base'] = balance['balance_value']['base']
+            # balances[-1]['balance_value']['base'] = balances[-1]['balance_value']['base'] - balances[-1]['balance_change'] + 0.00001
+          
+          try:
+            collateral = (balances[-1]['collateral'] if 'collateral' in balances[-1] else 0) - (prev_balance['collateral'] if 'collateral' in prev_balance else 0)
+            ret = log(balances[-1]['balance_value']['base'] - collateral) - log(ticker * prev_balance['balance_value']['base'])
+            dailyReturnsValue.append({
+              'return': ret,
+              # 'cum_return': ret + prev_return['cum_return'],
+              'timestamp': base_time,
+              'prev_balance': balances[-1]['balance_value']['base'],
+              'base_ccy': balances[-1]['base_ccy']
+            })
+            # prev_return['cum_return'] = dailyReturnsValue[-1]['cum_return']
+
           except Exception as e:
             if logger == None:
               print(client + " " + exchange + " " + account + " daily returns " + str(e))
@@ -399,9 +344,8 @@ class DailyReturns():
       'venue': exchange,
       'account': account,
       'return': item['return'],
-      'start_balance': item['start_balance'],
-      'end_balance': item['end_balance'],
-      'transfer': item['transfer'],
+      # 'cum_return': item['cum_return'],
+      'prev_balance': item['prev_balance'],
       'base_ccy': item['base_ccy'],
       'timestamp': item['timestamp'],
       'runid': latest_run_id
