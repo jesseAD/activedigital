@@ -6,33 +6,41 @@ import math
 import numpy as np
 from datetime import datetime, timezone, timedelta
 import time
+from dateutil import tz, relativedelta
 
 current_file = os.path.abspath(__file__)
 current_directory = os.path.dirname(current_file)
 target_dir = os.path.abspath(os.path.join(current_directory, os.pardir))
 sys.path.append(target_dir)
 
-from src.handlers.borrow_rates import BorrowRates
+from src.handlers.daily_returns import DailyReturns
 # from src.lib.log import Log
 
 # logger = Log()
 
-# mongo_uri = 'mongodb+srv://activedigital:'+'pwd'+'@mongodbcluster.nzphth1.mongodb.net/?retryWrites=true&w=majority'
-db = pymongo.MongoClient(None)
+mongo_uri = 'mongodb+srv://activedigital:'+''+'@mongodbcluster.nzphth1.mongodb.net/?retryWrites=true&w=majority'
+db = pymongo.MongoClient(mongo_uri)
 
-params = {
-    'apiKey': "",
-    'secret': "",
-    'enableRateLimit': True,
-    'requests_trust_env':True,
-    'verbose': True,
-    'options': {
-        'adjustForTimeDifference':True,
-        'warnOnFetchOpenOrdersWithoutSymbol': False
-    },
-    'headers': {},
-    # 'password': "!"
-}
+DailyReturns(db, "daily_returns").create(
+  client="nifty",
+  exchange="binance",
+  account="subbasis1",
+  balance_finished={"nifty_binance_subbasis1": True}
+)
+
+# params = {
+#     'apiKey': "",
+#     'secret': "",
+#     'enableRateLimit': True,
+#     'requests_trust_env':True,
+#     'verbose': True,
+#     'options': {
+#         'adjustForTimeDifference':True,
+#         'warnOnFetchOpenOrdersWithoutSymbol': False
+#     },
+#     'headers': {},
+#     # 'password': "!"
+# }
 
 # exchange = ccxt.okx(params)
 # res = exchange.private_get_account_interest_rate(params={"ccy": "LRC"})
@@ -65,5 +73,3 @@ params = {
 #   f.write(json.dumps(res))
 
 # print([item['info']['sn'] for item in res])
-
-print(datetime.now()> datetime.fromtimestamp(1717487622))
