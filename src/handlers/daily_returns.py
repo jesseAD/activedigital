@@ -39,9 +39,8 @@ def cal_ewma(data):
         ewma=(row['balance_value']*decay)+((1-decay)*priorewma)
       priorewma=ewma
     else:
-      if ewma==0 :
-        ewma=row['balance_value']
-      break
+      ewma=row['balance_value']
+      
   return ewma
 
 def get_ewmas(client_val,exchange_val,account_val,start_date, end_date, balances_db, transaction_union_db, session=None):
@@ -332,8 +331,25 @@ class DailyReturns():
           base_time = base_time + timedelta(hours=config['daily_returns']['period'])
 
         else:
+          ticker = 1
+          if last_balance['base_ccy'] != prev_balance['base_ccy']:
+            tickers = self.tickers_db.find({'venue': exchange})
+            for item in tickers:
+              ticker_value = item['ticker_value']
+
+            ticker = Helper().calc_cross_ccy_ratio(prev_balance['base_ccy'], last_balance['base_ccy'], ticker_value)
+
+            if ticker == 0:
+              if logger == None:
+                print(client + " " + exchange + " " + account + " daily returns: skipped as zero ticker price")
+                print("Unable to collect daily returns for " + client + " " + exchange + " " + account)
+              else:
+                logger.error(client + " " + exchange + " " + account + " daily returns: skipped as zero ticker price")
+                logger.error("Unable to collect daily returns for " + client + " " + exchange + " " + account)
+              return True
+            
           try:
-            transfers = self.transactions_db.find({
+            transfers = list(self.transactions_db.find({
               '$and': [
                 {'client': client},
                 {'venue': exchange},
@@ -347,14 +363,17 @@ class DailyReturns():
                   '$lt': int(base_time.timestamp() * 1000)
                 }}
               ]
-            }, session=session)
+            }, session=session))
             transfer = sum([item['income_base'] for item in transfers])
+            if transfer == 0.0:
+              transfer = sum([item['income'] for item in transfers])
 
             collateral = (last_balance['collateral'] if 'collateral' in last_balance else 0) - (prev_balance['collateral'] if 'collateral' in prev_balance else 0)
 
             ewmas = get_ewmas(client, exchange, account, prev_time - timedelta(hours=config['daily_returns']['overlap']), base_time, self.balances_db, self.transactions_db, session).to_dict(orient='records')
             start_balance = prev_return['end_balance'] if prev_return['end_balance'] > 0 else ewmas[0]['balance_value']
-            ret = log(ewmas[-1]['balance_value'] - transfer - collateral) - log(start_balance)
+            end_balance = max(0.0001, ewmas[-1]['balance_value'] - transfer - collateral)
+            ret = log(end_balance) - log(ticker * start_balance)
 
             prev_return = {
               'return': ret,

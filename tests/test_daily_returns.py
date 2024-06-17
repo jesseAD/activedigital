@@ -112,7 +112,11 @@ def test_SingleRetrunCalculatedWhenBalancesGenerated24HoursWith24IntervalPeriod(
     session=db_session)
   )
   assert(len(returns) == 2)
-  assert(round(returns[1]['return'], 5) == 0.73788)
+  assert(round(returns[1]['return'], 5) == 0.16252)
+  assert(round(returns[1]['end_balance'], 5) == 10)
+  assert(round(returns[1]['start_balance'], 5) == 8.5)
+  timestamp = datetime.now(timezone.utc) + relativedelta.relativedelta(hour=0, minute=0, second=0, microsecond=0)
+  assert(returns[1]['timestamp'].replace(tzinfo=timezone.utc) == timestamp)
 
 def test_TwoRetrunCalculatedWhenBalancesWithWithdrawlGenerated48HoursWith24IntervalPeriod(db_session):
   db_session = db_session
@@ -186,8 +190,16 @@ def test_TwoRetrunCalculatedWhenBalancesWithWithdrawlGenerated48HoursWith24Inter
     session=db_session)
   )
   assert(len(returns) == 3)
-  assert(round(returns[1]['return'], 5) == 0.68072)
-  assert(round(returns[2]['return'], 5) == 0.82591)
+  assert(round(returns[1]['return'], 5) == 0.10536)
+  assert(round(returns[1]['end_balance'], 5) == 10)
+  assert(round(returns[1]['start_balance'], 5) == 9)
+  timestamp = datetime.now(timezone.utc) + relativedelta.relativedelta(hour=0, minute=0, second=0, microsecond=0) - timedelta(days=1)
+  assert(returns[1]['timestamp'].replace(tzinfo=timezone.utc) == timestamp)
+  assert(round(returns[2]['return'], 5) == 0.18232)
+  assert(round(returns[2]['end_balance'], 5) == 11)
+  assert(round(returns[2]['start_balance'], 5) == 10)
+  timestamp = datetime.now(timezone.utc) + relativedelta.relativedelta(hour=0, minute=0, second=0, microsecond=0)
+  assert(returns[2]['timestamp'].replace(tzinfo=timezone.utc) == timestamp)
 
 def test_ThreeRetrunCalculatedWhenBalancesWithDepositlGenerated72HoursWith24IntervalPeriod(db_session):
   db_session = db_session
@@ -272,9 +284,21 @@ def test_ThreeRetrunCalculatedWhenBalancesWithDepositlGenerated72HoursWith24Inte
     session=db_session)
   )
   assert(len(returns) == 4)
-  assert(round(returns[1]['return'], 5) == 0.68072)
-  assert(round(returns[2]['return'], 5) == 0.77603)
-  assert(round(returns[3]['return'], 5) == 0.62283)
+  assert(round(returns[1]['return'], 5) == 0.10536)
+  assert(round(returns[1]['end_balance'], 5) == 10)
+  assert(round(returns[1]['start_balance'], 5) == 9)
+  timestamp = datetime.now(timezone.utc) + relativedelta.relativedelta(hour=0, minute=0, second=0, microsecond=0) - timedelta(days=2)
+  assert(returns[1]['timestamp'].replace(tzinfo=timezone.utc) == timestamp)
+  assert(round(returns[2]['return'], 5) == 0.09531)
+  assert(round(returns[2]['end_balance'], 5) == 11)
+  assert(round(returns[2]['start_balance'], 5) == 10)
+  timestamp = datetime.now(timezone.utc) + relativedelta.relativedelta(hour=0, minute=0, second=0, microsecond=0) - timedelta(days=1)
+  assert(returns[2]['timestamp'].replace(tzinfo=timezone.utc) == timestamp)
+  assert(round(returns[3]['return'], 5) == -0.20067)
+  assert(round(returns[3]['end_balance'], 5) == 10)
+  assert(round(returns[3]['start_balance'], 5) == 11)
+  timestamp = datetime.now(timezone.utc) + relativedelta.relativedelta(hour=0, minute=0, second=0, microsecond=0)
+  assert(returns[3]['timestamp'].replace(tzinfo=timezone.utc) == timestamp)
 
 def test_TwoRetrunCalculatedWhenBalancesWithCollateralCorrectionGenerated48HoursWith24IntervalPeriod(db_session):
   db_session = db_session
@@ -337,8 +361,16 @@ def test_TwoRetrunCalculatedWhenBalancesWithCollateralCorrectionGenerated48Hours
     session=db_session)
   )
   assert(len(returns) == 3)
-  assert(round(returns[1]['return'], 5) == 0.68072)
-  assert(round(returns[2]['return'], 5) == 0.77603)
+  assert(round(returns[1]['return'], 5) == 0.10536)
+  assert(round(returns[1]['end_balance'], 5) == 10)
+  assert(round(returns[1]['start_balance'], 5) == 9)
+  timestamp = datetime.now(timezone.utc) + relativedelta.relativedelta(hour=0, minute=0, second=0, microsecond=0) - timedelta(days=1)
+  assert(returns[1]['timestamp'].replace(tzinfo=timezone.utc) == timestamp)
+  assert(round(returns[2]['return'], 5) == -0.11653)
+  assert(round(returns[2]['end_balance'], 5) == 11)
+  assert(round(returns[2]['start_balance'], 5) == 10)
+  timestamp = datetime.now(timezone.utc) + relativedelta.relativedelta(hour=0, minute=0, second=0, microsecond=0)
+  assert(returns[2]['timestamp'].replace(tzinfo=timezone.utc) == timestamp)
 
 def test_ThreeRetrunCalculatedWhenBalancesWithDepositWithdrawlAndWithCollateralCorrectionlGenerated72HoursWith24IntervalPeriod(db_session):
   db_session = db_session
@@ -371,7 +403,7 @@ def test_ThreeRetrunCalculatedWhenBalancesWithDepositWithdrawlAndWithCollateralC
       'client': "vadym",
       'venue': "okx",
       'account': "subaccount",
-      'balance_value': {'base': 10},
+      'balance_value': {'base': 10.5},
       'collateral': 1.0,
       'base_ccy': "USDT",
       'runid': 0,
@@ -437,9 +469,21 @@ def test_ThreeRetrunCalculatedWhenBalancesWithDepositWithdrawlAndWithCollateralC
     session=db_session)
   )
   assert(len(returns) == 4)
-  assert(round(returns[1]['return'], 5) == 0.68072)
-  assert(round(returns[2]['return'], 5) == 0.87804)
-  assert(round(returns[3]['return'], 5) == 0.62283)
+  assert(round(returns[1]['return'], 5) == 0.05407)
+  assert(round(returns[1]['end_balance'], 5) == 10.5)
+  assert(round(returns[1]['start_balance'], 5) == 9)
+  timestamp = datetime.now(timezone.utc) + relativedelta.relativedelta(hour=0, minute=0, second=0, microsecond=0) - timedelta(days=2)
+  assert(returns[1]['timestamp'].replace(tzinfo=timezone.utc) == timestamp)
+  assert(round(returns[2]['return'], 5) == 0.22124)
+  assert(round(returns[2]['end_balance'], 5) == 11)
+  assert(round(returns[2]['start_balance'], 5) == 10.5)
+  timestamp = datetime.now(timezone.utc) + relativedelta.relativedelta(hour=0, minute=0, second=0, microsecond=0) - timedelta(days=1)
+  assert(returns[2]['timestamp'].replace(tzinfo=timezone.utc) == timestamp)
+  assert(round(returns[3]['return'], 5) == -0.25783)
+  assert(round(returns[3]['end_balance'], 5) == 10)
+  assert(round(returns[3]['start_balance'], 5) == 11)
+  timestamp = datetime.now(timezone.utc) + relativedelta.relativedelta(hour=0, minute=0, second=0, microsecond=0)
+  assert(returns[3]['timestamp'].replace(tzinfo=timezone.utc) == timestamp)
 
 def test_TwoRetrunOneOfWhichIsZeroCalculatedWhenBalancesWithCollateralCorrectionGenerated48HoursWith24IntervalPeriodAndOneBalanceIsMissing(db_session):
   db_session = db_session
@@ -492,7 +536,15 @@ def test_TwoRetrunOneOfWhichIsZeroCalculatedWhenBalancesWithCollateralCorrection
   )
   assert(len(returns) == 3)
   assert(returns[1]['return'] == 0.0)
-  assert(round(returns[2]['return'], 5) == 0.68072)
+  assert(round(returns[1]['end_balance'], 5) == 11)
+  assert(round(returns[1]['start_balance'], 5) == 0)
+  timestamp = datetime.now(timezone.utc) + relativedelta.relativedelta(hour=0, minute=0, second=0, microsecond=0) - timedelta(days=1)
+  assert(returns[1]['timestamp'].replace(tzinfo=timezone.utc) == timestamp)
+  assert(round(returns[2]['return'], 5) == 0.05407)
+  assert(round(returns[2]['end_balance'], 5) == 10)
+  assert(round(returns[2]['start_balance'], 5) == 9)
+  timestamp = datetime.now(timezone.utc) + relativedelta.relativedelta(hour=0, minute=0, second=0, microsecond=0)
+  assert(returns[2]['timestamp'].replace(tzinfo=timezone.utc) == timestamp)
 
 def test_ReturnsAreBackfilledWithDepositWithdrawlAndWithCollateralCorrectionAnd24HourIntervalPeriodWhenNoExistingReturns(db_session):
   db_session = db_session
@@ -555,7 +607,11 @@ def test_ReturnsAreBackfilledWithDepositWithdrawlAndWithCollateralCorrectionAnd2
   )
   assert(len(returns) == 2)
   assert(returns[0]['return'] == 0)
-  assert(round(returns[1]['return'], 5) == 0.06004)
+  assert(round(returns[1]['return'], 5) == 0.05827)
+  assert(round(returns[1]['end_balance'], 5) == 10)
+  assert(round(returns[1]['start_balance'], 5) == 10)
+  timestamp = datetime.now(timezone.utc) + relativedelta.relativedelta(hour=0, minute=0, second=0, microsecond=0)
+  assert(returns[1]['timestamp'].replace(tzinfo=timezone.utc) == timestamp)
 
 def test_SingleRetrunCalculatedWhenDelayedBalancesGenerated48HoursApartWith24IntervalPeriod(db_session):
   db_session = db_session
@@ -607,7 +663,11 @@ def test_SingleRetrunCalculatedWhenDelayedBalancesGenerated48HoursApartWith24Int
     session=db_session)
   )
   assert(len(returns) == 2)
-  assert(round(returns[1]['return'], 5) == 0.68072)
+  assert(round(returns[1]['return'], 5) == 0.10536)
+  assert(round(returns[1]['end_balance'], 5) == 10)
+  assert(round(returns[1]['start_balance'], 5) == 9)
+  timestamp = datetime.now(timezone.utc) + relativedelta.relativedelta(hour=0, minute=0, second=0, microsecond=0)
+  assert(returns[1]['timestamp'].replace(tzinfo=timezone.utc) == timestamp)
 
 def test_SingleRetrunCalculatedAndTimeStampedWithLastBalanceDataWhenBalancesGenerated24HourstWith24IntervalPeriod(db_session):
   db_session = db_session
@@ -663,9 +723,13 @@ def test_SingleRetrunCalculatedAndTimeStampedWithLastBalanceDataWhenBalancesGene
   assert('end_balance' in returns[1])
   assert('timestamp' in returns[1])
 
-  assert(round(returns[1]['return'], 5) == 0.48005)
+  assert(round(returns[1]['return'], 5) == -0.09531)
+  assert(round(returns[1]['end_balance'], 5) == 10)
+  assert(round(returns[1]['start_balance'], 5) == 11)
+  timestamp = datetime.now(timezone.utc) + relativedelta.relativedelta(hour=0, minute=0, second=0, microsecond=0)
+  assert(returns[1]['timestamp'].replace(tzinfo=timezone.utc) == timestamp)
 
-def test_Outlier(db_session):
+def test_OutlierAndEWMA(db_session):
   db_session = db_session
   db_session.client.active_digital.daily_returns.insert_one(
     {
@@ -756,4 +820,117 @@ def test_Outlier(db_session):
     len(returns) == 2
   )
 
-  assert(round(returns[1]['return'], 5) == 0.20169)
+  assert(round(returns[1]['return'], 5) == 0.27426)
+  assert(round(returns[1]['end_balance'], 5) == 11.84)
+  assert(round(returns[1]['start_balance'], 5) == 9)
+  timestamp = datetime.now(timezone.utc) + relativedelta.relativedelta(hour=0, minute=0, second=0, microsecond=0)
+  assert(returns[1]['timestamp'].replace(tzinfo=timezone.utc) == timestamp)
+
+def test_TransfersBeforeUSDTConvertedPayment(db_session):
+  db_session = db_session
+  db_session.client.active_digital.daily_returns.insert_one(
+    {
+      'client': "vadym",
+      'venue': "okx",
+      'account': "subaccount",
+      'return': 1.0,
+      'end_balance': 9,
+      'runid': 0,
+      'timestamp': datetime.now(timezone.utc) - timedelta(hours=24)
+    },
+    session=db_session
+  )
+  db_session.client.active_digital.balances.insert_one(
+    {
+      'client': "vadym",
+      'venue': "okx",
+      'account': "subaccount",
+      'balance_value': {'base': 10},
+      'collateral': 1.0,
+      'base_ccy': "USDT",
+      'runid': 0,
+      'timestamp': datetime.now(timezone.utc) - timedelta(hours=48)
+    },
+    session=db_session
+  )
+  db_session.client.active_digital.balances.insert_one(
+    {
+      'client': "vadym",
+      'venue': "okx",
+      'account': "subaccount",
+      'balance_value': {'base': 12},
+      'collateral': 1.0,
+      'base_ccy': "USDT",
+      'runid': 0,
+      'timestamp': (datetime.now(timezone.utc) - timedelta(hours=24)) + relativedelta.relativedelta(hour=23, minute=0)
+    },
+    session=db_session
+  )
+  db_session.client.active_digital.balances.insert_one(
+    {
+      'client': "vadym",
+      'venue': "okx",
+      'account': "subaccount",
+      'balance_value': {'base': 11},
+      'collateral': 1.0,
+      'base_ccy': "USDT",
+      'runid': 0,
+      'timestamp': (datetime.now(timezone.utc) - timedelta(hours=24)) + relativedelta.relativedelta(hour=23, minute=10)
+    },
+    session=db_session
+  )
+  db_session.client.active_digital.balances.insert_one(
+    {
+      'client': "vadym",
+      'venue': "okx",
+      'account': "subaccount",
+      'balance_value': {'base': 24},
+      'collateral': 1.0,
+      'base_ccy': "USDT",
+      'runid': 0,
+      'timestamp': (datetime.now(timezone.utc) - timedelta(hours=24)) + relativedelta.relativedelta(hour=23, minute=20)
+    },
+    session=db_session
+  )
+  db_session.client.active_digital.balances.insert_one(
+    {
+      'client': "vadym",
+      'venue': "okx",
+      'account': "subaccount",
+      'balance_value': {'base': 22},
+      'collateral': 1.0,
+      'base_ccy': "USDT",
+      'runid': 0,
+      'timestamp': (datetime.now(timezone.utc) - timedelta(hours=24)) + relativedelta.relativedelta(hour=23, minute=30)
+    },
+    session=db_session
+  )
+  db_session.client.active_digital.transaction_union.insert_one(
+    {
+      'client': "vadym",
+      'venue': "okx",
+      'account': "subaccount",
+      'incomeType': "COIN_SWAP_DEPOSIT",
+      'income_base': 0,
+      'income': 12,
+      'timestamp': int(((datetime.now(timezone.utc) - timedelta(hours=24)) + relativedelta.relativedelta(hour=23, minute=20)).timestamp() * 1000)
+    },
+    session=db_session
+  )
+
+  DailyReturns(db_session.client, "daily_returns").create(
+    client="vadym", exch=None, exchange="okx", account="subaccount", session=db_session
+  )
+  returns = list(db_session.client.active_digital.daily_returns.find(
+    {'client': "vadym"}, 
+    session=db_session)
+  )
+  assert(
+    len(returns) == 2
+  )
+
+  assert(round(returns[1]['return'], 5) == -0.42976)
+  assert(round(returns[1]['end_balance'], 5) == 17.856)
+  assert(round(returns[1]['start_balance'], 5) == 9)
+  timestamp = datetime.now(timezone.utc) + relativedelta.relativedelta(hour=0, minute=0, second=0, microsecond=0)
+  assert(returns[1]['timestamp'].replace(tzinfo=timezone.utc) == timestamp)

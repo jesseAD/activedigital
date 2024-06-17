@@ -263,7 +263,7 @@ clients:
         submn:
           base_ccy: USDT
           margin_mode: portfolio
-          daily_returns: True
+          daily_returns: False
           hedged_exclusion_positive: {'USDT': 0}
           hedged_exclusion_negative: {'USDT': 0}
 
@@ -271,7 +271,7 @@ clients:
         subbasis:
           base_ccy: USD
           margin_mode: non_portfolio
-          daily_returns: True
+          daily_returns: False
           hedged_exclusion_positive: {'USDT': 0}
           hedged_exclusion_negative: {'USDT': 0}
           
@@ -568,6 +568,17 @@ clients:
         subbasis1:
           base_ccy: USDT
           margin_mode: portfolio
+          daily_returns: True
+          hedged_exclusion_positive: {'USDT': 0}
+          hedged_exclusion_negative: {'USDT': 0}
+
+  shannon:
+    split_positions: True
+    subaccounts:
+      okx:
+        subbasis1:
+          base_ccy: USDT
+          margin_mode: non_portfolio
           daily_returns: True
           hedged_exclusion_positive: {'USDT': 0}
           hedged_exclusion_negative: {'USDT': 0}
