@@ -165,7 +165,7 @@ funding_rates:
 daily_returns:
   period: 24
   resampling: 1
-  span: 4
+  span: 15
   overlap: 8
 
 # exchanges: ["okx", ]
@@ -389,7 +389,7 @@ clients:
         synswap:
           base_ccy: BTC
           margin_mode: non_portfolio
-          daily_returns: True
+          daily_returns: False
           hedged_exclusion_positive: {'USDT': 0}
           hedged_exclusion_negative: {'USDT': 0}
 
@@ -397,7 +397,7 @@ clients:
         subbasis1:
           base_ccy: BTC
           margin_mode: non_portfolio
-          daily_returns: True
+          daily_returns: False
           hedged_exclusion_positive: {'USDT': 0}
           hedged_exclusion_negative: {'USDT': 0}
         

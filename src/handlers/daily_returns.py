@@ -30,6 +30,7 @@ def cal_ewma(data):
   #display(len(data[['balance_value','outlier']]))
   priorewma=0
   ewma=0
+  outlier = 0
   for index, row in data[['balance_value','outlier']].iterrows():
     #display(row)
     if row['outlier'] == 0:
@@ -39,11 +40,13 @@ def cal_ewma(data):
         ewma=(row['balance_value']*decay)+((1-decay)*priorewma)
       priorewma=ewma
     else:
+      outlier = 1
       ewma=row['balance_value']
       
-  return ewma
+  # return ewma
+  return {'balance_value': ewma, 'outlier': outlier}
 
-def get_ewmas(client_val,exchange_val,account_val,start_date, end_date, balances_db, transaction_union_db, session=None):
+def get_ewmas(client_val,exchange_val,account_val,start_date, end_date, balances_db, transaction_union_db, base_ccy, ticker, session=None):
   global balances_all
   global balances_df
   global transfers_df
@@ -70,7 +73,11 @@ def get_ewmas(client_val,exchange_val,account_val,start_date, end_date, balances
   }},
   {"$project": {"timestamp": 1, "_id": 0, "client": "$client", "venue": "$venue", "account": "$account","base":"$base_ccy", "balance_value": {"$ifNull": ["$balance_value", 0]}}},
   ]
-  balances=balances_db.aggregate(pipeline, session=session)
+  balances=list(balances_db.aggregate(pipeline, session=session))
+  for balance in balances:
+    if balance['base'] != base_ccy:
+      balance['balance_value'] = balance['balance_value'] * ticker
+
   balances_df = pd.json_normalize(balances)
   if balances_df.empty:
     dictionary={"timestamp":[datetime.now()], "client":[client_val], "venue":[exchange_val], "account":[account_val],"base":["USDT"],"balance_value":[0]}
@@ -97,7 +104,7 @@ def get_ewmas(client_val,exchange_val,account_val,start_date, end_date, balances
   }, session=session)
   transfers_df = pd.json_normalize(transfers)
   if transfers_df.empty:
-      transfers_df=pd.DataFrame( columns=["_id","client","venue","account","convert_ccy","incomeType","symbol","trade_type","income_base","asset","timestamp","billId","ordId"])
+      transfers_df=pd.DataFrame( columns=["_id","client","venue","account","convert_ccy","incomeType","symbol","trade_type","income","asset","timestamp","billId","ordId"])
 
   transfers_df=transfers_df.sort_values(by='timestamp')
   transfers_df['datetime'] = pd.to_datetime(transfers_df['timestamp'], unit='ms')
@@ -106,7 +113,7 @@ def get_ewmas(client_val,exchange_val,account_val,start_date, end_date, balances
 
   balances_all = pd.merge_asof(balances_df,transfers_df, left_index = True, right_index = True,  allow_exact_matches=True,tolerance=pd.Timedelta("240Min"), suffixes=('bals', 'trans'),direction='backward')
 
-  balances_all['income_base'].fillna(0, inplace=True)
+  balances_all['income'].fillna(0, inplace=True)
   balances_all['balance_change']=balances_all['balance_value']-balances_all['balance_value'].shift(1)
   balances_all['balance_change'].fillna(0, inplace=True)
   Q1 = balances_all[balances_all['incomeType'].isnull()]['balance_change'].quantile(0.25)
@@ -116,13 +123,13 @@ def get_ewmas(client_val,exchange_val,account_val,start_date, end_date, balances
   upper = Q3 + 1.5*IQR
   balances_all['outlier']=np.where((balances_all['balance_change'] > upper) | (balances_all['balance_change'] < lower),1,0)
 
-  adj_upper_array = np.where((balances_all['outlier'] >= 1) & (balances_all['income_base']==0 ))[0]
+  adj_upper_array = np.where((balances_all['outlier'] >= 1) & (balances_all['income']==0 ))[0]
   balances_all.drop(index=balances_all.iloc[adj_upper_array].index, inplace=True)
   balances_all['balance_change']=balances_all['balance_value']-balances_all['balance_value'].shift(1)
 
   balances_all['prior_bals']=balances_all["balance_value"].shift(1)
   balances_1d=balances_all.resample(str(config['daily_returns']['resampling']) + 'h').apply(cal_ewma).to_frame()
-  balances_1d = balances_1d.rename(columns= {0: 'balance_value'})
+  balances_1d = balances_1d.rename(columns= {0: 'ewma'})
 
   return balances_1d
 
@@ -337,7 +344,7 @@ class DailyReturns():
             for item in tickers:
               ticker_value = item['ticker_value']
 
-            ticker = Helper().calc_cross_ccy_ratio(prev_balance['base_ccy'], last_balance['base_ccy'], ticker_value)
+            ticker = Helper().calc_cross_ccy_ratio(last_balance['base_ccy'], prev_balance['base_ccy'], ticker_value)
 
             if ticker == 0:
               if logger == None:
@@ -370,16 +377,29 @@ class DailyReturns():
 
             collateral = (last_balance['collateral'] if 'collateral' in last_balance else 0) - (prev_balance['collateral'] if 'collateral' in prev_balance else 0)
 
-            ewmas = get_ewmas(client, exchange, account, prev_time - timedelta(hours=config['daily_returns']['overlap']), base_time, self.balances_db, self.transactions_db, session).to_dict(orient='records')
-            start_balance = prev_return['end_balance'] if prev_return['end_balance'] > 0 else ewmas[0]['balance_value']
-            end_balance = max(0.0001, ewmas[-1]['balance_value'] - transfer - collateral)
-            ret = log(end_balance) - log(ticker * start_balance)
+            ewmas = get_ewmas(
+              client, exchange, account, 
+              prev_time - timedelta(hours=config['daily_returns']['overlap']), 
+              base_time, self.balances_db, self.transactions_db, 
+              prev_balance['base_ccy'],
+              ticker,
+              session
+            ).to_dict(orient='records')
+
+            print(ewmas)
+            start_balance = float(prev_return['end_balance'] if prev_return['end_balance'] > 0 else ewmas[0]['ewma']['balance_value'])
+            end_balance = max(0.000000001, ewmas[-1]['ewma']['balance_value'] - transfer - collateral)
+            outlier = sum([item['ewma']['outlier'] for item in ewmas])
+            if outlier > 0:
+              ret = 0
+            else:
+              ret = log(end_balance) - log(start_balance)
 
             prev_return = {
               'return': ret,
               'timestamp': base_time,
               'start_balance': start_balance,
-              'end_balance': ewmas[-1]['balance_value'],
+              'end_balance': ewmas[-1]['ewma']['balance_value'] / ticker,
               'transfer': transfer,
               'base_ccy': last_balance['base_ccy']
             }

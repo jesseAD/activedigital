@@ -14,6 +14,7 @@ target_dir = os.path.abspath(os.path.join(current_directory, os.pardir))
 sys.path.append(target_dir)
 
 from src.handlers.daily_returns import DailyReturns
+from src.handlers.helpers import Helper
 from src.config import read_config_file
 from dotenv import load_dotenv
 
@@ -63,6 +64,9 @@ def test_ZeroReturnCalculatedWhenBalancesLessThanIntervalPeriod(db_session):
       session=db_session)
     )) == 1
   )
+
+  db_session.client.active_digital.daily_returns.delete_many({}, session=db_session)
+  db_session.client.active_digital.balances.delete_many({}, session=db_session)
 
 def test_SingleRetrunCalculatedWhenBalancesGenerated24HoursWith24IntervalPeriod(db_session):
   db_session = db_session
@@ -117,6 +121,9 @@ def test_SingleRetrunCalculatedWhenBalancesGenerated24HoursWith24IntervalPeriod(
   assert(round(returns[1]['start_balance'], 5) == 8.5)
   timestamp = datetime.now(timezone.utc) + relativedelta.relativedelta(hour=0, minute=0, second=0, microsecond=0)
   assert(returns[1]['timestamp'].replace(tzinfo=timezone.utc) == timestamp)
+
+  db_session.client.active_digital.daily_returns.delete_many({}, session=db_session)
+  db_session.client.active_digital.balances.delete_many({}, session=db_session)
 
 def test_TwoRetrunCalculatedWhenBalancesWithWithdrawlGenerated48HoursWith24IntervalPeriod(db_session):
   db_session = db_session
@@ -176,6 +183,7 @@ def test_TwoRetrunCalculatedWhenBalancesWithWithdrawlGenerated48HoursWith24Inter
       'account': "subaccount",
       'incomeType': "COIN_SWAP_WITHDRAW",
       'income_base': -1,
+      'income': -1,
       'timestamp': int((now - timedelta(hours=24)).timestamp() * 1000)
     },
     session=db_session
@@ -200,6 +208,9 @@ def test_TwoRetrunCalculatedWhenBalancesWithWithdrawlGenerated48HoursWith24Inter
   assert(round(returns[2]['start_balance'], 5) == 10)
   timestamp = datetime.now(timezone.utc) + relativedelta.relativedelta(hour=0, minute=0, second=0, microsecond=0)
   assert(returns[2]['timestamp'].replace(tzinfo=timezone.utc) == timestamp)
+
+  db_session.client.active_digital.daily_returns.delete_many({}, session=db_session)
+  db_session.client.active_digital.balances.delete_many({}, session=db_session)
 
 def test_ThreeRetrunCalculatedWhenBalancesWithDepositlGenerated72HoursWith24IntervalPeriod(db_session):
   db_session = db_session
@@ -270,6 +281,7 @@ def test_ThreeRetrunCalculatedWhenBalancesWithDepositlGenerated72HoursWith24Inte
       'account': "subaccount",
       'incomeType': "COIN_SWAP_DEPOSIT",
       'income_base': 1,
+      'income': 1,
       'timestamp': int((datetime.now(timezone.utc) - timedelta(hours=24)).timestamp() * 1000)
     },
     session=db_session
@@ -299,6 +311,9 @@ def test_ThreeRetrunCalculatedWhenBalancesWithDepositlGenerated72HoursWith24Inte
   assert(round(returns[3]['start_balance'], 5) == 11)
   timestamp = datetime.now(timezone.utc) + relativedelta.relativedelta(hour=0, minute=0, second=0, microsecond=0)
   assert(returns[3]['timestamp'].replace(tzinfo=timezone.utc) == timestamp)
+
+  db_session.client.active_digital.daily_returns.delete_many({}, session=db_session)
+  db_session.client.active_digital.balances.delete_many({}, session=db_session)
 
 def test_TwoRetrunCalculatedWhenBalancesWithCollateralCorrectionGenerated48HoursWith24IntervalPeriod(db_session):
   db_session = db_session
@@ -372,6 +387,9 @@ def test_TwoRetrunCalculatedWhenBalancesWithCollateralCorrectionGenerated48Hours
   timestamp = datetime.now(timezone.utc) + relativedelta.relativedelta(hour=0, minute=0, second=0, microsecond=0)
   assert(returns[2]['timestamp'].replace(tzinfo=timezone.utc) == timestamp)
 
+  db_session.client.active_digital.daily_returns.delete_many({}, session=db_session)
+  db_session.client.active_digital.balances.delete_many({}, session=db_session)
+
 def test_ThreeRetrunCalculatedWhenBalancesWithDepositWithdrawlAndWithCollateralCorrectionlGenerated72HoursWith24IntervalPeriod(db_session):
   db_session = db_session
   db_session.client.active_digital.daily_returns.insert_one(
@@ -382,7 +400,7 @@ def test_ThreeRetrunCalculatedWhenBalancesWithDepositWithdrawlAndWithCollateralC
       'return': 1.0,
       'end_balance': 9,
       'runid': 0,
-      'timestamp': datetime.now(timezone.utc) - timedelta(hours=73)
+      'timestamp': datetime.now(timezone.utc) - timedelta(hours=72)
     },
     session=db_session
   )
@@ -394,7 +412,7 @@ def test_ThreeRetrunCalculatedWhenBalancesWithDepositWithdrawlAndWithCollateralC
       'balance_value': {'base': 10},
       'base_ccy': "USDT",
       'runid': 0,
-      'timestamp': datetime.now(timezone.utc) - timedelta(hours=97)
+      'timestamp': datetime.now(timezone.utc) - timedelta(hours=96)
     },
     session=db_session
   )
@@ -407,7 +425,7 @@ def test_ThreeRetrunCalculatedWhenBalancesWithDepositWithdrawlAndWithCollateralC
       'collateral': 1.0,
       'base_ccy': "USDT",
       'runid': 0,
-      'timestamp': datetime.now(timezone.utc) - timedelta(hours=74)
+      'timestamp': datetime.now(timezone.utc) - timedelta(hours=72)
     },
     session=db_session
   )
@@ -420,7 +438,7 @@ def test_ThreeRetrunCalculatedWhenBalancesWithDepositWithdrawlAndWithCollateralC
       'collateral': 1.0,
       'base_ccy': "USDT",
       'runid': 0,
-      'timestamp': datetime.now(timezone.utc) - timedelta(hours=49)
+      'timestamp': datetime.now(timezone.utc) - timedelta(hours=48)
     },
     session=db_session
   )
@@ -433,7 +451,7 @@ def test_ThreeRetrunCalculatedWhenBalancesWithDepositWithdrawlAndWithCollateralC
       'collateral': 1.5,
       'base_ccy': "USDT",
       'runid': 0,
-      'timestamp': datetime.now(timezone.utc) - timedelta(hours=25)
+      'timestamp': datetime.now(timezone.utc) - timedelta(hours=24)
     },
     session=db_session
   )
@@ -444,6 +462,7 @@ def test_ThreeRetrunCalculatedWhenBalancesWithDepositWithdrawlAndWithCollateralC
       'account': "subaccount",
       'incomeType': "COIN_SWAP_DEPOSIT",
       'income_base': 1,
+      'income': 1,
       'timestamp': int((datetime.now(timezone.utc) - timedelta(hours=25)).timestamp() * 1000)
     },
     session=db_session
@@ -455,6 +474,7 @@ def test_ThreeRetrunCalculatedWhenBalancesWithDepositWithdrawlAndWithCollateralC
       'account': "subaccount",
       'incomeType': "COIN_SWAP_WITHDRAW",
       'income_base': -2.1,
+      'income': -2.1,
       'timestamp': int((datetime.now(timezone.utc) - timedelta(hours=49)).timestamp() * 1000)
     },
     session=db_session
@@ -484,6 +504,9 @@ def test_ThreeRetrunCalculatedWhenBalancesWithDepositWithdrawlAndWithCollateralC
   assert(round(returns[3]['start_balance'], 5) == 11)
   timestamp = datetime.now(timezone.utc) + relativedelta.relativedelta(hour=0, minute=0, second=0, microsecond=0)
   assert(returns[3]['timestamp'].replace(tzinfo=timezone.utc) == timestamp)
+
+  db_session.client.active_digital.daily_returns.delete_many({}, session=db_session)
+  db_session.client.active_digital.balances.delete_many({}, session=db_session)
 
 def test_TwoRetrunOneOfWhichIsZeroCalculatedWhenBalancesWithCollateralCorrectionGenerated48HoursWith24IntervalPeriodAndOneBalanceIsMissing(db_session):
   db_session = db_session
@@ -546,6 +569,9 @@ def test_TwoRetrunOneOfWhichIsZeroCalculatedWhenBalancesWithCollateralCorrection
   timestamp = datetime.now(timezone.utc) + relativedelta.relativedelta(hour=0, minute=0, second=0, microsecond=0)
   assert(returns[2]['timestamp'].replace(tzinfo=timezone.utc) == timestamp)
 
+  db_session.client.active_digital.daily_returns.delete_many({}, session=db_session)
+  db_session.client.active_digital.balances.delete_many({}, session=db_session)
+
 def test_ReturnsAreBackfilledWithDepositWithdrawlAndWithCollateralCorrectionAnd24HourIntervalPeriodWhenNoExistingReturns(db_session):
   db_session = db_session
   db_session.client.active_digital.balances.insert_one(
@@ -580,6 +606,7 @@ def test_ReturnsAreBackfilledWithDepositWithdrawlAndWithCollateralCorrectionAnd2
       'venue': "okx",
       'account': "subaccount",
       'incomeType': "COIN_SWAP_DEPOSIT",
+      'income': 1,
       'income_base': 1,
       'timestamp': int((datetime.now(timezone.utc) - timedelta(hours=30)).timestamp() * 1000)
     },
@@ -591,6 +618,7 @@ def test_ReturnsAreBackfilledWithDepositWithdrawlAndWithCollateralCorrectionAnd2
       'venue': "okx",
       'account': "subaccount",
       'incomeType': "COIN_SWAP_WITHDRAW",
+      'income': -2.1,
       'income_base': -2.1,
       'timestamp': int((datetime.now(timezone.utc) - timedelta(hours=30)).timestamp() * 1000)
     },
@@ -607,11 +635,14 @@ def test_ReturnsAreBackfilledWithDepositWithdrawlAndWithCollateralCorrectionAnd2
   )
   assert(len(returns) == 2)
   assert(returns[0]['return'] == 0)
-  assert(round(returns[1]['return'], 5) == 0.05827)
+  assert(round(returns[1]['return'], 5) == -0.03704)
   assert(round(returns[1]['end_balance'], 5) == 10)
-  assert(round(returns[1]['start_balance'], 5) == 10)
+  assert(round(returns[1]['start_balance'], 5) == 11)
   timestamp = datetime.now(timezone.utc) + relativedelta.relativedelta(hour=0, minute=0, second=0, microsecond=0)
   assert(returns[1]['timestamp'].replace(tzinfo=timezone.utc) == timestamp)
+
+  db_session.client.active_digital.daily_returns.delete_many({}, session=db_session)
+  db_session.client.active_digital.balances.delete_many({}, session=db_session)
 
 def test_SingleRetrunCalculatedWhenDelayedBalancesGenerated48HoursApartWith24IntervalPeriod(db_session):
   db_session = db_session
@@ -668,6 +699,9 @@ def test_SingleRetrunCalculatedWhenDelayedBalancesGenerated48HoursApartWith24Int
   assert(round(returns[1]['start_balance'], 5) == 9)
   timestamp = datetime.now(timezone.utc) + relativedelta.relativedelta(hour=0, minute=0, second=0, microsecond=0)
   assert(returns[1]['timestamp'].replace(tzinfo=timezone.utc) == timestamp)
+
+  db_session.client.active_digital.daily_returns.delete_many({}, session=db_session)
+  db_session.client.active_digital.balances.delete_many({}, session=db_session)
 
 def test_SingleRetrunCalculatedAndTimeStampedWithLastBalanceDataWhenBalancesGenerated24HourstWith24IntervalPeriod(db_session):
   db_session = db_session
@@ -728,6 +762,9 @@ def test_SingleRetrunCalculatedAndTimeStampedWithLastBalanceDataWhenBalancesGene
   assert(round(returns[1]['start_balance'], 5) == 11)
   timestamp = datetime.now(timezone.utc) + relativedelta.relativedelta(hour=0, minute=0, second=0, microsecond=0)
   assert(returns[1]['timestamp'].replace(tzinfo=timezone.utc) == timestamp)
+
+  db_session.client.active_digital.daily_returns.delete_many({}, session=db_session)
+  db_session.client.active_digital.balances.delete_many({}, session=db_session)
 
 def test_OutlierAndEWMA(db_session):
   db_session = db_session
@@ -820,11 +857,14 @@ def test_OutlierAndEWMA(db_session):
     len(returns) == 2
   )
 
-  assert(round(returns[1]['return'], 5) == 0.27426)
-  assert(round(returns[1]['end_balance'], 5) == 11.84)
+  assert(round(returns[1]['return'], 5) == 0.28638)
+  assert(round(returns[1]['end_balance'], 5) == 11.98438)
   assert(round(returns[1]['start_balance'], 5) == 9)
   timestamp = datetime.now(timezone.utc) + relativedelta.relativedelta(hour=0, minute=0, second=0, microsecond=0)
   assert(returns[1]['timestamp'].replace(tzinfo=timezone.utc) == timestamp)
+
+  db_session.client.active_digital.daily_returns.delete_many({}, session=db_session)
+  db_session.client.active_digital.balances.delete_many({}, session=db_session)
 
 def test_TransfersBeforeUSDTConvertedPayment(db_session):
   db_session = db_session
@@ -913,7 +953,7 @@ def test_TransfersBeforeUSDTConvertedPayment(db_session):
       'incomeType': "COIN_SWAP_DEPOSIT",
       'income_base': 0,
       'income': 12,
-      'timestamp': int(((datetime.now(timezone.utc) - timedelta(hours=24)) + relativedelta.relativedelta(hour=23, minute=20)).timestamp() * 1000)
+      'timestamp': int(((datetime.now(timezone.utc) - timedelta(hours=24)) + relativedelta.relativedelta(hour=23, minute=15)).timestamp() * 1000)
     },
     session=db_session
   )
@@ -929,8 +969,118 @@ def test_TransfersBeforeUSDTConvertedPayment(db_session):
     len(returns) == 2
   )
 
-  assert(round(returns[1]['return'], 5) == -0.42976)
-  assert(round(returns[1]['end_balance'], 5) == 17.856)
+  assert(round(returns[1]['return'], 5) == 0)
+  assert(round(returns[1]['end_balance'], 5) == 13.14062)
   assert(round(returns[1]['start_balance'], 5) == 9)
   timestamp = datetime.now(timezone.utc) + relativedelta.relativedelta(hour=0, minute=0, second=0, microsecond=0)
   assert(returns[1]['timestamp'].replace(tzinfo=timezone.utc) == timestamp)
+
+  db_session.client.active_digital.daily_returns.delete_many({}, session=db_session)
+  db_session.client.active_digital.balances.delete_many({}, session=db_session)
+
+def test_BaseCcyChange(db_session):
+  db_session = db_session
+  db_session.client.active_digital.daily_returns.insert_one(
+    {
+      'client': "vadym",
+      'venue': "okx",
+      'account': "subaccount",
+      'return': 1.0,
+      'end_balance': 1.01,
+      'runid': 0,
+      'timestamp': datetime.now(timezone.utc) - timedelta(hours=24)
+    },
+    session=db_session
+  )
+  db_session.client.active_digital.balances.insert_one(
+    {
+      'client': "vadym",
+      'venue': "okx",
+      'account': "subaccount",
+      'balance_value': {'base': 1},
+      'collateral': 1.0,
+      'base_ccy': "BTC",
+      'runid': 0,
+      'timestamp': datetime.now(timezone.utc) - timedelta(hours=48)
+    },
+    session=db_session
+  )
+  db_session.client.active_digital.balances.insert_one(
+    {
+      'client': "vadym",
+      'venue': "okx",
+      'account': "subaccount",
+      'balance_value': {'base': 65000},
+      'collateral': 1.0,
+      'base_ccy': "USDT",
+      'runid': 0,
+      'timestamp': (datetime.now(timezone.utc) - timedelta(hours=24)) + relativedelta.relativedelta(hour=23, minute=0)
+    },
+    session=db_session
+  )
+  db_session.client.active_digital.balances.insert_one(
+    {
+      'client': "vadym",
+      'venue': "okx",
+      'account': "subaccount",
+      'balance_value': {'base': 65100},
+      'collateral': 1.0,
+      'base_ccy': "USDT",
+      'runid': 0,
+      'timestamp': (datetime.now(timezone.utc) - timedelta(hours=24)) + relativedelta.relativedelta(hour=23, minute=10)
+    },
+    session=db_session
+  )
+  db_session.client.active_digital.balances.insert_one(
+    {
+      'client': "vadym",
+      'venue': "okx",
+      'account': "subaccount",
+      'balance_value': {'base': 65050},
+      'collateral': 1.0,
+      'base_ccy': "USDT",
+      'runid': 0,
+      'timestamp': (datetime.now(timezone.utc) - timedelta(hours=24)) + relativedelta.relativedelta(hour=23, minute=20)
+    },
+    session=db_session
+  )
+  db_session.client.active_digital.balances.insert_one(
+    {
+      'client': "vadym",
+      'venue': "okx",
+      'account': "subaccount",
+      'balance_value': {'base': 65060},
+      'collateral': 1.0,
+      'base_ccy': "USDT",
+      'runid': 0,
+      'timestamp': (datetime.now(timezone.utc) - timedelta(hours=24)) + relativedelta.relativedelta(hour=23, minute=30)
+    },
+    session=db_session
+  )
+
+  DailyReturns(db_session.client, "daily_returns").create(
+    client="vadym", exch=None, exchange="okx", account="subaccount", session=db_session
+  )
+  returns = list(db_session.client.active_digital.daily_returns.find(
+    {'client': "vadym"}, 
+    session=db_session)
+  )
+  assert(
+    len(returns) == 2
+  )
+
+  tickers = db_session.client.active_digital.tickers.find({'venue': "okx"})
+  for item in tickers:
+    ticker_value = item['ticker_value']
+
+  ticker = Helper().calc_cross_ccy_ratio("USDT", "BTC", ticker_value)
+
+  assert(round(returns[1]['return'], 5) == round(log(65051.25 * ticker) - log(1.01), 5))
+  assert(round(returns[1]['end_balance'], 5) == 65051.25)
+  assert(round(returns[1]['start_balance'], 5) == 1.01)
+  timestamp = datetime.now(timezone.utc) + relativedelta.relativedelta(hour=0, minute=0, second=0, microsecond=0)
+  assert(returns[1]['timestamp'].replace(tzinfo=timezone.utc) == timestamp)
+
+  db_session.client.active_digital.daily_returns.delete_many({}, session=db_session)
+  db_session.client.active_digital.balances.delete_many({}, session=db_session)
+
