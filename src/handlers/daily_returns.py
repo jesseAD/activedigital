@@ -60,7 +60,7 @@ def get_ewmas(client_val,exchange_val,account_val,start_date, end_date, balances
     {  "$eq": ["$account", account_val] },
   ]}}},
   {"$project": {
-    "_id":0,"client": "$client", "venue": "$venue", "account": "$account", "base_ccy":"$base_ccy", "balance_value": "$balance_value.base", "timestamp": 1
+    "_id":0,"client": "$client", "venue": "$venue", "account": "$account", "base_ccy":"$base_ccy", "balance_value": "$balance_value.base", "timestamp": 1, "collateral": 1
   }},
   {"$group": {
     "_id": {"client": "$client", "venue": "$venue", "account": "$account", "base_ccy": "$base_ccy","timestamp":"$timestamp"},  
@@ -70,13 +70,16 @@ def get_ewmas(client_val,exchange_val,account_val,start_date, end_date, balances
     "balance_value": {"$last": "$balance_value"},
     "base_ccy": {"$last": "$base_ccy"},
     "timestamp": {"$last": "$timestamp"},
+    "collateral": {"$last": "$collateral"},
   }},
-  {"$project": {"timestamp": 1, "_id": 0, "client": "$client", "venue": "$venue", "account": "$account","base":"$base_ccy", "balance_value": {"$ifNull": ["$balance_value", 0]}}},
+  {"$project": {"timestamp": 1, "_id": 0, "client": "$client", "venue": "$venue", "account": "$account","base":"$base_ccy", "balance_value": {"$ifNull": ["$balance_value", 0]}, "collateral": {"$ifNull": ["$collateral", 0]}}},
   ]
   balances=list(balances_db.aggregate(pipeline, session=session))
   for balance in balances:
     if balance['base'] != base_ccy:
       balance['balance_value'] = balance['balance_value'] * ticker
+
+    balance['balance_value'] -= ((balance['collateral'] if 'collateral' in balance else 0) - (balances[0]['collateral'] if 'collateral' in balances[0] else 0))
 
   balances_df = pd.json_normalize(balances)
   if balances_df.empty:
@@ -326,14 +329,15 @@ class DailyReturns():
           base_time = base_time + timedelta(hours=config['daily_returns']['period'])
           
         elif prev_balance == None:
-          dailyReturnsValue.append({
+          prev_return = {
             'return': 0,
             'timestamp': base_time,
             'start_balance': 0,
             'end_balance': last_balance['balance_value']['base'],
             'transfer': 0,
             'base_ccy': last_balance['base_ccy']
-          })
+          }
+          dailyReturnsValue.append(prev_return)
           prev_time = prev_time + timedelta(hours=config['daily_returns']['period'])
           base_time = base_time + timedelta(hours=config['daily_returns']['period'])
 
@@ -375,7 +379,7 @@ class DailyReturns():
             if transfer == 0.0:
               transfer = sum([item['income'] for item in transfers])
 
-            collateral = (last_balance['collateral'] if 'collateral' in last_balance else 0) - (prev_balance['collateral'] if 'collateral' in prev_balance else 0)
+            # collateral = (last_balance['collateral'] if 'collateral' in last_balance else 0) - (prev_balance['collateral'] if 'collateral' in prev_balance else 0)
 
             ewmas = get_ewmas(
               client, exchange, account, 
@@ -388,7 +392,7 @@ class DailyReturns():
 
             print(ewmas)
             start_balance = float(prev_return['end_balance'] if prev_return['end_balance'] > 0 else ewmas[0]['ewma']['balance_value'])
-            end_balance = max(0.000000001, ewmas[-1]['ewma']['balance_value'] - transfer - collateral)
+            end_balance = max(0.000000001, ewmas[-1]['ewma']['balance_value'] - transfer)
             outlier = sum([item['ewma']['outlier'] for item in ewmas])
             if outlier > 0:
               ret = 0

@@ -381,7 +381,7 @@ def test_TwoRetrunCalculatedWhenBalancesWithCollateralCorrectionGenerated48Hours
   assert(round(returns[1]['start_balance'], 5) == 9)
   timestamp = datetime.now(timezone.utc) + relativedelta.relativedelta(hour=0, minute=0, second=0, microsecond=0) - timedelta(days=1)
   assert(returns[1]['timestamp'].replace(tzinfo=timezone.utc) == timestamp)
-  assert(round(returns[2]['return'], 5) == -0.11653)
+  assert(round(returns[2]['return'], 5) == 0.09531)
   assert(round(returns[2]['end_balance'], 5) == 11)
   assert(round(returns[2]['start_balance'], 5) == 10)
   timestamp = datetime.now(timezone.utc) + relativedelta.relativedelta(hour=0, minute=0, second=0, microsecond=0)
@@ -489,7 +489,7 @@ def test_ThreeRetrunCalculatedWhenBalancesWithDepositWithdrawlAndWithCollateralC
     session=db_session)
   )
   assert(len(returns) == 4)
-  assert(round(returns[1]['return'], 5) == 0.05407)
+  assert(round(returns[1]['return'], 5) == 0.15415)
   assert(round(returns[1]['end_balance'], 5) == 10.5)
   assert(round(returns[1]['start_balance'], 5) == 9)
   timestamp = datetime.now(timezone.utc) + relativedelta.relativedelta(hour=0, minute=0, second=0, microsecond=0) - timedelta(days=2)
@@ -499,7 +499,7 @@ def test_ThreeRetrunCalculatedWhenBalancesWithDepositWithdrawlAndWithCollateralC
   assert(round(returns[2]['start_balance'], 5) == 10.5)
   timestamp = datetime.now(timezone.utc) + relativedelta.relativedelta(hour=0, minute=0, second=0, microsecond=0) - timedelta(days=1)
   assert(returns[2]['timestamp'].replace(tzinfo=timezone.utc) == timestamp)
-  assert(round(returns[3]['return'], 5) == -0.25783)
+  assert(round(returns[3]['return'], 5) == -0.20067)
   assert(round(returns[3]['end_balance'], 5) == 10)
   assert(round(returns[3]['start_balance'], 5) == 11)
   timestamp = datetime.now(timezone.utc) + relativedelta.relativedelta(hour=0, minute=0, second=0, microsecond=0)
@@ -563,9 +563,9 @@ def test_TwoRetrunOneOfWhichIsZeroCalculatedWhenBalancesWithCollateralCorrection
   assert(round(returns[1]['start_balance'], 5) == 0)
   timestamp = datetime.now(timezone.utc) + relativedelta.relativedelta(hour=0, minute=0, second=0, microsecond=0) - timedelta(days=1)
   assert(returns[1]['timestamp'].replace(tzinfo=timezone.utc) == timestamp)
-  assert(round(returns[2]['return'], 5) == 0.05407)
+  assert(round(returns[2]['return'], 5) == -0.09531)
   assert(round(returns[2]['end_balance'], 5) == 10)
-  assert(round(returns[2]['start_balance'], 5) == 9)
+  assert(round(returns[2]['start_balance'], 5) == 11)
   timestamp = datetime.now(timezone.utc) + relativedelta.relativedelta(hour=0, minute=0, second=0, microsecond=0)
   assert(returns[2]['timestamp'].replace(tzinfo=timezone.utc) == timestamp)
 
@@ -583,7 +583,7 @@ def test_ReturnsAreBackfilledWithDepositWithdrawlAndWithCollateralCorrectionAnd2
       'collateral': 1.0,
       'base_ccy': "USDT",
       'runid': 0,
-      'timestamp': datetime.now(timezone.utc) - timedelta(hours=49)
+      'timestamp': datetime.now(timezone.utc) - timedelta(hours=48)
     },
     session=db_session
   )
@@ -596,7 +596,7 @@ def test_ReturnsAreBackfilledWithDepositWithdrawlAndWithCollateralCorrectionAnd2
       'collateral': 1.5,
       'base_ccy': "USDT",
       'runid': 0,
-      'timestamp': datetime.now(timezone.utc) - timedelta(hours=25)
+      'timestamp': datetime.now(timezone.utc) - timedelta(hours=24)
     },
     session=db_session
   )
@@ -608,7 +608,7 @@ def test_ReturnsAreBackfilledWithDepositWithdrawlAndWithCollateralCorrectionAnd2
       'incomeType': "COIN_SWAP_DEPOSIT",
       'income': 1,
       'income_base': 1,
-      'timestamp': int((datetime.now(timezone.utc) - timedelta(hours=30)).timestamp() * 1000)
+      'timestamp': int((datetime.now(timezone.utc) - timedelta(hours=24)).timestamp() * 1000)
     },
     session=db_session
   )
@@ -620,7 +620,7 @@ def test_ReturnsAreBackfilledWithDepositWithdrawlAndWithCollateralCorrectionAnd2
       'incomeType': "COIN_SWAP_WITHDRAW",
       'income': -2.1,
       'income_base': -2.1,
-      'timestamp': int((datetime.now(timezone.utc) - timedelta(hours=30)).timestamp() * 1000)
+      'timestamp': int((datetime.now(timezone.utc) - timedelta(hours=24)).timestamp() * 1000)
     },
     session=db_session
   )
@@ -633,9 +633,10 @@ def test_ReturnsAreBackfilledWithDepositWithdrawlAndWithCollateralCorrectionAnd2
     {'client': "vadym"}, 
     session=db_session)
   )
+  print(returns)
   assert(len(returns) == 2)
   assert(returns[0]['return'] == 0)
-  assert(round(returns[1]['return'], 5) == -0.03704)
+  assert(round(returns[1]['return'], 5) == 0.00905)
   assert(round(returns[1]['end_balance'], 5) == 10)
   assert(round(returns[1]['start_balance'], 5) == 11)
   timestamp = datetime.now(timezone.utc) + relativedelta.relativedelta(hour=0, minute=0, second=0, microsecond=0)
@@ -970,7 +971,7 @@ def test_TransfersBeforeUSDTConvertedPayment(db_session):
   )
 
   assert(round(returns[1]['return'], 5) == 0)
-  assert(round(returns[1]['end_balance'], 5) == 13.14062)
+  assert(round(returns[1]['end_balance'], 5) == 22)
   assert(round(returns[1]['start_balance'], 5) == 9)
   timestamp = datetime.now(timezone.utc) + relativedelta.relativedelta(hour=0, minute=0, second=0, microsecond=0)
   assert(returns[1]['timestamp'].replace(tzinfo=timezone.utc) == timestamp)
@@ -1075,8 +1076,8 @@ def test_BaseCcyChange(db_session):
 
   ticker = Helper().calc_cross_ccy_ratio("USDT", "BTC", ticker_value)
 
-  assert(round(returns[1]['return'], 5) == round(log(65051.25 * ticker) - log(1.01), 5))
-  assert(round(returns[1]['end_balance'], 5) == 65051.25)
+  assert(round(returns[1]['return'], 5) == round(log(65012.96875 * ticker) - log(1.01), 5))
+  assert(round(returns[1]['end_balance'], 5) == 65012.96875)
   assert(round(returns[1]['start_balance'], 5) == 1.01)
   timestamp = datetime.now(timezone.utc) + relativedelta.relativedelta(hour=0, minute=0, second=0, microsecond=0)
   assert(returns[1]['timestamp'].replace(tzinfo=timezone.utc) == timestamp)
