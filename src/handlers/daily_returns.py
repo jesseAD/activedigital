@@ -390,7 +390,6 @@ class DailyReturns():
               session
             ).to_dict(orient='records')
 
-            print(ewmas)
             start_balance = float(prev_return['end_balance'] if prev_return['end_balance'] > 0 else ewmas[0]['ewma']['balance_value'])
             end_balance = max(0.000000001, ewmas[-1]['ewma']['balance_value'] - transfer)
             outlier = sum([item['ewma']['outlier'] for item in ewmas])
