@@ -381,8 +381,8 @@ def test_TwoRetrunCalculatedWhenBalancesWithCollateralCorrectionGenerated48Hours
   assert(round(returns[1]['start_balance'], 5) == 9)
   timestamp = datetime.now(timezone.utc) + relativedelta.relativedelta(hour=0, minute=0, second=0, microsecond=0) - timedelta(days=1)
   assert(returns[1]['timestamp'].replace(tzinfo=timezone.utc) == timestamp)
-  assert(round(returns[2]['return'], 5) == 0.09531)
-  assert(round(returns[2]['end_balance'], 5) == 11)
+  assert(round(returns[2]['return'], 5) == -0.11653)
+  assert(round(returns[2]['end_balance'], 5) == 8.9)
   assert(round(returns[2]['start_balance'], 5) == 10)
   timestamp = datetime.now(timezone.utc) + relativedelta.relativedelta(hour=0, minute=0, second=0, microsecond=0)
   assert(returns[2]['timestamp'].replace(tzinfo=timezone.utc) == timestamp)
@@ -489,18 +489,18 @@ def test_ThreeRetrunCalculatedWhenBalancesWithDepositWithdrawlAndWithCollateralC
     session=db_session)
   )
   assert(len(returns) == 4)
-  assert(round(returns[1]['return'], 5) == 0.15415)
-  assert(round(returns[1]['end_balance'], 5) == 10.5)
+  assert(round(returns[1]['return'], 5) == 0.05407)
+  assert(round(returns[1]['end_balance'], 5) == 9.5)
   assert(round(returns[1]['start_balance'], 5) == 9)
   timestamp = datetime.now(timezone.utc) + relativedelta.relativedelta(hour=0, minute=0, second=0, microsecond=0) - timedelta(days=2)
   assert(returns[1]['timestamp'].replace(tzinfo=timezone.utc) == timestamp)
-  assert(round(returns[2]['return'], 5) == 0.22124)
+  assert(round(returns[2]['return'], 5) == 0.32132)
   assert(round(returns[2]['end_balance'], 5) == 11)
-  assert(round(returns[2]['start_balance'], 5) == 10.5)
+  assert(round(returns[2]['start_balance'], 5) == 9.5)
   timestamp = datetime.now(timezone.utc) + relativedelta.relativedelta(hour=0, minute=0, second=0, microsecond=0) - timedelta(days=1)
   assert(returns[2]['timestamp'].replace(tzinfo=timezone.utc) == timestamp)
-  assert(round(returns[3]['return'], 5) == -0.20067)
-  assert(round(returns[3]['end_balance'], 5) == 10)
+  assert(round(returns[3]['return'], 5) == -0.25783)
+  assert(round(returns[3]['end_balance'], 5) == 9.5)
   assert(round(returns[3]['start_balance'], 5) == 11)
   timestamp = datetime.now(timezone.utc) + relativedelta.relativedelta(hour=0, minute=0, second=0, microsecond=0)
   assert(returns[3]['timestamp'].replace(tzinfo=timezone.utc) == timestamp)
@@ -563,8 +563,8 @@ def test_TwoRetrunOneOfWhichIsZeroCalculatedWhenBalancesWithCollateralCorrection
   assert(round(returns[1]['start_balance'], 5) == 0)
   timestamp = datetime.now(timezone.utc) + relativedelta.relativedelta(hour=0, minute=0, second=0, microsecond=0) - timedelta(days=1)
   assert(returns[1]['timestamp'].replace(tzinfo=timezone.utc) == timestamp)
-  assert(round(returns[2]['return'], 5) == -0.09531)
-  assert(round(returns[2]['end_balance'], 5) == 10)
+  assert(round(returns[2]['return'], 5) == -0.1466)
+  assert(round(returns[2]['end_balance'], 5) == 9.5)
   assert(round(returns[2]['start_balance'], 5) == 11)
   timestamp = datetime.now(timezone.utc) + relativedelta.relativedelta(hour=0, minute=0, second=0, microsecond=0)
   assert(returns[2]['timestamp'].replace(tzinfo=timezone.utc) == timestamp)
@@ -636,8 +636,8 @@ def test_ReturnsAreBackfilledWithDepositWithdrawlAndWithCollateralCorrectionAnd2
   print(returns)
   assert(len(returns) == 2)
   assert(returns[0]['return'] == 0)
-  assert(round(returns[1]['return'], 5) == 0.00905)
-  assert(round(returns[1]['end_balance'], 5) == 10)
+  assert(round(returns[1]['return'], 5) == -0.03704)
+  assert(round(returns[1]['end_balance'], 5) == 9.5)
   assert(round(returns[1]['start_balance'], 5) == 11)
   timestamp = datetime.now(timezone.utc) + relativedelta.relativedelta(hour=0, minute=0, second=0, microsecond=0)
   assert(returns[1]['timestamp'].replace(tzinfo=timezone.utc) == timestamp)
@@ -999,7 +999,6 @@ def test_BaseCcyChange(db_session):
       'venue': "okx",
       'account': "subaccount",
       'balance_value': {'base': 1},
-      'collateral': 1.0,
       'base_ccy': "BTC",
       'runid': 0,
       'timestamp': datetime.now(timezone.utc) - timedelta(hours=48)
@@ -1012,7 +1011,6 @@ def test_BaseCcyChange(db_session):
       'venue': "okx",
       'account': "subaccount",
       'balance_value': {'base': 65000},
-      'collateral': 1.0,
       'base_ccy': "USDT",
       'runid': 0,
       'timestamp': (datetime.now(timezone.utc) - timedelta(hours=24)) + relativedelta.relativedelta(hour=23, minute=0)
@@ -1025,7 +1023,6 @@ def test_BaseCcyChange(db_session):
       'venue': "okx",
       'account': "subaccount",
       'balance_value': {'base': 65100},
-      'collateral': 1.0,
       'base_ccy': "USDT",
       'runid': 0,
       'timestamp': (datetime.now(timezone.utc) - timedelta(hours=24)) + relativedelta.relativedelta(hour=23, minute=10)
@@ -1038,7 +1035,6 @@ def test_BaseCcyChange(db_session):
       'venue': "okx",
       'account': "subaccount",
       'balance_value': {'base': 65050},
-      'collateral': 1.0,
       'base_ccy': "USDT",
       'runid': 0,
       'timestamp': (datetime.now(timezone.utc) - timedelta(hours=24)) + relativedelta.relativedelta(hour=23, minute=20)
@@ -1051,7 +1047,6 @@ def test_BaseCcyChange(db_session):
       'venue': "okx",
       'account': "subaccount",
       'balance_value': {'base': 65060},
-      'collateral': 1.0,
       'base_ccy': "USDT",
       'runid': 0,
       'timestamp': (datetime.now(timezone.utc) - timedelta(hours=24)) + relativedelta.relativedelta(hour=23, minute=30)

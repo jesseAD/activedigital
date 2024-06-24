@@ -49,7 +49,7 @@ db['daily_returns'].delete_many({'client': "nifty", 'venue': "bybit", 'account':
 # })
 # print([item['balance_value']['base'] for item in balances])
 
-# db.update_many(
-#     {'runid': {'$lt': 57106}},
-#     {'$set': {'convert_ccy': 'USDT'}}
+# db['balances'].update_many(
+#   {'runid': {'$gt': 66763}, 'client': "nifty", 'venue': "bybit", 'account': "subbasis1"},
+#   {'$set': {'collateral': 7.5}}
 # )

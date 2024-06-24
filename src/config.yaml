@@ -163,9 +163,9 @@ funding_rates:
   base_ccy: ["USDT", "ETH", "BTC", ]
 
 daily_returns:
-  period: 8
+  period: 24
   resampling: 1
-  span: 3
+  span: 15
   overlap: 8
 
 # exchanges: ["okx", ]

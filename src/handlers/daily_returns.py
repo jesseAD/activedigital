@@ -46,7 +46,7 @@ def cal_ewma(data):
   # return ewma
   return {'balance_value': ewma, 'outlier': outlier}
 
-def get_ewmas(client_val,exchange_val,account_val,start_date, end_date, balances_db, transaction_union_db, base_ccy, ticker, session=None):
+def get_ewmas(client_val,exchange_val,account_val,start_date, end_date, balances_db, transaction_union_db, base_ccy, ticker, collateral, session=None):
   global balances_all
   global balances_df
   global transfers_df
@@ -77,9 +77,9 @@ def get_ewmas(client_val,exchange_val,account_val,start_date, end_date, balances
   balances=list(balances_db.aggregate(pipeline, session=session))
   for balance in balances:
     if balance['base'] != base_ccy:
-      balance['balance_value'] = balance['balance_value'] * ticker
-
-    balance['balance_value'] -= ((balance['collateral'] if 'collateral' in balance else 0) - (balances[0]['collateral'] if 'collateral' in balances[0] else 0))
+      balance['balance_value'] = balance['balance_value'] * ticker - (balance['collateral'] * ticker - collateral)
+    else:
+      balance['balance_value'] -= (balance['collateral'] - collateral)
 
   balances_df = pd.json_normalize(balances)
   if balances_df.empty:
@@ -387,6 +387,7 @@ class DailyReturns():
               base_time, self.balances_db, self.transactions_db, 
               prev_balance['base_ccy'],
               ticker,
+              prev_balance['collateral'] if 'collateral' in prev_balance else 0,
               session
             ).to_dict(orient='records')
 

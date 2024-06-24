@@ -23,9 +23,9 @@ db = pymongo.MongoClient(mongo_uri)
 
 DailyReturns(db, "daily_returns").create(
   client="nifty",
-  exchange="binance",
+  exchange="bybit",
   account="subbasis1",
-  balance_finished={"nifty_binance_subbasis1": True}
+  balance_finished={"nifty_bybit_subbasis1": True}
 )
 
 # params = {
@@ -33,7 +33,7 @@ DailyReturns(db, "daily_returns").create(
 #     'secret': "",
 #     'enableRateLimit': True,
 #     'requests_trust_env':True,
-#     'verbose': True,
+#     'verbose': False,
 #     'options': {
 #         'adjustForTimeDifference':True,
 #         'warnOnFetchOpenOrdersWithoutSymbol': False
@@ -42,7 +42,36 @@ DailyReturns(db, "daily_returns").create(
 #     # 'password': "!"
 # }
 
-# exchange = ccxt.okx(params)
+# exchange = ccxt.bybit(params)
+# res = exchange.public_get_v5_market_kline(params={'category': "spot", 'symbol': "BTCUSDT", 'interval': "1", 'limit': 1, 'start': 1708500592000})
+# print(res)
+
+# for runid in range(52255, 67355):
+#   balance = list(db['active_digital']['balances'].find({
+#     'client': "nifty",
+#     'venue': "bybit",
+#     'account': "subbasis1",
+#     'runid': runid
+#   }))
+#   print(balance)
+
+#   if len(balance) > 0:
+#     price = float(exchange.public_get_v5_market_kline(
+#       params={'category': "spot", 'symbol': "BTCUSDT", 'interval': "1", 'limit': 1, 'start': int(balance[0]['timestamp'].timestamp() * 1000)}
+#     )['result']['list'][0][4])
+#     print(price)
+
+#     db['active_digital']['balances'].update_one(
+#       {
+#         'client': "nifty",
+#         'venue': "bybit",
+#         'account': "subbasis1",
+#         'runid': runid
+#       },
+#       {'$set': {
+#         'collateral': 7.5 * price
+#       }}
+#     )
 # res = exchange.private_get_account_interest_rate(params={"ccy": "LRC"})
 # res = exchange.fetch_borrow_rate_history(code="LRC", limit=92)
 # print(res)
