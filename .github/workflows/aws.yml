@@ -1,9 +1,8 @@
 name: CI/CD Pipeline
 on:
-  pull_request:
-    branches:
-          - main
-    types: [closed]
+ push:
+   branches:
+     - main
 
 permissions:
   id-token: write # This is updated required for requesting the JWT
