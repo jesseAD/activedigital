@@ -441,10 +441,10 @@ clients:
           hedged_exclusion_negative: {'USDT': 0,'BTC': 0}
 
         subbasis2:
-          base_ccy: USDT
+          base_ccy: BTC
           margin_mode: non_portfolio
           daily_returns: True
-          hedged_exclusion_positive: {'BTC': 0}
+          hedged_exclusion_positive: {'BTC': 19.6383}
           hedged_exclusion_negative: {'USDT': 0,'BTC': 0}
 
       bybit:
