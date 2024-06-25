@@ -337,4 +337,9 @@ def get_unhedged(perp=[], spot=[]):
 
       id += 1
 
+  for pair in pairs:
+    min_notional = min([item['notional'] for item in pair])
+    for position in pair:
+      position['unhedgedAmount'] = abs(position['unhedgedAmount']) / min_notional
+
   return pairs
