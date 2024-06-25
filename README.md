@@ -1,6 +1,6 @@
 # Account Management Service
 
-This python webserver helps manage binance, bybit and okx positions, accounts, balances and public data for tracking purposes only.
+This python webserver helps manage binance, bybit and okx positions, accounts, funding rates and balances and public data for tracking purposes only.
 
 ## Contributing
 
