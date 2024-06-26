@@ -444,7 +444,7 @@ clients:
           base_ccy: BTC
           margin_mode: non_portfolio
           daily_returns: True
-          hedged_exclusion_positive: {'BTC': 19.6383}
+          hedged_exclusion_positive: {'BTC': 19.691244}
           hedged_exclusion_negative: {'USDT': 0,'BTC': 0}
 
       bybit:
@@ -459,7 +459,7 @@ clients:
           base_ccy: BTC
           margin_mode: non_portfolio
           daily_returns: True
-          hedged_exclusion_positive: {'USDT': 0,'BTC': 20, 'USDC': 0}
+          hedged_exclusion_positive: {'USDT': 0,'BTC': 20.03898379, 'USDC': 0}
           hedged_exclusion_negative: {'USDT': 0,'BTC': 0, 'USDC': 0}
 
       binance:
@@ -487,8 +487,8 @@ clients:
           base_ccy: ETH
           margin_mode: non_portfolio
           daily_returns: True
-          hedged_exclusion_positive: {'USDT': 0, 'ETH': 30.2}
-          hedged_exclusion_negative: {'USDT': 0}
+          hedged_exclusion_positive: {'USDT': 0, 'ETH': 30.2, 'USDC': 0}
+          hedged_exclusion_negative: {'USDT': 0, 'USDC': 0}
 
       huobi:
         subbasis1:
