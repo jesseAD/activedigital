@@ -168,6 +168,9 @@ daily_returns:
   span: 15
   overlap: 8
 
+hedged:
+  threshold: 50
+
 # exchanges: ["okx", ]
 exchanges: ["binance", "okx", "bybit", "huobi", ]
 

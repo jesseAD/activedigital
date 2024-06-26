@@ -957,6 +957,7 @@ class Positions:
           "venue": exchange,
           "account": "Main Account",
           "position_value": split_positions,
+          "threshold": config['clients'][client]['hedged_threshold'] if "hedged_threshold" in config['clients'][client] else config['hedged']['threshold'],
           "active": True,
           "entry": False,
           "exit": False,
