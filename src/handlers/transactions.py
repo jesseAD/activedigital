@@ -1608,6 +1608,10 @@ class Transactions:
               item['funding'] = float(item['funding']) * Helper().calc_cross_ccy_ratio(item['currency'], config['transactions']['convert_ccy'], tickers)
 
             if _type == "commission":
+              item['fee'] = -item['fee']
+              item['fee_origin'] = -item['fee_origin']
+              item['fee_base'] = -item['fee_base']
+
               if item['cashFlow'] != '':
                 item['cashFlow_origin'] = float(item['cashFlow'])
                 item['cashFlow_base'] = (
