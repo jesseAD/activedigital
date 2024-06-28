@@ -8,13 +8,13 @@ mongo_uri = 'mongodb+srv://activedigital:' + secrets['CLOUD_MONGO_PASSWORD'] + '
 
 mongo_client = pymongo.MongoClient(mongo_uri)
 # mongo_client = pymongo.MongoClient(None)
-db = mongo_client['active_digital']
+db = mongo_client['active_digita']
 
-collections = [
-  'balances', 'fills', 'positions', 'transactions', 'open_orders', 'leverages', 'lifetime_funding', 'mtd_pnls',
-  'bid_asks', 'borrow_rates', 'funding_rates', 'index_prices', 'instruments', 'long_funding', 'mark_prices',
-  'open_positions_price_change', 'roll_costs', 'runs', 'short_funding', 'split_positions'
-]
+# collections = [
+#   'balances', 'fills', 'positions', 'transactions', 'open_orders', 'leverages', 'lifetime_funding', 'mtd_pnls',
+#   'bid_asks', 'borrow_rates', 'funding_rates', 'index_prices', 'instruments', 'long_funding', 'mark_prices',
+#   'open_positions_price_change', 'roll_costs', 'runs', 'short_funding', 'split_positions'
+# ]
 
 # for collection in collections:
 #   db[collection].delete_many({
@@ -53,3 +53,12 @@ collections = [
 #   {'runid': {'$gt': 66763}, 'client': "nifty", 'venue': "bybit", 'account': "subbasis1"},
 #   {'$set': {'collateral': 7.5}}
 # )
+
+db['transactions'].update_many(
+  {'venue': "bybit", 'runid': {'$lte': 25251}, 'trade_type': "commission"},
+  [{'$set': {
+    'transaction_value.fee': {'$subtract': [0, "$transaction_value.fee"]},
+    'transaction_value.fee_origin': {'$subtract': [0, "$transaction_value.fee_origin"]},
+    'transaction_value.fee_base': {'$subtract': [0, "$transaction_value.fee_base"]}
+  }}]
+)
