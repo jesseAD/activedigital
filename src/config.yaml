@@ -354,8 +354,7 @@ clients:
           hedged_exclusion_negative: {'USDT': 0}
 
   faraday:
-    split_positions: False
-
+    split_positions: True
     subaccounts:
       okx:
         subls:
