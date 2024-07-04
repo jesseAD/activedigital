@@ -24,8 +24,8 @@ db = pymongo.MongoClient(mongo_uri)
 DailyReturns(db, "daily_returns").create(
   client="nifty",
   exchange="bybit",
-  account="subbasis1",
-  balance_finished={"nifty_bybit_subbasis1": True}
+  account="subbasis2",
+  balance_finished={"nifty_bybit_subbasis2": True}
 )
 
 # params = {
