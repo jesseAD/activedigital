@@ -380,7 +380,7 @@ clients:
         payment:
           base_ccy: USDT
           margin_mode: non_portfolio
-          daily_returns: True
+          daily_returns: False
           hedged_exclusion_positive: {'USDT': 0}
           hedged_exclusion_negative: {'USDT': 0}
           

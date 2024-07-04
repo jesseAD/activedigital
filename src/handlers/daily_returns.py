@@ -31,6 +31,7 @@ def cal_ewma(data):
   priorewma=0
   ewma=0
   outlier = 0
+  print(data[['balance_value','outlier']])
   for index, row in data[['balance_value','outlier']].iterrows():
     #display(row)
     if row['outlier'] == 0:
@@ -44,6 +45,7 @@ def cal_ewma(data):
       ewma=row['balance_value']
       
   # return ewma
+  print(ewma)
   return {'balance_value': ewma, 'outlier': outlier}
 
 def get_ewmas(client_val,exchange_val,account_val,start_date, end_date, balances_db, transaction_union_db, base_ccy, ticker, collateral, session=None):
@@ -131,6 +133,7 @@ def get_ewmas(client_val,exchange_val,account_val,start_date, end_date, balances
   balances_all['balance_change']=balances_all['balance_value']-balances_all['balance_value'].shift(1)
 
   balances_all['prior_bals']=balances_all["balance_value"].shift(1)
+  print(client_val + " " + exchange_val + " " + account_val)
   balances_1d=balances_all.resample(str(config['daily_returns']['resampling']) + 'h').apply(cal_ewma).to_frame()
   balances_1d = balances_1d.rename(columns= {0: 'ewma'})
 
@@ -140,6 +143,7 @@ class DailyReturns():
   def __init__(self, db, collection):
     self.runs_db = db[config['mongodb']['database']]['runs']
     self.balances_db = db[config['mongodb']['database']]['balances']
+    self.leverages_db = db[config['mongodb']['database']]['leverages']
     self.tickers_db = db[config['mongodb']['database']]['tickers']
     self.transactions_db = db[config['mongodb']['database']]['transaction_union']
     self.daily_returns_db = db[config['mongodb']['database']][collection]
@@ -334,6 +338,7 @@ class DailyReturns():
             'timestamp': base_time,
             'start_balance': 0,
             'end_balance': last_balance['balance_value']['base'],
+            'avg_leverage': 1,
             'transfer': 0,
             'base_ccy': last_balance['base_ccy']
           }
@@ -379,6 +384,21 @@ class DailyReturns():
             if transfer == 0.0:
               transfer = sum([item['income'] for item in transfers])
 
+            leverages = list(self.leverages_db.find({
+              '$and': [
+                {'client': client},
+                {'venue': exchange},
+                {'account': account},
+                {'timestamp': {
+                  '$gte': prev_time,
+                  '$lt': base_time
+                }}
+              ]
+            }, session=session))
+            avg_leverage = sum(item['leverage'] for item in leverages) / len(leverages)
+            if avg_leverage == 0.0:
+              avg_leverage = 1
+
             # collateral = (last_balance['collateral'] if 'collateral' in last_balance else 0) - (prev_balance['collateral'] if 'collateral' in prev_balance else 0)
 
             ewmas = get_ewmas(
@@ -404,6 +424,7 @@ class DailyReturns():
               'timestamp': base_time,
               'start_balance': start_balance,
               'end_balance': ewmas[-1]['ewma']['balance_value'] / ticker,
+              'avg_leverage': avg_leverage,
               'transfer': transfer,
               'base_ccy': last_balance['base_ccy']
             }
@@ -444,6 +465,7 @@ class DailyReturns():
       'return': item['return'],
       'start_balance': item['start_balance'],
       'end_balance': item['end_balance'],
+      'avg_leverage': item['avg_leverage'],
       'transfer': item['transfer'],
       'base_ccy': item['base_ccy'],
       'timestamp': item['timestamp'],
