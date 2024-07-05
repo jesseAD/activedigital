@@ -31,7 +31,7 @@ def cal_ewma(data):
   priorewma=0
   ewma=0
   outlier = 0
-  print(data[['balance_value','outlier']])
+  # print(data[['balance_value','outlier']])
   for index, row in data[['balance_value','outlier']].iterrows():
     #display(row)
     if row['outlier'] == 0:
@@ -48,7 +48,7 @@ def cal_ewma(data):
   print(ewma)
   return {'balance_value': ewma, 'outlier': outlier}
 
-def get_ewmas(client_val,exchange_val,account_val,start_date, end_date, balances_db, transaction_union_db, base_ccy, ticker, collateral, session=None):
+def get_ewmas(client_val,exchange_val,account_val,start_date, end_date, balances_db, transaction_union_db, base_ccy, ticker, collateral, session=None, logger=None):
   global balances_all
   global balances_df
   global transfers_df
@@ -133,9 +133,11 @@ def get_ewmas(client_val,exchange_val,account_val,start_date, end_date, balances
   balances_all['balance_change']=balances_all['balance_value']-balances_all['balance_value'].shift(1)
 
   balances_all['prior_bals']=balances_all["balance_value"].shift(1)
-  print(client_val + " " + exchange_val + " " + account_val)
+  logger.info("EWMA Calc " + client_val + " " + exchange_val + " " + account_val)
+  logger.info(balances_all[['balance_value','outlier']].to_dict(orient='records'))
   balances_1d=balances_all.resample(str(config['daily_returns']['resampling']) + 'h').apply(cal_ewma).to_frame()
   balances_1d = balances_1d.rename(columns= {0: 'ewma'})
+  logger.info(balances_1d.to_dict(orient='records'))
 
   return balances_1d
 
@@ -408,7 +410,8 @@ class DailyReturns():
               prev_balance['base_ccy'],
               ticker,
               prev_balance['collateral'] if 'collateral' in prev_balance else 0,
-              session
+              session,
+              logger
             ).to_dict(orient='records')
 
             start_balance = float(prev_return['end_balance'] if prev_return['end_balance'] > 0 else ewmas[0]['ewma']['balance_value'])
