@@ -17,37 +17,41 @@ load_dotenv()
 mongo_uri = 'mongodb+srv://activedigital:'+os.getenv("CLOUD_MONGO_PASSWORD")+'@mongodbcluster.nzphth1.mongodb.net/?retryWrites=true&w=majority'
 db = pymongo.MongoClient(mongo_uri)['active_digital']
 
-for client in config['clients']:
-  for exchange in config['clients'][client]['subaccounts']:
-    for account in config['clients'][client]['subaccounts'][exchange]:
-      if config['clients'][client]['subaccounts'][exchange][account]['daily_returns'] == True:
-        print(client+exchange+account)
-        daily_returns = list(db['daily_returns'].find({
-          'client': client,
-          'venue': exchange,
-          'account': account
-        }))
+# for client in config['clients']:
+#   for exchange in config['clients'][client]['subaccounts']:
+#     for account in config['clients'][client]['subaccounts'][exchange]:
+#       if config['clients'][client]['subaccounts'][exchange][account]['daily_returns'] == True:
+client = "nifty"
+exchange = "binance"
+account = "subbasis1"
 
-        for item in daily_returns:
-          leverages = list(db['leverages'].find({
-            'client': client,
-            'venue': exchange,
-            'account': account,
-            'timestamp': {'$gte': item['timestamp'] - timedelta(days=1), '$lt': item['timestamp']}
-          }))
-          if len(leverages) > 0:
-            avg_leverage = sum([lev['leverage'] for lev in leverages]) / len(leverages)
-          else:
-            avg_leverage = 1
-          if avg_leverage == 0.0:
-            avg_leverage = 1
+print(client+exchange+account)
+daily_returns = list(db['daily_returns'].find({
+  'client': client,
+  'venue': exchange,
+  'account': account
+}))
 
-          db['daily_returns'].update_one(
-            {
-              'client': client,
-              'venue': exchange,
-              'account': account,
-              'timestamp': item['timestamp']
-            },
-            {'$set': {'avg_leverage': avg_leverage}}
-          )
+for item in daily_returns:
+  leverages = list(db['leverages'].find({
+    'client': client,
+    'venue': exchange,
+    'account': account,
+    'timestamp': {'$gte': item['timestamp'] - timedelta(days=1), '$lt': item['timestamp']}
+  }))
+  if len(leverages) > 0:
+    avg_leverage = sum([lev['leverage'] for lev in leverages]) / len(leverages)
+  else:
+    avg_leverage = 1
+  if avg_leverage == 0.0:
+    avg_leverage = 1
+
+  db['daily_returns'].update_one(
+    {
+      'client': client,
+      'venue': exchange,
+      'account': account,
+      'timestamp': item['timestamp']
+    },
+    {'$set': {'avg_leverage': avg_leverage}}
+  )

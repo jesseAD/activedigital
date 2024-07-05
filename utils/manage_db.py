@@ -8,7 +8,7 @@ mongo_uri = 'mongodb+srv://activedigital:' + secrets['CLOUD_MONGO_PASSWORD'] + '
 
 mongo_client = pymongo.MongoClient(mongo_uri)
 # mongo_client = pymongo.MongoClient(None)
-db = mongo_client['active_digita']
+db = mongo_client['active_digital']
 
 # collections = [
 #   'balances', 'fills', 'positions', 'transactions', 'open_orders', 'leverages', 'lifetime_funding', 'mtd_pnls',
@@ -54,11 +54,16 @@ db = mongo_client['active_digita']
 #   {'$set': {'collateral': 7.5}}
 # )
 
-db['transactions'].update_many(
-  {'venue': "bybit", 'runid': {'$lte': 25251}, 'trade_type': "commission"},
-  [{'$set': {
-    'transaction_value.fee': {'$subtract': [0, "$transaction_value.fee"]},
-    'transaction_value.fee_origin': {'$subtract': [0, "$transaction_value.fee_origin"]},
-    'transaction_value.fee_base': {'$subtract': [0, "$transaction_value.fee_base"]}
-  }}]
+db['leverages'].update_many(
+  {'venue': "binance", 'runid': {'$gte': 67175, '$lte': 67617}, 'client': "nifty", 'account': "subbasis1"},
+  {'$set': {'leverage': 0.000005786932240871664}}
 )
+
+# db['transactions'].update_many(
+#   {'venue': "bybit", 'runid': {'$lte': 25251}, 'trade_type': "commission"},
+#   [{'$set': {
+#     'transaction_value.fee': {'$subtract': [0, "$transaction_value.fee"]},
+#     'transaction_value.fee_origin': {'$subtract': [0, "$transaction_value.fee_origin"]},
+#     'transaction_value.fee_base': {'$subtract': [0, "$transaction_value.fee_base"]}
+#   }}]
+# )

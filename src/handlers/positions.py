@@ -958,6 +958,7 @@ class Positions:
           "account": "Main Account",
           "position_value": split_positions,
           "threshold": config['clients'][client]['hedged_threshold'] if "hedged_threshold" in config['clients'][client] else config['hedged']['threshold'],
+          "unhedged_alert": config['clients'][client]['subaccounts'][exchange][sub_account]['unhedged_alert'],
           "active": True,
           "entry": False,
           "exit": False,
