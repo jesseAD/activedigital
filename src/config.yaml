@@ -177,83 +177,74 @@ exchanges: ["binance", "okx", "bybit", "huobi", ]
 clients:
   besttrader:
     split_positions: True
-
     subaccounts:
       okx:
         sub1ap:
           base_ccy: USD
           margin_mode: non_portfolio
           daily_returns: False
-          unhedged_alert: True
+          unhedged_alert: False
           hedged_exclusion_positive: {'USDT': 0}
           hedged_exclusion_negative: {'USDT': 0}
-        
         sub2aa:
           base_ccy: USD
           margin_mode: non_portfolio
           daily_returns: False
-          unhedged_alert: True
+          unhedged_alert: False
           hedged_exclusion_positive: {'USDT': 0}
           hedged_exclusion_negative: {'USDT': 0}
-
       bybit:
         sub1:
           base_ccy: USD
           margin_mode: non_portfolio
           daily_returns: False
-          unhedged_alert: True
+          unhedged_alert: False
           hedged_exclusion_positive: {'USDT': 0}
           hedged_exclusion_negative: {'USDT': 0}
-
         sub4:
           base_ccy: USD
           margin_mode: non_portfolio
           daily_returns: False
-          unhedged_alert: True
+          unhedged_alert: False
           hedged_exclusion_positive: {'USDT': 0}
           hedged_exclusion_negative: {'USDT': 0}
 
   rundmc:
     split_positions: True
-
     subaccounts:
       binance:
         subaccount4:
           base_ccy: BTC
           margin_mode: non_portfolio
           daily_returns: False
-          unhedged_alert: True
+          unhedged_alert: False
           hedged_exclusion_positive: {'USDT': 0}
           hedged_exclusion_negative: {'USDT': 0}
-        
         subaccount6:
           base_ccy: BTC
           margin_mode: non_portfolio
           daily_returns: False
-          unhedged_alert: True
+          unhedged_alert: False
           hedged_exclusion_positive: {'USDT': 0}
           hedged_exclusion_negative: {'USDT': 0}
-        
         subbinancepm1:
           base_ccy: BTC
           margin_mode: portfolio
           daily_returns: False
-          unhedged_alert: True
+          unhedged_alert: False
           hedged_exclusion_negative: {'USDT': 0}
           hedged_exclusion_positive: {'USDT': 0}
-
       okx:
         subaccount1:
           base_ccy: USD
           margin_mode: non_portfolio
           daily_returns: False
-          unhedged_alert: True
+          unhedged_alert: False
           hedged_exclusion_positive: {'USDT': 0}
           hedged_exclusion_negative: {'USDT': 0}
 
   wizardly:
     split_positions: True
-
     subaccounts:
       okx:
         submn:
@@ -263,15 +254,13 @@ clients:
           unhedged_alert: True
           hedged_exclusion_positive: {'USDT': 0}
           hedged_exclusion_negative: {'USDT': 0}
-
         subbasis:
           base_ccy: USDT
           margin_mode: non_portfolio
           daily_returns: True
           unhedged_alert: True
           hedged_exclusion_positive: {'USDT': 0}
-          hedged_exclusion_negative: {'USDT': 0}
-          
+          hedged_exclusion_negative: {'USDT': 0}          
       binance:
         submn:
           base_ccy: USDT
@@ -280,7 +269,6 @@ clients:
           unhedged_alert: True
           hedged_exclusion_positive: {'USDT': 0}
           hedged_exclusion_negative: {'USDT': 0}
-
       bybit:
         subbasis:
           base_ccy: USD
@@ -293,45 +281,40 @@ clients:
         
   jess:
     split_positions: True
-
     subaccounts:
       okx:
         subandyactivedigital:
           base_ccy: USD
           margin_mode: non_portfolio
           daily_returns: False
-          unhedged_alert: True
+          unhedged_alert: False
           hedged_exclusion_positive: {'USDT': 0}
-          hedged_exclusion_negative: {'USDT': 0}
-        
+          hedged_exclusion_negative: {'USDT': 0}        
         subandypants:
           base_ccy: USD
           margin_mode: non_portfolio
           daily_returns: False
-          unhedged_alert: True
+          unhedged_alert: False
           hedged_exclusion_positive: {'USDT': 0}
           hedged_exclusion_negative: {'USDT': 0}
-          collateral: {'BTC': 1}
-        
+          collateral: {'BTC': 1}        
         subjessetf:
           base_ccy: USD
           margin_mode: non_portfolio
           daily_returns: False
-          unhedged_alert: True
+          unhedged_alert: False
           hedged_exclusion_positive: {'USDT': 0}
-          hedged_exclusion_negative: {'USDT': 0}
-        
+          hedged_exclusion_negative: {'USDT': 0}        
         subadtest2:
           base_ccy: USD
           margin_mode: non_portfolio
           daily_returns: False
-          unhedged_alert: True
+          unhedged_alert: False
           hedged_exclusion_positive: {'USDT': 0}
           hedged_exclusion_negative: {'USDT': 0}
 
   blackburn:
     split_positions: True
-
     subaccounts:
       okx:
         submn1:
@@ -341,7 +324,6 @@ clients:
           unhedged_alert: True
           hedged_exclusion_positive: {'USDT': 0}
           hedged_exclusion_negative: {'USDT': 0}
-
       binance:
         submn1:
           base_ccy: USDT
@@ -350,7 +332,6 @@ clients:
           unhedged_alert: True
           hedged_exclusion_positive: {'USDT': 0}
           hedged_exclusion_negative: {'USDT': 0}    
-
       bybit:
         submn1:
           base_ccy: USD
@@ -362,7 +343,6 @@ clients:
           
   quizzical:
     split_positions: True
-
     subaccounts:
       binance:
         subls:
@@ -381,44 +361,40 @@ clients:
           base_ccy: USDT
           margin_mode: non_portfolio
           daily_returns: True
-          unhedged_alert: True
+          unhedged_alert: False
           hedged_exclusion_positive: {'USDT': 0, 'USDC': 0 }
-          hedged_exclusion_negative: {'USDT': 0, 'USDC': 0}
-          
+          hedged_exclusion_negative: {'USDT': 0, 'USDC': 0}        
+  
   edison:
     split_positions: True
-
     subaccounts:
       okx:
         submn1:
           base_ccy: USDT
           margin_mode: non_portfolio
           daily_returns: True
-          unhedged_alert: True
+          unhedged_alert: False
           hedged_exclusion_positive: {'USDT': 0, 'SOL': 347,'ETH': 14 }
           hedged_exclusion_negative: {'USDT': 0}
-
         payment:
           base_ccy: USDT
           margin_mode: non_portfolio
           daily_returns: False
-          unhedged_alert: True
+          unhedged_alert: False
           hedged_exclusion_positive: {'USDT': 0}
           hedged_exclusion_negative: {'USDT': 0}
           
   edisonhedge:
     split_positions: True
-
     subaccounts:
       okx:
         synswap:
           base_ccy: BTC
           margin_mode: non_portfolio
           daily_returns: False
-          unhedged_alert: True
+          unhedged_alert: False
           hedged_exclusion_positive: {'USDT': 0}
           hedged_exclusion_negative: {'USDT': 0}
-
       bybit:
         subbasis1:
           base_ccy: BTC
@@ -430,7 +406,6 @@ clients:
         
   kepler:
     split_positions: True
-
     subaccounts:
       okx:
         subbasis1:
@@ -440,7 +415,6 @@ clients:
           unhedged_alert: True
           hedged_exclusion_positive: {'USDT': 0}
           hedged_exclusion_negative: {'USDT': 0}
-
         subbasis2:
           base_ccy: USDT
           margin_mode: non_portfolio
@@ -448,7 +422,6 @@ clients:
           unhedged_alert: True
           hedged_exclusion_positive: {'USDT': 0}
           hedged_exclusion_negative: {'USDT': 0}          
-
       bybit:
         subbasis1:
           base_ccy: USD
@@ -460,7 +433,6 @@ clients:
 
   nifty:
     split_positions: True
-
     subaccounts:
       okx:
         subbasis1:
@@ -470,7 +442,6 @@ clients:
           unhedged_alert: True
           hedged_exclusion_positive: {'BTC': 0}
           hedged_exclusion_negative: {'USDT': 0,'BTC': 0}
-
         subbasis2:
           base_ccy: BTC
           margin_mode: non_portfolio
@@ -478,7 +449,6 @@ clients:
           unhedged_alert: True
           hedged_exclusion_positive: {'BTC': 19.691244}
           hedged_exclusion_negative: {'USDT': 0,'BTC': 0}
-
       bybit:
         subbasis1:
           base_ccy: BTC
@@ -487,7 +457,6 @@ clients:
           unhedged_alert: True
           hedged_exclusion_positive: {'USDT': 0,'BTC': 0, 'USDC': 0}
           hedged_exclusion_negative: {'USDT': 0,'BTC': 0, 'USDC': 0}
-
         subbasis2:
           base_ccy: BTC
           margin_mode: non_portfolio
@@ -495,7 +464,6 @@ clients:
           unhedged_alert: True
           hedged_exclusion_positive: {'USDT': 0,'BTC': 20.03898379, 'USDC': 0}
           hedged_exclusion_negative: {'USDT': 0,'BTC': 0, 'USDC': 0}
-
       binance:
         subbasis1:
           base_ccy: BTC
@@ -507,17 +475,15 @@ clients:
 
   wilbur:
     split_positions: True
-
     subaccounts:
       okx:
         subls1:
           base_ccy: USDT
           margin_mode: non_portfolio
           daily_returns: True
-          unhedged_alert: True
+          unhedged_alert: False
           hedged_exclusion_positive: {'USDT': 0}
           hedged_exclusion_negative: {'USDT': 0}
-
       bybit:
         subbasis1:
           base_ccy: ETH
@@ -526,7 +492,6 @@ clients:
           unhedged_alert: True
           hedged_exclusion_positive: {'USDT': 0, 'ETH': 30.2, 'USDC': 0}
           hedged_exclusion_negative: {'USDT': 0, 'USDC': 0}
-
       huobi:
         subbasis1:
           base_ccy: USDT
@@ -538,7 +503,6 @@ clients:
 
   vigilant:
     split_positions: True
-
     subaccounts:
       bybit:
         subbasis1:
@@ -551,7 +515,6 @@ clients:
   
   sanderson:
     split_positions: True
-
     subaccounts:
       okx:
         subbasis1:
@@ -570,9 +533,10 @@ clients:
           base_ccy: BTC
           margin_mode: non_portfolio
           daily_returns: True
-          unhedged_alert: True
+          unhedged_alert: False
           hedged_exclusion_positive: {'USDT': 0,'BTC': 5}
           hedged_exclusion_negative: {'USDT': 0} 
+ 
   eloquent:
     split_positions: True
     subaccounts:
@@ -584,6 +548,7 @@ clients:
           unhedged_alert: True
           hedged_exclusion_positive: {'USDT': 0}
           hedged_exclusion_negative: {'USDT': 0}
+ 
   galileo:
     split_positions: True
     subaccounts:
@@ -595,6 +560,7 @@ clients:
           unhedged_alert: True
           hedged_exclusion_positive: {'USDT': 0}
           hedged_exclusion_negative: {'USDT': 0}
+  
   euclid:
     split_positions: True
     subaccounts:
@@ -610,9 +576,10 @@ clients:
           base_ccy: USDT
           margin_mode: non_portfolio
           daily_returns: True
-          unhedged_alert: True
+          unhedged_alert: False
           hedged_exclusion_positive: {'USDT': 0}
           hedged_exclusion_negative: {'USDT': 0}
+  
   newton:
     split_positions: True
     subaccounts:          
@@ -625,6 +592,7 @@ clients:
           hedged_exclusion_positive: {'USDT': 0}
           hedged_exclusion_negative: {'USDT': 0}
 
+  
   shannon:
     split_positions: True
     subaccounts:
@@ -640,9 +608,10 @@ clients:
           base_ccy: USDT
           margin_mode: non_portfolio
           daily_returns: True
-          unhedged_alert: True
+          unhedged_alert: False
           hedged_exclusion_positive: {'USDT': 0}
           hedged_exclusion_negative: {'USDT': 0}          
+  
   hermann:
     split_positions: True
     subaccounts:
