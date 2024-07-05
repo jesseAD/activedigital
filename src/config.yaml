@@ -374,8 +374,7 @@ clients:
           hedged_exclusion_negative: {'USDT': 0}
 
   faraday:
-    split_positions: False
-
+    split_positions: True
     subaccounts:
       okx:
         subls:
@@ -383,8 +382,8 @@ clients:
           margin_mode: non_portfolio
           daily_returns: True
           unhedged_alert: True
-          hedged_exclusion_positive: {'USDT': 0, 'SOL': 347,'ETH': 14 }
-          hedged_exclusion_negative: {'USDT': 0}
+          hedged_exclusion_positive: {'USDT': 0, 'USDC': 0 }
+          hedged_exclusion_negative: {'USDT': 0, 'USDC': 0}
           
   edison:
     split_positions: True
@@ -637,6 +636,12 @@ clients:
           unhedged_alert: True
           hedged_exclusion_positive: {'USDT': 0}
           hedged_exclusion_negative: {'USDT': 0}
+        subls1:
+          base_ccy: USDT
+          margin_mode: non_portfolio
+          daily_returns: True
+          hedged_exclusion_positive: {'USDT': 0}
+          hedged_exclusion_negative: {'USDT': 0}          
   hermann:
     split_positions: True
     subaccounts:
@@ -646,5 +651,21 @@ clients:
           margin_mode: non_portfolio
           daily_returns: True
           unhedged_alert: True
+          hedged_exclusion_positive: {'USDT': 0}
+          hedged_exclusion_negative: {'USDT': 0}
+        subbasis2:
+          base_ccy: USDT
+          margin_mode: non_portfolio
+          daily_returns: True
+          hedged_exclusion_positive: {'USDT': 0}
+          hedged_exclusion_negative: {'USDT': 0}          
+  pascal:
+    split_positions: True
+    subaccounts:
+      bybit:
+        subbasis1:
+          base_ccy: USDT
+          margin_mode: non_portfolio
+          daily_returns: True
           hedged_exclusion_positive: {'USDT': 0}
           hedged_exclusion_negative: {'USDT': 0}
