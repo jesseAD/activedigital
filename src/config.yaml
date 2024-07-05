@@ -381,6 +381,7 @@ clients:
           base_ccy: USDT
           margin_mode: non_portfolio
           daily_returns: True
+          unhedged_alert: True
           hedged_exclusion_positive: {'USDT': 0, 'USDC': 0 }
           hedged_exclusion_negative: {'USDT': 0, 'USDC': 0}
           
