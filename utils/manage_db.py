@@ -54,10 +54,10 @@ db = mongo_client['active_digital']
 #   {'$set': {'collateral': 7.5}}
 # )
 
-db['leverages'].update_many(
-  {'venue': "binance", 'runid': {'$gte': 67175, '$lte': 67617}, 'client': "nifty", 'account': "subbasis1"},
-  {'$set': {'leverage': 0.000005786932240871664}}
-)
+# db['leverages'].update_many(
+#   {'venue': "binance", 'runid': {'$gte': 67175, '$lte': 67617}, 'client': "nifty", 'account': "subbasis1"},
+#   {'$set': {'leverage': 0.000005786932240871664}}
+# )
 
 # db['transactions'].update_many(
 #   {'venue': "bybit", 'runid': {'$lte': 25251}, 'trade_type': "commission"},
@@ -67,3 +67,9 @@ db['leverages'].update_many(
 #     'transaction_value.fee_base': {'$subtract': [0, "$transaction_value.fee_base"]}
 #   }}]
 # )
+
+db['daily_returns'].delete_many({
+  'client': "blackburn",
+  'venue': "binance",
+  'account': "submn1"
+})
