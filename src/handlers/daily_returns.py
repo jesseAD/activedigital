@@ -330,7 +330,7 @@ class DailyReturns():
           prev_return = {
             'return': 0,
             'timestamp': base_time,
-            'start_balance': 0,
+            'start_balance': last_balance['balance_value']['base'],
             'end_balance': last_balance['balance_value']['base'],
             'avg_leverage': 1,
             'transfer': 0,
@@ -410,6 +410,7 @@ class DailyReturns():
             outlier = sum([item['ewma']['outlier'] for item in ewmas])
             if outlier > 0:
               ret = 0
+              start_balance = end_balance
             else:
               ret = log(end_balance) - log(start_balance)
 
