@@ -33,6 +33,7 @@ from src.handlers.instantiator import fills_wrapper
 from src.handlers.instantiator import bids_asks_wrapper
 from src.handlers.instantiator import roll_costs_wrapper
 from src.handlers.instantiator import daily_returns_wrapper
+from src.handlers.instantiator import funding_contributions_wrapper
 from src.handlers.instantiator import insert_runs
 from src.handlers.instantiator import enclose_runs
 from src.handlers.instantiator import get_data_collectors
@@ -133,7 +134,7 @@ public_data_collectors = [
 # ]
 private_data_collectors = [
   balances_wrapper, positions_wrapper, open_orders_wrapper,
-  fills_wrapper, transactions_wrapper, #daily_returns_wrapper
+  fills_wrapper, transactions_wrapper, daily_returns_wrapper, funding_contributions_wrapper
 ]
 
 if config['dask']['workers'] > 0:

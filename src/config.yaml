@@ -171,6 +171,13 @@ daily_returns:
 hedged:
   threshold: 50
 
+funding_contributions:
+  period:
+    binance: 8
+    okx: 8
+    bybit: 8
+    huobi: 8
+
 # exchanges: ["okx", ]
 exchanges: ["binance", "okx", "bybit", "huobi", ]
 
