@@ -184,7 +184,7 @@ class FundingContributions():
           item['base']: item['rate'] for item in funding_rates
         }
 
-        total_notional = sum(item['notional'] for item in positions)
+        total_notional = sum(abs(item['notional']) for item in positions)
         funding_contributions = [{
           'base': item['base'],
           'contribution': abs(item['notional']) / total_notional * funding_rates[item['base']] * (1 if item['side'] == "short" else -1)

@@ -23,9 +23,9 @@ mongo_uri = 'mongodb+srv://activedigital:'+''+'@mongodbcluster.nzphth1.mongodb.n
 db = pymongo.MongoClient(mongo_uri)
 
 FundingContributions(db, "funding_contributions").create(
-  client="nifty",
-  exchange="bybit",
-  account="subbasis2",
+  client="newton",
+  exchange="binance",
+  account="subbasis1",
 )
 
 # params = {
