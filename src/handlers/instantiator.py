@@ -17,6 +17,7 @@ from src.handlers.fills import Fills
 from src.handlers.bids_asks import Bids_Asks
 from src.handlers.roll_costs import Roll_Costs
 from src.handlers.daily_returns import DailyReturns
+from src.handlers.funding_contributions import FundingContributions
 from src.handlers.runs import Runs
 from src.config import read_config_file
 
@@ -193,6 +194,68 @@ def collect_daily_returns(client_alias, data_collector, logger, db, secrets, bal
         print("Unable to collect daily returns for " + client_alias + " " + data_collector.exchange + " " + data_collector.account)
       else:
         logger.error("Unable to collect daily returns for " + client_alias + " " + data_collector.exchange + " " + data_collector.account)
+
+    return res
+  
+def collect_funding_contributions(client_alias, data_collector, logger, db, secrets):
+  res = False
+  funding_contributions = FundingContributions(db, 'funding_contributions')
+  try:
+    res = funding_contributions.create(
+      client=client_alias,
+      exch=data_collector.exch,
+      exchange=data_collector.exchange,
+      account=data_collector.account,
+      logger=logger,
+      secrets=secrets
+    )
+
+  except Exception as e:
+    if logger == None:
+      print(client_alias + " " + data_collector.exchange + " " + data_collector.account + " Funding Contributions " + str(e))
+    else:
+      logger.warning(client_alias + " " + data_collector.exchange + " " + data_collector.account + " Funding Contributions " + str(e))
+
+  finally:
+    attempt = 1
+    timeout = config['ccxt'][data_collector.exchange]['timeout']
+
+    while(not res):
+      time.sleep(timeout / 1000)
+
+      if logger == None:
+        print(client_alias + " " + data_collector.exchange + " " + data_collector.account + " Retrying Funding Contributions " + str(attempt))
+      else:
+        logger.info(client_alias + " " + data_collector.exchange + " " + data_collector.account + " Retrying Funding Contributions " + str(attempt))
+
+      timeout *= 2
+
+      try:
+        res = funding_contributions.create(
+          client=client_alias,
+          exch=data_collector.exch,
+          exchange=data_collector.exchange,
+          account=data_collector.account,
+          logger=logger,
+          secrets=secrets
+        )
+      except Exception as e:
+        if logger == None:
+          print(client_alias + " " + data_collector.exchange + " " + data_collector.account + " Funding Contributions " + str(e))
+        else:
+          logger.warning(client_alias + " " + data_collector.exchange + " " + data_collector.account + " Funding Contributions " + str(e))
+
+      if attempt == config['ccxt'][data_collector.exchange]['retry']:
+        break
+      attempt += 1
+
+    del funding_contributions
+
+    if not res:
+      if logger == None:
+        print("Unable to collect funding contributions for " + client_alias + " " + data_collector.exchange + " " + data_collector.account)
+      else:
+        logger.error("Unable to collect funding contributions for " + client_alias + " " + data_collector.exchange + " " + data_collector.account)
 
     return res
 
@@ -966,6 +1029,9 @@ def positions_wrapper(thread_pool, client_alias, data_collector, logger, db, sec
 
 def daily_returns_wrapper(thread_pool, client_alias, data_collector, logger, db, secrets, balance_finished):
   return thread_pool.submit(collect_daily_returns, client_alias, data_collector, logger, db, secrets, balance_finished)
+
+def funding_contributions_wrapper(thread_pool, client_alias, data_collector, logger, db, secrets, balance_finished):
+  return thread_pool.submit(collect_funding_contributions, client_alias, data_collector, logger, db, secrets)
 
 def balances_wrapper(thread_pool, client_alias, data_collector, logger, db, secrets, balance_finished):
   return thread_pool.submit(collect_balances, client_alias, data_collector, logger, db, secrets, balance_finished)

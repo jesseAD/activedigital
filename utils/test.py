@@ -14,6 +14,7 @@ target_dir = os.path.abspath(os.path.join(current_directory, os.pardir))
 sys.path.append(target_dir)
 
 from src.handlers.daily_returns import DailyReturns
+from src.handlers.funding_contributions import FundingContributions
 # from src.lib.log import Log
 
 # logger = Log()
@@ -21,11 +22,10 @@ from src.handlers.daily_returns import DailyReturns
 mongo_uri = 'mongodb+srv://activedigital:'+''+'@mongodbcluster.nzphth1.mongodb.net/?retryWrites=true&w=majority'
 db = pymongo.MongoClient(mongo_uri)
 
-DailyReturns(db, "daily_returns").create(
+FundingContributions(db, "funding_contributions").create(
   client="nifty",
   exchange="bybit",
   account="subbasis2",
-  balance_finished={"nifty_bybit_subbasis2": True}
 )
 
 # params = {
