@@ -165,6 +165,13 @@ funding_rates:
 daily_returns:
   period: 24
 
+funding_contributions:
+  period:
+    binance: 8
+    okx: 8
+    bybit: 8
+    huobi: 8
+
 # exchanges: ["huobi", ]
 exchanges: ["binance", "okx", "bybit", "huobi", ]
 
