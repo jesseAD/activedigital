@@ -3,7 +3,6 @@ from datetime import datetime, timezone, timedelta
 from src.config import read_config_file
 from src.handlers.helpers import Helper, OKXHelper, BybitHelper, HuobiHelper
 
-# pd.set_option('future.no_silent_downcasting', True)
 config = read_config_file()
 
 class FundingContributions():
@@ -24,6 +23,10 @@ class FundingContributions():
     session=None,
     secrets={}
   ):
+    if session == None:
+      if config['clients'][client]['subaccounts'][exchange][account]['funding_contributions'] == False:
+        return True
+    
     try:
       prev_values = self.funding_contributions_db.aggregate([
         {
@@ -51,7 +54,7 @@ class FundingContributions():
         }, {
           '$limit': 1
         }
-      ])
+      ], session=session)
 
       prev_value = None
       for item in prev_values:
@@ -153,7 +156,7 @@ class FundingContributions():
               'notional': {'$last': {'$toDouble': "$position_value.notional"}}
             }
           }
-        ]))
+        ], session=session))
         positions.sort(key = lambda x: x['base'])
 
         funding_rates = list(self.funding_rates_db.aggregate([
@@ -165,9 +168,9 @@ class FundingContributions():
                   }, {
                     '$eq': ['$funding_rates_value.quote', "USDT"]
                   }, {
-                    '$lte': ['$timestamp', base_time]
+                    '$lte': ['$funding_rates_value.timestamp', int(base_time.timestamp() * 1000)]
                   }, {
-                    '$gt': ['$timestamp', prev_time]
+                    '$gt': ['$funding_rates_value.timestamp', int(prev_time.timestamp() * 1000)]
                   }
                 ]
               }
@@ -179,12 +182,12 @@ class FundingContributions():
               'rate': {'$avg': {'$multiply': ["$funding_rates_value.scalar", "$funding_rates_value.fundingRate"]}},
             }
           }
-        ]))
+        ], session=session))
         funding_rates = {
           item['base']: item['rate'] for item in funding_rates
         }
 
-        total_notional = sum(item['notional'] for item in positions)
+        total_notional = sum(abs(item['notional']) for item in positions)
         funding_contributions = [{
           'base': item['base'],
           'contribution': abs(item['notional']) / total_notional * funding_rates[item['base']] * (1 if item['side'] == "short" else -1)
@@ -227,7 +230,7 @@ class FundingContributions():
     } for item in funding_contribution_values]
 
     try:
-      self.funding_contributions_db.insert_many(funding_contribution)
+      self.funding_contributions_db.insert_many(funding_contribution, session=session)
 
       if logger == None:
         print("Collected funding contributions for " + client + " " + exchange + " " + account)

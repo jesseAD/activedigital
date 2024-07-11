@@ -189,28 +189,35 @@ clients:
         sub1ap:
           base_ccy: USD
           margin_mode: non_portfolio
+          funding_contributions: False
           daily_returns: False
           unhedged_alert: False
           hedged_exclusion_positive: {'USDT': 0}
           hedged_exclusion_negative: {'USDT': 0}
+
         sub2aa:
           base_ccy: USD
           margin_mode: non_portfolio
+          funding_contributions: False
           daily_returns: False
           unhedged_alert: False
           hedged_exclusion_positive: {'USDT': 0}
           hedged_exclusion_negative: {'USDT': 0}
+
       bybit:
         sub1:
           base_ccy: USD
           margin_mode: non_portfolio
+          funding_contributions: False
           daily_returns: False
           unhedged_alert: False
           hedged_exclusion_positive: {'USDT': 0}
           hedged_exclusion_negative: {'USDT': 0}
+
         sub4:
           base_ccy: USD
           margin_mode: non_portfolio
+          funding_contributions: False
           daily_returns: False
           unhedged_alert: False
           hedged_exclusion_positive: {'USDT': 0}
@@ -223,28 +230,35 @@ clients:
         subaccount4:
           base_ccy: BTC
           margin_mode: non_portfolio
+          funding_contributions: False
           daily_returns: False
           unhedged_alert: False
           hedged_exclusion_positive: {'USDT': 0}
           hedged_exclusion_negative: {'USDT': 0}
+
         subaccount6:
           base_ccy: BTC
           margin_mode: non_portfolio
+          funding_contributions: False
           daily_returns: False
           unhedged_alert: False
           hedged_exclusion_positive: {'USDT': 0}
           hedged_exclusion_negative: {'USDT': 0}
+
         subbinancepm1:
           base_ccy: BTC
           margin_mode: portfolio
+          funding_contributions: False
           daily_returns: False
           unhedged_alert: False
           hedged_exclusion_negative: {'USDT': 0}
           hedged_exclusion_positive: {'USDT': 0}
+
       okx:
         subaccount1:
           base_ccy: USD
           margin_mode: non_portfolio
+          funding_contributions: False
           daily_returns: False
           unhedged_alert: False
           hedged_exclusion_positive: {'USDT': 0}
@@ -257,29 +271,36 @@ clients:
         submn:
           base_ccy: USDT
           margin_mode: non_portfolio
+          funding_contributions: False
           daily_returns: False
           unhedged_alert: True
           hedged_exclusion_positive: {'USDT': 0}
           hedged_exclusion_negative: {'USDT': 0}
+
         subbasis:
           base_ccy: USDT
           margin_mode: non_portfolio
+          funding_contributions: True
           daily_returns: True
           unhedged_alert: True
           hedged_exclusion_positive: {'USDT': 0}
-          hedged_exclusion_negative: {'USDT': 0}          
+          hedged_exclusion_negative: {'USDT': 0}      
+
       binance:
         submn:
           base_ccy: USDT
           margin_mode: portfolio
+          funding_contributions: False
           daily_returns: False
           unhedged_alert: True
           hedged_exclusion_positive: {'USDT': 0}
           hedged_exclusion_negative: {'USDT': 0}
+
       bybit:
         subbasis:
           base_ccy: USD
           margin_mode: non_portfolio
+          funding_contributions: False
           daily_returns: False
           unhedged_alert: True
           hedged_exclusion_positive: {'USDT': 0}
@@ -293,28 +314,35 @@ clients:
         subandyactivedigital:
           base_ccy: USD
           margin_mode: non_portfolio
+          funding_contributions: False
           daily_returns: False
           unhedged_alert: False
           hedged_exclusion_positive: {'USDT': 0}
-          hedged_exclusion_negative: {'USDT': 0}        
+          hedged_exclusion_negative: {'USDT': 0}   
+               
         subandypants:
           base_ccy: USD
           margin_mode: non_portfolio
+          funding_contributions: False
           daily_returns: False
           unhedged_alert: False
           hedged_exclusion_positive: {'USDT': 0}
           hedged_exclusion_negative: {'USDT': 0}
           collateral: {'BTC': 1}        
+
         subjessetf:
           base_ccy: USD
           margin_mode: non_portfolio
+          funding_contributions: False
           daily_returns: False
           unhedged_alert: False
           hedged_exclusion_positive: {'USDT': 0}
           hedged_exclusion_negative: {'USDT': 0}        
+
         subadtest2:
           base_ccy: USD
           margin_mode: non_portfolio
+          funding_contributions: False
           daily_returns: False
           unhedged_alert: False
           hedged_exclusion_positive: {'USDT': 0}
@@ -327,22 +355,27 @@ clients:
         submn1:
           base_ccy: USDT
           margin_mode: non_portfolio
+          funding_contributions: True
           daily_returns: True
           unhedged_alert: True
           hedged_exclusion_positive: {'USDT': 0}
           hedged_exclusion_negative: {'USDT': 0}
+
       binance:
         submn1:
           base_ccy: USDT
           margin_mode: portfolio
+          funding_contributions: True
           daily_returns: True
           unhedged_alert: True
           hedged_exclusion_positive: {'USDT': 0}
           hedged_exclusion_negative: {'USDT': 0}    
+
       bybit:
         submn1:
           base_ccy: USD
           margin_mode: non_portfolio
+          funding_contributions: True
           daily_returns: True
           unhedged_alert: True
           hedged_exclusion_positive: {'USDT': 0}
@@ -355,6 +388,7 @@ clients:
         subls:
           base_ccy: USD
           margin_mode: non_portfolio
+          funding_contributions: False
           daily_returns: False
           unhedged_alert: True
           hedged_exclusion_positive: {'USDT': 0}
@@ -367,6 +401,7 @@ clients:
         subls:
           base_ccy: USDT
           margin_mode: non_portfolio
+          funding_contributions: True
           daily_returns: True
           unhedged_alert: False
           hedged_exclusion_positive: {'USDT': 0, 'USDC': 0 }
@@ -379,13 +414,16 @@ clients:
         submn1:
           base_ccy: USDT
           margin_mode: non_portfolio
+          funding_contributions: True
           daily_returns: True
           unhedged_alert: False
           hedged_exclusion_positive: {'USDT': 0, 'SOL': 347,'ETH': 14 }
           hedged_exclusion_negative: {'USDT': 0}
+
         payment:
           base_ccy: USDT
           margin_mode: non_portfolio
+          funding_contributions: False
           daily_returns: False
           unhedged_alert: False
           hedged_exclusion_positive: {'USDT': 0}
@@ -398,14 +436,17 @@ clients:
         synswap:
           base_ccy: BTC
           margin_mode: non_portfolio
+          funding_contributions: False
           daily_returns: False
           unhedged_alert: False
           hedged_exclusion_positive: {'USDT': 0}
           hedged_exclusion_negative: {'USDT': 0}
+
       bybit:
         subbasis1:
           base_ccy: BTC
           margin_mode: non_portfolio
+          funding_contributions: False
           daily_returns: False
           unhedged_alert: True
           hedged_exclusion_positive: {'USDT': 0}
@@ -418,21 +459,26 @@ clients:
         subbasis1:
           base_ccy: USDT
           margin_mode: non_portfolio
+          funding_contributions: True
           daily_returns: True
           unhedged_alert: True
           hedged_exclusion_positive: {'USDT': 0}
           hedged_exclusion_negative: {'USDT': 0}
+
         subbasis2:
           base_ccy: USDT
           margin_mode: non_portfolio
+          funding_contributions: True
           daily_returns: True
           unhedged_alert: True
           hedged_exclusion_positive: {'USDT': 0}
           hedged_exclusion_negative: {'USDT': 0}          
+
       bybit:
         subbasis1:
           base_ccy: USD
           margin_mode: non_portfolio
+          funding_contributions: True
           daily_returns: True
           unhedged_alert: True
           hedged_exclusion_positive: {'USDT': 0}
@@ -445,36 +491,45 @@ clients:
         subbasis1:
           base_ccy: BTC
           margin_mode: non_portfolio
+          funding_contributions: True
           daily_returns: True
           unhedged_alert: True
           hedged_exclusion_positive: {'BTC': 0}
           hedged_exclusion_negative: {'USDT': 0,'BTC': 0}
+
         subbasis2:
           base_ccy: BTC
           margin_mode: non_portfolio
+          funding_contributions: True
           daily_returns: True
           unhedged_alert: True
           hedged_exclusion_positive: {'BTC': 19.691244}
           hedged_exclusion_negative: {'USDT': 0,'BTC': 0}
+
       bybit:
         subbasis1:
           base_ccy: BTC
           margin_mode: non_portfolio
+          funding_contributions: True
           daily_returns: True
           unhedged_alert: True
           hedged_exclusion_positive: {'USDT': 0,'BTC': 0, 'USDC': 0}
           hedged_exclusion_negative: {'USDT': 0,'BTC': 0, 'USDC': 0}
+
         subbasis2:
           base_ccy: BTC
           margin_mode: non_portfolio
+          funding_contributions: True
           daily_returns: True
           unhedged_alert: True
           hedged_exclusion_positive: {'USDT': 0,'BTC': 20.03898379, 'USDC': 0}
           hedged_exclusion_negative: {'USDT': 0,'BTC': 0, 'USDC': 0}
+
       binance:
         subbasis1:
           base_ccy: BTC
           margin_mode: portfolio
+          funding_contributions: False
           daily_returns: True
           unhedged_alert: True
           hedged_exclusion_positive: {'BTC': 0}
@@ -487,22 +542,27 @@ clients:
         subls1:
           base_ccy: USDT
           margin_mode: non_portfolio
+          funding_contributions: True
           daily_returns: True
           unhedged_alert: False
           hedged_exclusion_positive: {'USDT': 0}
           hedged_exclusion_negative: {'USDT': 0}
+
       bybit:
         subbasis1:
           base_ccy: ETH
           margin_mode: non_portfolio
+          funding_contributions: True
           daily_returns: True
           unhedged_alert: True
           hedged_exclusion_positive: {'USDT': 0, 'ETH': 30.2, 'USDC': 0}
           hedged_exclusion_negative: {'USDT': 0, 'USDC': 0}
+
       huobi:
         subbasis1:
           base_ccy: USDT
           margin_mode: non_portfolio
+          funding_contributions: True
           daily_returns: True
           unhedged_alert: True
           hedged_exclusion_positive: {'USDT': 0}
@@ -515,6 +575,7 @@ clients:
         subbasis1:
           base_ccy: ETH
           margin_mode: non_portfolio
+          funding_contributions: False
           daily_returns: True
           unhedged_alert: True
           hedged_exclusion_positive: {'ETH': 101.99}
@@ -527,6 +588,7 @@ clients:
         subbasis1:
           base_ccy: USDT
           margin_mode: non_portfolio
+          funding_contributions: True
           daily_returns: True
           unhedged_alert: True
           hedged_exclusion_positive: {'USDT': 0}
@@ -539,6 +601,7 @@ clients:
         subls1:
           base_ccy: BTC
           margin_mode: non_portfolio
+          funding_contributions: True
           daily_returns: True
           unhedged_alert: False
           hedged_exclusion_positive: {'USDT': 0,'BTC': 5}
@@ -551,6 +614,7 @@ clients:
         subbasis1:
           base_ccy: USDT
           margin_mode: non_portfolio
+          funding_contributions: True
           daily_returns: True
           unhedged_alert: True
           hedged_exclusion_positive: {'USDT': 0}
@@ -563,6 +627,7 @@ clients:
         subbasis1:
           base_ccy: USDT
           margin_mode: non_portfolio
+          funding_contributions: True
           daily_returns: True
           unhedged_alert: True
           hedged_exclusion_positive: {'USDT': 0}
@@ -575,13 +640,16 @@ clients:
         subbasis1:
           base_ccy: USDT
           margin_mode: non_portfolio
+          funding_contributions: True
           daily_returns: True
           unhedged_alert: True
           hedged_exclusion_positive: {'USDT': 0}
           hedged_exclusion_negative: {'USDT': 0}
+
         subls1:
           base_ccy: USDT
           margin_mode: non_portfolio
+          funding_contributions: True
           daily_returns: True
           unhedged_alert: False
           hedged_exclusion_positive: {'USDT': 0}
@@ -594,6 +662,7 @@ clients:
         subbasis1:
           base_ccy: USDT
           margin_mode: portfolio
+          funding_contributions: True
           daily_returns: True
           unhedged_alert: True
           hedged_exclusion_positive: {'USDT': 0}
@@ -607,13 +676,16 @@ clients:
         subbasis1:
           base_ccy: USDT
           margin_mode: non_portfolio
+          funding_contributions: True
           daily_returns: True
           unhedged_alert: True
           hedged_exclusion_positive: {'USDT': 0}
           hedged_exclusion_negative: {'USDT': 0}
+
         subls1:
           base_ccy: USDT
           margin_mode: non_portfolio
+          funding_contributions: True
           daily_returns: True
           unhedged_alert: False
           hedged_exclusion_positive: {'USDT': 0}
@@ -626,13 +698,16 @@ clients:
         subbasis1:
           base_ccy: USDT
           margin_mode: non_portfolio
+          funding_contributions: True
           daily_returns: True
           unhedged_alert: True
           hedged_exclusion_positive: {'USDT': 0}
           hedged_exclusion_negative: {'USDT': 0}
+
         subbasis2:
           base_ccy: USDT
           margin_mode: non_portfolio
+          funding_contributions: True
           daily_returns: True
           unhedged_alert: True
           hedged_exclusion_positive: {'USDT': 0}
@@ -645,6 +720,7 @@ clients:
         subbasis1:
           base_ccy: USDT
           margin_mode: non_portfolio
+          funding_contributions: True
           daily_returns: True
           unhedged_alert: True
           hedged_exclusion_positive: {'USDT': 0}
