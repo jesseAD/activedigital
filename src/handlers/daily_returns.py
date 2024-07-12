@@ -158,15 +158,6 @@ class DailyReturns():
         return True
     
     try:
-      if session == None:
-        while(not balance_finished[client + "_" + exchange + "_" + account]):
-          if logger == None:
-            print(client + " " + exchange + " " + account + " daily returns: balances was not finished")
-          else:
-            logger.info(client + " " + exchange + " " + account + " daily returns: balances was not finished")
-
-          time.sleep(0.5)
-
       prev_returns = self.daily_returns_db.aggregate([
         {
           '$match': {
