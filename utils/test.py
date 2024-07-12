@@ -22,29 +22,30 @@ from src.handlers.funding_contributions import FundingContributions
 mongo_uri = 'mongodb+srv://activedigital:'+''+'@mongodbcluster.nzphth1.mongodb.net/?retryWrites=true&w=majority'
 db = pymongo.MongoClient(mongo_uri)
 
-FundingContributions(db, "funding_contributions").create(
-  client="rundmc",
-  exchange="binance",
-  account="subaccount4",
+FundingContributions(db, "tempcollection").create(
+  client="euclid",
+  exchange="bybit",
+  account="subls1",
 )
 
-# params = {
-#     'apiKey': "",
-#     'secret': "",
-#     'enableRateLimit': True,
-#     'requests_trust_env':True,
-#     'verbose': False,
-#     'options': {
-#         'adjustForTimeDifference':True,
-#         'warnOnFetchOpenOrdersWithoutSymbol': False
-#     },
-#     'headers': {},
-#     # 'password': "!"
-# }
+params = {
+    'apiKey': "aa",
+    'secret': "aa",
+    'enableRateLimit': True,
+    'requests_trust_env':True,
+    'verbose': True,
+    'options': {
+        'adjustForTimeDifference':True,
+        'warnOnFetchOpenOrdersWithoutSymbol': False
+    },
+    'headers': {},
+    # 'password': "!"
+}
 
-# exchange = ccxt.bybit(params)
+# exchange = ccxt.binance(params)
 # res = exchange.public_get_v5_market_kline(params={'category': "spot", 'symbol': "BTCUSDT", 'interval': "1", 'limit': 1, 'start': 1708500592000})
 # print(res)
+# exchange.papi_get_balance()
 
 # for runid in range(52255, 67355):
 #   balance = list(db['active_digital']['balances'].find({

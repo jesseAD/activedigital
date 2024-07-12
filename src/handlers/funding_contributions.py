@@ -190,7 +190,8 @@ class FundingContributions():
         total_notional = sum(abs(item['notional']) for item in positions)
         funding_contributions = [{
           'base': item['base'],
-          'contribution': abs(item['notional']) / total_notional * funding_rates[item['base']] * (1 if item['side'] == "short" else -1)
+          'contribution': abs(item['notional']) / total_notional * funding_rates[item['base']] * (1 if item['side'] == "short" else -1),
+          'avg_funding_rate': funding_rates[item['base']] * (1 if item['side'] == "short" else -1)
         } for item in positions if item['base'] in funding_rates]
 
         if len(funding_contributions) > 0:
@@ -226,6 +227,7 @@ class FundingContributions():
       'account': account,
       'funding_contributions': item['funding_contributions'],
       'timestamp': item['timestamp'],
+      'interval': config['funding_contributions']['period'][exchange],
       'runid': latest_run_id
     } for item in funding_contribution_values]
 
