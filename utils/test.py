@@ -22,10 +22,10 @@ from src.handlers.funding_contributions import FundingContributions
 mongo_uri = 'mongodb+srv://activedigital:'+''+'@mongodbcluster.nzphth1.mongodb.net/?retryWrites=true&w=majority'
 db = pymongo.MongoClient(mongo_uri)
 
-FundingContributions(db, "tempcollection").create(
-  client="euclid",
-  exchange="bybit",
-  account="subls1",
+FundingContributions(db, "funding_contributions").create(
+  client="blackburn",
+  exchange="binance",
+  account="submn1",
 )
 
 params = {

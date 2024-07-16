@@ -69,7 +69,7 @@ db = mongo_client['active_digital']
 # )
 
 db['funding_contributions'].delete_many({
-  'client': "newton",
-  # 'venue': "binance",
-  # 'account': "submn1"
+  'client': "blackburn",
+  'venue': "binance",
+  'account': "submn1"
 })
