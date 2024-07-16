@@ -20,7 +20,7 @@ db = pymongo.MongoClient(mongo_uri)
 for client in config['clients']:
   for exchange in config['clients'][client]['subaccounts']:
     for account in config['clients'][client]['subaccounts'][exchange]:
-      FundingContributions(db, "temp_collection").create(
+      FundingContributions(db, "funding_contributions").create(
         client=client,
         exchange=exchange,
         account=account

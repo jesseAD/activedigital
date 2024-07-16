@@ -11,6 +11,7 @@ class FundingContributions():
     self.positions_db = db[config['mongodb']['database']]['positions']
     self.funding_rates_db = db[config['mongodb']['database']]['funding_rates']
     self.borrow_rates_db = db[config['mongodb']['database']]['borrow_rates']
+    self.transactions_db = db[config['mongodb']['database']]['transaction_union']
     self.funding_contributions_db = db[config['mongodb']['database']][collection]
 
   def create(
@@ -188,15 +189,64 @@ class FundingContributions():
         }
 
         total_notional = sum(abs(item['notional']) for item in positions)
+
         funding_contributions = [{
           'base': item['base'],
           'contribution': abs(item['notional']) / total_notional * funding_rates[item['base']] * (1 if item['side'] == "short" else -1),
           'avg_funding_rate': funding_rates[item['base']] * (1 if item['side'] == "short" else -1)
         } for item in positions if item['base'] in funding_rates]
 
-        if len(funding_contributions) > 0:
+        
+
+        transactions = list(self.transactions_db.aggregate([
+          {
+            '$match': {
+              '$expr': {
+                '$and': [{
+                    '$eq': ['$client', client]
+                  }, {
+                    '$eq': ['$venue', exchange]
+                  }, {
+                    '$eq': ['$account', account]
+                  }, {
+                    '$or': [
+                      {'$eq': ['$incomeType', "COMMISSION"]},
+                      {'$eq': ['$incomeType', "FUNDING_FEE"]}
+                    ]
+                  }, {
+                    '$lte': ['$timestamp', int(base_time.timestamp() * 1000)]
+                  }, {
+                    '$gt': ['$timestamp', int(prev_time.timestamp() * 1000)]
+                  }
+                ]
+              }
+            }
+          }, {
+            '$group': {
+              '_id': {'symbol': "$symbol", 'incomeType': "$incomeType"},
+              'symbol': {'$last': "$symbol"},
+              'incomeType': {'$last': "$incomeType"},
+              'income': {'$sum': "$income"},
+            }
+          }
+        ], session=session))
+
+        funding_payments = sum([
+          item['income'] for item in transactions if item['incomeType'] == "FUNDING_FEE"
+        ])
+
+        commission_contributions = []
+        if funding_payments != 0.0:
+          commission_contributions = [{
+            'symbol': item['symbol'],
+            'contribution': item['income'] / abs(funding_payments)
+          } for item in transactions if item['incomeType'] == "COMMISSION"]
+
+        if len(funding_contributions) > 0 or len(commission_contributions) > 0:
           funding_contribution_values.append({
             'funding_contributions': funding_contributions,
+            'commission_contributions': commission_contributions,
+            'funding_payments': funding_payments,
             'timestamp': base_time
           })
 
@@ -226,6 +276,8 @@ class FundingContributions():
       'venue': exchange,
       'account': account,
       'funding_contributions': item['funding_contributions'],
+      'commission_contributions': item['commission_contributions'],
+      'funding_payments': item['funding_payments'],
       'timestamp': item['timestamp'],
       'interval': config['funding_contributions']['period'][exchange],
       'runid': latest_run_id
