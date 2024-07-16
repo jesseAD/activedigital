@@ -483,7 +483,22 @@ clients:
           unhedged_alert: True
           hedged_exclusion_positive: {'USDT': 0}
           hedged_exclusion_negative: {'USDT': 0}
-
+        subbasismulti1:
+          base_ccy: USD
+          margin_mode: non_portfolio
+          funding_contributions: True
+          daily_returns: True
+          unhedged_alert: True
+          hedged_exclusion_positive: {'USDT': 0}
+          hedged_exclusion_negative: {'USDT': 0}          
+        subtrendmulti1:
+          base_ccy: USD
+          margin_mode: non_portfolio
+          funding_contributions: True
+          daily_returns: True
+          unhedged_alert: False
+          hedged_exclusion_positive: {'USDT': 0}
+          hedged_exclusion_negative: {'USDT': 0} 
   nifty:
     split_positions: True
     subaccounts:
