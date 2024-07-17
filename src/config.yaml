@@ -36,6 +36,10 @@ ccxt:
     rateLimit: 30
     timeout: 3000
     retry: 3
+  deribit:
+    rateLimit: 30
+    timeout: 3000
+    retry: 3
 
 liquidation:
   threshold: 
@@ -46,6 +50,7 @@ liquidation:
     okx: 0.95
     bybit: 0.95
     huobi: 0.8
+    deribit: 0.7
   scalar:
     binance: 0.53
     binance_cm: 0.5
@@ -54,6 +59,7 @@ liquidation:
     okx: 0.125
     bybit: -1
     huobi: -1.8
+    deribit: 1
 
 funding_payments: &funding_payments
   function: funding_payments.py
@@ -178,7 +184,7 @@ funding_contributions:
     bybit: 8
     huobi: 8
 
-# exchanges: ["okx", ]
+# exchanges: ["deribit", ]
 exchanges: ["binance", "okx", "bybit", "huobi", ]
 
 clients:
@@ -492,7 +498,7 @@ clients:
           unhedged_alert: True
           hedged_exclusion_positive: {'USDT': 0}
           hedged_exclusion_negative: {'USDT': 0}   
-                 
+
         subtrendmulti1:
           base_ccy: USD
           margin_mode: non_portfolio
@@ -742,3 +748,16 @@ clients:
           unhedged_alert: True
           hedged_exclusion_positive: {'USDT': 0}
           hedged_exclusion_negative: {'USDT': 0}
+
+  deribittest:
+    split_positions: False
+    subaccounts:
+      deribit:
+        subtest:
+          base_ccy: USDT
+          margin_mode: non_portfolio
+          funding_contributions: False
+          daily_returns: False
+          unhedged_alert: False
+          hedged_exclusion_positive: {}
+          hedged_exclusion_negative: {}

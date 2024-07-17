@@ -130,7 +130,7 @@ public_data_collectors = [
 ]
 
 # private_data_collectors = [
-#   balances_wrapper, daily_returns_wrapper
+#   balances_wrapper, positions_wrapper
 # ]
 private_data_collectors = [
   balances_wrapper, positions_wrapper, open_orders_wrapper,
@@ -250,6 +250,7 @@ else:
     exchs[exchange] = Exchange(exchange).exch()
 
   public_pool(public_data_collectors, config['exchanges'], symbols)
+
   exchs = {}
 
   accounts = []

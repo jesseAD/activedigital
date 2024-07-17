@@ -45,6 +45,8 @@ class Exchange:
       exchange = ccxt.coinbasepro()
     elif self.exchange == 'huobi':
       exchange = ccxt.huobi(params)
+    elif self.exchange == 'deribit':
+      exchange = ccxt.deribit(params)
     
     return exchange
 

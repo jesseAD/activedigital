@@ -3,7 +3,7 @@ import ccxt
 
 from src.lib.exchange import Exchange
 from src.config import read_config_file
-from src.handlers.helpers import Helper, OKXHelper, BybitHelper, CoinbaseHelper, HuobiHelper
+from src.handlers.helpers import Helper, OKXHelper, BybitHelper, CoinbaseHelper, HuobiHelper, DeribitHelper
 
 config = read_config_file()
 
@@ -74,6 +74,8 @@ class Tickers:
           tickerValue = {_val['symbol']: _val for _key, _val in tickerValue.items()}
         elif exchange == "huobi":
           tickerValue = HuobiHelper().get_tickers(exch = exch)
+        elif exchange == "deribit":
+          tickerValue = DeribitHelper().get_tickers(exch = exch)
         
         tickerValue = {symbol: tickerValue[symbol] for symbol in tickerValue if symbol.endswith("USDT")}
         tickerValue['USDT/USD'] = CoinbaseHelper().get_usdt2usd_ticker(exch=Exchange(exchange='coinbase').exch())
