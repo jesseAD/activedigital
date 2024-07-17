@@ -749,7 +749,7 @@ clients:
           hedged_exclusion_positive: {'USDT': 0}
           hedged_exclusion_negative: {'USDT': 0}
 
-  deribittest:
+  frosty:
     split_positions: False
     subaccounts:
       deribit:
