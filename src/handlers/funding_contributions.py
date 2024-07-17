@@ -242,13 +242,13 @@ class FundingContributions():
             'contribution': item['income'] / abs(funding_payments)
           } for item in transactions if item['incomeType'] == "COMMISSION"]
 
-        if len(funding_contributions) > 0 or len(commission_contributions) > 0:
-          funding_contribution_values.append({
-            'funding_contributions': funding_contributions,
-            'commission_contributions': commission_contributions,
-            'funding_payments': funding_payments,
-            'timestamp': base_time
-          })
+        # if len(funding_contributions) > 0 or len(commission_contributions) > 0:
+        funding_contribution_values.append({
+          'funding_contributions': funding_contributions,
+          'commission_contributions': commission_contributions,
+          'funding_payments': funding_payments,
+          'timestamp': base_time
+        })
 
         prev_time = base_time
         base_time = base_time + timedelta(hours=config['funding_contributions']['period'][exchange])
