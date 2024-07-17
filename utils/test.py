@@ -33,7 +33,7 @@ params = {
     'secret': "aa",
     'enableRateLimit': True,
     'requests_trust_env':True,
-    'verbose': True,
+    'verbose': False,
     'options': {
         'adjustForTimeDifference':True,
         'warnOnFetchOpenOrdersWithoutSymbol': False
@@ -43,8 +43,8 @@ params = {
 }
 
 exchange = ccxt.deribit(params)
-res = exchange.fetch_balance(params={'currency': "USD"})
-print(res['total'])
+res = exchange.fetch_positions(params={'currency': "any"})
+print(res)
 # res = exchange.public_get_v5_market_kline(params={'category': "spot", 'symbol': "BTCUSDT", 'interval': "1", 'limit': 1, 'start': 1708500592000})
 # print(res)
 # exchange.papi_get_balance()

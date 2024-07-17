@@ -758,6 +758,10 @@ class HuobiHelper(Helper):
       transaction['currency'] = transaction['currency'].upper()
 
     return transactions
+  
+class DeribitHelper(Helper):
+  def get_positions(self, exch):
+    return exch.fetch_positions(params={'currency': "any"})
 
 class CoinbaseHelper:
   def get_usdt2usd_ticker(self, exch):

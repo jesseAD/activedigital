@@ -55,7 +55,7 @@ def get_data_collectors(client, secrets):
   data_collectors = []
 
   collections = ['subaccounts', ]
-  exchanges = ['binance', 'okx', 'bybit', 'huobi']
+  exchanges = ['binance', 'okx', 'bybit', 'huobi', 'deribit']
 
   for collection in collections:
     for exchange in config['clients'][client][collection]:
