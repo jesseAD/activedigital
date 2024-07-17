@@ -753,8 +753,16 @@ clients:
     split_positions: False
     subaccounts:
       deribit:
-        subtest:
-          base_ccy: USDT
+        volarb:
+          base_ccy: BTC
+          margin_mode: non_portfolio
+          funding_contributions: False
+          daily_returns: False
+          unhedged_alert: False
+          hedged_exclusion_positive: {}
+          hedged_exclusion_negative: {}
+        diags:
+          base_ccy: BTC
           margin_mode: non_portfolio
           funding_contributions: False
           daily_returns: False
