@@ -368,7 +368,6 @@ class Positions:
 
       for value in position_value:
         try:
-          print(instruments['BTC-19JUL24-63500-P'])
           value['base'] = instruments[value['info']['symbol']]['base']
           value['quote'] = instruments[value['info']['symbol']]['quote']
           if instruments[value['info']['symbol']]['expiryDatetime'] != None and instruments[value['info']['symbol']]['expiryDatetime'] != "":
