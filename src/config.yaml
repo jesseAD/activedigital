@@ -78,6 +78,8 @@ symbols: ['BTC', 'ETH', 'USDT', 'XRP', 'BNB', 'DOGE', 'SOL', 'LTC', 'BCH', 'DOT'
   'GRT', '1INCH', 'CHZ', 'NEO', 'KNC', 'XTZ', 'THETA', 'DASH', 'PEOPLE', 'LRC', 'ZIL', 'OMG', 'ROSE', 'AR', 'COTI', 'ICX', 
   'BIGTIME', 'ORDI', 'FTM', '1000BONK', ]
 
+deribit_symbols: ['ADA', 'ALGO', 'AVAX', 'BCH', 'BTC', 'DOGE', 'DOT', 'ETH', 'LINK', 'LTC', 'MATIC', 'NEAR', 'SOL', 'TRX', 'UNI', 'XRP']
+
 instruments:
   store_type: snapshot
 
@@ -770,6 +772,7 @@ clients:
           unhedged_alert: False
           hedged_exclusion_positive: {}
           hedged_exclusion_negative: {}
+          
         diags:
           base_ccy: BTC
           margin_mode: non_portfolio

@@ -3,7 +3,7 @@ import ccxt
 
 from src.lib.exchange import Exchange
 from src.config import read_config_file
-from src.handlers.helpers import Helper, OKXHelper, BybitHelper, HuobiHelper
+from src.handlers.helpers import Helper, OKXHelper, BybitHelper, HuobiHelper, DeribitHelper
 
 config = read_config_file()
 
@@ -133,6 +133,10 @@ class FundingRates:
             fundingRatesValue = HuobiHelper().get_funding_rates(
               exch=exch, limit=100, symbol=symbol
             )
+          elif exchange == "deribit":
+            fundingRatesValue = DeribitHelper().get_funding_rates(
+              exch=exch, symbol=(symbol[:-4] if symbol.endswith("USD") else symbol).replace("/", "_") + "-PERPETUAL"
+            )
         else:
           last_time = int(current_values['timestamp']) + 1
           if exchange == "okx":
@@ -168,6 +172,11 @@ class FundingRates:
           elif exchange == "huobi":
             fundingRatesValue = HuobiHelper().get_funding_rates(
               exch=exch, limit=100, symbol=symbol, since=last_time
+            )
+
+          elif exchange == "deribit":
+            fundingRatesValue = DeribitHelper().get_funding_rates(
+              exch=exch, symbol=(symbol[:-4] if symbol.endswith("USD") else symbol).replace("/", "_") + "-PERPETUAL", since=last_time
             )
 
         if len(fundingRatesValue) > 0:
@@ -227,6 +236,29 @@ class FundingRates:
               scalar /= int(funding_rate["fundingTimestamp"]) - int(
                 fundingRatesValue[-1]["timestamp"]
               )
+
+            for item in fundingRatesValue:
+              item["nextFundingRate"] = funding_rate["fundingRate"]
+              item["nextFundingTime"] = funding_rate["fundingTimestamp"]
+              item["base"] = symbol.split("/")[0]
+              item["quote"] = symbol.split("/")[1].split(":")[0]
+              item["scalar"] = scalar
+
+          elif exchange == "deribit":
+            funding_rate = DeribitHelper().get_funding_rate(
+              exch=exch, symbol=(symbol[:-4] if symbol.endswith("USD") else symbol).replace("/", "_") + "-PERPETUAL"
+            )
+
+            scalar = 1
+
+            if config["funding_rates"]["period"] == "daily":
+              scalar = 365
+            elif config["funding_rates"]["period"] == "interval":
+              scalar = 24 * 365 * 3600000
+              # scalar /= int(funding_rate["fundingTimestamp"]) - int(
+              #   fundingRatesValue[-1]["timestamp"]
+              # )
+              scalar /= 3600000
 
             for item in fundingRatesValue:
               item["nextFundingRate"] = funding_rate["fundingRate"]
@@ -476,7 +508,22 @@ class FundingRates:
               },
               upsert=False
             )
-          pass
+          elif exchange == "deribit":
+            funding_rate = DeribitHelper().get_funding_rate(exch=exch, symbol=(symbol[:-4] if symbol.endswith("USD") else symbol).replace("/", "_") + "-PERPETUAL")
+
+            self.funding_rates_db.update_one(
+              {
+                "venue": exchange,
+                "symbol": symbol.split(":")[0],
+                "funding_rates_value.timestamp": current_values['timestamp']
+              },
+              {
+                "$set": {
+                  "funding_rates_value.nextFundingRate": funding_rate['fundingRate']
+                }
+              },
+              upsert=False
+            )
       
       except ccxt.ExchangeError as e:
         if logger == None:

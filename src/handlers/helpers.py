@@ -1,4 +1,4 @@
-from datetime import datetime, timezone
+from datetime import datetime, timezone, timedelta
 
 from src.config import read_config_file
 
@@ -762,6 +762,27 @@ class HuobiHelper(Helper):
 class DeribitHelper(Helper):
   def get_positions(self, exch):
     return exch.fetch_positions(params={'currency': "any"})
+  
+  def get_funding_rates(self, exch, symbol, since=None, params={}):
+    if since == None:
+      since = int((datetime.now(timezone.utc) - timedelta(hours=5)).timestamp() * 1000)
+
+    res = exch.public_get_get_funding_rate_history(
+      params={'instrument_name': symbol, 'start_timestamp': since, 'end_timestamp': int(datetime.now(timezone.utc).timestamp() * 1000), **params}
+    )['result']
+
+    funding_rates = [{
+      'info': item,
+      'symbol': symbol,
+      'fundingRate': float(item['interest_1h']),
+      'timestamp': int(item['timestamp']),
+      'datetime': datetime.fromtimestamp(int(item['timestamp']) / 1000),
+    } for item in res]
+
+    return funding_rates
+  
+  def get_funding_rate(self, exch, symbol, params={}):
+    return exch.fetch_funding_rate(symbol=symbol)
 
 class CoinbaseHelper:
   def get_usdt2usd_ticker(self, exch):
