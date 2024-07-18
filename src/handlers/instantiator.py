@@ -976,7 +976,12 @@ def tickers_wrapper(thread_pool, exch, exchange, symbols, logger, db, secrets):
 
 def funding_rates_wrapper(thread_pool, exch, exchange, symbols, logger, db, secrets):
 
-  symbols = [symbol + "/USDT:USDT" for symbol in symbols] + [symbol + "/USD:" + symbol for symbol in symbols]
+  if exchange == "deribit":
+    symbols = config['deribit_symbols']
+    symbols = [symbol + "/USDT" for symbol in symbols] + [symbol + "/USD" for symbol in symbols] + [symbol + "/USDC" for symbol in symbols]
+  
+  else:  
+    symbols = [symbol + "/USDT:USDT" for symbol in symbols] + [symbol + "/USD:" + symbol for symbol in symbols]
 
   threads = []
   for symbol in symbols:
