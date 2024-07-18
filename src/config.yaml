@@ -185,7 +185,7 @@ funding_contributions:
     huobi: 8
 
 # exchanges: ["deribit", ]
-exchanges: ["binance", "okx", "bybit", "huobi", ]
+exchanges: ["binance", "okx", "bybit", "huobi", "deribit"]
 
 clients:
   besttrader:

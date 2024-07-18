@@ -42,8 +42,8 @@ params = {
     # 'password': "!"
 }
 
-exchange = ccxt.deribit(params)
-res = exchange.fetch_positions(params={'currency': "any"})
+exchange = ccxt.binance(params)
+res = exchange.papi_get_margin_margininteresthistory(params={"startTime": 1721089198000, "endTime": 1721171998000, "size": 100})
 print(res)
 # res = exchange.public_get_v5_market_kline(params={'category': "spot", 'symbol': "BTCUSDT", 'interval': "1", 'limit': 1, 'start': 1708500592000})
 # print(res)
