@@ -765,7 +765,7 @@ class DeribitHelper(Helper):
   
   def get_funding_rates(self, exch, symbol, since=None, params={}):
     if since == None:
-      since = int((datetime.now(timezone.utc) - timedelta(hours=5)).timestamp() * 1000)
+      since = int((datetime.now(timezone.utc) - timedelta(days=30)).timestamp() * 1000)
 
     res = exch.public_get_get_funding_rate_history(
       params={'instrument_name': symbol, 'start_timestamp': since, 'end_timestamp': int(datetime.now(timezone.utc).timestamp() * 1000), **params}
