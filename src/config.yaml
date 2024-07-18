@@ -416,6 +416,15 @@ clients:
   edison:
     split_positions: True
     subaccounts:
+      gate:
+        submn2:
+          base_ccy: USDT
+          margin_mode: non_portfolio
+          funding_contributions: True
+          daily_returns: True
+          unhedged_alert: False
+          hedged_exclusion_positive: {'USDT': 0, 'SOL': 347,'ETH': 14 }
+          hedged_exclusion_negative: {'USDT': 0}
       okx:
         submn1:
           base_ccy: USDT
@@ -749,12 +758,20 @@ clients:
           hedged_exclusion_positive: {'USDT': 0}
           hedged_exclusion_negative: {'USDT': 0}
 
-  deribittest:
+  frosty:
     split_positions: False
     subaccounts:
       deribit:
-        subtest:
-          base_ccy: USDT
+        volarb:
+          base_ccy: BTC
+          margin_mode: non_portfolio
+          funding_contributions: False
+          daily_returns: False
+          unhedged_alert: False
+          hedged_exclusion_positive: {}
+          hedged_exclusion_negative: {}
+        diags:
+          base_ccy: BTC
           margin_mode: non_portfolio
           funding_contributions: False
           daily_returns: False
