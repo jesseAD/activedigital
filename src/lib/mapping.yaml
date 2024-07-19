@@ -120,3 +120,7 @@ huobi:
     transact-amt: amount
     symbol: currency
     asset: currency
+
+deribit:
+  position:
+    contractSize: contracts
