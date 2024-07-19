@@ -518,6 +518,7 @@ clients:
           unhedged_alert: False
           hedged_exclusion_positive: {'USDT': 0}
           hedged_exclusion_negative: {'USDT': 0} 
+
   nifty:
     split_positions: True
     subaccounts:

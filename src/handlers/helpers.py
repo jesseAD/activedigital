@@ -783,6 +783,11 @@ class DeribitHelper(Helper):
   
   def get_funding_rate(self, exch, symbol, params={}):
     return exch.fetch_funding_rate(symbol=symbol)
+  
+  def get_balances(self, exch):
+    res = exch.private_get_get_account_summary(params={'currency': "BTC"})['result']
+
+    return {'USD': float(res['total_equity_usd'])}
 
 class CoinbaseHelper:
   def get_usdt2usd_ticker(self, exch):

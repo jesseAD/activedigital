@@ -27,7 +27,7 @@ db = mongo_client['active_digital']
 #     {'$set': {'client': 'nifty'}}
 #   )
 
-print(list(db['instruments'].find({'venue': "bybit"}))[0]['instrument_value']['BTC-27SEP24'])
+# print(list(db['instruments'].find({'venue': "bybit"}))[0]['instrument_value']['BTC-27SEP24'])
 
 # data = list(db['positions_archive'].find())
 # print("read")
@@ -69,7 +69,8 @@ print(list(db['instruments'].find({'venue': "bybit"}))[0]['instrument_value']['B
 # )
 
 # db['funding_contributions'].delete_many({
-#   'client': "blackburn",
-#   'venue': "binance",
-#   'account': "submn1"
+  # 'client': "blackburn",
+  # 'venue': "deribit",
+  # 'account': "submn1"
+#   'runid': {'$gte': 69502}
 # })
