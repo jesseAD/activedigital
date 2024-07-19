@@ -43,7 +43,7 @@ params = {
 }
 
 exchange = ccxt.deribit(params)
-res = exchange.fetch_funding_rate_history(symbol="UNI_USDC-PERPETUAL")
+res = exchange.private_get_get_account_summary(params={'currency': "BTC"})
 print(res)
 # res = exchange.public_get_v5_market_kline(params={'category': "spot", 'symbol': "BTCUSDT", 'interval': "1", 'limit': 1, 'start': 1708500592000})
 # print(res)

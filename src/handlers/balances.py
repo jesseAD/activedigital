@@ -3,7 +3,7 @@ import ccxt
 
 from src.lib.exchange import Exchange
 from src.config import read_config_file
-from src.handlers.helpers import Helper, OKXHelper, BybitHelper, HuobiHelper
+from src.handlers.helpers import Helper, OKXHelper, BybitHelper, HuobiHelper, DeribitHelper
 
 config = read_config_file()
 
@@ -103,6 +103,9 @@ class Balances:
             
         elif exchange == "bybit":
           balanceValue = BybitHelper().get_balances(exch=exch)
+
+        elif exchange == "deribit":
+          balanceValue = DeribitHelper().get_balances(exch=exch)
 
         elif exchange == "huobi":
           cm_balances = {}
