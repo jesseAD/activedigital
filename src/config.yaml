@@ -427,6 +427,7 @@ clients:
           unhedged_alert: False
           hedged_exclusion_positive: {'USDT': 0, 'SOL': 347,'ETH': 14 }
           hedged_exclusion_negative: {'USDT': 0}
+          
       okx:
         submn1:
           base_ccy: USDT
