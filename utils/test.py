@@ -32,8 +32,8 @@ db = pymongo.MongoClient(mongo_uri)
 # )
 
 params = {
-    'apiKey': "aa",
-    'secret': "aa",
+    'apiKey': "",
+    'secret': "",
     'enableRateLimit': True,
     'requests_trust_env':True,
     'verbose': False,
@@ -46,8 +46,8 @@ params = {
 }
 
 exchange = ccxt.deribit(params)
-res = exchange.private_get_get_account_summary(params={'currency': "EURR"})
-print(res)
+res = exchange.fetch_tickers(params={'currency': "USDC"})
+print(res['XRP/USDC:USDC'])
 # res = exchange.public_get_v5_market_kline(params={'category': "spot", 'symbol': "BTCUSDT", 'interval': "1", 'limit': 1, 'start': 1708500592000})
 # print(res)
 # exchange.papi_get_balance()

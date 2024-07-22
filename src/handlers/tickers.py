@@ -64,20 +64,31 @@ class Tickers:
       try:
         if exchange == 'okx':
           tickerValue = OKXHelper().get_tickers(exch = exch)
+          tickerValue = {symbol: tickerValue[symbol] for symbol in tickerValue if symbol.endswith("USDT")}
+
         elif exchange == "binance":
           tickerValue = Helper().get_tickers(exch = exch)
+          tickerValue = {symbol: tickerValue[symbol] for symbol in tickerValue if symbol.endswith("USDT")}
+
         elif exchange == "bybit":
           tickerValue = BybitHelper().get_tickers(exch=exch)
           for item in tickerValue:
             tickerValue[item]['symbol'] = tickerValue[item]['symbol'].split(":")[0]
 
           tickerValue = {_val['symbol']: _val for _key, _val in tickerValue.items()}
+          tickerValue = {symbol: tickerValue[symbol] for symbol in tickerValue if symbol.endswith("USDT")}
+
         elif exchange == "huobi":
           tickerValue = HuobiHelper().get_tickers(exch = exch)
+          tickerValue = {symbol: tickerValue[symbol] for symbol in tickerValue if symbol.endswith("USDT")}
+
         elif exchange == "deribit":
-          tickerValue = DeribitHelper().get_tickers(exch = exch)
+          usdc_usdt = DeribitHelper().get_tickers(exch = exch, params={'currency': "USDT"})['USDC/USDT']['last']
+          tickerValue = DeribitHelper().get_tickers(exch = exch, params={'currency': "USDC"})
+          tickerValue = {symbol.split("/")[0] + "/USDT": tickerValue[symbol] for symbol in tickerValue if symbol.endswith(":USDC")}
+          for symbol in tickerValue.keys():
+            tickerValue[symbol]['last'] *= usdc_usdt
         
-        tickerValue = {symbol: tickerValue[symbol] for symbol in tickerValue if symbol.endswith("USDT")}
         tickerValue['USDT/USD'] = CoinbaseHelper().get_usdt2usd_ticker(exch=Exchange(exchange='coinbase').exch())
     
       except ccxt.ExchangeError as e:
