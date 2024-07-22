@@ -22,11 +22,11 @@ from src.handlers.funding_contributions import FundingContributions
 # mongo_uri = 'mongodb+srv://activedigital:'+''+'@mongodbcluster.nzphth1.mongodb.net/?retryWrites=true&w=majority'
 # db = pymongo.MongoClient(mongo_uri)
 
-# FundingContributions(db, "funding_contributions").create(
-#   client="blackburn",
-#   exchange="binance",
-#   account="submn1",
-# )
+DailyReturns(db, "daily_returns").create(
+  client="shannon",
+  exchange="okx",
+  account="subls1",
+)
 
 params = {
     'apiKey': "aa",
@@ -42,9 +42,9 @@ params = {
     # 'password': "!"
 }
 
-exchange = ccxt.deribit(params)
-res = exchange.private_get_get_account_summary(params={'currency': "BTC"})
-print(res)
+# exchange = ccxt.deribit(params)
+# res = exchange.private_get_get_account_summary(params={'currency': "USDC"})
+# print(res)
 # res = exchange.public_get_v5_market_kline(params={'category': "spot", 'symbol': "BTCUSDT", 'interval': "1", 'limit': 1, 'start': 1708500592000})
 # print(res)
 # exchange.papi_get_balance()
