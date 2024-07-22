@@ -788,6 +788,17 @@ class DeribitHelper(Helper):
     res = exch.private_get_get_account_summary(params={'currency': "BTC"})['result']
 
     return {'USD': float(res['total_equity_usd'])}
+  
+  def get_cross_margin_ratio(self, exch):
+    currencies = ["BTC", "ETH", "USDT", "USDC"]
+    cmr = 0
+
+    for currency in currencies:
+      ratio = float(exch.private_get_get_account_summary(params={'currency': currency})['result']['maintenance_margin'])
+      if ratio > cmr:
+        cmr = ratio
+
+    return cmr
 
 class CoinbaseHelper:
   def get_usdt2usd_ticker(self, exch):

@@ -243,6 +243,41 @@ class Positions:
           else:
             logger.warning(client + " " + exchange + " " + sub_account + " positions: in cross margin ratio " + str(e))
 
+      elif exchange == "deribit":
+        try:
+          cross_margin_ratio = float(
+            DeribitHelper().get_cross_margin_ratio(exch=exch)
+          )
+          liquidation_buffer = DeribitHelper().calc_liquidation_buffer(
+            exchange=exchange, mgnRatio=cross_margin_ratio
+          )
+
+        except ccxt.ExchangeError as e:
+          self.session.abort_transaction()
+
+          if logger == None:
+            print(client + " " + exchange + " " + sub_account + " positions: in cross margin ratio " + str(e))
+          else:
+            logger.warning(client + " " + exchange + " " + sub_account + " positions: in cross margin ratio " + str(e))
+
+          return True
+        
+        except ccxt.NetworkError as e:
+          self.session.abort_transaction()
+
+          if logger == None:
+            print(client + " " + exchange + " " + sub_account + " positions: in cross margin ratio " + str(e))
+          else:
+            logger.warning(client + " " + exchange + " " + sub_account + " positions: in cross margin ratio " + str(e))
+            
+          return False
+        
+        except Exception as e:
+          if logger == None:
+            print(client + " " + exchange + " " + sub_account + " positions: in cross margin ratio " + str(e))
+          else:
+            logger.warning(client + " " + exchange + " " + sub_account + " positions: in cross margin ratio " + str(e))
+
       elif exchange == "huobi":
         try:
           liquidation1 = HuobiHelper().calc_liquidation_buffer(
@@ -392,6 +427,7 @@ class Positions:
             position_info.append(value)
 
           elif exchange == "deribit":
+            value["liquidationBuffer"] = liquidation_buffer
             position_info.append(value)
 
           elif exchange == "okx":
