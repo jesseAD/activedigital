@@ -3,10 +3,12 @@ import ccxt
 import pymongo
 import math
 # import pdb
-import numpy as np
-from datetime import datetime, timezone, timedelta
 import time
 from dateutil import tz, relativedelta
+import os, sys, json
+import pymongo
+from datetime import datetime, timezone, timedelta
+from dotenv import load_dotenv
 
 current_file = os.path.abspath(__file__)
 current_directory = os.path.dirname(current_file)
@@ -17,23 +19,24 @@ from src.handlers.daily_returns import DailyReturns
 from src.handlers.funding_contributions import FundingContributions
 # from src.lib.log import Log
 
+load_dotenv()
 # logger = Log()
 
-# mongo_uri = 'mongodb+srv://activedigital:'+''+'@mongodbcluster.nzphth1.mongodb.net/?retryWrites=true&w=majority'
-# db = pymongo.MongoClient(mongo_uri)
+mongo_uri = 'mongodb+srv://activedigital:'+os.getenv("CLOUD_MONGO_PASSWORD")+'@mongodbcluster.nzphth1.mongodb.net/?retryWrites=true&w=majority'
+db = pymongo.MongoClient(mongo_uri)
 
-DailyReturns(db, "daily_returns").create(
-  client="shannon",
-  exchange="okx",
-  account="subls1",
-)
+# DailyReturns(db, "daily_returns").create(
+#   client="shannon",
+#   exchange="okx",
+#   account="subls1",
+# )
 
 params = {
     'apiKey': "aa",
     'secret': "aa",
     'enableRateLimit': True,
     'requests_trust_env':True,
-    'verbose': True,
+    'verbose': False,
     'options': {
         'adjustForTimeDifference':True,
         'warnOnFetchOpenOrdersWithoutSymbol': False
@@ -42,9 +45,9 @@ params = {
     # 'password': "!"
 }
 
-# exchange = ccxt.deribit(params)
-# res = exchange.private_get_get_account_summary(params={'currency': "USDC"})
-# print(res)
+exchange = ccxt.deribit(params)
+res = exchange.private_get_get_account_summary(params={'currency': "EURR"})
+print(res)
 # res = exchange.public_get_v5_market_kline(params={'category': "spot", 'symbol': "BTCUSDT", 'interval': "1", 'limit': 1, 'start': 1708500592000})
 # print(res)
 # exchange.papi_get_balance()
