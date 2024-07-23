@@ -184,6 +184,17 @@ class FundingContributions():
             }
           }
         ], session=session))
+        
+        if len(funding_rates) == 0:
+          if logger == None:
+            print(client + " " + exchange + " " + account + " funding contributions: didn't collect funding rates")
+            print("Unable to collect funding contributions for " + client + " " + exchange + " " + account)
+          else:
+            logger.warning(client + " " + exchange + " " + account + " funding contributions: didn't collect funding rates")
+            logger.error("Unable to collect funding contributions for " + client + " " + exchange + " " + account)
+
+          return True
+        
         funding_rates = {
           item['base']: item['rate'] for item in funding_rates
         }
