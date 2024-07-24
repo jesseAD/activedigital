@@ -45,12 +45,11 @@ params = {
     # 'password': "!"
 }
 
-exchange = ccxt.bybit(params)
-print(exchange.fetch_tickers())
-# res = exchange.private_get_get_transaction_log(params={'currency': "BTC", 'start_timestamp': 1721326560000, 'end_timestamp': 1721593198000})
+exchange = ccxt.deribit(params)
+res = exchange.private_get_get_transaction_log(params={'currency': "BTC", 'start_timestamp': 1689970798000, 'end_timestamp': 1721593198000, 'continuation': 645073786})
+# res = exchange.private_get_get_transaction_log(params={'currency': "BTC", 'start_timestamp': 1689970798000, 'end_timestamp': 1721593198000})
 # print([item['type'] for item in res['result']['logs']])
-# res = exchange.public_get_v5_market_kline(params={'category': "spot", 'symbol': "BTCUSDT", 'interval': "1", 'limit': 1, 'start': 1708500592000})
-# print(res)
+print(res)
 # exchange.papi_get_balance()
 
 # for runid in range(52255, 67355):
