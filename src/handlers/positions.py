@@ -961,7 +961,7 @@ class Positions:
               spot_position['marginMode'] = None
               spot_position['timestamp'] = int(timestamp.timestamp() * 1000)
               spot_position['side'] = "long" if _val > 0 else "short"
-              spot_position['markPrice'] = 1 if _key == "USDT" else tickers[_key + "/USDT"]['last']
+              spot_position['markPrice'] = 1 if _key == "USDT" else (0 if (_key + "/USDT") in tickers else tickers[_key + "/USDT"]['last'])
               spot_position['notional'] = spot_position['markPrice'] * spot_position['contracts']
 
               spot_positions.append(spot_position)
