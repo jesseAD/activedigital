@@ -799,6 +799,26 @@ class DeribitHelper(Helper):
         cmr = ratio
 
     return cmr
+  
+  def get_transactions(self, exch, params={}):
+    currencies = ["BTC", "ETH", "USDT", "USDC"]
+    types = ["trade", "maker", "taker", "open", "close", "liquidation", "buy", "sell", "withdrawal", 
+             "delivery", "settlement", "deposit", "transfer","option", "future", "correction", "block_trade", "swap"]
+    
+    transactions = []
+    for currency in currencies:
+      res = exch.private_get_get_transaction_log(params={**params, 'currency': currency})['result']
+      token = res['continuation']
+      transactions += res['logs']
+
+      while token != None:
+        res = exch.private_get_get_transaction_log(params={**params, 'currency': currency, 'continuation': token})['result']
+        token = res['continuation']
+        transactions += res['logs']
+
+    transactions = [item for item in transactions if item['type'] in types]
+
+    return transactions
 
 class CoinbaseHelper:
   def get_usdt2usd_ticker(self, exch):

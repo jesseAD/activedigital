@@ -83,11 +83,13 @@ class Tickers:
           tickerValue = {symbol: tickerValue[symbol] for symbol in tickerValue if symbol.endswith("USDT")}
 
         elif exchange == "deribit":
-          usdc_usdt = DeribitHelper().get_tickers(exch = exch, params={'currency': "USDT"})['USDC/USDT']['last']
+          usdc_usdt = DeribitHelper().get_tickers(exch = exch, params={'currency': "USDT"})['USDC/USDT']
           tickerValue = DeribitHelper().get_tickers(exch = exch, params={'currency': "USDC"})
           tickerValue = {symbol.split("/")[0] + "/USDT": tickerValue[symbol] for symbol in tickerValue if symbol.endswith(":USDC")}
           for symbol in tickerValue.keys():
-            tickerValue[symbol]['last'] *= usdc_usdt
+            tickerValue[symbol]['last'] *= usdc_usdt['last']
+
+          tickerValue = {**tickerValue, 'USDC/USDT': usdc_usdt}
         
         tickerValue['USDT/USD'] = CoinbaseHelper().get_usdt2usd_ticker(exch=Exchange(exchange='coinbase').exch())
     

@@ -5,7 +5,7 @@ import time
 from src.lib.exchange import Exchange
 from src.lib.mapping import Mapping
 from src.config import read_config_file
-from src.handlers.helpers import Helper, OKXHelper, BybitHelper, HuobiHelper
+from src.handlers.helpers import Helper, OKXHelper, BybitHelper, HuobiHelper, DeribitHelper
 
 config = read_config_file()
 
@@ -253,6 +253,69 @@ class Transactions:
                 transaction_value = Mapping().mapping_transactions(
                   exchange=exchange, transactions=transactions
                 )
+
+          elif exchange == "deribit":
+            transactions_values = self.transactions_db.aggregate([
+              {
+                '$match': {
+                  '$expr': {
+                    '$and': [
+                      {
+                        '$eq': [
+                          '$client', client
+                        ]
+                      }, {
+                        '$eq': [
+                          '$venue', exchange
+                        ]
+                      }, {
+                        '$eq': [
+                          '$account', sub_account
+                        ]
+                      }
+                    ]
+                  }
+                }
+              }, {
+                '$sort': {'transaction_value.timestamp': -1}
+              }, {
+                '$limit': 1
+              }
+            ])
+
+            current_value = None
+            for item in transactions_values:
+              current_value = item['transaction_value']
+
+            if current_value is None:
+              last_time = int(datetime.timestamp(datetime(datetime.now(timezone.utc).year, datetime.now(timezone.utc).month, 1)) * 1000)
+              end_time = int(datetime.timestamp(datetime.now(timezone.utc)) * 1000)
+              
+              transaction_value = DeribitHelper().get_transactions(exch=exch, params={"start_timestamp": last_time, "end_timestamp": end_time})
+
+              transaction_value.sort(key = lambda x: x['timestamp'])
+
+              for item in transaction_value:
+                item['info'] = {**item}
+
+              transaction_value = Mapping().mapping_transactions(
+                exchange=exchange, transactions=transaction_value
+              )
+
+            else:
+              last_time = int(current_value["timestamp"]) + 1 + config['transactions']['time_slack']
+              end_time = int(datetime.timestamp(datetime.now(timezone.utc)) * 1000)
+                
+              transaction_value = DeribitHelper().get_transactions(exch=exch, params={"start_timestamp": last_time, "end_timestamp": end_time})
+
+              transaction_value.sort(key = lambda x: x['ts'])
+
+              for item in transaction_value:
+                item['info'] = {**item}
+              transaction_value = Mapping().mapping_transactions(
+                exchange=exchange, transactions=transaction_value
+              )
+
           elif exchange == "binance":
             transaction_value = {}
             if config['clients'][client]['subaccounts'][exchange][sub_account]['margin_mode'] == 'portfolio':
@@ -1537,6 +1600,44 @@ class Transactions:
               new_value["perpMarket"] = perp
 
             transaction.append(new_value)   
+
+      elif exchange == "deribit":
+        for item in transaction_value:
+          item['timestamp'] = int(item["timestamp"]) - config['transactions']['time_slack']
+
+          item['change_origin'] = float(item['change'])
+          item['change_base'] = (
+            float(item["change"]) * 
+            Helper().calc_cross_ccy_ratio(
+              item['currency'],
+              config["clients"][client]["subaccounts"][exchange][sub_account]["base_ccy"], 
+              tickers
+            )
+          )
+          item['change'] = float(item["change"]) * Helper().calc_cross_ccy_ratio(item['currency'], config['transactions']['convert_ccy'], tickers)
+
+          new_value = {
+            "client": client,
+            "venue": exchange,
+            "account": "Main Account",
+            "transaction_value": item,
+            "convert_ccy": config['transactions']['convert_ccy'],
+            "runid": latest_run_id,
+            "active": True,
+            "entry": False,
+            "exit": False,
+            "timestamp": current_time,
+          }
+          if sub_account:
+            new_value["account"] = sub_account
+          if spot:
+            new_value["spotMarket"] = spot
+          if future:
+            new_value["futureMarket"] = future
+          if perp:
+            new_value["perpMarket"] = perp
+
+          transaction.append(new_value)   
 
       elif exchange == "huobi":
         for _type in transaction_value:
