@@ -238,7 +238,8 @@ class Balances:
             else:
               logger.error(client + " " + exchange + " " + sub_account + " balances: skipped as zero ticker price")
               logger.error("Unable to collect balances for " + client + " " + exchange + " " + sub_account)
-            return True
+            continue
+            # return True
           
           base_balance += _value * cross_ratio
 
