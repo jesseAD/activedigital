@@ -46,10 +46,10 @@ params = {
 }
 
 exchange = ccxt.deribit(params)
-res = exchange.private_get_get_transaction_log(params={'currency': "BTC", 'start_timestamp': 1689970798000, 'end_timestamp': 1721593198000, 'continuation': 645073786})
+res = exchange.private_get_get_transaction_log(params={'currency': "BTC", 'start_timestamp': 1689970798000, 'end_timestamp': 1721593198000})
 # res = exchange.private_get_get_transaction_log(params={'currency': "BTC", 'start_timestamp': 1689970798000, 'end_timestamp': 1721593198000})
 # print([item['type'] for item in res['result']['logs']])
-print(res)
+print(len(res['result']['logs']))
 # exchange.papi_get_balance()
 
 # for runid in range(52255, 67355):

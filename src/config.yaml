@@ -81,6 +81,13 @@ symbols: ['BTC', 'ETH', 'USDT', 'XRP', 'BNB', 'DOGE', 'SOL', 'LTC', 'BCH', 'DOT'
 
 deribit_symbols: ['ADA', 'ALGO', 'AVAX', 'BCH', 'BTC', 'DOGE', 'DOT', 'ETH', 'LINK', 'LTC', 'MATIC', 'NEAR', 'SOL', 'TRX', 'UNI', 'XRP']
 
+ignore_symbols:
+  okx: []
+  binance: []
+  bybit: ["RNDR"]
+  huobi: []
+  deribit: []
+
 instruments:
   store_type: snapshot
 
@@ -203,6 +210,7 @@ clients:
           unhedged_alert: False
           hedged_exclusion_positive: {'USDT': 0}
           hedged_exclusion_negative: {'USDT': 0}
+          ignore_symbols: []
 
         sub2aa:
           base_ccy: USD
@@ -212,6 +220,7 @@ clients:
           unhedged_alert: False
           hedged_exclusion_positive: {'USDT': 0}
           hedged_exclusion_negative: {'USDT': 0}
+          ignore_symbols: []
 
       bybit:
         sub1:
@@ -222,6 +231,7 @@ clients:
           unhedged_alert: False
           hedged_exclusion_positive: {'USDT': 0}
           hedged_exclusion_negative: {'USDT': 0}
+          ignore_symbols: []
 
         sub4:
           base_ccy: USD
@@ -231,6 +241,7 @@ clients:
           unhedged_alert: False
           hedged_exclusion_positive: {'USDT': 0}
           hedged_exclusion_negative: {'USDT': 0}
+          ignore_symbols: []
 
   rundmc:
     split_positions: True
@@ -244,6 +255,7 @@ clients:
           unhedged_alert: False
           hedged_exclusion_positive: {'USDT': 0}
           hedged_exclusion_negative: {'USDT': 0}
+          ignore_symbols: []
 
         subaccount6:
           base_ccy: BTC
@@ -253,6 +265,7 @@ clients:
           unhedged_alert: False
           hedged_exclusion_positive: {'USDT': 0}
           hedged_exclusion_negative: {'USDT': 0}
+          ignore_symbols: []
 
         subbinancepm1:
           base_ccy: BTC
@@ -262,6 +275,7 @@ clients:
           unhedged_alert: False
           hedged_exclusion_negative: {'USDT': 0}
           hedged_exclusion_positive: {'USDT': 0}
+          ignore_symbols: []
 
       okx:
         subaccount1:
@@ -272,6 +286,7 @@ clients:
           unhedged_alert: False
           hedged_exclusion_positive: {'USDT': 0}
           hedged_exclusion_negative: {'USDT': 0}
+          ignore_symbols: []
 
   wizardly:
     split_positions: True
@@ -285,6 +300,7 @@ clients:
           unhedged_alert: True
           hedged_exclusion_positive: {'USDT': 0}
           hedged_exclusion_negative: {'USDT': 0}
+          ignore_symbols: []
 
         subbasis:
           base_ccy: USDT
@@ -294,6 +310,7 @@ clients:
           unhedged_alert: True
           hedged_exclusion_positive: {'USDT': 0}
           hedged_exclusion_negative: {'USDT': 0}      
+          ignore_symbols: []
 
       binance:
         submn:
@@ -304,6 +321,7 @@ clients:
           unhedged_alert: True
           hedged_exclusion_positive: {'USDT': 0}
           hedged_exclusion_negative: {'USDT': 0}
+          ignore_symbols: []
 
       bybit:
         subbasis:
@@ -314,6 +332,7 @@ clients:
           unhedged_alert: True
           hedged_exclusion_positive: {'USDT': 0}
           hedged_exclusion_negative: {'USDT': 0}
+          ignore_symbols: []
           
         
   jess:
@@ -328,6 +347,7 @@ clients:
           unhedged_alert: False
           hedged_exclusion_positive: {'USDT': 0}
           hedged_exclusion_negative: {'USDT': 0}   
+          ignore_symbols: []
                
         subandypants:
           base_ccy: USD
@@ -338,6 +358,7 @@ clients:
           hedged_exclusion_positive: {'USDT': 0}
           hedged_exclusion_negative: {'USDT': 0}
           collateral: {'BTC': 1}        
+          ignore_symbols: []
 
         subjessetf:
           base_ccy: USD
@@ -347,6 +368,7 @@ clients:
           unhedged_alert: False
           hedged_exclusion_positive: {'USDT': 0}
           hedged_exclusion_negative: {'USDT': 0}        
+          ignore_symbols: []
 
         subadtest2:
           base_ccy: USD
@@ -356,6 +378,7 @@ clients:
           unhedged_alert: False
           hedged_exclusion_positive: {'USDT': 0}
           hedged_exclusion_negative: {'USDT': 0}
+          ignore_symbols: []
 
   blackburn:
     split_positions: True
@@ -369,6 +392,7 @@ clients:
           unhedged_alert: True
           hedged_exclusion_positive: {'USDT': 0}
           hedged_exclusion_negative: {'USDT': 0}
+          ignore_symbols: []
 
       binance:
         submn1:
@@ -379,6 +403,7 @@ clients:
           unhedged_alert: True
           hedged_exclusion_positive: {'USDT': 0}
           hedged_exclusion_negative: {'USDT': 0}    
+          ignore_symbols: []
 
       bybit:
         submn1:
@@ -389,6 +414,7 @@ clients:
           unhedged_alert: True
           hedged_exclusion_positive: {'USDT': 0}
           hedged_exclusion_negative: {'USDT': 0}
+          ignore_symbols: []
           
   quizzical:
     split_positions: True
@@ -402,6 +428,7 @@ clients:
           unhedged_alert: True
           hedged_exclusion_positive: {'USDT': 0}
           hedged_exclusion_negative: {'USDT': 0}
+          ignore_symbols: []
 
   faraday:
     split_positions: True
@@ -415,6 +442,7 @@ clients:
           unhedged_alert: False
           hedged_exclusion_positive: {'USDT': 0, 'USDC': 0 }
           hedged_exclusion_negative: {'USDT': 0, 'USDC': 0}        
+          ignore_symbols: []
   
   edison:
     split_positions: True
@@ -428,6 +456,7 @@ clients:
           unhedged_alert: False
           hedged_exclusion_positive: {'USDT': 0, 'SOL': 347,'ETH': 14 }
           hedged_exclusion_negative: {'USDT': 0}
+          ignore_symbols: []
 
       okx:
         submn1:
@@ -438,6 +467,7 @@ clients:
           unhedged_alert: False
           hedged_exclusion_positive: {'USDT': 0, 'SOL': 347,'ETH': 14 }
           hedged_exclusion_negative: {'USDT': 0}
+          ignore_symbols: []
 
         payment:
           base_ccy: USDT
@@ -447,6 +477,7 @@ clients:
           unhedged_alert: False
           hedged_exclusion_positive: {'USDT': 0}
           hedged_exclusion_negative: {'USDT': 0}
+          ignore_symbols: []
           
   edisonhedge:
     split_positions: True
@@ -460,6 +491,7 @@ clients:
           unhedged_alert: False
           hedged_exclusion_positive: {'USDT': 0}
           hedged_exclusion_negative: {'USDT': 0}
+          ignore_symbols: []
 
       bybit:
         subbasis1:
@@ -470,6 +502,7 @@ clients:
           unhedged_alert: True
           hedged_exclusion_positive: {'USDT': 0}
           hedged_exclusion_negative: {'USDT': 0}
+          ignore_symbols: []
         
   kepler:
     split_positions: True
@@ -483,6 +516,7 @@ clients:
           unhedged_alert: True
           hedged_exclusion_positive: {'USDT': 0}
           hedged_exclusion_negative: {'USDT': 0}
+          ignore_symbols: []
 
         subbasis2:
           base_ccy: USDT
@@ -492,6 +526,7 @@ clients:
           unhedged_alert: True
           hedged_exclusion_positive: {'USDT': 0}
           hedged_exclusion_negative: {'USDT': 0}          
+          ignore_symbols: []
 
       bybit:
         subbasis1:
@@ -502,6 +537,7 @@ clients:
           unhedged_alert: True
           hedged_exclusion_positive: {'USDT': 0}
           hedged_exclusion_negative: {'USDT': 0}
+          ignore_symbols: []
 
         subbasismulti1:
           base_ccy: USD
@@ -511,6 +547,7 @@ clients:
           unhedged_alert: True
           hedged_exclusion_positive: {'USDT': 0}
           hedged_exclusion_negative: {'USDT': 0}   
+          ignore_symbols: []
 
         subtrendmulti1:
           base_ccy: USD
@@ -520,6 +557,7 @@ clients:
           unhedged_alert: False
           hedged_exclusion_positive: {'USDT': 0}
           hedged_exclusion_negative: {'USDT': 0} 
+          ignore_symbols: []
 
   nifty:
     split_positions: True
@@ -533,6 +571,7 @@ clients:
           unhedged_alert: True
           hedged_exclusion_positive: {'BTC': 0}
           hedged_exclusion_negative: {'USDT': 0,'BTC': 0}
+          ignore_symbols: []
 
         subbasis2:
           base_ccy: BTC
@@ -542,6 +581,7 @@ clients:
           unhedged_alert: True
           hedged_exclusion_positive: {'BTC': 19.691244}
           hedged_exclusion_negative: {'USDT': 0,'BTC': 0}
+          ignore_symbols: []
 
       bybit:
         subbasis1:
@@ -552,6 +592,7 @@ clients:
           unhedged_alert: True
           hedged_exclusion_positive: {'USDT': 0,'BTC': 0, 'USDC': 0}
           hedged_exclusion_negative: {'USDT': 0,'BTC': 0, 'USDC': 0}
+          ignore_symbols: []
 
         subbasis2:
           base_ccy: BTC
@@ -561,6 +602,7 @@ clients:
           unhedged_alert: True
           hedged_exclusion_positive: {'USDT': 0,'BTC': 20.03898379, 'USDC': 0}
           hedged_exclusion_negative: {'USDT': 0,'BTC': 0, 'USDC': 0}
+          ignore_symbols: []
 
       binance:
         subbasis1:
@@ -571,6 +613,7 @@ clients:
           unhedged_alert: True
           hedged_exclusion_positive: {'BTC': 0}
           hedged_exclusion_negative: {'USDT': 0,'BTC': 0}
+          ignore_symbols: []
 
   wilbur:
     split_positions: True
@@ -584,6 +627,7 @@ clients:
           unhedged_alert: False
           hedged_exclusion_positive: {'USDT': 0}
           hedged_exclusion_negative: {'USDT': 0}
+          ignore_symbols: []
 
       bybit:
         subbasis1:
@@ -594,6 +638,7 @@ clients:
           unhedged_alert: True
           hedged_exclusion_positive: {'USDT': 0, 'ETH': 30.2, 'USDC': 0}
           hedged_exclusion_negative: {'USDT': 0, 'USDC': 0}
+          ignore_symbols: []
 
       huobi:
         subbasis1:
@@ -604,6 +649,7 @@ clients:
           unhedged_alert: True
           hedged_exclusion_positive: {'USDT': 0}
           hedged_exclusion_negative: {'USDT': 0}          
+          ignore_symbols: []
 
   vigilant:
     split_positions: True
@@ -617,6 +663,7 @@ clients:
           unhedged_alert: True
           hedged_exclusion_positive: {'ETH': 101.99}
           hedged_exclusion_negative: {'ETH': 0, 'USDT': 0} 
+          ignore_symbols: []
   
   sanderson:
     split_positions: True
@@ -630,6 +677,7 @@ clients:
           unhedged_alert: True
           hedged_exclusion_positive: {'USDT': 0}
           hedged_exclusion_negative: {'USDT': 0} 
+          ignore_symbols: []
 
   lumiere:
     split_positions: True
@@ -643,6 +691,7 @@ clients:
           unhedged_alert: False
           hedged_exclusion_positive: {'USDT': 0,'BTC': 5}
           hedged_exclusion_negative: {'USDT': 0} 
+          ignore_symbols: []
  
   eloquent:
     split_positions: True
@@ -656,6 +705,7 @@ clients:
           unhedged_alert: True
           hedged_exclusion_positive: {'USDT': 0}
           hedged_exclusion_negative: {'USDT': 0}
+          ignore_symbols: []
  
   galileo:
     split_positions: True
@@ -669,6 +719,7 @@ clients:
           unhedged_alert: True
           hedged_exclusion_positive: {'USDT': 0}
           hedged_exclusion_negative: {'USDT': 0}
+          ignore_symbols: []
   
   euclid:
     split_positions: True
@@ -682,6 +733,7 @@ clients:
           unhedged_alert: True
           hedged_exclusion_positive: {'USDT': 0}
           hedged_exclusion_negative: {'USDT': 0}
+          ignore_symbols: []
 
         subls1:
           base_ccy: USDT
@@ -691,6 +743,7 @@ clients:
           unhedged_alert: False
           hedged_exclusion_positive: {'USDT': 0}
           hedged_exclusion_negative: {'USDT': 0}
+          ignore_symbols: []
   
   newton:
     split_positions: True
@@ -704,6 +757,7 @@ clients:
           unhedged_alert: True
           hedged_exclusion_positive: {'USDT': 0}
           hedged_exclusion_negative: {'USDT': 0}
+          ignore_symbols: []
 
   
   shannon:
@@ -718,6 +772,7 @@ clients:
           unhedged_alert: True
           hedged_exclusion_positive: {'USDT': 0}
           hedged_exclusion_negative: {'USDT': 0}
+          ignore_symbols: []
 
         subls1:
           base_ccy: USDT
@@ -727,6 +782,7 @@ clients:
           unhedged_alert: False
           hedged_exclusion_positive: {'USDT': 0}
           hedged_exclusion_negative: {'USDT': 0}          
+          ignore_symbols: []
   
   hermann:
     split_positions: True
@@ -740,6 +796,7 @@ clients:
           unhedged_alert: True
           hedged_exclusion_positive: {'USDT': 0}
           hedged_exclusion_negative: {'USDT': 0}
+          ignore_symbols: []
 
         subbasis2:
           base_ccy: USDT
@@ -749,6 +806,7 @@ clients:
           unhedged_alert: True
           hedged_exclusion_positive: {'USDT': 0}
           hedged_exclusion_negative: {'USDT': 0}
+          ignore_symbols: []
              
   pascal:
     split_positions: True
@@ -762,6 +820,7 @@ clients:
           unhedged_alert: True
           hedged_exclusion_positive: {'USDT': 0}
           hedged_exclusion_negative: {'USDT': 0}
+          ignore_symbols: []
 
   frosty:
     split_positions: False
@@ -775,6 +834,7 @@ clients:
           unhedged_alert: False
           hedged_exclusion_positive: {}
           hedged_exclusion_negative: {}
+          ignore_symbols: []
           
         diags:
           base_ccy: BTC
@@ -784,3 +844,4 @@ clients:
           unhedged_alert: False
           hedged_exclusion_positive: {}
           hedged_exclusion_negative: {}
+          ignore_symbols: []
