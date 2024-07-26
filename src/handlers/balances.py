@@ -214,17 +214,24 @@ class Balances:
               else:
                 logger.error(client + " " + exchange + " " + sub_account + " balances: skipped as zero ticker price")
                 logger.error("Unable to collect balances for " + client + " " + exchange + " " + sub_account)
+
               return True
           
             base_balance += float(item['balance']) * cross_ratio
+
         except ccxt.ExchangeError as e:
           if logger == None:
             print(client + " " + exchange + " " + sub_account + " balances " + str(e))
           else:
             logger.warning(client + " " + exchange + " " + sub_account + " balances " + str(e))
-          pass
+
       else:
         for _key, _value in balanceValue.items():
+          if (_key in config['ignore_symbols'][exchange] or 
+              _key in config["clients"][client]["subaccounts"][exchange][sub_account]["ignore_symbols"]):
+            
+            continue
+
           cross_ratio = Helper().calc_cross_ccy_ratio(
             _key,
             config["clients"][client]["subaccounts"][exchange][sub_account]["base_ccy"],
@@ -238,8 +245,8 @@ class Balances:
             else:
               logger.error(client + " " + exchange + " " + sub_account + " balances: skipped as zero ticker price")
               logger.error("Unable to collect balances for " + client + " " + exchange + " " + sub_account)
-            continue
-            # return True
+
+            return True
           
           base_balance += _value * cross_ratio
 

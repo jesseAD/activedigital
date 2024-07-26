@@ -948,23 +948,28 @@ class Positions:
 
         if balance != None:
           for _key, _val in balance.items():
-            if _key != "base":
-              spot_position = {}
-              spot_position['base'] = _key
-              spot_position['quote'] = _key
-              spot_position['symbol'] = _key
-              spot_position['contracts'] = _val
-              spot_position['avgPrice'] = 0
-              spot_position['leverage'] = 0
-              spot_position['unrealizedPnl'] = 0
-              spot_position['lifetime_funding_rates'] = 0
-              spot_position['marginMode'] = None
-              spot_position['timestamp'] = int(timestamp.timestamp() * 1000)
-              spot_position['side'] = "long" if _val > 0 else "short"
-              spot_position['markPrice'] = 1 if _key == "USDT" else (0.00000001 if (_key + "/USDT") not in tickers else tickers[_key + "/USDT"]['last'])
-              spot_position['notional'] = spot_position['markPrice'] * spot_position['contracts']
+            if (_key == "base" or 
+                _key in config['ignore_symbols'][exchange] or 
+                _key in config["clients"][client]["subaccounts"][exchange][sub_account]["ignore_symbols"]):
+              
+              continue
 
-              spot_positions.append(spot_position)
+            spot_position = {}
+            spot_position['base'] = _key
+            spot_position['quote'] = _key
+            spot_position['symbol'] = _key
+            spot_position['contracts'] = _val
+            spot_position['avgPrice'] = 0
+            spot_position['leverage'] = 0
+            spot_position['unrealizedPnl'] = 0
+            spot_position['lifetime_funding_rates'] = 0
+            spot_position['marginMode'] = None
+            spot_position['timestamp'] = int(timestamp.timestamp() * 1000)
+            spot_position['side'] = "long" if _val > 0 else "short"
+            spot_position['markPrice'] = 1 if _key == "USDT" else tickers[_key + "/USDT"]['last']
+            spot_position['notional'] = spot_position['markPrice'] * spot_position['contracts']
+
+            spot_positions.append(spot_position)
 
         split_positions = []
         split_positions = get_unhedged(position_info, spot_positions)
