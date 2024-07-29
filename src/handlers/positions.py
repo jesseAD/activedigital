@@ -135,6 +135,15 @@ class Positions:
           for item in position_value:
             item['info']['symbol'] = item['info']['instrument_name']
 
+            if "delta" in item['info']:
+              item['delta'] = float(item['info']['delta'])
+            if "vega" in item['info']:
+              item['vega'] = float(item['info']['vega'])
+            if "theta" in item['info']:
+              item['theta'] = float(item['info']['theta'])
+            if "gamma" in item['info']:
+              item['gamma'] = float(item['info']['gamma'])
+
         position_value = Mapping().mapping_positions(exchange=exchange, positions=position_value)
 
       except ccxt.ExchangeError as e:
@@ -393,10 +402,10 @@ class Positions:
         instruments = list(self.instruments_db.find({'venue': exchange}))[0]['instrument_value']
       except Exception as e:
         if logger == None:
-          print(client + " " + exchange + " " + sub_account + " positions skipped" + "as non instruments")
+          print(client + " " + exchange + " " + sub_account + " positions skipped as non instruments")
           print("Unable to collect positions for " + client + " " + exchange + " " + sub_account)
         else:
-          logger.warning(client + " " + exchange + " " + sub_account + " positions skipped" + "as non instruments")
+          logger.warning(client + " " + exchange + " " + sub_account + " positions skipped as non instruments")
           logger.error("Unable to collect positions for " + client + " " + exchange + " " + sub_account)
 
         return True

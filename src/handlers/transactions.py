@@ -308,7 +308,7 @@ class Transactions:
                 
               transaction_value = DeribitHelper().get_transactions(exch=exch, params={"start_timestamp": last_time, "end_timestamp": end_time})
 
-              transaction_value.sort(key = lambda x: x['ts'])
+              transaction_value.sort(key = lambda x: x['timestamp'])
 
               for item in transaction_value:
                 item['info'] = {**item}
