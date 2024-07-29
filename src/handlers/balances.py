@@ -184,7 +184,16 @@ class Balances:
         else:
           logger.warning(client + " " + exchange + " " + sub_account + " balances " + str(e))
           logger.error("Unable to collect balances for " + client + " " + exchange + " " + sub_account)
+          
         return True
+      
+      except Exception as e:
+        if logger == None:
+          print(client + " " + exchange + " " + sub_account + " balances " + str(e))
+          print("Unable to collect balances for " + client + " " + exchange + " " + sub_account)
+        else:
+          logger.warning(client + " " + exchange + " " + sub_account + " balances " + str(e))
+          logger.error("Unable to collect balances for " + client + " " + exchange + " " + sub_account)
 
       balanceValue = {_key: balanceValue[_key] for _key in balanceValue if balanceValue[_key] != 0.0}
 
