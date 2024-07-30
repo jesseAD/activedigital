@@ -845,3 +845,16 @@ clients:
           hedged_exclusion_positive: {}
           hedged_exclusion_negative: {}
           ignore_symbols: []
+  rubin:
+    split_positions: True
+    subaccounts:
+      bybit:
+        subbasis1:
+          base_ccy: USDT
+          margin_mode: non_portfolio
+          funding_contributions: True
+          daily_returns: True
+          unhedged_alert: True
+          hedged_exclusion_positive: {'USDT': 0}
+          hedged_exclusion_negative: {'USDT': 0}
+          ignore_symbols: []
