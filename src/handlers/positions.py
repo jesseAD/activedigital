@@ -1071,6 +1071,9 @@ class Positions:
 
     position["runid"] = latest_run_id
 
+    if exchange == "deribit":
+      position['options_alerting'] = config['positions']['options_alerting']
+
     try:
       if config["positions"]["store_type"] == "timeseries":
         self.positions_db.insert_one(position)
