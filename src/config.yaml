@@ -96,6 +96,7 @@ positions:
   margin_mode: non_portfolio
   bybit_coins: ["BTC", "ETH", "XRP", "ADA", "DOT", "LTC", "EOS", "MANA", "USDT", "USDC", ]
   alert_threshold: 1000
+  options_alerting: 25
 
 open_orders:
   timeout: 120
