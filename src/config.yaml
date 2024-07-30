@@ -824,14 +824,14 @@ clients:
           ignore_symbols: []
 
   frosty:
-    split_positions: False
+    split_positions: True
     subaccounts:
       deribit:
         volarb:
           base_ccy: USDT
           margin_mode: non_portfolio
-          funding_contributions: False
-          daily_returns: False
+          funding_contributions: True
+          daily_returns: True
           unhedged_alert: False
           hedged_exclusion_positive: {}
           hedged_exclusion_negative: {}
@@ -840,8 +840,8 @@ clients:
         flipflop:
           base_ccy: USDT
           margin_mode: non_portfolio
-          funding_contributions: False
-          daily_returns: False
+          funding_contributions: True
+          daily_returns: True
           unhedged_alert: False
           hedged_exclusion_positive: {}
           hedged_exclusion_negative: {}
