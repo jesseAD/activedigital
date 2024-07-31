@@ -42,7 +42,7 @@ class Exchange:
       # exchange = ccxt.okex5(params)
       exchange = ccxt.okx(params)
     elif self.exchange == 'coinbase':
-      exchange = ccxt.coinbasepro()
+      exchange = ccxt.coinbase()
     elif self.exchange == 'huobi':
       exchange = ccxt.huobi(params)
     elif self.exchange == 'deribit':

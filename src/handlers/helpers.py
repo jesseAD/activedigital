@@ -319,6 +319,9 @@ class Helper:
   
   def get_inverse_open_orders(self, exch, params={}):
     return exch.dapiprivate_get_openorders(params=params)
+  
+  def get_vip_level(self, exch):
+    return "vip" + exch.sapi_get_account_info()['vipLevel']
 
 
 class OKXHelper(Helper):
@@ -410,6 +413,9 @@ class OKXHelper(Helper):
 
   def get_cross_margin_ratio(self, exch):
     return exch.private_get_account_balance()["data"][0]["mgnRatio"]
+  
+  def get_vip_level(self, exch):
+    return exch.private_get_account_config()['data'][0]['level'].lower()
 
 
 class BybitHelper(Helper):
@@ -497,6 +503,12 @@ class BybitHelper(Helper):
   
   def get_cross_margin_ratio(self, exch):
     return exch.private_get_v5_account_wallet_balance(params={'accountType': "UNIFIED"})['result']["list"][0]["accountMMRate"]
+  
+  def get_vip_level(self, exch):
+    vip_level = exch.private_get_user_v3_private_query_api()['result']['vipLevel'].lower()
+    vip_level = vip_level.replace(" ", "")
+    vip_level = vip_level.replace("-", "")
+    return vip_level
 
 
 class HuobiHelper(Helper):
