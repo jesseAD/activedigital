@@ -75,6 +75,8 @@ class Balances:
       'market_loan': 0
     }
     collateral = 0
+    vip_level = ""
+
   
     if balanceValue is None:
       if exch == None:
@@ -282,6 +284,32 @@ class Balances:
           
           collateral += _value * cross_ratio
 
+      # get vip level
+      try:
+        if exchange == "deribit": 
+          vip_level = config["clients"][client]["subaccounts"][exchange][sub_account]["vip_level"]
+
+        elif exchange == "huobi":
+          vip_level = config["clients"][client]["subaccounts"][exchange][sub_account]["vip_level"]
+
+        elif exchange == "okx":
+          vip_level = OKXHelper().get_vip_level(exch)
+
+        elif exchange == "binance":
+          vip_level = Helper().get_vip_level(exch)
+
+        elif exchange == "bybit":
+          vip_level = BybitHelper().get_vip_level(exch)
+
+      except Exception as e:
+        if logger == None:
+          print(client + " " + exchange + " " + sub_account + " vip level: " + str(e))
+          print("Unable to collect balances for " + client + " " + exchange + " " + sub_account)
+        else:
+          logger.error(client + " " + exchange + " " + sub_account + " vip level: " + str(e))
+          logger.error("Unable to collect balances for " + client + " " + exchange + " " + sub_account)
+
+
     # calculate balance change
     
     balance_values = self.balances_db.aggregate([
@@ -332,6 +360,7 @@ class Balances:
       "client": client,
       "venue": exchange,
       "account": "Main Account",
+      "vip_level": vip_level,
       "balance_value": balanceValue,
       "repayments": repayments,
       "loan_pools": loan_pools,

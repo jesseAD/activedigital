@@ -651,6 +651,7 @@ clients:
           hedged_exclusion_positive: {'USDT': 0}
           hedged_exclusion_negative: {'USDT': 0}          
           ignore_symbols: []
+          vip_level: prime8
 
   vigilant:
     split_positions: True
@@ -836,6 +837,7 @@ clients:
           hedged_exclusion_positive: {}
           hedged_exclusion_negative: {}
           ignore_symbols: []
+          vip_level: vip0
           
         flipflop:
           base_ccy: USDT
@@ -846,6 +848,8 @@ clients:
           hedged_exclusion_positive: {}
           hedged_exclusion_negative: {}
           ignore_symbols: []
+          vip_level: vip0
+          
   rubin:
     split_positions: True
     subaccounts:

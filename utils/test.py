@@ -42,14 +42,14 @@ params = {
         'warnOnFetchOpenOrdersWithoutSymbol': False
     },
     'headers': {},
-    # 'password': "!"
+    # 'password': "C5@y@3dg54"
 }
 
-exchange = ccxt.deribit(params)
-res = exchange.private_get_get_transaction_log(params={'currency': "BTC", 'start_timestamp': 1689970798000, 'end_timestamp': 1721593198000})
+exchange = ccxt.binance(params)
+vip_level = "vip" + exchange.sapi_get_account_info()['vipLevel']
 # res = exchange.private_get_get_transaction_log(params={'currency': "BTC", 'start_timestamp': 1689970798000, 'end_timestamp': 1721593198000})
 # print([item['type'] for item in res['result']['logs']])
-print(len(res['result']['logs']))
+print(vip_level)
 # exchange.papi_get_balance()
 
 # for runid in range(52255, 67355):
