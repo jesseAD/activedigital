@@ -87,6 +87,8 @@ class Positions:
   ):
     self.session.start_transaction()
 
+    vip_level = ""
+
     if position_value is None:
       while(not balance_finished[client + "_" + exchange + "_" + sub_account]):
         if logger == None:
@@ -558,7 +560,31 @@ class Positions:
 
               pass
         
-      # del position_value
+      # get vip level
+
+      try:
+        if exchange == "deribit": 
+          vip_level = config["clients"][client]["subaccounts"][exchange][sub_account]["vip_level"]
+
+        elif exchange == "huobi":
+          vip_level = config["clients"][client]["subaccounts"][exchange][sub_account]["vip_level"]
+
+        elif exchange == "okx":
+          vip_level = OKXHelper().get_vip_level(exch)
+
+        elif exchange == "binance":
+          vip_level = Helper().get_vip_level(exch)
+
+        elif exchange == "bybit":
+          vip_level = BybitHelper().get_vip_level(exch)
+
+      except Exception as e:
+        if logger == None:
+          print(client + " " + exchange + " " + sub_account + " vip level: " + str(e))
+          print("Unable to collect balances for " + client + " " + exchange + " " + sub_account)
+        else:
+          logger.error(client + " " + exchange + " " + sub_account + " vip level: " + str(e))
+          logger.error("Unable to collect balances for " + client + " " + exchange + " " + sub_account)
 
       run_ids = self.runs_db.find({}).sort("_id", -1).limit(1)
       latest_run_id = 0
@@ -580,6 +606,7 @@ class Positions:
             'client': client,
             'venue': exchange,
             'account': sub_account,
+            'tier': vip_level,
             'base': position['base'],
             'symbol': position['symbol'],
             'price_change': (ticker - mark_klines[0][1]) / mark_klines[0][1] * 100,
@@ -1015,6 +1042,7 @@ class Positions:
           "client": client,
           "venue": exchange,
           "account": "Main Account",
+          "tier": vip_level,
           "position_value": split_positions,
           "threshold": config['clients'][client]['hedged_threshold'] if "hedged_threshold" in config['clients'][client] else config['hedged']['threshold'],
           "unhedged_alert": config['clients'][client]['subaccounts'][exchange][sub_account]['unhedged_alert'],
@@ -1048,8 +1076,8 @@ class Positions:
     position = {
       "client": client,
       "venue": exchange,
-      # "positionType": positionType.lower(),
       "account": "Main Account",
+      "tier": vip_level,
       "position_value": position_info,
       "alert_threshold": config['positions']['alert_threshold'],
       "active": True,
