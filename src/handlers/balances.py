@@ -360,7 +360,7 @@ class Balances:
       "client": client,
       "venue": exchange,
       "account": "Main Account",
-      "vip_level": vip_level,
+      "tier": vip_level,
       "balance_value": balanceValue,
       "repayments": repayments,
       "loan_pools": loan_pools,
