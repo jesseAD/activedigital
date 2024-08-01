@@ -29,6 +29,8 @@ class OpenOrders:
     logger=None,
     secrets={},
   ):
+    vip_level = ""
+
     if openOrderValue is None:
       if exch == None:
         spec = (client.upper() + "_" + exchange.upper() + "_" + sub_account.upper() + "_")
@@ -90,6 +92,32 @@ class OpenOrders:
           logger.error("Unable to collect open orders for " + client + " " + exchange + " " + sub_account)
            
         return True
+      
+      # get vip level
+      
+      try:
+        if exchange == "deribit": 
+          vip_level = config["clients"][client]["subaccounts"][exchange][sub_account]["vip_level"]
+
+        elif exchange == "huobi":
+          vip_level = config["clients"][client]["subaccounts"][exchange][sub_account]["vip_level"]
+
+        elif exchange == "okx":
+          vip_level = OKXHelper().get_vip_level(exch)
+
+        elif exchange == "binance":
+          vip_level = Helper().get_vip_level(exch)
+
+        elif exchange == "bybit":
+          vip_level = BybitHelper().get_vip_level(exch)
+
+      except Exception as e:
+        if logger == None:
+          print(client + " " + exchange + " " + sub_account + " vip level: " + str(e))
+          print("Unable to collect balances for " + client + " " + exchange + " " + sub_account)
+        else:
+          logger.error(client + " " + exchange + " " + sub_account + " vip level: " + str(e))
+          logger.error("Unable to collect balances for " + client + " " + exchange + " " + sub_account)
 
 
     openOrderValue = [
@@ -146,6 +174,7 @@ class OpenOrders:
         "client": client,
         "venue": exchange,
         "account": "Main Account",
+        "tier": vip_level,
         "open_orders_value": openOrderValue,
         "timestamp": datetime.now(timezone.utc),
     }

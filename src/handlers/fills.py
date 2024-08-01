@@ -113,6 +113,8 @@ class Fills:
         for item in position['position_value']:
           symbols.append(item['info']['symbol'])
 
+    vip_level = ""
+    
     if fillsValue is None:
       if exch == None:
         spec = client.upper() + "_" + exchange.upper() + "_" + sub_account.upper() + "_"
@@ -364,6 +366,32 @@ class Fills:
           else:
             logger.warning(client + " " + exchange + " " + sub_account + " fills " + str(e) + " on " + symbol)
          
+      # get vip level
+      
+      try:
+        if exchange == "deribit": 
+          vip_level = config["clients"][client]["subaccounts"][exchange][sub_account]["vip_level"]
+
+        elif exchange == "huobi":
+          vip_level = config["clients"][client]["subaccounts"][exchange][sub_account]["vip_level"]
+
+        elif exchange == "okx":
+          vip_level = OKXHelper().get_vip_level(exch)
+
+        elif exchange == "binance":
+          vip_level = Helper().get_vip_level(exch)
+
+        elif exchange == "bybit":
+          vip_level = BybitHelper().get_vip_level(exch)
+
+      except Exception as e:
+        if logger == None:
+          print(client + " " + exchange + " " + sub_account + " vip level: " + str(e))
+          print("Unable to collect balances for " + client + " " + exchange + " " + sub_account)
+        else:
+          logger.error(client + " " + exchange + " " + sub_account + " vip level: " + str(e))
+          logger.error("Unable to collect balances for " + client + " " + exchange + " " + sub_account)
+    
     fills = []
 
     run_ids = self.runs_db.find({}).sort("_id", -1).limit(1)
@@ -381,6 +409,7 @@ class Fills:
           "client": client,
           "venue": exchange,
           "account": "Main Account",
+          "tier": vip_level,
           "fills_value": item,
           "symbol": symbol,
           "active": True,

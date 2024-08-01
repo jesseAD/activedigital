@@ -274,6 +274,35 @@ class FundingContributions():
 
       return True
     
+    # get vip level
+    
+    vip_level = ""
+
+    if session == None:
+      try:
+        if exchange == "deribit": 
+          vip_level = config["clients"][client]["subaccounts"][exchange][account]["vip_level"]
+
+        elif exchange == "huobi":
+          vip_level = config["clients"][client]["subaccounts"][exchange][account]["vip_level"]
+
+        elif exchange == "okx":
+          vip_level = OKXHelper().get_vip_level(exch)
+
+        elif exchange == "binance":
+          vip_level = Helper().get_vip_level(exch)
+
+        elif exchange == "bybit":
+          vip_level = BybitHelper().get_vip_level(exch)
+
+      except Exception as e:
+        if logger == None:
+          print(client + " " + exchange + " " + account + " vip level: " + str(e))
+          print("Unable to collect balances for " + client + " " + exchange + " " + account)
+        else:
+          logger.error(client + " " + exchange + " " + account + " vip level: " + str(e))
+          logger.error("Unable to collect balances for " + client + " " + exchange + " " + account)
+    
     run_ids = self.runs_db.find({}).sort("_id", -1).limit(1)
     latest_run_id = 0
     for item in run_ids:
@@ -286,6 +315,7 @@ class FundingContributions():
       'client': client,
       'venue': exchange,
       'account': account,
+      'tier': vip_level,
       'funding_contributions': item['funding_contributions'],
       'commission_contributions': item['commission_contributions'],
       'funding_payments': item['funding_payments'],
