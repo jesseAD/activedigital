@@ -15,25 +15,24 @@ config = read_config_file()
 load_dotenv()
 
 mongo_uri = 'mongodb+srv://activedigital:'+os.getenv("CLOUD_MONGO_PASSWORD")+'@mongodbcluster.nzphth1.mongodb.net/?retryWrites=true&w=majority'
-db = pymongo.MongoClient(mongo_uri)
-collection = db['active_digital']['balances']
+db = pymongo.MongoClient(mongo_uri)['active_digital']
 
 for client in config['clients']:
   for exchange in config['clients'][client]['subaccounts']:
     for account in config['clients'][client]['subaccounts'][exchange]:
-      balance = list(collection.find({
+      balance = list(db['balances'].find({
         'client': client,
         'venue': exchange,
         'account': account,
-        'runid': 70651
+        'runid': 70745
       }))
 
       if len(balance) > 0:
-        vip_level = balance[0]['vip_level']
+        vip_level = balance[0]['tier']
 
-        collection.update_many(
-          {'runid': {'$lt': 70651}, 'client': client, 'venue': exchange, 'account': account},
-          {'$set': {'vip_level': vip_level}}
+        db['fills'].update_many(
+          {'runid': {'$lt': 70745}, 'client': client, 'venue': exchange, 'account': account},
+          {'$set': {'tier': vip_level}}
         )
       # FundingContributions(db, "temp_collection").create(
       #   client=client,
