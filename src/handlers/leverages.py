@@ -203,6 +203,7 @@ class Leverages:
       for item in balance_value:
         try: 
           latest_balance = item['balance_value']
+          vip_level = item['tier']
         except Exception as e:
           if logger == None:
             print(client + " " + exchange + " " + account + " leverages " + str(e))
@@ -248,6 +249,7 @@ class Leverages:
       "client": client,
       "venue": exchange,
       "account": account,
+      "tier": vip_level,
       "leverage": leverage,
       "timestamp": datetime.now(timezone.utc),
     }

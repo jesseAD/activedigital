@@ -94,7 +94,7 @@ class OpenOrders:
         return True
       
       # get vip level
-      
+
       try:
         if exchange == "deribit": 
           vip_level = config["clients"][client]["subaccounts"][exchange][sub_account]["vip_level"]
@@ -210,6 +210,7 @@ class OpenOrders:
           },
           {
             "$set": {
+              "tier": vip_level,
               "open_orders_value": open_orders["open_orders_value"],
               "timestamp": open_orders["timestamp"],
               "runid": open_orders["runid"],
