@@ -86,6 +86,9 @@ class Bids_Asks:
           spot_value = HuobiHelper().get_bid_ask(exch=exch, symbol=symbol+"/USDT")
           perp_value = HuobiHelper().get_bid_ask(exch=exch, symbol=symbol+"/USDT:USDT")
 
+        elif exchange == "deribit":
+          return True
+
         bid_ask_value = {
           'spot': spot_value,
           'perp': perp_value,

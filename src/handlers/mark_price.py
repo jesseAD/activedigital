@@ -87,6 +87,9 @@ class MarkPrices:
         elif exchange == "huobi":
           res = HuobiHelper().get_mark_prices(exch=exch, symbol=symbols+"-USDT")
           markPriceValue = {symbols: res}
+
+        elif exchange == "deribit":
+          return True
       
       except ccxt.ExchangeError as e:
         if logger == None:

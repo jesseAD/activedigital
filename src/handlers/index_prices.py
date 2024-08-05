@@ -83,6 +83,9 @@ class IndexPrices:
           res = HuobiHelper().get_index_prices(exch=exch, symbol=symbols+"-USDT")
 
           indexPriceValue = {symbols: res}
+
+        elif exchange == "deribit":
+          return True
       
       except ccxt.ExchangeError as e:
         if logger == None:
