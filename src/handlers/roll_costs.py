@@ -280,6 +280,9 @@ class Roll_Costs:
               except:
                 pass
 
+            elif exchange == "deribit":
+              return True
+
           except ccxt.NetworkError as e:
             if logger == None:
               print(exchange +" roll costs " + symbol + " " + prompt + ": " + str(e))
