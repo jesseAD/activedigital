@@ -96,7 +96,7 @@ class Positions:
         else:
           logger.info(client + " " + exchange + " " + sub_account + " positions: balances was not finished")
 
-        time.sleep(0.5)
+        time.sleep(1)
 
       if exch == None:
         spec = (client.upper() + "_" + exchange.upper() + "_" + sub_account.upper() + "_")
