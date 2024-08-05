@@ -194,6 +194,7 @@ funding_contributions:
     okx: 8
     bybit: 8
     huobi: 8
+    deribit: 8
 
 # exchanges: ["deribit", ]
 exchanges: ["binance", "okx", "bybit", "huobi", "deribit"]
@@ -223,26 +224,26 @@ clients:
           hedged_exclusion_negative: {'USDT': 0}
           ignore_symbols: []
 
-      bybit:
-        sub1:
-          base_ccy: USD
-          margin_mode: non_portfolio
-          funding_contributions: False
-          daily_returns: False
-          unhedged_alert: False
-          hedged_exclusion_positive: {'USDT': 0}
-          hedged_exclusion_negative: {'USDT': 0}
-          ignore_symbols: []
+      # bybit:
+        # sub1:
+        #   base_ccy: USD
+        #   margin_mode: non_portfolio
+        #   funding_contributions: False
+        #   daily_returns: False
+        #   unhedged_alert: False
+        #   hedged_exclusion_positive: {'USDT': 0}
+        #   hedged_exclusion_negative: {'USDT': 0}
+        #   ignore_symbols: []
 
-        sub4:
-          base_ccy: USD
-          margin_mode: non_portfolio
-          funding_contributions: False
-          daily_returns: False
-          unhedged_alert: False
-          hedged_exclusion_positive: {'USDT': 0}
-          hedged_exclusion_negative: {'USDT': 0}
-          ignore_symbols: []
+        # sub4:
+        #   base_ccy: USD
+        #   margin_mode: non_portfolio
+        #   funding_contributions: False
+        #   daily_returns: False
+        #   unhedged_alert: False
+        #   hedged_exclusion_positive: {'USDT': 0}
+        #   hedged_exclusion_negative: {'USDT': 0}
+        #   ignore_symbols: []
 
   rundmc:
     split_positions: True
@@ -294,14 +295,14 @@ clients:
     subaccounts:
       okx:
         submn:
-          base_ccy: USDT
-          margin_mode: non_portfolio
-          funding_contributions: False
-          daily_returns: False
-          unhedged_alert: True
-          hedged_exclusion_positive: {'USDT': 0}
-          hedged_exclusion_negative: {'USDT': 0}
-          ignore_symbols: []
+          # base_ccy: USDT
+          # margin_mode: non_portfolio
+          # funding_contributions: False
+          # daily_returns: False
+          # unhedged_alert: True
+          # hedged_exclusion_positive: {'USDT': 0}
+          # hedged_exclusion_negative: {'USDT': 0}
+          # ignore_symbols: []
 
         subbasis:
           base_ccy: USDT
@@ -313,16 +314,16 @@ clients:
           hedged_exclusion_negative: {'USDT': 0}      
           ignore_symbols: []
 
-      binance:
-        submn:
-          base_ccy: USDT
-          margin_mode: portfolio
-          funding_contributions: False
-          daily_returns: False
-          unhedged_alert: True
-          hedged_exclusion_positive: {'USDT': 0}
-          hedged_exclusion_negative: {'USDT': 0}
-          ignore_symbols: []
+      # binance:
+      #   submn:
+      #     base_ccy: USDT
+      #     margin_mode: portfolio
+      #     funding_contributions: False
+      #     daily_returns: False
+      #     unhedged_alert: True
+      #     hedged_exclusion_positive: {'USDT': 0}
+      #     hedged_exclusion_negative: {'USDT': 0}
+      #     ignore_symbols: []
 
       bybit:
         subbasis:
@@ -361,15 +362,15 @@ clients:
           collateral: {'BTC': 1}        
           ignore_symbols: []
 
-        subjessetf:
-          base_ccy: USD
-          margin_mode: non_portfolio
-          funding_contributions: False
-          daily_returns: False
-          unhedged_alert: False
-          hedged_exclusion_positive: {'USDT': 0}
-          hedged_exclusion_negative: {'USDT': 0}        
-          ignore_symbols: []
+        # subjessetf:
+        #   base_ccy: USD
+        #   margin_mode: non_portfolio
+        #   funding_contributions: False
+        #   daily_returns: False
+        #   unhedged_alert: False
+        #   hedged_exclusion_positive: {'USDT': 0}
+        #   hedged_exclusion_negative: {'USDT': 0}        
+        #   ignore_symbols: []
 
         subadtest2:
           base_ccy: USD
@@ -519,15 +520,15 @@ clients:
           hedged_exclusion_negative: {'USDT': 0}
           ignore_symbols: []
 
-        subbasis2:
-          base_ccy: USDT
-          margin_mode: non_portfolio
-          funding_contributions: True
-          daily_returns: True
-          unhedged_alert: True
-          hedged_exclusion_positive: {'USDT': 0}
-          hedged_exclusion_negative: {'USDT': 0}          
-          ignore_symbols: []
+        # subbasis2:
+        #   base_ccy: USDT
+        #   margin_mode: non_portfolio
+        #   funding_contributions: True
+        #   daily_returns: True
+        #   unhedged_alert: True
+        #   hedged_exclusion_positive: {'USDT': 0}
+        #   hedged_exclusion_negative: {'USDT': 0}          
+        #   ignore_symbols: []
 
       bybit:
         subbasis1:
@@ -828,16 +829,16 @@ clients:
     split_positions: True
     subaccounts:
       deribit:
-        volarb:
-          base_ccy: USDT
-          margin_mode: non_portfolio
-          funding_contributions: True
-          daily_returns: True
-          unhedged_alert: False
-          hedged_exclusion_positive: {}
-          hedged_exclusion_negative: {}
-          ignore_symbols: []
-          vip_level: vip0
+        # volarb:
+        #   base_ccy: USDT
+        #   margin_mode: non_portfolio
+        #   funding_contributions: True
+        #   daily_returns: True
+        #   unhedged_alert: False
+        #   hedged_exclusion_positive: {}
+        #   hedged_exclusion_negative: {}
+        #   ignore_symbols: []
+        #   vip_level: vip0
           
         flipflop:
           base_ccy: USDT

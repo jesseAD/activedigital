@@ -30,8 +30,8 @@ for client in config['clients']:
       if len(balance) > 0:
         vip_level = balance[0]['tier']
 
-        db['fills'].update_many(
-          {'runid': {'$lt': 70745}, 'client': client, 'venue': exchange, 'account': account},
+        db['open_positions_price_change'].update_many(
+          {'runid': {'$lte': 70744}, 'client': client, 'venue': exchange, 'account': account},
           {'$set': {'tier': vip_level}}
         )
       # FundingContributions(db, "temp_collection").create(
