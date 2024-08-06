@@ -27,11 +27,11 @@ db = mongo_client['active_digital']
 #     {'$set': {'client': 'nifty'}}
 #   )
 
-# print(list(db['tickers'].find({'venue': "bybit"}))[0]['ticker_value']['RNDR/USDT'])
-db['balances'].update_many(
-  {},
-  {'$rename': {"vip_level": "tier"}}
-)
+print(list(db['tickers'].find({'venue': "binance"}))[0]['ticker_value']['DYDX/USDT'])
+# db['balances'].update_many(
+#   {},
+#   {'$rename': {"vip_level": "tier"}}
+# )
 
 # data = list(db['positions_archive'].find())
 # print("read")
