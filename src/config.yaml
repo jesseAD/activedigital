@@ -731,8 +731,8 @@ clients:
         subbasis1:
           base_ccy: USDT
           margin_mode: non_portfolio
-          funding_contributions: True
-          daily_returns: True
+          funding_contributions: False
+          daily_returns: False
           unhedged_alert: True
           hedged_exclusion_positive: {'USDT': 0}
           hedged_exclusion_negative: {'USDT': 0}
@@ -741,8 +741,8 @@ clients:
         subls1:
           base_ccy: USDT
           margin_mode: non_portfolio
-          funding_contributions: True
-          daily_returns: True
+          funding_contributions: False
+          daily_returns: False
           unhedged_alert: False
           hedged_exclusion_positive: {'USDT': 0}
           hedged_exclusion_negative: {'USDT': 0}

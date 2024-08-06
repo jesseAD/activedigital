@@ -36,20 +36,25 @@ params = {
     'secret': "",
     'enableRateLimit': True,
     'requests_trust_env':True,
-    'verbose': False,
+    'verbose': True,
     'options': {
         'adjustForTimeDifference':True,
         'warnOnFetchOpenOrdersWithoutSymbol': False
     },
     'headers': {},
-    # 'password': "C5@y@3dg54"
+    'password': "dcj5*kTT7%"
 }
 
-exchange = ccxt.binance(params)
-vip_level = "vip" + exchange.sapi_get_account_info()['vipLevel']
-# res = exchange.private_get_get_transaction_log(params={'currency': "BTC", 'start_timestamp': 1689970798000, 'end_timestamp': 1721593198000})
-# print([item['type'] for item in res['result']['logs']])
-print(vip_level)
+exchange = ccxt.okx(params)
+response = exchange.fetch_balance()
+
+balances = dict()
+for currency, balance in response['total'].items():
+    if float(balance) != 0:
+        balances[currency] = balance
+
+balances['base'] = float(response['info']['data'][0]['totalEq'])
+print(balances)
 # exchange.papi_get_balance()
 
 # for runid in range(52255, 67355):

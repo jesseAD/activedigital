@@ -336,6 +336,8 @@ class OKXHelper(Helper):
       if float(balance) != 0:
         balances[currency] = balance
 
+    balances['base'] = float(response['info']['data'][0]['totalEq'])
+
     repayments = {}
     max_loan = 0
     for item in response['info']['data'][0]['details']:
@@ -438,11 +440,14 @@ class BybitHelper(Helper):
     return positions
   
   def get_balances(self, exch):
-    balances = exch.fetch_balance()['info']['result']['list'][0]['coin']
+    res = exch.fetch_balance()['info']['result']['list'][0]
+
     result = dict()
-    for balance in balances:
+    for balance in res['coin']:
       if float(balance['equity']) != 0.0:
         result[balance['coin']] = float(balance['equity'])
+
+    result['base'] = float(res['totalEquity'])
 
     return result
   

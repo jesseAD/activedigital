@@ -236,6 +236,23 @@ class Balances:
           else:
             logger.warning(client + " " + exchange + " " + sub_account + " balances " + str(e))
 
+      elif exchange == "okx" or exchange == "bybit":
+        cross_ratio = Helper().calc_cross_ccy_ratio(
+          "USD", config["clients"][client]["subaccounts"][exchange][sub_account]["base_ccy"], ticker_value
+        )
+
+        if cross_ratio == 0:
+          if logger == None:
+            print(client + " " + exchange + " " + sub_account + " balances: skipped as zero ticker price")
+            print("Unable to collect balances for " + client + " " + exchange + " " + sub_account)
+          else:
+            logger.error(client + " " + exchange + " " + sub_account + " balances: skipped as zero ticker price")
+            logger.error("Unable to collect balances for " + client + " " + exchange + " " + sub_account)
+
+          return True
+        
+        base_balance = balanceValue["base"] * cross_ratio
+      
       else:
         for _key, _value in balanceValue.items():
           if (_key in config['ignore_symbols'][exchange] or 
