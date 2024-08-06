@@ -804,7 +804,7 @@ class DeribitHelper(Helper):
   def get_balances(self, exch):
     res = exch.private_get_get_account_summary(params={'currency': "BTC"})['result']
 
-    return {'USD': float(res['total_equity_usd'])}
+    return {'base': float(res['total_equity_usd'])}
   
   def get_cross_margin_ratio(self, exch):
     currencies = ["BTC", "ETH", "USDT", "USDC"]

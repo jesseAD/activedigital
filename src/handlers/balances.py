@@ -253,7 +253,10 @@ class Balances:
         
         base_balance = balanceValue["base"] * cross_ratio
       
-      else:
+      elif exchange == "deribit":
+        base_balance = balanceValue["base"]
+      
+      elif exchange == "huobi":
         for _key, _value in balanceValue.items():
           if (_key in config['ignore_symbols'][exchange] or 
               _key in config["clients"][client]["subaccounts"][exchange][sub_account]["ignore_symbols"]):
