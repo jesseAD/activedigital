@@ -301,13 +301,21 @@ class FundingRates:
             
             borrow_ccy = "USDT" if fundingRatesValue[-1]['quote'] == "USDT" else fundingRatesValue[-1]['base']
             
-            borrow_rates = list(self.borrow_rates_db.find({
-              "$and": [
-                {"venue": exchange},
-                {"code": borrow_ccy},
-                {"borrow_rates_value.timestamp": {"$gte": max(last_time - 1, fundingRatesValue[-1]["timestamp"] - 28800000), "$lt": fundingRatesValue[-1]["timestamp"]}}
-              ]
-            }))
+            borrow_rates = list(self.borrow_rates_db.aggregate([
+              {'$match': {
+                'venue': exchange,
+                'code': borrow_ccy,
+                "borrow_rates_value.timestamp": {
+                  '$gte': fundingRatesValue[-1]["timestamp"] - config['borrow_rates']['window'][exchange] * 3600000, 
+                  '$lte': fundingRatesValue[-1]["timestamp"]
+                }
+              }},
+              {'$group': {
+                '_id': "$market/vip",
+                'market/vip': {'$last': "$market/vip"},
+                'borrow_rates_value': {'$last': "$borrow_rates_value"}
+              }}
+            ]))
             market_borrow_rate = 0
             vip_borrow_rate = 0
             try:
@@ -374,13 +382,21 @@ class FundingRates:
             if len(long_fundings) > 0:
               self.long_funding_db.insert_many(long_fundings)
 
-            borrow_rates = list(self.borrow_rates_db.find({
-              "$and": [
-                {"venue": exchange},
-                {"code": symbol.split("/")[0]},
-                {"borrow_rates_value.timestamp": {"$gte": max(last_time - 1, fundingRatesValue[-1]["timestamp"] - 28800000), "$lt": fundingRatesValue[-1]["timestamp"]}}
-              ]
-            }))
+            borrow_rates = list(self.borrow_rates_db.aggregate([
+              {'$match': {
+                'venue': exchange,
+                'code': symbol.split("/")[0],
+                "borrow_rates_value.timestamp": {
+                  '$gte': fundingRatesValue[-1]["timestamp"] - config['borrow_rates']['window'][exchange] * 3600000, 
+                  '$lte': fundingRatesValue[-1]["timestamp"]
+                }
+              }},
+              {'$group': {
+                '_id': "$market/vip",
+                'market/vip': {'$last': "$market/vip"},
+                'borrow_rates_value': {'$last': "$borrow_rates_value"}
+              }}
+            ]))
             market_borrow_rate = 0
             vip_borrow_rate = 0
             try:

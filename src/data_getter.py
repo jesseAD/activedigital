@@ -126,7 +126,7 @@ print("inserted a new run")
 public_data_collectors = [
   instruments_wrapper, tickers_wrapper, roll_costs_wrapper,
   mark_prices_wrapper, index_prices_wrapper, bids_asks_wrapper,
-  funding_rates_wrapper, borrow_rates_wrapper
+  borrow_rates_wrapper, funding_rates_wrapper
 ]
 
 # private_data_collectors = [

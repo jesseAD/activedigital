@@ -36,25 +36,19 @@ params = {
     'secret': "",
     'enableRateLimit': True,
     'requests_trust_env':True,
-    'verbose': True,
+    'verbose': False,
     'options': {
         'adjustForTimeDifference':True,
         'warnOnFetchOpenOrdersWithoutSymbol': False
     },
     'headers': {},
-    'password': "dcj5*kTT7%"
+    # 'password': "dcj5*kTT7%"
 }
 
-exchange = ccxt.okx(params)
-response = exchange.fetch_balance()
+exchange = ccxt.binance(params)
+response = exchange.fetch_borrow_rate_history(code="WIF", since=1715059120000)
 
-balances = dict()
-for currency, balance in response['total'].items():
-    if float(balance) != 0:
-        balances[currency] = balance
-
-balances['base'] = float(response['info']['data'][0]['totalEq'])
-print(balances)
+print(response)
 # exchange.papi_get_balance()
 
 # for runid in range(52255, 67355):

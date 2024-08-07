@@ -1,5 +1,5 @@
 import pymongo
-from datetime import datetime, timezone
+from datetime import datetime, timezone, timedelta
 from dotenv import dotenv_values
 
 secrets = dotenv_values()
@@ -27,7 +27,7 @@ db = mongo_client['active_digital']
 #     {'$set': {'client': 'nifty'}}
 #   )
 
-print(list(db['tickers'].find({'venue': "binance"}))[0]['ticker_value']['DYDX/USDT'])
+# print(list(db['tickers'].find({'venue': "binance"}))[0]['ticker_value']['DYDX/USDT'])
 # db['balances'].update_many(
 #   {},
 #   {'$rename': {"vip_level": "tier"}}
@@ -77,3 +77,32 @@ print(list(db['tickers'].find({'venue': "binance"}))[0]['ticker_value']['DYDX/US
   # 'venue': "deribit",
   # 'account': "submn1"
 # })
+
+borrow_rates_db = db['borrow_rates']
+codes = list(borrow_rates_db.aggregate([
+  {'$match': {'venue': "binance"}},
+  {'$group': {
+    '_id': "$code",
+  }}
+]))
+codes = [item['_id'] for item in codes]
+
+# print(codes)
+
+recent_codes = list(borrow_rates_db.aggregate([
+  {'$match': {'venue': "binance"}},
+  {'$match': {'timestamp': {'$gte': datetime.now() - timedelta(days=30)}}},
+  {'$group': {
+    '_id': "$code",
+  }}
+]))
+recent_codes = [item['_id'] for item in recent_codes]
+print(recent_codes)
+
+for code in codes:
+  if code not in recent_codes:
+    print(code)
+    borrow_rates_db.delete_many({
+      'venue': "binance",
+      'code': code
+    })
