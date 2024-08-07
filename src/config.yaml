@@ -160,6 +160,12 @@ borrow_rates:
     bybit: daily # yearly, daily or interval
     huobi: daily # yearly, daily or interval
 
+  window:
+    binance: 24
+    okx: 2
+    bybit: 2
+    huobi: 2
+
 funding_rates:
   bybit:
     helper: bybithelper.py
@@ -832,8 +838,8 @@ clients:
         volarb:
            base_ccy: USDT
            margin_mode: non_portfolio
-           funding_contributions: True
-           daily_returns: True
+           funding_contributions: False
+           daily_returns: False
            unhedged_alert: False
            hedged_exclusion_positive: {}
            hedged_exclusion_negative: {}
@@ -843,8 +849,8 @@ clients:
         flipflop:
           base_ccy: USDT
           margin_mode: non_portfolio
-          funding_contributions: True
-          daily_returns: True
+          funding_contributions: False
+          daily_returns: False
           unhedged_alert: False
           hedged_exclusion_positive: {}
           hedged_exclusion_negative: {}
