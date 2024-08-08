@@ -165,6 +165,7 @@ borrow_rates:
     okx: 2
     bybit: 2
     huobi: 2
+    deribit: 0
 
 funding_rates:
   bybit:
