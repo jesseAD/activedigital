@@ -1753,245 +1753,245 @@ class Transactions:
 
       # transactions_union
 
-      transactions_union = []
+      # transactions_union = []
 
-      try:
-        for item in transaction:
-          income_type = ""
+      # try:
+      #   for item in transaction:
+      #     income_type = ""
 
-          if exchange == "binance":
-            if item['transaction_value']['incomeType'] == "TRANSFER" and item['transaction_value']['income'] > 0:
-              income_type = "COIN_SWAP_DEPOSIT"
-            elif item['transaction_value']['incomeType'] == "TRANSFER" and item['transaction_value']['income'] < 0:
-              income_type = "COIN_SWAP_WITHDRAW"
-            if item['transaction_value']['incomeType'] == "INTERNAL_TRANSFER" and item['transaction_value']['income'] > 0:
-              income_type = "COIN_SWAP_DEPOSIT"
-            elif item['transaction_value']['incomeType'] == "INTERNAL_TRANSFER" and item['transaction_value']['income'] < 0:
-              income_type = "COIN_SWAP_WITHDRAW"
-            elif item['transaction_value']['incomeType'] == "COMMISSION":
-              income_type = "COMMISSION"
-            elif item['transaction_value']['incomeType'] == "COMMISSION_REBATE":
-              income_type = "COMMISSION"
-            elif item['transaction_value']['incomeType'] == "API_REBATE":
-              income_type = "COMMISSION"
-            elif item['transaction_value']['incomeType'] == "FUNDING_FEE":
-              income_type = "FUNDING_FEE"
-            elif item['transaction_value']['incomeType'] == "ON_BORROW":
-              income_type = "BORROW"
-            elif item['transaction_value']['incomeType'] == "PERIODIC":
-              income_type = "BORROW"
+      #     if exchange == "binance":
+      #       if item['transaction_value']['incomeType'] == "TRANSFER" and item['transaction_value']['income'] > 0:
+      #         income_type = "COIN_SWAP_DEPOSIT"
+      #       elif item['transaction_value']['incomeType'] == "TRANSFER" and item['transaction_value']['income'] < 0:
+      #         income_type = "COIN_SWAP_WITHDRAW"
+      #       if item['transaction_value']['incomeType'] == "INTERNAL_TRANSFER" and item['transaction_value']['income'] > 0:
+      #         income_type = "COIN_SWAP_DEPOSIT"
+      #       elif item['transaction_value']['incomeType'] == "INTERNAL_TRANSFER" and item['transaction_value']['income'] < 0:
+      #         income_type = "COIN_SWAP_WITHDRAW"
+      #       elif item['transaction_value']['incomeType'] == "COMMISSION":
+      #         income_type = "COMMISSION"
+      #       elif item['transaction_value']['incomeType'] == "COMMISSION_REBATE":
+      #         income_type = "COMMISSION"
+      #       elif item['transaction_value']['incomeType'] == "API_REBATE":
+      #         income_type = "COMMISSION"
+      #       elif item['transaction_value']['incomeType'] == "FUNDING_FEE":
+      #         income_type = "FUNDING_FEE"
+      #       elif item['transaction_value']['incomeType'] == "ON_BORROW":
+      #         income_type = "BORROW"
+      #       elif item['transaction_value']['incomeType'] == "PERIODIC":
+      #         income_type = "BORROW"
 
-            transactions_union.append({
-              **item,
-              'transaction_value': {
-                'info': item['transaction_value']['info'],
-                'symbol': item['transaction_value']['symbol'],
-                'asset': item['transaction_value']['asset'],
-                'income': item['transaction_value']['income'],
-                'income_base': item['transaction_value']['income_base'],
-                'income_origin': item['transaction_value']['income_origin'],
-                'timestamp': item['transaction_value']['timestamp'],
-              },
-              'incomeType': income_type
-            })
+      #       transactions_union.append({
+      #         **item,
+      #         'transaction_value': {
+      #           'info': item['transaction_value']['info'],
+      #           'symbol': item['transaction_value']['symbol'],
+      #           'asset': item['transaction_value']['asset'],
+      #           'income': item['transaction_value']['income'],
+      #           'income_base': item['transaction_value']['income_base'],
+      #           'income_origin': item['transaction_value']['income_origin'],
+      #           'timestamp': item['transaction_value']['timestamp'],
+      #         },
+      #         'incomeType': income_type
+      #       })
         
-          elif exchange == "okx":
-            income = item['transaction_value']['fee']
-            income_base = item['transaction_value']['fee_base']
-            income_origin = item['transaction_value']['fee_origin']
+      #     elif exchange == "okx":
+      #       income = item['transaction_value']['fee']
+      #       income_base = item['transaction_value']['fee_base']
+      #       income_origin = item['transaction_value']['fee_origin']
 
-            if item['transaction_value']['type'] == "2":
-              income_type = "COMMISSION"
-              income = item['transaction_value']['fee']
-              income_base = item['transaction_value']['fee_base']
-              income_origin = item['transaction_value']['fee_origin']
-            elif item['transaction_value']['type'] == "8":
-              income_type = "FUNDING_FEE"
-              income = item['transaction_value']['pnl']
-              income_base = item['transaction_value']['pnl_base']
-              income_origin = item['transaction_value']['pnl_origin']
-            elif item['transaction_value']['type'] == "15":
-              income_type = "BORROW"
-              income = item['transaction_value']['sz']
-              income_base = item['transaction_value']['sz_base']
-              income_origin = item['transaction_value']['sz_origin']
-            elif item['transaction_value']['subType'] == "9":
-              income_type = "BORROW"
-              income = item['transaction_value']['sz']
-              income_base = item['transaction_value']['sz_base']
-              income_origin = item['transaction_value']['sz_origin']
-            elif item['transaction_value']['subType'] == "11":
-              income_type = "COIN_SWAP_DEPOSIT"
-              income = item['transaction_value']['sz']
-              income_base = item['transaction_value']['sz_base']
-              income_origin = item['transaction_value']['sz_origin']
-            elif item['transaction_value']['subType'] == "12":
-              income_type = "COIN_SWAP_WITHDRAW"
-              income = item['transaction_value']['sz']
-              income_base = item['transaction_value']['sz_base']
-              income_origin = item['transaction_value']['sz_origin']
-            elif item['transaction_value']['subType'] == "173":
-              income_type = "FUNDING_FEE"
-              income = item['transaction_value']['pnl']
-              income_base = item['transaction_value']['pnl_base']
-              income_origin = item['transaction_value']['pnl_origin']
-            elif item['transaction_value']['subType'] == "174":
-              income_type = "FUNDING_FEE"
-              income = item['transaction_value']['pnl']
-              income_base = item['transaction_value']['pnl_base']
-              income_origin = item['transaction_value']['pnl_origin']
-            elif item['transaction_value']['subType'] == "210":
-              income_type = "BORROW"
-              income = item['transaction_value']['sz']
-              income_base = item['transaction_value']['sz_base']
-              income_origin = item['transaction_value']['sz_origin']
-            elif item['transaction_value']['subType'] == "212":
-              income_type = "BORROW"
-              income = item['transaction_value']['sz']
-              income_base = item['transaction_value']['sz_base']
-              income_origin = item['transaction_value']['sz_origin']
-            elif item['transaction_value']['subType'] == "17":
-              income_type = "BORROW"
-              income = item['transaction_value']['sz']
-              income_base = item['transaction_value']['sz_base']
-              income_origin = item['transaction_value']['sz_origin']
+      #       if item['transaction_value']['type'] == "2":
+      #         income_type = "COMMISSION"
+      #         income = item['transaction_value']['fee']
+      #         income_base = item['transaction_value']['fee_base']
+      #         income_origin = item['transaction_value']['fee_origin']
+      #       elif item['transaction_value']['type'] == "8":
+      #         income_type = "FUNDING_FEE"
+      #         income = item['transaction_value']['pnl']
+      #         income_base = item['transaction_value']['pnl_base']
+      #         income_origin = item['transaction_value']['pnl_origin']
+      #       elif item['transaction_value']['type'] == "15":
+      #         income_type = "BORROW"
+      #         income = item['transaction_value']['sz']
+      #         income_base = item['transaction_value']['sz_base']
+      #         income_origin = item['transaction_value']['sz_origin']
+      #       elif item['transaction_value']['subType'] == "9":
+      #         income_type = "BORROW"
+      #         income = item['transaction_value']['sz']
+      #         income_base = item['transaction_value']['sz_base']
+      #         income_origin = item['transaction_value']['sz_origin']
+      #       elif item['transaction_value']['subType'] == "11":
+      #         income_type = "COIN_SWAP_DEPOSIT"
+      #         income = item['transaction_value']['sz']
+      #         income_base = item['transaction_value']['sz_base']
+      #         income_origin = item['transaction_value']['sz_origin']
+      #       elif item['transaction_value']['subType'] == "12":
+      #         income_type = "COIN_SWAP_WITHDRAW"
+      #         income = item['transaction_value']['sz']
+      #         income_base = item['transaction_value']['sz_base']
+      #         income_origin = item['transaction_value']['sz_origin']
+      #       elif item['transaction_value']['subType'] == "173":
+      #         income_type = "FUNDING_FEE"
+      #         income = item['transaction_value']['pnl']
+      #         income_base = item['transaction_value']['pnl_base']
+      #         income_origin = item['transaction_value']['pnl_origin']
+      #       elif item['transaction_value']['subType'] == "174":
+      #         income_type = "FUNDING_FEE"
+      #         income = item['transaction_value']['pnl']
+      #         income_base = item['transaction_value']['pnl_base']
+      #         income_origin = item['transaction_value']['pnl_origin']
+      #       elif item['transaction_value']['subType'] == "210":
+      #         income_type = "BORROW"
+      #         income = item['transaction_value']['sz']
+      #         income_base = item['transaction_value']['sz_base']
+      #         income_origin = item['transaction_value']['sz_origin']
+      #       elif item['transaction_value']['subType'] == "212":
+      #         income_type = "BORROW"
+      #         income = item['transaction_value']['sz']
+      #         income_base = item['transaction_value']['sz_base']
+      #         income_origin = item['transaction_value']['sz_origin']
+      #       elif item['transaction_value']['subType'] == "17":
+      #         income_type = "BORROW"
+      #         income = item['transaction_value']['sz']
+      #         income_base = item['transaction_value']['sz_base']
+      #         income_origin = item['transaction_value']['sz_origin']
 
-            transactions_union.append({
-              **item,
-              'transaction_value': {
-                'info': item['transaction_value']['info'],
-                'symbol': item['transaction_value']['instId'],
-                'asset': item['transaction_value']['ccy'],
-                'income': income,
-                'income_base': income_base,
-                'income_origin': income_origin,
-                'timestamp': item['transaction_value']['timestamp'],
-              },
-              'incomeType': income_type
-            })
+      #       transactions_union.append({
+      #         **item,
+      #         'transaction_value': {
+      #           'info': item['transaction_value']['info'],
+      #           'symbol': item['transaction_value']['instId'],
+      #           'asset': item['transaction_value']['ccy'],
+      #           'income': income,
+      #           'income_base': income_base,
+      #           'income_origin': income_origin,
+      #           'timestamp': item['transaction_value']['timestamp'],
+      #         },
+      #         'incomeType': income_type
+      #       })
 
-          elif exchange == "bybit":
-            income = item['transaction_value']['fee']
-            income_base = item['transaction_value']['fee_base']
-            income_origin = item['transaction_value']['fee_origin']
+      #     elif exchange == "bybit":
+      #       income = item['transaction_value']['fee']
+      #       income_base = item['transaction_value']['fee_base']
+      #       income_origin = item['transaction_value']['fee_origin']
 
-            if item['trade_type'] == "borrow":
-              income_type = "BORROW"
-            else:
-              if item['transaction_value']['type'] == "TRADE":
-                income_type = "COMMISSION"
-              elif item['transaction_value']['type'] == "SETTLEMENT":
-                income_type = "FUNDING_FEE"
-                income = item['transaction_value']['funding']
-                income_base = item['transaction_value']['funding_base']
-                income_origin = item['transaction_value']['funding_origin']
-              elif item['transaction_value']['type'] == "TRANSFER_IN":
-                income_type = "COIN_SWAP_DEPOSIT"
-                income = item['transaction_value']['cashFlow']
-                income_base = item['transaction_value']['cashFlow_base']
-                income_origin = item['transaction_value']['cashFlow_origin']
-              elif item['transaction_value']['type'] == "TRANSFER_OUT":
-                income_type = "COIN_SWAP_WITHDRAW"
-                income = item['transaction_value']['cashFlow']
-                income_base = item['transaction_value']['cashFlow_base']
-                income_origin = item['transaction_value']['cashFlow_origin']
+      #       if item['trade_type'] == "borrow":
+      #         income_type = "BORROW"
+      #       else:
+      #         if item['transaction_value']['type'] == "TRADE":
+      #           income_type = "COMMISSION"
+      #         elif item['transaction_value']['type'] == "SETTLEMENT":
+      #           income_type = "FUNDING_FEE"
+      #           income = item['transaction_value']['funding']
+      #           income_base = item['transaction_value']['funding_base']
+      #           income_origin = item['transaction_value']['funding_origin']
+      #         elif item['transaction_value']['type'] == "TRANSFER_IN":
+      #           income_type = "COIN_SWAP_DEPOSIT"
+      #           income = item['transaction_value']['cashFlow']
+      #           income_base = item['transaction_value']['cashFlow_base']
+      #           income_origin = item['transaction_value']['cashFlow_origin']
+      #         elif item['transaction_value']['type'] == "TRANSFER_OUT":
+      #           income_type = "COIN_SWAP_WITHDRAW"
+      #           income = item['transaction_value']['cashFlow']
+      #           income_base = item['transaction_value']['cashFlow_base']
+      #           income_origin = item['transaction_value']['cashFlow_origin']
 
-            transactions_union.append({
-              **item,
-              'transaction_value': {
-                'info': item['transaction_value']['info'],
-                'symbol': item['transaction_value']['symbol'],
-                'asset': item['transaction_value']['currency'],
-                'income': income,
-                'income_base': income_base,
-                'income_origin': income_origin,
-                'timestamp': item['transaction_value']['timestamp'],
-              },
-              'incomeType': income_type
-            })
+      #       transactions_union.append({
+      #         **item,
+      #         'transaction_value': {
+      #           'info': item['transaction_value']['info'],
+      #           'symbol': item['transaction_value']['symbol'],
+      #           'asset': item['transaction_value']['currency'],
+      #           'income': income,
+      #           'income_base': income_base,
+      #           'income_origin': income_origin,
+      #           'timestamp': item['transaction_value']['timestamp'],
+      #         },
+      #         'incomeType': income_type
+      #       })
 
-          elif exchange == "huobi":
-            if item['transaction_value']['type'] == "30" or item['transaction_value']['type'] == "31":
-              income_type = "FUNDING_FEE"
-            elif (
-              item['transaction_value']['type'] == "5" or 
-              item['transaction_value']['type'] == "6" or 
-              item['transaction_value']['type'] == "7" or 
-              item['transaction_value']['type'] == "8" or
-              item['trade_type'] == "spot"
-            ):
-              income_type = "COMMISSION"
-            elif (
-              item['transaction_value']['type'] == "14" or 
-              item['transaction_value']['type'] == "34" or 
-              item['transaction_value']['type'] == "37" or 
-              item['transaction_value']['type'] == "38" 
-            ):
-              income_type = "COIN_SWAP_DEPOSIT"
-            elif (
-              item['transaction_value']['type'] == "15" or 
-              item['transaction_value']['type'] == "36" or 
-              item['transaction_value']['type'] == "39" 
-            ):
-              income_type = "COIN_SWAP_WITHDRAW"
+      #     elif exchange == "huobi":
+      #       if item['transaction_value']['type'] == "30" or item['transaction_value']['type'] == "31":
+      #         income_type = "FUNDING_FEE"
+      #       elif (
+      #         item['transaction_value']['type'] == "5" or 
+      #         item['transaction_value']['type'] == "6" or 
+      #         item['transaction_value']['type'] == "7" or 
+      #         item['transaction_value']['type'] == "8" or
+      #         item['trade_type'] == "spot"
+      #       ):
+      #         income_type = "COMMISSION"
+      #       elif (
+      #         item['transaction_value']['type'] == "14" or 
+      #         item['transaction_value']['type'] == "34" or 
+      #         item['transaction_value']['type'] == "37" or 
+      #         item['transaction_value']['type'] == "38" 
+      #       ):
+      #         income_type = "COIN_SWAP_DEPOSIT"
+      #       elif (
+      #         item['transaction_value']['type'] == "15" or 
+      #         item['transaction_value']['type'] == "36" or 
+      #         item['transaction_value']['type'] == "39" 
+      #       ):
+      #         income_type = "COIN_SWAP_WITHDRAW"
 
-            transactions_union.append({
-              **item,
-              'transaction_value': {
-                'info': item['transaction_value']['info'],
-                'symbol': item['transaction_value']['contract_code'],
-                'asset': item['transaction_value']['currency'],
-                'income': item['transaction_value']['amount'],
-                'income_base': item['transaction_value']['amount_base'],
-                'income_origin': item['transaction_value']['amount_origin'],
-                'timestamp': item['transaction_value']['timestamp'],
-              },
-              'incomeType': income_type
-            })
+      #       transactions_union.append({
+      #         **item,
+      #         'transaction_value': {
+      #           'info': item['transaction_value']['info'],
+      #           'symbol': item['transaction_value']['contract_code'],
+      #           'asset': item['transaction_value']['currency'],
+      #           'income': item['transaction_value']['amount'],
+      #           'income_base': item['transaction_value']['amount_base'],
+      #           'income_origin': item['transaction_value']['amount_origin'],
+      #           'timestamp': item['transaction_value']['timestamp'],
+      #         },
+      #         'incomeType': income_type
+      #       })
 
-          elif exchange == "deribit":
-            if item['transaction_value']['type'] == "30" or item['transaction_value']['type'] == "31":
-              income_type = "FUNDING_FEE"
-            elif (
-              item['transaction_value']['type'] == "maker" or 
-              item['transaction_value']['type'] == "taker" or 
-              item['transaction_value']['type'] == "open" or 
-              item['transaction_value']['type'] == "close" or
-              item['transaction_value']['type'] == "liquidation" or
-              item['transaction_value']['type'] == "buy" or
-              item['transaction_value']['type'] == "sell" or
-              item['transaction_value']['type'] == "delivery" or
-              item['transaction_value']['type'] == "option" or
-              item['transaction_value']['type'] == "future" or
-              item['transaction_value']['type'] == "correction" or
-              item['transaction_value']['type'] == "block_trade" or
-              item['trade_type'] == "trade"
-            ):
-              income_type = "COMMISSION"
-            elif item['transaction_value']['type'] == "deposit":
-              income_type = "COIN_SWAP_DEPOSIT"
-            elif item['transaction_value']['type'] == "withdrawal":
-              income_type = "COIN_SWAP_WITHDRAW"
+      #     elif exchange == "deribit":
+      #       if item['transaction_value']['type'] == "30" or item['transaction_value']['type'] == "31":
+      #         income_type = "FUNDING_FEE"
+      #       elif (
+      #         item['transaction_value']['type'] == "maker" or 
+      #         item['transaction_value']['type'] == "taker" or 
+      #         item['transaction_value']['type'] == "open" or 
+      #         item['transaction_value']['type'] == "close" or
+      #         item['transaction_value']['type'] == "liquidation" or
+      #         item['transaction_value']['type'] == "buy" or
+      #         item['transaction_value']['type'] == "sell" or
+      #         item['transaction_value']['type'] == "delivery" or
+      #         item['transaction_value']['type'] == "option" or
+      #         item['transaction_value']['type'] == "future" or
+      #         item['transaction_value']['type'] == "correction" or
+      #         item['transaction_value']['type'] == "block_trade" or
+      #         item['trade_type'] == "trade"
+      #       ):
+      #         income_type = "COMMISSION"
+      #       elif item['transaction_value']['type'] == "deposit":
+      #         income_type = "COIN_SWAP_DEPOSIT"
+      #       elif item['transaction_value']['type'] == "withdrawal":
+      #         income_type = "COIN_SWAP_WITHDRAW"
 
-            transactions_union.append({
-              **item,
-              'transaction_value': {
-                'info': item['transaction_value']['info'],
-                'symbol': item['transaction_value']['instrument_name'],
-                'asset': item['transaction_value']['currency'],
-                'income': item['transaction_value']['change'],
-                'income_base': item['transaction_value']['change_base'],
-                'income_origin': item['transaction_value']['change_origin'],
-                'timestamp': item['transaction_value']['timestamp'],
-              },
-              'incomeType': income_type
-            })
+      #       transactions_union.append({
+      #         **item,
+      #         'transaction_value': {
+      #           'info': item['transaction_value']['info'],
+      #           'symbol': item['transaction_value']['instrument_name'],
+      #           'asset': item['transaction_value']['currency'],
+      #           'income': item['transaction_value']['change'],
+      #           'income_base': item['transaction_value']['change_base'],
+      #           'income_origin': item['transaction_value']['change_origin'],
+      #           'timestamp': item['transaction_value']['timestamp'],
+      #         },
+      #         'incomeType': income_type
+      #       })
 
-      except Exception as e:
-        if logger == None:
-          print(client + " " + exchange + " " + sub_account + " transactions union " + str(e))
-        else:
-          logger.error(client + " " + exchange + " " + sub_account + " transactions union " + str(e))
+      # except Exception as e:
+      #   if logger == None:
+      #     print(client + " " + exchange + " " + sub_account + " transactions union " + str(e))
+      #   else:
+      #     logger.error(client + " " + exchange + " " + sub_account + " transactions union " + str(e))
     
     #  MTD PnL
     try:
@@ -2124,7 +2124,7 @@ class Transactions:
 
       elif config["transactions"]["store_type"] == "timeseries":
         self.transactions_db.insert_many(transaction)
-        self.transactions_union_db.insert_many(transactions_union)
+        # self.transactions_union_db.insert_many(transactions_union)
 
       del transaction
 
