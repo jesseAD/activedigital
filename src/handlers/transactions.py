@@ -1950,9 +1950,7 @@ class Transactions:
             })
 
           elif exchange == "deribit":
-            if item['transaction_value']['type'] == "30" or item['transaction_value']['type'] == "31":
-              income_type = "FUNDING_FEE"
-            elif (
+            if (
               item['transaction_value']['type'] == "maker" or 
               item['transaction_value']['type'] == "taker" or 
               item['transaction_value']['type'] == "open" or 
@@ -1964,8 +1962,7 @@ class Transactions:
               item['transaction_value']['type'] == "option" or
               item['transaction_value']['type'] == "future" or
               item['transaction_value']['type'] == "correction" or
-              item['transaction_value']['type'] == "block_trade" or
-              item['trade_type'] == "trade"
+              item['transaction_value']['type'] == "block_trade"
             ):
               income_type = "COMMISSION"
             elif item['transaction_value']['type'] == "deposit":
