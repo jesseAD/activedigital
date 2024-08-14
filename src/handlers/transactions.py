@@ -1796,10 +1796,6 @@ class Transactions:
             })
         
           elif exchange == "okx":
-            income = item['transaction_value']['fee']
-            income_base = item['transaction_value']['fee_base']
-            income_origin = item['transaction_value']['fee_origin']
-
             if item['transaction_value']['type'] == "2":
               income_type = "COMMISSION"
               income = item['transaction_value']['fee']
