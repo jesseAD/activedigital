@@ -74,7 +74,7 @@ def get_unhedged(perp=[], spot=[]):
       else:
         new_position['avgPrice'] = 0
     else:
-      new_position['avgPrice'] = float(position['info']['avgPrice'])
+      new_position['avgPrice'] = 0
 
     try:
       new_position['leverage'] = float(position['leverage'])
