@@ -439,6 +439,7 @@ class Positions:
 
           elif exchange == "deribit":
             value["liquidationBuffer"] = liquidation_buffer
+            value["notional"] = value['contracts'] * tickers[value['base'] + "/USDT"]['last']
             position_info.append(value)
 
           elif exchange == "okx":
