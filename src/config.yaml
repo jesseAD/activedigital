@@ -833,7 +833,7 @@ clients:
           ignore_symbols: []
 
   frosty:
-    split_positions: True
+    split_positions: False
     subaccounts:
       deribit:
         volarb:
