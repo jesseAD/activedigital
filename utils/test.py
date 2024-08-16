@@ -23,7 +23,7 @@ load_dotenv()
 # logger = Log()
 
 mongo_uri = 'mongodb+srv://activedigital:'+os.getenv("CLOUD_MONGO_PASSWORD")+'@mongodbcluster.nzphth1.mongodb.net/?retryWrites=true&w=majority'
-db = pymongo.MongoClient(mongo_uri)
+db = pymongo.MongoClient(mongo_uri)['active_digital']
 
 # DailyReturns(db, "daily_returns").create(
 #   client="shannon",
@@ -32,23 +32,87 @@ db = pymongo.MongoClient(mongo_uri)
 # )
 
 params = {
-    'apiKey': "",
-    'secret': "",
-    'enableRateLimit': True,
-    'requests_trust_env':True,
-    'verbose': False,
-    'options': {
-        'adjustForTimeDifference':True,
-        'warnOnFetchOpenOrdersWithoutSymbol': False
-    },
-    'headers': {},
-    # 'password': "dcj5*kTT7%"
+  'apiKey': "",
+  'secret': "",
+  'enableRateLimit': True,
+  'requests_trust_env':True,
+  'verbose': False,
+  'options': {
+      'adjustForTimeDifference':True,
+      'warnOnFetchOpenOrdersWithoutSymbol': False
+  },
+  'headers': {},
+  # 'password': "dcj5*kTT7%"
 }
 
 exchange = ccxt.binance(params)
-response = exchange.fetch_borrow_rate_history(code="WIF", since=1715059120000)
 
-print(response)
+for i in range(8):
+  start = int(datetime(2024, i+1, 1).timestamp() * 1000)
+  end = int(datetime(2024, i+2, 1).timestamp() * 1000)
+  print(start)
+
+  response = exchange.sapi_get_sub_account_transfer_subuserhistory(params={
+    'startTime': start,
+    'endTime': end,
+    'type': 2,
+    'limit': 1000,
+  })
+  print(response)
+
+  transactions = []
+  transactions_union = []
+  for item in response:
+    date = datetime.fromtimestamp(int(item['time']) / 1000)
+
+    run = list(db['runs'].find({'start_time': {'$gte': date}}).sort('runid', 1).limit(1))[0]
+
+    transactions.append({
+      'transaction_value': {
+        'info': item,
+        'asset': item['asset'],
+        'incomeType': "TRANSFER",
+        'income': -float(item['qty']),
+        'income_base': -float(item['qty']),
+        'income_origin': -float(item['qty']),
+        'timestamp': int(item['time']) - 600000
+      },
+      'client': "blackburn",
+      'venue': "binance",
+      'account': "submn1",
+      'runid': run['runid'],
+      'timestamp': run['end_time'],
+      'convert_ccy': "USDT",
+      'trade_type': "um"
+    })
+
+    transactions_union.append({
+      'transaction_value': {
+        'info': item,
+        'asset': item['asset'],
+        'symbol': "",
+        'income': -float(item['qty']),
+        'income_base': -float(item['qty']),
+        'income_origin': -float(item['qty']),
+        'timestamp': int(item['time']) - 600000
+      },
+      'client': "blackburn",
+      'venue': "binance",
+      'account': "submn1",
+      'runid': run['runid'],
+      'timestamp': run['end_time'],
+      'convert_ccy': "USDT",
+      'trade_type': "um",
+      'incomeType': "COIN_SWAP_WITHDRAW"
+    })
+
+  print(transactions)
+  print(transactions_union)
+  if len(transactions) > 0:
+    db['transactions'].insert_many(transactions)
+    db['transactions_union'].insert_many(transactions_union)
+
+# print(response)
 # exchange.papi_get_balance()
 
 # for runid in range(52255, 67355):
