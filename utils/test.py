@@ -46,7 +46,8 @@ params = {
 }
 
 exchange = ccxt.binance(params)
-
+response = exchange.sapi_get_sub_account_transfer_subuserhistory(params={})
+print(response)
 for i in range(8):
   start = int(datetime(2024, i+1, 1).timestamp() * 1000)
   end = int(datetime(2024, i+2, 1).timestamp() * 1000)

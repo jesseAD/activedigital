@@ -27,7 +27,7 @@ db = mongo_client['active_digital']
 #     {'$set': {'client': 'nifty'}}
 #   )
 
-db['transactions_union'].delete_many({'client': "edison", 'venue': "okx", 'account': "submn1", 'runid': {'$lt': 71647}})
+db['funding_contributions'].delete_many({'runid': {'$gt': 71978}})
 
 # print(list(db['tickers'].find({'venue': "binance"}))[0]['ticker_value']['DYDX/USDT'])
 # db['balances'].update_many(
