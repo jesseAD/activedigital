@@ -29,7 +29,7 @@ accounts = list(db['transactions'].aggregate([
   {'$sort': {'client': 1, 'venue': 1, 'account': 1}}
 ]))
 
-accounts = accounts[8:]
+# accounts = accounts[8:]
 
 print(accounts)
 
@@ -37,8 +37,20 @@ def backfill_account(account):
 # for account in accounts:
   print(account)
 
-  runids = list(db['transactions'].aggregate([
+  runids_done = list(db['transactions_union'].aggregate([
     {'$match': {'client': account['client'], 'venue': account['venue'], 'account': account['account'], 'runid': {'$lt': 71647}}},
+    {'$sort': {'runid': 1}},
+    {'$group': {
+      '_id': None,
+      'runid': {'$last': "$runid"}
+    }}
+  ]))
+
+  if len(runids_done) == 0:
+    return
+  
+  runids = list(db['transactions'].aggregate([
+    {'$match': {'client': account['client'], 'venue': account['venue'], 'account': account['account'], 'runid': {'$lt': 71647, '$gt': runids_done[0]['runid']}}},
     {'$group': {'_id': "$runid"}},
     {'$sort': {'_id': 1}}
   ]))
@@ -285,11 +297,15 @@ def backfill_account(account):
 
   print("Finished " + str(account))
 
-executor = concurrent.futures.ThreadPoolExecutor(50)
-threads = []
 
 for account in accounts:
-  executor.submit(backfill_account, account)
+  backfill_account(account)
 
-for thread in concurrent.futures.as_completed(threads):
-  thread.cancel()
+# executor = concurrent.futures.ThreadPoolExecutor(50)
+# threads = []
+
+# for account in accounts:
+#   executor.submit(backfill_account, account)
+
+# for thread in concurrent.futures.as_completed(threads):
+#   thread.cancel()

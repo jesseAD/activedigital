@@ -249,7 +249,7 @@ else:
   for exchange in config['exchanges']:
     exchs[exchange] = Exchange(exchange).exch()
 
-  # public_pool(public_data_collectors, config['exchanges'], symbols)
+  public_pool(public_data_collectors, config['exchanges'], symbols)
 
   exchs = {}
 

@@ -337,10 +337,6 @@ class Transactions:
                           '$eq': [
                             '$account', sub_account
                           ]
-                        }, {
-                          '$eq': [
-                            '$trade_type', 'cm'
-                          ]
                         }
                       ]
                     }
@@ -413,42 +409,6 @@ class Transactions:
                 )
 
                 transaction_value['cm'] = cm_trades
-              
-              transactions_values = self.transactions_db.aggregate([
-                {
-                  '$match': {
-                    '$expr': {
-                      '$and': [
-                        {
-                          '$eq': [
-                            '$client', client
-                          ]
-                        }, {
-                          '$eq': [
-                            '$venue', exchange
-                          ]
-                        }, {
-                          '$eq': [
-                            '$account', sub_account
-                          ]
-                        }, {
-                          '$eq': [
-                            '$trade_type', 'um'
-                          ]
-                        }
-                      ]
-                    }
-                  }
-                }, {
-                  '$sort': {'transaction_value.timestamp': -1}
-                }, {
-                  '$limit': 1
-                }
-              ])
-
-              current_value = None
-              for item in transactions_values:
-                current_value = item['transaction_value']
 
               if current_value is None:
                 um_trades = []
@@ -477,6 +437,7 @@ class Transactions:
                 )
 
                 transaction_value['um'] = um_trades
+
               else:
                 last_time = current_value["timestamp"] + 1 + config['transactions']['time_slack']
 
@@ -506,42 +467,6 @@ class Transactions:
                 )
 
                 transaction_value['um'] = um_trades
-
-              transactions_values = self.transactions_db.aggregate([
-                {
-                  '$match': {
-                    '$expr': {
-                      '$and': [
-                        {
-                          '$eq': [
-                            '$client', client
-                          ]
-                        }, {
-                          '$eq': [
-                            '$venue', exchange
-                          ]
-                        }, {
-                          '$eq': [
-                            '$account', sub_account
-                          ]
-                        }, {
-                          '$eq': [
-                            '$trade_type', 'borrow'
-                          ]
-                        }
-                      ]
-                    }
-                  }
-                }, {
-                  '$sort': {'transaction_value.timestamp': -1}
-                }, {
-                  '$limit': 1
-                }
-              ])
-
-              current_value = None
-              for item in transactions_values:
-                current_value = item['transaction_value']
 
               if current_value is None:
                 borrow_trades = []
@@ -605,6 +530,67 @@ class Transactions:
 
                 transaction_value['borrow'] = borrow_trades
 
+              if current_value is None:
+                transfers = []
+
+                while(True):
+                  last_time = int(datetime.timestamp(datetime(datetime.now(timezone.utc).year, datetime.now(timezone.utc).month, 1)) * 1000)
+                  end_time = int(transfers[0]['time']) - 1 if len(transfers) > 0 else int(datetime.timestamp(datetime.now(timezone.utc)) * 1000)
+
+                  try:
+                    res = Helper().get_transfers(exch=exch, params={"startTime": last_time, "endTime": end_time})
+                  except:
+                    break
+
+                  if len(res) == 0:
+                    break
+
+                  res.sort(key = lambda x: x['time'])
+                  transfers = res + transfers
+
+                  time.sleep(0.5)
+
+                for item in transfers:
+                  item['info'] = {**item}
+                  item['incomeType'] = "TRANSFER"
+                  
+                transfers = Mapping().mapping_transactions(
+                  exchange=exchange, transactions=transfers
+                )
+
+                transaction_value['transfer'] = transfers
+
+              else:
+                last_time = current_value["timestamp"] + 1 + config['transactions']['time_slack']
+
+                transfers = []
+
+                while(True):
+                  end_time = int(transfers[0]['time']) - 1 if len(transfers) > 0 else int(datetime.timestamp(datetime.now(timezone.utc)) * 1000)
+
+                  try:
+                    res = Helper().get_transfers(exch=exch, params={"startTime": last_time, "endTime": end_time})
+                  except:
+                    break
+
+                  if len(res) == 0:
+                    break
+
+                  res.sort(key = lambda x: x['time'])
+                  transfers = res + transfers
+
+                  time.sleep(0.5)
+                
+                for item in transfers:
+                  item['info'] = {**item}
+                  item['incomeType'] = "TRANSFER"
+
+                transfers = Mapping().mapping_transactions(
+                  exchange=exchange, transactions=transfers
+                )
+
+                transaction_value['transfer'] = transfers
+
             else:
               transactions_values = self.transactions_db.aggregate([
                 {
@@ -622,10 +608,6 @@ class Transactions:
                         }, {
                           '$eq': [
                             '$account', sub_account
-                          ]
-                        }, {
-                          '$eq': [
-                            '$trade_type', 'future'
                           ]
                         }
                       ]
@@ -699,42 +681,6 @@ class Transactions:
 
                 transaction_value['future'] = futures_trades
 
-              transactions_values = self.transactions_db.aggregate([
-                {
-                  '$match': {
-                    '$expr': {
-                      '$and': [
-                        {
-                          '$eq': [
-                            '$client', client
-                          ]
-                        }, {
-                          '$eq': [
-                            '$venue', exchange
-                          ]
-                        }, {
-                          '$eq': [
-                            '$account', sub_account
-                          ]
-                        }, {
-                          '$eq': [
-                            '$trade_type', 'spot'
-                          ]
-                        }
-                      ]
-                    }
-                  }
-                }, {
-                  '$sort': {'transaction_value.timestamp': -1}
-                }, {
-                  '$limit': 1
-                }
-              ])
-
-              current_value = None
-              for item in transactions_values:
-                current_value = item['transaction_value']
-
               if current_value is None:
                 spot_trades = []
 
@@ -804,6 +750,67 @@ class Transactions:
                   exchange=exchange, transactions=spot_trades
                 )
                 transaction_value["spot"] = spot_trades
+
+              if current_value is None:
+                transfers = []
+
+                while(True):
+                  last_time = int(datetime.timestamp(datetime(datetime.now(timezone.utc).year, datetime.now(timezone.utc).month, 1)) * 1000)
+                  end_time = int(transfers[0]['time']) - 1 if len(transfers) > 0 else int(datetime.timestamp(datetime.now(timezone.utc)) * 1000)
+
+                  try:
+                    res = Helper().get_transfers(exch=exch, params={"startTime": last_time, "endTime": end_time})
+                  except:
+                    break
+
+                  if len(res) == 0:
+                    break
+
+                  res.sort(key = lambda x: x['time'])
+                  transfers = res + transfers
+
+                  time.sleep(0.5)
+
+                for item in transfers:
+                  item['info'] = {**item}
+                  item['incomeType'] = "TRANSFER"
+                  
+                transfers = Mapping().mapping_transactions(
+                  exchange=exchange, transactions=transfers
+                )
+
+                transaction_value['transfer'] = transfers
+
+              else:
+                last_time = current_value["timestamp"] + 1 + config['transactions']['time_slack']
+
+                transfers = []
+
+                while(True):
+                  end_time = int(transfers[0]['time']) - 1 if len(transfers) > 0 else int(datetime.timestamp(datetime.now(timezone.utc)) * 1000)
+
+                  try:
+                    res = Helper().get_transfers(exch=exch, params={"startTime": last_time, "endTime": end_time})
+                  except:
+                    break
+
+                  if len(res) == 0:
+                    break
+
+                  res.sort(key = lambda x: x['time'])
+                  transfers = res + transfers
+
+                  time.sleep(0.5)
+                
+                for item in transfers:
+                  item['info'] = {**item}
+                  item['incomeType'] = "TRANSFER"
+
+                transfers = Mapping().mapping_transactions(
+                  exchange=exchange, transactions=transfers
+                )
+
+                transaction_value['transfer'] = transfers
 
           elif exchange == "bybit":
             transaction_value = {}

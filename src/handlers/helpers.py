@@ -195,6 +195,16 @@ class Helper:
   
   def get_pm_borrow_transactions(self, exch, params={}):
     return exch.papi_get_margin_margininteresthistory(params=params)['rows']
+  
+  def get_transfers(self, exch, params={}):
+    transfers = []
+    response = exch.sapi_get_sub_account_transfer_subuserhistory(params={**params, 'type': 1})
+    transfers += response
+    response = exch.sapi_get_sub_account_transfer_subuserhistory(params={**params, 'type': 2})
+    for item in response:
+      item['qty'] = -float(item['qty'])
+
+    return transfers
 
   def get_fills(self, exch, symbol=None, since=None, limit=None, params={}):
     return exch.fetch_my_trades(symbol=symbol, since=since, limit=limit, params=params)
