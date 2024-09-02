@@ -520,7 +520,7 @@ class BybitHelper(Helper):
     return exch.private_get_v5_account_wallet_balance(params={'accountType': "UNIFIED"})['result']["list"][0]["accountMMRate"]
   
   def get_vip_level(self, exch):
-    vip_level = exch.private_get_user_v3_private_query_api()['result']['vipLevel'].lower()
+    vip_level = exch.private_get_v5_user_query_api()['result']['vipLevel'].lower()
     vip_level = vip_level.replace(" ", "")
     vip_level = vip_level.replace("-", "")
     return vip_level
