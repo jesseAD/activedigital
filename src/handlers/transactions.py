@@ -143,7 +143,7 @@ class Transactions:
 
         elif config["transactions"]["store_type"] == "timeseries":
           if exchange == "okx":
-            transactions_values = self.transactions_db.aggregate([
+            transactions_values = self.transactions_union_db.aggregate([
               {
                 '$match': {
                   '$expr': {
@@ -203,7 +203,7 @@ class Transactions:
               )
             else:
               if config["transactions"]["fetch_type"] == "id":
-                last_id = int(current_value["billId"]) + 1
+                last_id = int(current_value['info']["billId"]) + 1
 
                 transactions = []
 
@@ -256,7 +256,7 @@ class Transactions:
                 )
 
           elif exchange == "deribit":
-            transactions_values = self.transactions_db.aggregate([
+            transactions_values = self.transactions_union_db.aggregate([
               {
                 '$match': {
                   '$expr': {
@@ -320,7 +320,7 @@ class Transactions:
           elif exchange == "binance":
             transaction_value = {}
             if config['clients'][client]['subaccounts'][exchange][sub_account]['margin_mode'] == 'portfolio':
-              transactions_values = self.transactions_db.aggregate([
+              transactions_values = self.transactions_union_db.aggregate([
                 {
                   '$match': {
                     '$expr': {
@@ -592,7 +592,7 @@ class Transactions:
                 transaction_value['transfer'] = transfers
 
             else:
-              transactions_values = self.transactions_db.aggregate([
+              transactions_values = self.transactions_union_db.aggregate([
                 {
                   '$match': {
                     '$expr': {
@@ -815,7 +815,7 @@ class Transactions:
           elif exchange == "bybit":
             transaction_value = {}
 
-            transactions_values = self.transactions_db.aggregate([
+            transactions_values = self.transactions_union_db.aggregate([
               {
                 '$match': {
                   '$expr': {
@@ -831,10 +831,6 @@ class Transactions:
                       }, {
                         '$eq': [
                           '$account', sub_account
-                        ]
-                      }, {
-                        '$eq': [
-                          '$trade_type', 'commission'
                         ]
                       }
                     ]
@@ -905,42 +901,6 @@ class Transactions:
               transaction_value['commission'] = Mapping().mapping_transactions(
                 exchange=exchange, transactions=transactions
               )
-
-            transactions_values = self.transactions_db.aggregate([
-              {
-                '$match': {
-                  '$expr': {
-                    '$and': [
-                      {
-                        '$eq': [
-                          '$client', client
-                        ]
-                      }, {
-                        '$eq': [
-                          '$venue', exchange
-                        ]
-                      }, {
-                        '$eq': [
-                          '$account', sub_account
-                        ]
-                      }, {
-                        '$eq': [
-                          '$trade_type', 'borrow'
-                        ]
-                      }
-                    ]
-                  }
-                }
-              }, {
-                '$sort': {'transaction_value.timestamp': -1}
-              }, {
-                '$limit': 1
-              }
-            ])
-
-            current_value = None
-            for item in transactions_values:
-              current_value = item['transaction_value']
 
             if current_value is None:
               transactions = []
@@ -1003,7 +963,7 @@ class Transactions:
           elif exchange == "huobi":
             transaction_value = {}
 
-            transactions_values = self.transactions_db.aggregate([
+            transactions_values = self.transactions_union_db.aggregate([
               {
                 '$match': {
                   '$expr': {
@@ -1019,10 +979,6 @@ class Transactions:
                       }, {
                         '$eq': [
                           '$account', sub_account
-                        ]
-                      }, {
-                        '$eq': [
-                          '$trade_type', 'cross'
                         ]
                       }
                     ]
@@ -1094,42 +1050,6 @@ class Transactions:
                 exchange=exchange, transactions=transactions
               )
 
-            transactions_values = self.transactions_db.aggregate([
-              {
-                '$match': {
-                  '$expr': {
-                    '$and': [
-                      {
-                        '$eq': [
-                          '$client', client
-                        ]
-                      }, {
-                        '$eq': [
-                          '$venue', exchange
-                        ]
-                      }, {
-                        '$eq': [
-                          '$account', sub_account
-                        ]
-                      }, {
-                        '$eq': [
-                          '$trade_type', 'isolated'
-                        ]
-                      }
-                    ]
-                  }
-                }
-              }, {
-                '$sort': {'transaction_value.timestamp': -1}
-              }, {
-                '$limit': 1
-              }
-            ])
-
-            current_value = None
-            for item in transactions_values:
-              current_value = item['transaction_value']
-
             if current_value is None:
               transactions = []
 
@@ -1184,42 +1104,6 @@ class Transactions:
               transaction_value['isolated'] = Mapping().mapping_transactions(
                 exchange=exchange, transactions=transactions
               )
-
-            transactions_values = self.transactions_db.aggregate([
-              {
-                '$match': {
-                  '$expr': {
-                    '$and': [
-                      {
-                        '$eq': [
-                          '$client', client
-                        ]
-                      }, {
-                        '$eq': [
-                          '$venue', exchange
-                        ]
-                      }, {
-                        '$eq': [
-                          '$account', sub_account
-                        ]
-                      }, {
-                        '$eq': [
-                          '$trade_type', 'cm'
-                        ]
-                      }
-                    ]
-                  }
-                }
-              }, {
-                '$sort': {'transaction_value.timestamp': -1}
-              }, {
-                '$limit': 1
-              }
-            ])
-
-            current_value = None
-            for item in transactions_values:
-              current_value = item['transaction_value']
 
             if current_value is None:
               transactions = []
@@ -1276,42 +1160,6 @@ class Transactions:
                 exchange=exchange, transactions=transactions
               )
 
-            transactions_values = self.transactions_db.aggregate([
-              {
-                '$match': {
-                  '$expr': {
-                    '$and': [
-                      {
-                        '$eq': [
-                          '$client', client
-                        ]
-                      }, {
-                        '$eq': [
-                          '$venue', exchange
-                        ]
-                      }, {
-                        '$eq': [
-                          '$account', sub_account
-                        ]
-                      }, {
-                        '$eq': [
-                          '$trade_type', 'future'
-                        ]
-                      }
-                    ]
-                  }
-                }
-              }, {
-                '$sort': {'transaction_value.timestamp': -1}
-              }, {
-                '$limit': 1
-              }
-            ])
-
-            current_value = None
-            for item in transactions_values:
-              current_value = item["transaction_value"]
-
             if current_value is None:
               transactions = []
 
@@ -1366,42 +1214,6 @@ class Transactions:
               transaction_value['future'] = Mapping().mapping_transactions(
                 exchange=exchange, transactions=transactions
               )
-
-            transactions_values = self.transactions_db.aggregate([
-              {
-                '$match': {
-                  '$expr': {
-                    '$and': [
-                      {
-                        '$eq': [
-                          '$client', client
-                        ]
-                      }, {
-                        '$eq': [
-                          '$venue', exchange
-                        ]
-                      }, {
-                        '$eq': [
-                          '$account', sub_account
-                        ]
-                      }, {
-                        '$eq': [
-                          '$trade_type', 'spot'
-                        ]
-                      }
-                    ]
-                  }
-                }
-              }, {
-                '$sort': {'transaction_value.timestamp': -1}
-              }, {
-                '$limit': 1
-              }
-            ])
-
-            current_value = None
-            for item in transactions_values:
-              current_value = item["transaction_value"]
 
             if current_value is None:
               transactions = []
@@ -1483,23 +1295,11 @@ class Transactions:
       transaction = {
         "client": client,
         "venue": exchange,
-        "account": "Main Account",
+        "account": sub_account,
         "transaction_value": transaction_value,
         "runid": latest_run_id,
-        "active": True,
-        "entry": False,
-        "exit": False,
         "timestamp": current_time,
       }
-
-      if sub_account:
-        transaction["account"] = sub_account
-      if spot:
-        transaction["spotMarket"] = spot
-      if future:
-        transaction["futureMarket"] = future
-      if perp:
-        transaction["perpMarket"] = perp
 
     elif config["transactions"]["store_type"] == "timeseries":
       transaction = []
@@ -1548,7 +1348,7 @@ class Transactions:
           new_value = {
             "client": client,
             "venue": exchange,
-            "account": "Main Account",
+            "account": sub_account,
             "transaction_value": item,
             "convert_ccy": config['transactions']['convert_ccy'],
             "runid": latest_run_id,
@@ -1557,15 +1357,6 @@ class Transactions:
             "exit": False,
             "timestamp": current_time,
           }
-          
-          if sub_account:
-            new_value["account"] = sub_account
-          if spot:
-            new_value["spotMarket"] = spot
-          if future:
-            new_value["futureMarket"] = future
-          if perp:
-            new_value["perpMarket"] = perp
 
           transaction.append(new_value)
 
@@ -1588,7 +1379,7 @@ class Transactions:
             new_value = {
               "client": client,
               "venue": exchange,
-              "account": "Main Account",
+              "account": sub_account,
               "transaction_value": item,
               "trade_type": _type,
               "convert_ccy": config['transactions']['convert_ccy'],
@@ -1598,14 +1389,6 @@ class Transactions:
               "exit": False,
               "timestamp": current_time,
             }
-            if sub_account:
-              new_value["account"] = sub_account
-            if spot:
-              new_value["spotMarket"] = spot
-            if future:
-              new_value["futureMarket"] = future
-            if perp:
-              new_value["perpMarket"] = perp
 
             transaction.append(new_value)   
 
@@ -1627,7 +1410,7 @@ class Transactions:
           new_value = {
             "client": client,
             "venue": exchange,
-            "account": "Main Account",
+            "account": sub_account,
             "transaction_value": item,
             "convert_ccy": config['transactions']['convert_ccy'],
             "runid": latest_run_id,
@@ -1636,14 +1419,6 @@ class Transactions:
             "exit": False,
             "timestamp": current_time,
           }
-          if sub_account:
-            new_value["account"] = sub_account
-          if spot:
-            new_value["spotMarket"] = spot
-          if future:
-            new_value["futureMarket"] = future
-          if perp:
-            new_value["perpMarket"] = perp
 
           transaction.append(new_value)   
 
@@ -1666,24 +1441,13 @@ class Transactions:
             new_value = {
               "client": client,
               "venue": exchange,
-              "account": "Main Account",
+              "account": sub_account,
               "transaction_value": item,
               "trade_type": _type,
               "convert_ccy": config['transactions']['convert_ccy'],
               "runid": latest_run_id,
-              "active": True,
-              "entry": False,
-              "exit": False,
               "timestamp": current_time,
             }
-            if sub_account:
-              new_value["account"] = sub_account
-            if spot:
-              new_value["spotMarket"] = spot
-            if future:
-              new_value["futureMarket"] = future
-            if perp:
-              new_value["perpMarket"] = perp
 
             transaction.append(new_value)   
 
@@ -1736,25 +1500,13 @@ class Transactions:
             new_value = {
               "client": client,
               "venue": exchange,
-              "account": "Main Account",
+              "account": sub_account,
               "transaction_value": item,
               "trade_type": _type,
               "convert_ccy": config['transactions']['convert_ccy'],
               "runid": latest_run_id,
-              "active": True,
-              "entry": False,
-              "exit": False,
               "timestamp": current_time,
             }
-            
-            if sub_account:
-              new_value["account"] = sub_account
-            if spot:
-              new_value["spotMarket"] = spot
-            if future:
-              new_value["futureMarket"] = future
-            if perp:
-              new_value["perpMarket"] = perp
 
             transaction.append(new_value)
 
@@ -1994,99 +1746,100 @@ class Transactions:
           logger.error(client + " " + exchange + " " + sub_account + " transactions union " + str(e))
     
     #  MTD PnL
-    try:
-      pnl = 0
 
-      if exchange == "binance":
-        for _type in transaction_value:
-          pnl += sum(float(item['income']) for item in transaction_value[_type])
+    # try:
+    #   pnl = 0
 
-      elif exchange == "okx":
-        pnl = sum(float(item['sz']) for item in transaction_value if item['instType'] == "SPOT")
+    #   if exchange == "binance":
+    #     for _type in transaction_value:
+    #       pnl += sum(float(item['income']) for item in transaction_value[_type])
 
-      elif exchange == "bybit":
-        for _type in transaction_value:
-          pnl += sum(float(item['funding']) for item in transaction_value[_type])
+    #   elif exchange == "okx":
+    #     pnl = sum(float(item['sz']) for item in transaction_value if item['instType'] == "SPOT")
 
-      last_pnls = self.mtd_pnls_db.aggregate([
-        {
-          '$match': {
-            '$expr': {
-              '$and': [
-                {
-                  '$eq': [
-                    '$client', client
-                  ]
-                }, {
-                  '$eq': [
-                    '$venue', exchange
-                  ]
-                }, {
-                  '$eq': [
-                    '$account', sub_account
-                  ]
-                }
-              ]
-            }
-          }
-        }, {
-          '$sort': {'date': -1}
-        }, {
-          '$limit': 1
-        }
-      ])
+    #   elif exchange == "bybit":
+    #     for _type in transaction_value:
+    #       pnl += sum(float(item['funding']) for item in transaction_value[_type])
 
-      last_pnl = None
-      for item in last_pnls:
-        last_pnl = item
+    #   last_pnls = self.mtd_pnls_db.aggregate([
+    #     {
+    #       '$match': {
+    #         '$expr': {
+    #           '$and': [
+    #             {
+    #               '$eq': [
+    #                 '$client', client
+    #               ]
+    #             }, {
+    #               '$eq': [
+    #                 '$venue', exchange
+    #               ]
+    #             }, {
+    #               '$eq': [
+    #                 '$account', sub_account
+    #               ]
+    #             }
+    #           ]
+    #         }
+    #       }
+    #     }, {
+    #       '$sort': {'date': -1}
+    #     }, {
+    #       '$limit': 1
+    #     }
+    #   ])
 
-      current_date = datetime.combine(date.today(), datetime.min.time())
+    #   last_pnl = None
+    #   for item in last_pnls:
+    #     last_pnl = item
+
+    #   current_date = datetime.combine(date.today(), datetime.min.time())
       
-      if last_pnl is None:
-        self.mtd_pnls_db.insert_one({
-          'client': client,
-          'venue': exchange,
-          'account': sub_account,
-          'pnl': pnl,
-          'cumulative_pnl': pnl,
-          'date': current_date
-        })
+    #   if last_pnl is None:
+    #     self.mtd_pnls_db.insert_one({
+    #       'client': client,
+    #       'venue': exchange,
+    #       'account': sub_account,
+    #       'pnl': pnl,
+    #       'cumulative_pnl': pnl,
+    #       'date': current_date
+    #     })
       
-      else:
-        if last_pnl['date'] == current_date:
-          self.mtd_pnls_db.update_one(
-            {
-              'client': client,
-              'venue': exchange,
-              'account': sub_account,
-              'date': current_date
-            },
-            {"$set": {
-              'pnl': pnl + last_pnl['pnl'],
-              'cumulative_pnl': pnl + last_pnl['cumulative_pnl'],
-            }}
-          )
+    #   else:
+    #     if last_pnl['date'] == current_date:
+    #       self.mtd_pnls_db.update_one(
+    #         {
+    #           'client': client,
+    #           'venue': exchange,
+    #           'account': sub_account,
+    #           'date': current_date
+    #         },
+    #         {"$set": {
+    #           'pnl': pnl + last_pnl['pnl'],
+    #           'cumulative_pnl': pnl + last_pnl['cumulative_pnl'],
+    #         }}
+    #       )
         
-        else:
-          if current_date.day == 1:
-            cumulative = 0
-          else:
-            cumulative = last_pnl['cumulative_pnl']
+    #     else:
+    #       if current_date.day == 1:
+    #         cumulative = 0
+    #       else:
+    #         cumulative = last_pnl['cumulative_pnl']
 
-          self.mtd_pnls_db.insert_one({
-            'client': client,
-            'venue': exchange,
-            'account': sub_account,
-            'pnl': pnl,
-            'cumulative_pnl': pnl + cumulative,
-            'date': current_date
-          })
+    #       self.mtd_pnls_db.insert_one({
+    #         'client': client,
+    #         'venue': exchange,
+    #         'account': sub_account,
+    #         'pnl': pnl,
+    #         'cumulative_pnl': pnl + cumulative,
+    #         'date': current_date
+    #       })
     
-    except Exception as e:
-      if logger == None:
-        print(client + " " + exchange + " " + sub_account + " MTD PnL " + str(e))
-      else:
-        logger.warning(client + " " + exchange + " " + sub_account + " MTD PnL " + str(e))
+    # except Exception as e:
+    #   if logger == None:
+    #     print(client + " " + exchange + " " + sub_account + " MTD PnL " + str(e))
+    #   else:
+    #     logger.warning(client + " " + exchange + " " + sub_account + " MTD PnL " + str(e))
 
     
     del transaction_value
@@ -2103,7 +1856,7 @@ class Transactions:
 
     try:
       if config["transactions"]["store_type"] == "snapshot":
-        self.transactions_db.update_one(
+        self.transactions_union_db.update_one(
           {
             "client": transaction["client"],
             "venue": transaction["venue"],
@@ -2123,7 +1876,7 @@ class Transactions:
         )
 
       elif config["transactions"]["store_type"] == "timeseries":
-        self.transactions_db.insert_many(transaction)
+        # self.transactions_db.insert_many(transaction)
         self.transactions_union_db.insert_many(transactions_union)
 
       del transaction
