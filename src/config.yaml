@@ -320,6 +320,15 @@ clients:
           hedged_exclusion_positive: {'USDT': 0}
           hedged_exclusion_negative: {'USDT': 0}      
           ignore_symbols: []
+        subbasis2:
+          base_ccy: USDT
+          margin_mode: non_portfolio
+          funding_contributions: True
+          daily_returns: True
+          unhedged_alert: True
+          hedged_exclusion_positive: {'USDT': 0}
+          hedged_exclusion_negative: {'USDT': 0}      
+          ignore_symbols: []        
 
       # binance:
       #   submn:
