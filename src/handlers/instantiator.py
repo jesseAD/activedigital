@@ -19,6 +19,7 @@ from src.handlers.roll_costs import Roll_Costs
 from src.handlers.daily_returns import DailyReturns
 from src.handlers.funding_contributions import FundingContributions
 from src.handlers.runs import Runs
+from src.handlers.aprs import Aprs
 from src.config import read_config_file
 
 config = read_config_file()
@@ -550,6 +551,55 @@ def collect_instruments(exch, exchange, logger, db):
         print("Unable to collect instruments for " + exchange)
       else:
         logger.error("Unable to collect instruments for " + exchange)
+
+    return res
+  
+def collect_aprs(logger, db):
+  res = False
+  aprs = Aprs(db, 'aprs')
+  try:
+    res = aprs.create(
+      logger=logger
+    )
+
+  except Exception as e:
+    if logger == None:
+      print("Aprs " + str(e))
+    else:
+      logger.warning("Aprs " + str(e))
+
+  finally:
+    attempt = 1
+    timeout = config['ccxt']['binance']['timeout']
+
+    while(not res):
+      time.sleep(timeout / 1000)
+
+      if logger == None:
+        print("Retrying aprs " + str(attempt))
+      else:
+        logger.info("Retrying aprs " + str(attempt))
+
+      timeout *= 2
+
+      try:
+        res = aprs.create(
+          logger=logger
+        )
+      except:
+        pass
+
+      if attempt == config['ccxt']['binance']['retry']:
+        break
+      attempt += 1
+
+    del aprs
+
+    if not res:
+      if logger == None:
+        print("Unable to collect aprs")
+      else:
+        logger.error("Unable to collect aprs")
 
     return res
 

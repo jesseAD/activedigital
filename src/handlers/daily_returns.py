@@ -139,7 +139,7 @@ class DailyReturns():
     self.balances_db = db[config['mongodb']['database']]['balances']
     self.leverages_db = db[config['mongodb']['database']]['leverages']
     self.tickers_db = db[config['mongodb']['database']]['tickers']
-    self.transactions_db = db[config['mongodb']['database']]['transaction_union']
+    self.transactions_db = db[config['mongodb']['database']]['transactions_union']
     self.daily_returns_db = db[config['mongodb']['database']][collection]
 
   def create(
