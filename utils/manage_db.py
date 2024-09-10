@@ -6,8 +6,8 @@ secrets = dotenv_values()
 
 mongo_uri = 'mongodb+srv://activedigital:' + secrets['CLOUD_MONGO_PASSWORD'] + '@mongodbcluster.nzphth1.mongodb.net/?retryWrites=true&w=majority'
 
-mongo_client = pymongo.MongoClient(mongo_uri)
-# mongo_client = pymongo.MongoClient(None)
+# mongo_client = pymongo.MongoClient(mongo_uri)
+mongo_client = pymongo.MongoClient(None)
 db = mongo_client['active_digital']
 
 # collections = [
@@ -29,7 +29,10 @@ db = mongo_client['active_digital']
 
 # db['funding_contributions'].delete_many({'runid': {'$gt': 71978}})
 
-print(list(db['tickers'].find({'venue': "bybit"}))[0]['ticker_value']['USDT/USD'])
+# print(list(db['tickers'].find({'venue': "bybit"}))[0]['ticker_value']['USDT/USD'])
+insts = list(db['instruments'].find({'venue': "deribit"}))[0]['instrument_value']
+insts = {item: insts[item] for item in insts if insts[item]['type'] == "future"}
+print(insts)
 # db['balances'].update_many(
 #   {},
 #   {'$rename': {"vip_level": "tier"}}

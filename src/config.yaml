@@ -84,7 +84,7 @@ deribit_symbols: ['ADA', 'ALGO', 'AVAX', 'BCH', 'BTC', 'DOGE', 'DOT', 'ETH', 'LI
 ignore_symbols:
   okx: []
   binance: []
-  bybit: ["RNDR"]
+  bybit: ["RNDR", "MATIC"]
   huobi: []
   deribit: []
 
@@ -202,6 +202,15 @@ funding_contributions:
     bybit: 8
     huobi: 8
     deribit: 8
+
+future_opportunities: 
+  period: 4
+  anualize:
+    binance: 365
+    okx: 365
+    huobi: 365
+    deribit: 365
+    bybit: 365
 
 # exchanges: ["deribit", ]
 exchanges: ["binance", "okx", "bybit", "huobi", "deribit"]
@@ -739,6 +748,7 @@ clients:
           hedged_exclusion_positive: {'USDT': 0}
           hedged_exclusion_negative: {'USDT': 0}
           ignore_symbols: []
+          
         subtrend1:
           base_ccy: USDT
           margin_mode: non_portfolio
@@ -899,6 +909,7 @@ clients:
           hedged_exclusion_positive: {'USDT': 0}
           hedged_exclusion_negative: {'USDT': 0}
           ignore_symbols: []
+
   hooper:
     split_positions: True
     subaccounts:

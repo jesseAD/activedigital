@@ -1,0 +1,148 @@
+import csv
+from datetime import datetime, timezone
+import concurrent.futures
+import ccxt 
+from dotenv import load_dotenv
+
+from src.lib.exchange import Exchange
+from src.config import read_config_file
+from src.handlers.helpers import Helper, OKXHelper, BybitHelper, HuobiHelper
+from src.lib.apr_pairs import filter_insts, make_pairs
+
+config = read_config_file()
+
+class Aprs:
+  def __init__(self, db, collection):
+
+    self.runs_db = db['runs']
+    self.instruments_db = db['instruments']
+    self.aprs_db = db[collection]
+
+  def get_tickers(self, exchange, tickers, param):
+    exch = Exchange(exchange).exch()
+
+    _tickers = {}
+
+    try:
+      _tickers = exch.fetch_tickers(params={**param})
+    except:
+      pass
+
+    tickers[exchange].update(_tickers)
+  
+  def create(
+    self,
+    apr_value: str = None,
+    logger=None
+  ):
+    prev_values = self.aprs_db.find({}).sort("_id", -1).limit(1)
+
+    prev_value = None
+    for item in prev_values:
+      prev_value = item
+
+    if prev_value != None:
+      now = datetime.now(timezone.utc)
+      base_time = datetime(
+        now.year, now.month, now.day, 
+        int(now.hour / config['future_opportunities']['period']) * config['future_opportunities']['period']
+      ).replace(tzinfo=timezone.utc)
+
+      prev_time = prev_value['timestamp'].replace(tzinfo=timezone.utc)
+
+      if(prev_time >= base_time):
+        if logger == None:
+          print("Future opportunities: didn't reach the period")
+          print("Unable to collect future opportunities")
+        else:
+          logger.warning("Future opportunities: didn't reach the period")
+          logger.error("Unable to collect future opportunities")
+
+        return True
+
+    tickers = {exchange: {} for exchange in config['exchanges']}
+    params = {
+      'deribit': [
+        {'currency': "BTC"},
+        {'currency': "ETH"},
+        {'currency': "USDT"},
+        {'currency': "USDC"},
+      ]
+    }
+    types = [
+      {'type': "spot"},
+      {'type': "future", 'subType': "linear"},
+      {'type': "future", 'subType': "inverse"},
+      {'type': "swap", 'subType': "linear"},
+      {'type': "swap", 'subType': "inverse"},
+    ]
+
+    threads = []
+    executor = concurrent.futures.ThreadPoolExecutor(max_workers=len(config['exchanges']) * 5)
+
+    for exchange in params:
+      for param in params[exchange]:
+        threads.append(executor.submit(self.get_tickers, exchange, tickers, param))
+
+    for thread in concurrent.futures.as_completed(threads):
+      thread.cancel()
+
+    # print(tickers['deribit'].keys())
+    # print([item for item in tickers['huobi'] if item.startswith("eth")])
+
+    instruments = self.instruments_db.find({'venue': "deribit"})
+    instruments = {item['venue']: item['instrument_value'] for item in instruments}
+
+    instruments = filter_insts(instruments)
+    pairs = make_pairs(instruments)
+
+    for pair in pairs:
+      leg1_bid = tickers[pair['leg1_exchange']][pair['leg1']]['bid']
+      leg1_ask = tickers[pair['leg1_exchange']][pair['leg1']]['ask']
+      leg2_bid = tickers[pair['leg2_exchange']][pair['leg2']]['bid']
+      leg2_ask = tickers[pair['leg2_exchange']][pair['leg2']]['ask']
+
+      if leg1_bid > leg2_ask:
+        pair['maker_apr'] = (leg1_bid - leg2_ask) / leg1_bid
+        pair['mid_apr'] = (leg1_bid + leg1_ask - leg2_ask - leg2_bid) / (leg1_bid + leg1_ask)
+        pair['taker_apr'] = (leg1_ask - leg2_bid) / leg1_ask
+
+      else:
+        pair['maker_apr'] = (leg1_ask - leg2_bid) / leg1_ask
+        pair['mid_apr'] = (leg1_bid + leg1_ask - leg2_ask - leg2_bid) / (leg1_bid + leg1_ask)
+        pair['taker_apr'] = (leg1_bid - leg2_ask) / leg1_bid
+
+    run_ids = self.runs_db.find({}).sort("_id", -1).limit(1)
+
+    latest_run_id = 0
+    for item in run_ids:
+      try:
+        latest_run_id = item["runid"]
+      except:
+        pass
+
+    new_value = {
+      "apr_values": pairs, 
+      "timestamp": datetime.now(timezone.utc),
+      "runid": latest_run_id,
+    }
+
+    try:
+      self.aprs_db.insert_one(new_value)
+
+      if logger == None:
+        print("Collected future opportunities")
+      else:
+        logger.info("Collected future opportunities")
+
+      return True
+    
+    except Exception as e:
+      if logger == None:
+        print("future opportunities " + str(e))
+        print("Unable to collect future opportunities")
+      else:
+        logger.error("future opportunities " + str(e))
+        logger.error("Unable to collect future opportunities")
+
+      return True

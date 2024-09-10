@@ -1,0 +1,1091 @@
+{
+  "total": {
+    "huobi": {
+      "BTC-USDT-240920": {
+        "id": "BTC-USDT-240920",
+        "lowercaseId": "btc-usdt-240920",
+        "symbol": "BTC/USDT:USDT-240920",
+        "base": "BTC",
+        "quote": "USDT",
+        "settle": "USDT",
+        "baseId": "btc",
+        "quoteId": "usdt",
+        "settleId": "usdt",
+        "type": "future",
+        "spot": false,
+        "margin": false,
+        "swap": false,
+        "future": true,
+        "option": false,
+        "active": true,
+        "contract": true,
+        "linear": true,
+        "inverse": false,
+        "taker": 0.0005,
+        "maker": 0.0002,
+        "contractSize": 0.001,
+        "expiry": 1726819200000,
+        "expiryDatetime": "2024-09-20T08:00:00.000Z",
+        "strike": null,
+        "optionType": null,
+        "precision": {
+          "amount": 1.0,
+          "price": 0.1,
+          "cost": null
+        },
+        "limits": {
+          "leverage": {
+            "min": 1.0,
+            "max": 1.0,
+            "superMax": 1.0
+          },
+          "amount": {
+            "min": 0.001,
+            "max": null
+          },
+          "price": {
+            "min": null,
+            "max": null
+          },
+          "cost": {
+            "min": null,
+            "max": null
+          }
+        },
+        "created": 1725580800000,
+        "info": {
+          "symbol": "BTC",
+          "contract_code": "BTC-USDT-240920",
+          "contract_size": "0.001000000000000000",
+          "price_tick": "0.100000000000000000",
+          "delivery_date": "20240920",
+          "delivery_time": "1726819200000",
+          "create_date": "20240906",
+          "contract_status": "1",
+          "settlement_date": "1726819200000",
+          "support_margin_mode": "cross",
+          "business_type": "futures",
+          "pair": "BTC-USDT",
+          "contract_type": "next_week",
+          "trade_partition": "USDT"
+        }
+      },
+      "BTC240927": {
+        "id": "BTC240927",
+        "lowercaseId": "btc240927",
+        "symbol": "BTC/USD:BTC-240927",
+        "base": "BTC",
+        "quote": "USD",
+        "settle": "BTC",
+        "baseId": "btc",
+        "quoteId": "USD",
+        "settleId": "btc",
+        "type": "future",
+        "spot": false,
+        "margin": false,
+        "swap": false,
+        "future": true,
+        "option": false,
+        "active": true,
+        "contract": true,
+        "linear": false,
+        "inverse": true,
+        "taker": 0.0005,
+        "maker": 0.0002,
+        "contractSize": 100.0,
+        "expiry": 1727424000000,
+        "expiryDatetime": "2024-09-27T08:00:00.000Z",
+        "strike": null,
+        "optionType": null,
+        "precision": {
+          "amount": 1.0,
+          "price": 0.01,
+          "cost": null
+        },
+        "limits": {
+          "leverage": {
+            "min": 1.0,
+            "max": 1.0,
+            "superMax": 1.0
+          },
+          "amount": {
+            "min": null,
+            "max": null
+          },
+          "price": {
+            "min": null,
+            "max": null
+          },
+          "cost": {
+            "min": 100.0,
+            "max": null
+          }
+        },
+        "created": 1718323200000,
+        "info": {
+          "symbol": "BTC",
+          "contract_code": "BTC240927",
+          "contract_type": "quarter",
+          "contract_size": "100.000000000000000000",
+          "price_tick": "0.010000000000000000",
+          "delivery_date": "20240927",
+          "delivery_time": "1727424000000",
+          "create_date": "20240614",
+          "contract_status": "1",
+          "settlement_time": "1725868800000"
+        }
+      }
+    },
+    "binance": {
+      "BTCUSDT_241227": {
+        "id": "BTCUSDT_241227",
+        "lowercaseId": "btcusdt_241227",
+        "symbol": "BTC/USDT:USDT-241227",
+        "base": "BTC",
+        "quote": "USDT",
+        "settle": "USDT",
+        "baseId": "BTC",
+        "quoteId": "USDT",
+        "settleId": "USDT",
+        "type": "future",
+        "spot": false,
+        "margin": false,
+        "swap": false,
+        "future": true,
+        "option": false,
+        "active": true,
+        "contract": true,
+        "linear": true,
+        "inverse": false,
+        "taker": 0.0005,
+        "maker": 0.0002,
+        "contractSize": 1.0,
+        "expiry": 1735286400000,
+        "expiryDatetime": "2024-12-27T08:00:00.000Z",
+        "strike": null,
+        "optionType": null,
+        "precision": {
+          "amount": 0.001,
+          "price": 0.1,
+          "base": 1e-08,
+          "quote": 1e-08
+        },
+        "limits": {
+          "leverage": {
+            "min": null,
+            "max": null
+          },
+          "amount": {
+            "min": 0.001,
+            "max": 500.0
+          },
+          "price": {
+            "min": 576.3,
+            "max": 1000000.0
+          },
+          "cost": {
+            "min": 5.0,
+            "max": null
+          },
+          "market": {
+            "min": 0.001,
+            "max": 1.0
+          }
+        },
+        "info": {
+          "symbol": "BTCUSDT_241227",
+          "pair": "BTCUSDT",
+          "contractType": "NEXT_QUARTER",
+          "deliveryDate": "1735286400000",
+          "onboardDate": "1719561600000",
+          "status": "TRADING",
+          "maintMarginPercent": "2.5000",
+          "requiredMarginPercent": "5.0000",
+          "baseAsset": "BTC",
+          "quoteAsset": "USDT",
+          "marginAsset": "USDT",
+          "pricePrecision": "1",
+          "quantityPrecision": "3",
+          "baseAssetPrecision": "8",
+          "quotePrecision": "8",
+          "underlyingType": "COIN",
+          "underlyingSubType": [],
+          "settlePlan": "0",
+          "triggerProtect": "0.0500",
+          "liquidationFee": "0.010000",
+          "marketTakeBound": "0.05",
+          "maxMoveOrderLimit": "10000",
+          "filters": [
+            {
+              "minPrice": "576.3",
+              "filterType": "PRICE_FILTER",
+              "maxPrice": "1000000",
+              "tickSize": "0.1"
+            },
+            {
+              "maxQty": "500",
+              "stepSize": "0.001",
+              "minQty": "0.001",
+              "filterType": "LOT_SIZE"
+            },
+            {
+              "filterType": "MARKET_LOT_SIZE",
+              "minQty": "0.001",
+              "maxQty": "1",
+              "stepSize": "0.001"
+            },
+            {
+              "filterType": "MAX_NUM_ORDERS",
+              "limit": "200"
+            },
+            {
+              "filterType": "MAX_NUM_ALGO_ORDERS",
+              "limit": "10"
+            },
+            {
+              "notional": "5",
+              "filterType": "MIN_NOTIONAL"
+            },
+            {
+              "filterType": "PERCENT_PRICE",
+              "multiplierDecimal": "4",
+              "multiplierDown": "0.9500",
+              "multiplierUp": "1.0500"
+            }
+          ],
+          "orderTypes": [
+            "LIMIT",
+            "MARKET",
+            "STOP",
+            "STOP_MARKET",
+            "TAKE_PROFIT",
+            "TAKE_PROFIT_MARKET",
+            "TRAILING_STOP_MARKET"
+          ],
+          "timeInForce": [
+            "GTC",
+            "IOC",
+            "FOK",
+            "GTX",
+            "GTD"
+          ]
+        },
+        "created": 1719561600000
+      },
+      "BTCUSD_241227": {
+        "id": "BTCUSD_241227",
+        "lowercaseId": "btcusd_241227",
+        "symbol": "BTC/USD:BTC-241227",
+        "base": "BTC",
+        "quote": "USD",
+        "settle": "BTC",
+        "baseId": "BTC",
+        "quoteId": "USD",
+        "settleId": "BTC",
+        "type": "future",
+        "spot": false,
+        "margin": false,
+        "swap": false,
+        "future": true,
+        "option": false,
+        "active": true,
+        "contract": true,
+        "linear": false,
+        "inverse": true,
+        "taker": 0.0005,
+        "maker": 0.0001,
+        "contractSize": 100.0,
+        "expiry": 1735286400000,
+        "expiryDatetime": "2024-12-27T08:00:00.000Z",
+        "strike": null,
+        "optionType": null,
+        "precision": {
+          "amount": 1.0,
+          "price": 0.1,
+          "base": 1e-08,
+          "quote": 1e-08
+        },
+        "limits": {
+          "leverage": {
+            "min": null,
+            "max": null
+          },
+          "amount": {
+            "min": 1.0,
+            "max": 1000000.0
+          },
+          "price": {
+            "min": 1000.0,
+            "max": 4671848.0
+          },
+          "cost": {
+            "min": null,
+            "max": null
+          },
+          "market": {
+            "min": 1.0,
+            "max": 1000.0
+          }
+        },
+        "info": {
+          "symbol": "BTCUSD_241227",
+          "pair": "BTCUSD",
+          "contractType": "NEXT_QUARTER",
+          "deliveryDate": "1735286400000",
+          "onboardDate": "1719561600000",
+          "contractStatus": "TRADING",
+          "contractSize": "100",
+          "marginAsset": "BTC",
+          "maintMarginPercent": "2.5000",
+          "requiredMarginPercent": "5.0000",
+          "baseAsset": "BTC",
+          "quoteAsset": "USD",
+          "pricePrecision": "1",
+          "quantityPrecision": "0",
+          "baseAssetPrecision": "8",
+          "quotePrecision": "8",
+          "equalQtyPrecision": "4",
+          "maxMoveOrderLimit": "10000",
+          "triggerProtect": "0.0500",
+          "underlyingType": "COIN",
+          "underlyingSubType": [],
+          "filters": [
+            {
+              "minPrice": "1000",
+              "maxPrice": "4671848",
+              "filterType": "PRICE_FILTER",
+              "tickSize": "0.1"
+            },
+            {
+              "stepSize": "1",
+              "filterType": "LOT_SIZE",
+              "maxQty": "1000000",
+              "minQty": "1"
+            },
+            {
+              "stepSize": "1",
+              "filterType": "MARKET_LOT_SIZE",
+              "maxQty": "1000",
+              "minQty": "1"
+            },
+            {
+              "limit": "200",
+              "filterType": "MAX_NUM_ORDERS"
+            },
+            {
+              "limit": "20",
+              "filterType": "MAX_NUM_ALGO_ORDERS"
+            },
+            {
+              "multiplierDown": "0.9500",
+              "multiplierUp": "1.0500",
+              "multiplierDecimal": "4",
+              "filterType": "PERCENT_PRICE"
+            }
+          ],
+          "orderTypes": [
+            "LIMIT",
+            "MARKET",
+            "STOP",
+            "STOP_MARKET",
+            "TAKE_PROFIT",
+            "TAKE_PROFIT_MARKET",
+            "TRAILING_STOP_MARKET"
+          ],
+          "timeInForce": [
+            "GTC",
+            "IOC",
+            "FOK",
+            "GTX"
+          ],
+          "liquidationFee": "0.010000",
+          "marketTakeBound": "0.05"
+        },
+        "created": 1719561600000
+      }
+    },
+    "bybit": {
+      "BTC-28MAR25": {
+        "id": "BTC-28MAR25",
+        "lowercaseId": null,
+        "symbol": "BTC/USDC:USDC-250328",
+        "base": "BTC",
+        "quote": "USDC",
+        "settle": "USDC",
+        "baseId": "BTC",
+        "quoteId": "USDC",
+        "settleId": "USDC",
+        "type": "future",
+        "spot": false,
+        "margin": null,
+        "swap": false,
+        "future": true,
+        "option": false,
+        "index": null,
+        "active": true,
+        "contract": true,
+        "linear": true,
+        "inverse": false,
+        "subType": null,
+        "taker": 0.0006,
+        "maker": 0.0001,
+        "contractSize": 1.0,
+        "expiry": 1743148800000,
+        "expiryDatetime": "2025-03-28T08:00:00.000Z",
+        "strike": null,
+        "optionType": null,
+        "precision": {
+          "amount": 0.001,
+          "price": 0.5
+        },
+        "limits": {
+          "leverage": {
+            "min": 1.0,
+            "max": 50.0
+          },
+          "amount": {
+            "min": 0.001,
+            "max": 10.0
+          },
+          "price": {
+            "min": 0.5,
+            "max": 999999.0
+          },
+          "cost": {
+            "min": null,
+            "max": null
+          }
+        },
+        "created": 1713427200000,
+        "info": {
+          "symbol": "BTC-28MAR25",
+          "contractType": "LinearFutures",
+          "status": "Trading",
+          "baseCoin": "BTC",
+          "quoteCoin": "USDC",
+          "launchTime": "1713427200000",
+          "deliveryTime": "1743148800000",
+          "deliveryFeeRate": "0",
+          "priceScale": "2",
+          "leverageFilter": {
+            "minLeverage": "1",
+            "maxLeverage": "50.00",
+            "leverageStep": "0.01"
+          },
+          "priceFilter": {
+            "minPrice": "0.50",
+            "maxPrice": "999999.00",
+            "tickSize": "0.50"
+          },
+          "lotSizeFilter": {
+            "maxOrderQty": "10.000",
+            "minOrderQty": "0.001",
+            "qtyStep": "0.001",
+            "postOnlyMaxOrderQty": "10.000",
+            "maxMktOrderQty": "10.000",
+            "minNotionalValue": "5"
+          },
+          "unifiedMarginTrade": true,
+          "fundingInterval": "480",
+          "settleCoin": "USDC",
+          "copyTrading": "none",
+          "upperFundingRate": "0.00375",
+          "lowerFundingRate": "-0.00375",
+          "isPreListing": false,
+          "preListingInfo": null
+        }
+      },
+      "BTCUSDZ24": {
+        "id": "BTCUSDZ24",
+        "lowercaseId": null,
+        "symbol": "BTC/USD:BTC-241227",
+        "base": "BTC",
+        "quote": "USD",
+        "settle": "BTC",
+        "baseId": "BTC",
+        "quoteId": "USD",
+        "settleId": "BTC",
+        "type": "future",
+        "spot": false,
+        "margin": null,
+        "swap": false,
+        "future": true,
+        "option": false,
+        "index": null,
+        "active": true,
+        "contract": true,
+        "linear": false,
+        "inverse": true,
+        "subType": null,
+        "taker": 0.0006,
+        "maker": 0.0001,
+        "contractSize": 1.0,
+        "expiry": 1735286400000,
+        "expiryDatetime": "2024-12-27T08:00:00.000Z",
+        "strike": null,
+        "optionType": null,
+        "precision": {
+          "amount": 1.0,
+          "price": 0.5
+        },
+        "limits": {
+          "leverage": {
+            "min": 1.0,
+            "max": 100.0
+          },
+          "amount": {
+            "min": 1.0,
+            "max": 5000000.0
+          },
+          "price": {
+            "min": 0.5,
+            "max": 999999.0
+          },
+          "cost": {
+            "min": null,
+            "max": null
+          }
+        },
+        "created": 1718352000000,
+        "info": {
+          "symbol": "BTCUSDZ24",
+          "contractType": "InverseFutures",
+          "status": "Trading",
+          "baseCoin": "BTC",
+          "quoteCoin": "USD",
+          "launchTime": "1718352000000",
+          "deliveryTime": "1735286400000",
+          "deliveryFeeRate": "0.0005",
+          "priceScale": "2",
+          "leverageFilter": {
+            "minLeverage": "1",
+            "maxLeverage": "100.00",
+            "leverageStep": "0.01"
+          },
+          "priceFilter": {
+            "minPrice": "0.50",
+            "maxPrice": "999999.00",
+            "tickSize": "0.50"
+          },
+          "lotSizeFilter": {
+            "maxOrderQty": "5000000",
+            "minOrderQty": "1",
+            "qtyStep": "1",
+            "postOnlyMaxOrderQty": "5000000",
+            "maxMktOrderQty": "1000000",
+            "minNotionalValue": ""
+          },
+          "unifiedMarginTrade": true,
+          "fundingInterval": "480",
+          "settleCoin": "BTC",
+          "copyTrading": "none",
+          "upperFundingRate": "0",
+          "lowerFundingRate": "0",
+          "isPreListing": false,
+          "preListingInfo": null
+        }
+      }
+    },
+    "okx": {
+      "BTC-USD-241025": {
+        "taker": 0.0005,
+        "maker": 0.0002,
+        "id": "BTC-USD-241025",
+        "symbol": "BTC/USD:BTC-241025",
+        "base": "BTC",
+        "quote": "USD",
+        "settle": "BTC",
+        "baseId": "BTC",
+        "quoteId": "USD",
+        "settleId": "BTC",
+        "type": "future",
+        "spot": false,
+        "margin": false,
+        "swap": false,
+        "future": true,
+        "option": false,
+        "active": true,
+        "contract": true,
+        "linear": false,
+        "inverse": true,
+        "contractSize": 100.0,
+        "expiry": 1729843200000,
+        "expiryDatetime": "2024-10-25T08:00:00.000Z",
+        "strike": null,
+        "optionType": null,
+        "created": 1723795800531,
+        "precision": {
+          "amount": 1.0,
+          "price": 0.1
+        },
+        "limits": {
+          "leverage": {
+            "min": 1.0,
+            "max": 20.0
+          },
+          "amount": {
+            "min": 1.0,
+            "max": null
+          },
+          "price": {
+            "min": null,
+            "max": null
+          },
+          "cost": {
+            "min": null,
+            "max": null
+          }
+        },
+        "info": {
+          "alias": "next_month",
+          "baseCcy": "",
+          "category": "1",
+          "ctMult": "1",
+          "ctType": "inverse",
+          "ctVal": "100",
+          "ctValCcy": "USD",
+          "expTime": "1729843200000",
+          "instFamily": "BTC-USD",
+          "instId": "BTC-USD-241025",
+          "instType": "FUTURES",
+          "lever": "20",
+          "listTime": "1723795800531",
+          "lotSz": "1",
+          "maxIcebergSz": "1000000.0000000000000000",
+          "maxLmtAmt": "20000000",
+          "maxLmtSz": "1000000",
+          "maxMktAmt": "",
+          "maxMktSz": "10000",
+          "maxStopSz": "10000",
+          "maxTriggerSz": "1000000.0000000000000000",
+          "maxTwapSz": "1000000.0000000000000000",
+          "minSz": "1",
+          "optType": "",
+          "quoteCcy": "",
+          "ruleType": "normal",
+          "settleCcy": "BTC",
+          "state": "live",
+          "stk": "",
+          "tickSz": "0.1",
+          "uly": "BTC-USD"
+        }
+      },
+      "BTC-USDT-250328": {
+        "taker": 0.0005,
+        "maker": 0.0002,
+        "id": "BTC-USDT-250328",
+        "symbol": "BTC/USDT:USDT-250328",
+        "base": "BTC",
+        "quote": "USDT",
+        "settle": "USDT",
+        "baseId": "BTC",
+        "quoteId": "USDT",
+        "settleId": "USDT",
+        "type": "future",
+        "spot": false,
+        "margin": false,
+        "swap": false,
+        "future": true,
+        "option": false,
+        "active": true,
+        "contract": true,
+        "linear": true,
+        "inverse": false,
+        "contractSize": 0.01,
+        "expiry": 1743148800000,
+        "expiryDatetime": "2025-03-28T08:00:00.000Z",
+        "strike": null,
+        "optionType": null,
+        "created": 1720771800347,
+        "precision": {
+          "amount": 0.1,
+          "price": 0.1
+        },
+        "limits": {
+          "leverage": {
+            "min": 1.0,
+            "max": 20.0
+          },
+          "amount": {
+            "min": 0.1,
+            "max": null
+          },
+          "price": {
+            "min": null,
+            "max": null
+          },
+          "cost": {
+            "min": null,
+            "max": null
+          }
+        },
+        "info": {
+          "alias": "next_quarter",
+          "baseCcy": "",
+          "category": "1",
+          "ctMult": "1",
+          "ctType": "linear",
+          "ctVal": "0.01",
+          "ctValCcy": "BTC",
+          "expTime": "1743148800000",
+          "instFamily": "BTC-USDT",
+          "instId": "BTC-USDT-250328",
+          "instType": "FUTURES",
+          "lever": "20",
+          "listTime": "1720771800347",
+          "lotSz": "0.1",
+          "maxIcebergSz": "1000000.0000000000000000",
+          "maxLmtAmt": "20000000",
+          "maxLmtSz": "1000000",
+          "maxMktAmt": "",
+          "maxMktSz": "3000",
+          "maxStopSz": "3000",
+          "maxTriggerSz": "1000000.0000000000000000",
+          "maxTwapSz": "1000000.0000000000000000",
+          "minSz": "0.1",
+          "optType": "",
+          "quoteCcy": "",
+          "ruleType": "normal",
+          "settleCcy": "USDT",
+          "state": "live",
+          "stk": "",
+          "tickSz": "0.1",
+          "uly": "BTC-USDT"
+        }
+      },
+      "BTC-USDC-241227": {
+        "taker": 0.0005,
+        "maker": 0.0002,
+        "id": "BTC-USDC-241227",
+        "symbol": "BTC/USDC:USDC-241227",
+        "base": "BTC",
+        "quote": "USDC",
+        "settle": "USDC",
+        "baseId": "BTC",
+        "quoteId": "USDC",
+        "settleId": "USDC",
+        "type": "future",
+        "spot": false,
+        "margin": false,
+        "swap": false,
+        "future": true,
+        "option": false,
+        "active": true,
+        "contract": true,
+        "linear": true,
+        "inverse": false,
+        "contractSize": 0.0001,
+        "expiry": 1735286400000,
+        "expiryDatetime": "2024-12-27T08:00:00.000Z",
+        "strike": null,
+        "optionType": null,
+        "created": 1718352600450,
+        "precision": {
+          "amount": 1.0,
+          "price": 0.1
+        },
+        "limits": {
+          "leverage": {
+            "min": 1.0,
+            "max": 20.0
+          },
+          "amount": {
+            "min": 1.0,
+            "max": null
+          },
+          "price": {
+            "min": null,
+            "max": null
+          },
+          "cost": {
+            "min": null,
+            "max": null
+          }
+        },
+        "info": {
+          "alias": "next_quarter",
+          "baseCcy": "",
+          "category": "1",
+          "ctMult": "1",
+          "ctType": "linear",
+          "ctVal": "0.0001",
+          "ctValCcy": "BTC",
+          "expTime": "1735286400000",
+          "instFamily": "BTC-USDC",
+          "instId": "BTC-USDC-241227",
+          "instType": "FUTURES",
+          "lever": "20",
+          "listTime": "1718352600450",
+          "lotSz": "1",
+          "maxIcebergSz": "100000000.0000000000000000",
+          "maxLmtAmt": "20000000",
+          "maxLmtSz": "100000000",
+          "maxMktAmt": "",
+          "maxMktSz": "40000",
+          "maxStopSz": "40000",
+          "maxTriggerSz": "100000000.0000000000000000",
+          "maxTwapSz": "100000000.0000000000000000",
+          "minSz": "1",
+          "optType": "",
+          "quoteCcy": "",
+          "ruleType": "normal",
+          "settleCcy": "USDC",
+          "state": "live",
+          "stk": "",
+          "tickSz": "0.1",
+          "uly": "BTC-USDC"
+        }
+      }
+    },
+    "deribit": {
+      "BTC-27JUN25": {
+        "id": "BTC-27JUN25",
+        "symbol": "BTC/USD:BTC-250627",
+        "base": "BTC",
+        "quote": "USD",
+        "settle": "BTC",
+        "baseId": "BTC",
+        "quoteId": "USD",
+        "settleId": "BTC",
+        "type": "future",
+        "spot": false,
+        "margin": false,
+        "swap": false,
+        "future": true,
+        "option": false,
+        "active": true,
+        "contract": true,
+        "linear": false,
+        "inverse": true,
+        "taker": 0.0005,
+        "maker": 0.0,
+        "contractSize": 10.0,
+        "expiry": 1751011200000,
+        "expiryDatetime": "2025-06-27T08:00:00.000Z",
+        "strike": null,
+        "optionType": null,
+        "precision": {
+          "amount": 10.0,
+          "price": 2.5
+        },
+        "limits": {
+          "leverage": {
+            "min": null,
+            "max": null
+          },
+          "amount": {
+            "min": 10.0,
+            "max": null
+          },
+          "price": {
+            "min": 2.5,
+            "max": null
+          },
+          "cost": {
+            "min": null,
+            "max": null
+          }
+        },
+        "created": 1719561614000,
+        "info": {
+          "tick_size_steps": [],
+          "quote_currency": "USD",
+          "min_trade_amount": "10.0",
+          "counter_currency": "USD",
+          "settlement_currency": "BTC",
+          "block_trade_min_trade_amount": "200000",
+          "block_trade_commission": "0.00025",
+          "max_liquidation_commission": "0.0075",
+          "max_leverage": "25",
+          "future_type": "reversed",
+          "settlement_period": "month",
+          "creation_timestamp": "1719561614000",
+          "instrument_id": "341755",
+          "base_currency": "BTC",
+          "block_trade_tick_size": "0.01",
+          "tick_size": "2.5",
+          "contract_size": "10.0",
+          "is_active": true,
+          "expiration_timestamp": "1751011200000",
+          "instrument_type": "reversed",
+          "taker_commission": "0.0005",
+          "maker_commission": "0.0",
+          "instrument_name": "BTC-27JUN25",
+          "kind": "future",
+          "rfq": false,
+          "price_index": "btc_usd"
+        }
+      }
+    }
+  },
+  "same_date": {
+    "okx": {
+      "BTC-USDT-250328": {
+        "taker": 0.0005,
+        "maker": 0.0002,
+        "id": "BTC-USDT-250328",
+        "symbol": "BTC/USDT:USDT-250328",
+        "base": "BTC",
+        "quote": "USDT",
+        "settle": "USDT",
+        "baseId": "BTC",
+        "quoteId": "USDT",
+        "settleId": "USDT",
+        "type": "future",
+        "spot": false,
+        "margin": false,
+        "swap": false,
+        "future": true,
+        "option": false,
+        "active": true,
+        "contract": true,
+        "linear": true,
+        "inverse": false,
+        "contractSize": 0.01,
+        "expiry": 1743148800000,
+        "expiryDatetime": "2025-03-28T08:00:00.000Z",
+        "strike": null,
+        "optionType": null,
+        "created": 1720771800347,
+        "precision": {
+          "amount": 0.1,
+          "price": 0.1
+        },
+        "limits": {
+          "leverage": {
+            "min": 1.0,
+            "max": 20.0
+          },
+          "amount": {
+            "min": 0.1,
+            "max": null
+          },
+          "price": {
+            "min": null,
+            "max": null
+          },
+          "cost": {
+            "min": null,
+            "max": null
+          }
+        },
+        "info": {
+          "alias": "next_quarter",
+          "baseCcy": "",
+          "category": "1",
+          "ctMult": "1",
+          "ctType": "linear",
+          "ctVal": "0.01",
+          "ctValCcy": "BTC",
+          "expTime": "1743148800000",
+          "instFamily": "BTC-USDT",
+          "instId": "BTC-USDT-250328",
+          "instType": "FUTURES",
+          "lever": "20",
+          "listTime": "1720771800347",
+          "lotSz": "0.1",
+          "maxIcebergSz": "1000000.0000000000000000",
+          "maxLmtAmt": "20000000",
+          "maxLmtSz": "1000000",
+          "maxMktAmt": "",
+          "maxMktSz": "3000",
+          "maxStopSz": "3000",
+          "maxTriggerSz": "1000000.0000000000000000",
+          "maxTwapSz": "1000000.0000000000000000",
+          "minSz": "0.1",
+          "optType": "",
+          "quoteCcy": "",
+          "ruleType": "normal",
+          "settleCcy": "USDT",
+          "state": "live",
+          "stk": "",
+          "tickSz": "0.1",
+          "uly": "BTC-USDT"
+        }
+      },
+      "BTC-USD-250328": {
+        "taker": 0.0005,
+        "maker": 0.0002,
+        "id": "BTC-USDT-250328",
+        "symbol": "BTC/USDT:USDT-250328",
+        "base": "BTC",
+        "quote": "USDT",
+        "settle": "USDT",
+        "baseId": "BTC",
+        "quoteId": "USDT",
+        "settleId": "USDT",
+        "type": "future",
+        "spot": false,
+        "margin": false,
+        "swap": false,
+        "future": true,
+        "option": false,
+        "active": true,
+        "contract": true,
+        "linear": false,
+        "inverse": true,
+        "contractSize": 0.01,
+        "expiry": 1743148800000,
+        "expiryDatetime": "2025-03-28T08:00:00.000Z",
+        "strike": null,
+        "optionType": null,
+        "created": 1720771800347,
+        "precision": {
+          "amount": 0.1,
+          "price": 0.1
+        },
+        "limits": {
+          "leverage": {
+            "min": 1.0,
+            "max": 20.0
+          },
+          "amount": {
+            "min": 0.1,
+            "max": null
+          },
+          "price": {
+            "min": null,
+            "max": null
+          },
+          "cost": {
+            "min": null,
+            "max": null
+          }
+        },
+        "info": {
+          "alias": "next_quarter",
+          "baseCcy": "",
+          "category": "1",
+          "ctMult": "1",
+          "ctType": "linear",
+          "ctVal": "0.01",
+          "ctValCcy": "BTC",
+          "expTime": "1743148800000",
+          "instFamily": "BTC-USDT",
+          "instId": "BTC-USDT-250328",
+          "instType": "FUTURES",
+          "lever": "20",
+          "listTime": "1720771800347",
+          "lotSz": "0.1",
+          "maxIcebergSz": "1000000.0000000000000000",
+          "maxLmtAmt": "20000000",
+          "maxLmtSz": "1000000",
+          "maxMktAmt": "",
+          "maxMktSz": "3000",
+          "maxStopSz": "3000",
+          "maxTriggerSz": "1000000.0000000000000000",
+          "maxTwapSz": "1000000.0000000000000000",
+          "minSz": "0.1",
+          "optType": "",
+          "quoteCcy": "",
+          "ruleType": "normal",
+          "settleCcy": "USDT",
+          "state": "live",
+          "stk": "",
+          "tickSz": "0.1",
+          "uly": "BTC-USDT"
+        }
+      }
+    }
+  }
+}

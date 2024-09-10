@@ -34,6 +34,7 @@ from src.handlers.instantiator import bids_asks_wrapper
 from src.handlers.instantiator import roll_costs_wrapper
 from src.handlers.instantiator import daily_returns_wrapper
 from src.handlers.instantiator import funding_contributions_wrapper
+from src.handlers.instantiator import collect_aprs
 from src.handlers.instantiator import insert_runs
 from src.handlers.instantiator import enclose_runs
 from src.handlers.instantiator import get_data_collectors
@@ -250,6 +251,8 @@ else:
     exchs[exchange] = Exchange(exchange).exch()
 
   public_pool(public_data_collectors, config['exchanges'], symbols)
+
+  collect_aprs(logger=logger, db=db)
 
   exchs = {}
 

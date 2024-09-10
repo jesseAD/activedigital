@@ -1,4 +1,4 @@
-import os, sys, json
+import os, sys, json, csv
 import ccxt
 import pymongo
 import math
@@ -17,13 +17,17 @@ sys.path.append(target_dir)
 
 from src.handlers.daily_returns import DailyReturns
 from src.handlers.funding_contributions import FundingContributions
+from src.lib.apr_pairs import filter_insts, make_pairs
+from src.handlers.aprs import Aprs
 # from src.lib.log import Log
 
 load_dotenv()
 # logger = Log()
 
 mongo_uri = 'mongodb+srv://activedigital:'+os.getenv("CLOUD_MONGO_PASSWORD")+'@mongodbcluster.nzphth1.mongodb.net/?retryWrites=true&w=majority'
-db = pymongo.MongoClient(mongo_uri)['active_digital']
+# db = pymongo.MongoClient(mongo_uri)['active_digital']
+# db = pymongo.MongoClient(None)['active_digital']
+db = pymongo.MongoClient(None)
 
 # DailyReturns(db, "daily_returns").create(
 #   client="shannon",
@@ -45,9 +49,9 @@ params = {
   # 'password': "dcj5*kTT7%"
 }
 
-exchange = ccxt.bybit(params)
-response = exchange.fetch_balance(params={})
-print(response)
+# exchange = ccxt.deribit(params)
+# response = exchange.fetch_tickers(params={'currency': "USDC"})
+# print(response['BTC/USDC:USDC'])
 
 # print(response)
 # exchange.papi_get_balance()
@@ -108,3 +112,34 @@ print(response)
 #   f.write(json.dumps(res))
 
 # print([item['info']['sn'] for item in res])
+
+
+# insts = list(db['instruments'].find({}))
+# insts = {item['venue']: item['instrument_value'] for item in insts}
+
+# insts = filter_insts(insts)
+# pairs = make_pairs(insts)
+
+# pairs = [
+#   [
+#     item['leg1_exchange'], 
+#     item['leg1'], 
+#     item['leg1_type'], 
+#     item['leg1_expiry'], 
+#     item['leg2_exchange'], 
+#     item['leg2'], 
+#     item['leg2_type'], 
+#     item['leg2_expiry'], 
+#   ] for item in pairs
+# ]
+
+# with open('insts.json', 'w') as file:
+#   json.dump(insts, file, indent=2)
+
+# with open('data.csv', 'w', newline='') as csv_file:
+#   writer = csv.writer(csv_file)
+
+#   writer.writerows(pairs)
+
+aprs = Aprs(db, "aprs")
+aprs.create()
