@@ -87,9 +87,6 @@ class Aprs:
     for thread in concurrent.futures.as_completed(threads):
       thread.cancel()
 
-    # print(tickers['deribit'].keys())
-    # print([item for item in tickers['huobi'] if item.startswith("eth")])
-
     instruments = self.instruments_db.find({'venue': "deribit"})
     instruments = {item['venue']: item['instrument_value'] for item in instruments}
 
@@ -97,20 +94,26 @@ class Aprs:
     pairs = make_pairs(instruments)
 
     for pair in pairs:
-      leg1_bid = tickers[pair['leg1_exchange']][pair['leg1']]['bid']
-      leg1_ask = tickers[pair['leg1_exchange']][pair['leg1']]['ask']
-      leg2_bid = tickers[pair['leg2_exchange']][pair['leg2']]['bid']
-      leg2_ask = tickers[pair['leg2_exchange']][pair['leg2']]['ask']
+      leg1_bid = tickers[pair['leg1']['exchange']][pair['leg1']['symbol']]['bid']
+      leg1_ask = tickers[pair['leg1']['exchange']][pair['leg1']['symbol']]['ask']
+      leg2_bid = tickers[pair['leg2']['exchange']][pair['leg2']['symbol']]['bid']
+      leg2_ask = tickers[pair['leg2']['exchange']][pair['leg2']['symbol']]['ask']
 
-      if leg1_bid > leg2_ask:
-        pair['maker_apr'] = (leg1_bid - leg2_ask) / leg1_bid
-        pair['mid_apr'] = (leg1_bid + leg1_ask - leg2_ask - leg2_bid) / (leg1_bid + leg1_ask)
-        pair['taker_apr'] = (leg1_ask - leg2_bid) / leg1_ask
+      pair['maker_apr'] = (leg2_ask - leg1_bid) / leg1_bid
+      pair['mid_apr'] = (leg2_ask + leg2_bid - leg1_bid - leg1_ask) / (leg1_bid + leg1_ask)
+      pair['taker_apr'] = (leg2_bid - leg1_ask) / leg1_ask
+      pair['leg1']['bid'] = leg1_bid
+      pair['leg1']['ask'] = leg1_ask
+      pair['leg2']['bid'] = leg2_bid
+      pair['leg2']['ask'] = leg2_ask
 
-      else:
-        pair['maker_apr'] = (leg1_ask - leg2_bid) / leg1_ask
-        pair['mid_apr'] = (leg1_bid + leg1_ask - leg2_ask - leg2_bid) / (leg1_bid + leg1_ask)
-        pair['taker_apr'] = (leg1_bid - leg2_ask) / leg1_bid
+      if pair['leg1']['exchange'] == "deribit":
+        pair['leg1']['volume'] = float(tickers[pair['leg1']['exchange']][pair['leg1']['symbol']]['info']['volume_usd'])
+        pair['leg1']['open_interest'] = float(tickers[pair['leg1']['exchange']][pair['leg1']['symbol']]['info']['open_interest']) if 'open_interest' in tickers[pair['leg1']['exchange']][pair['leg1']['symbol']]['info'] else 0
+
+      if pair['leg2']['exchange'] == "deribit":
+        pair['leg2']['volume'] = float(tickers[pair['leg2']['exchange']][pair['leg2']['symbol']]['info']['volume_usd'])
+        pair['leg2']['open_interest'] = float(tickers[pair['leg2']['exchange']][pair['leg2']['symbol']]['info']['open_interest']) if 'open_interest' in tickers[pair['leg2']['exchange']][pair['leg2']['symbol']]['info'] else 0
 
     run_ids = self.runs_db.find({}).sort("_id", -1).limit(1)
 
