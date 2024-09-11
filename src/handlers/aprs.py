@@ -99,9 +99,12 @@ class Aprs:
       leg2_bid = tickers[pair['leg2']['exchange']][pair['leg2']['symbol']]['bid']
       leg2_ask = tickers[pair['leg2']['exchange']][pair['leg2']['symbol']]['ask']
 
-      pair['maker_apr'] = (leg2_ask - leg1_bid) / leg1_bid
-      pair['mid_apr'] = (leg2_ask + leg2_bid - leg1_bid - leg1_ask) / (leg1_bid + leg1_ask)
-      pair['taker_apr'] = (leg2_bid - leg1_ask) / leg1_ask
+      annualize = max(config['future_opportunities']['anualize'][pair['leg1']['exchange']], config['future_opportunities']['anualize'][pair['leg2']['exchange']])
+      annualize /= (pair['leg2']['expiry'] - pair['leg1']['expiry'])
+
+      pair['maker_apr'] = (leg2_ask - leg1_bid) / leg1_bid * annualize
+      pair['mid_apr'] = (leg2_ask + leg2_bid - leg1_bid - leg1_ask) / (leg1_bid + leg1_ask) * annualize
+      pair['taker_apr'] = (leg2_bid - leg1_ask) / leg1_ask * annualize
       pair['leg1']['bid'] = leg1_bid
       pair['leg1']['ask'] = leg1_ask
       pair['leg2']['bid'] = leg2_bid
