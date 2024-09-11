@@ -38,15 +38,18 @@ def make_pairs(insts={}):
       for _y in _inst.keys():
         if _x != _y and _inst[_x]['base'] == _inst[_y]['base'] and _inst[_x]['expiry'] < _inst[_y]['expiry']:
           pairs.append({
-            'apr': 0,
-            'leg1_exchange': _exchange,
-            'leg1': _inst[_x]['symbol'],
-            'leg1_type': "Spot" if _inst[_x]['spot'] else ("Swap" if _inst[_x]['swap'] else ("Linear" if _inst[_x]['linear'] else "Inverse")),
-            'leg1_expiry': (datetime.fromtimestamp(_inst[_x]['expiry'] / 1000) - datetime.now()).days,
-            'leg2_exchange': _exchange,
-            'leg2': _inst[_y]['symbol'],
-            'leg2_type': "Spot" if _inst[_y]['spot'] else ("Swap" if _inst[_y]['swap'] else ("Linear" if _inst[_y]['linear'] else "Inverse")),
-            'leg2_expiry': (datetime.fromtimestamp(_inst[_y]['expiry'] / 1000) - datetime.now()).days
+            'leg1': {
+              'exchange': _exchange,
+              'symbol': _inst[_x]['symbol'],
+              'type': "Spot" if _inst[_x]['spot'] else ("Swap" if _inst[_x]['swap'] else ("Linear" if _inst[_x]['linear'] else "Inverse")),
+              'expiry': (datetime.fromtimestamp(_inst[_x]['expiry'] / 1000) - datetime.now()).days + 1
+            },
+            'leg2': {
+              'exchange': _exchange,
+              'symbol': _inst[_y]['symbol'],
+              'type': "Spot" if _inst[_y]['spot'] else ("Swap" if _inst[_y]['swap'] else ("Linear" if _inst[_y]['linear'] else "Inverse")),
+              'expiry': (datetime.fromtimestamp(_inst[_y]['expiry'] / 1000) - datetime.now()).days + 1
+            }
           })
 
   for exch1 in insts.keys():
@@ -56,15 +59,18 @@ def make_pairs(insts={}):
           for _y in insts[exch2].keys():
             if insts[exch1][_x]['base'] == insts[exch2][_y]['base'] and insts[exch1][_x]['expiry'] < insts[exch2][_y]['expiry']:
               pairs.append({
-              'apr': 0,
-              'leg1_exchange': exch1,
-              'leg1': insts[exch1][_x]['symbol'],
-              'leg1_type': "Spot" if insts[exch1][_x]['spot'] else ("Swap" if insts[exch1][_x]['swap'] else ("Linear" if insts[exch1][_x]['linear'] else "Inverse")),
-              'leg1_expiry': (datetime.fromtimestamp(insts[exch1][_x]['expiry'] / 1000) - datetime.now()).days,
-              'leg2_exchange': exch2,
-              'leg2': insts[exch2][_y]['symbol'],
-              'leg2_type': "Spot" if insts[exch2][_y]['spot'] else ("Swap" if insts[exch2][_y]['swap'] else ("Linear" if insts[exch2][_y]['linear'] else "Inverse")),
-              'leg2_expiry': (datetime.fromtimestamp(insts[exch2][_y]['expiry'] / 1000) - datetime.now()).days
+              'leg1': {
+                'exchange': exch1,
+                'symbol': insts[exch1][_x]['symbol'],
+                'type': "Spot" if insts[exch1][_x]['spot'] else ("Swap" if insts[exch1][_x]['swap'] else ("Linear" if insts[exch1][_x]['linear'] else "Inverse")),
+                'expiry': (datetime.fromtimestamp(insts[exch1][_x]['expiry'] / 1000) - datetime.now()).days + 1
+              },
+              'leg2': {
+                'exchange': exch2,
+                'symbol': insts[exch2][_y]['symbol'],
+                'type': "Spot" if insts[exch2][_y]['spot'] else ("Swap" if insts[exch2][_y]['swap'] else ("Linear" if insts[exch2][_y]['linear'] else "Inverse")),
+                'expiry': (datetime.fromtimestamp(insts[exch2][_y]['expiry'] / 1000) - datetime.now()).days + 1
+              }
             })
 
   return pairs
