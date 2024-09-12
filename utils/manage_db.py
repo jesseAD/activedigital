@@ -31,8 +31,8 @@ db = mongo_client['active_digital']
 
 # print(list(db['tickers'].find({'venue': "bybit"}))[0]['ticker_value']['USDT/USD'])
 insts = list(db['instruments'].find({'venue': "deribit"}))[0]['instrument_value']
-insts = {item: insts[item] for item in insts if insts[item]['type'] == "future"}
-print(insts)
+# insts = {item: insts[item] for item in insts if insts[item]['type'] == "future"}
+print(insts['BTC-13SEP24'])
 # db['balances'].update_many(
 #   {},
 #   {'$rename': {"vip_level": "tier"}}

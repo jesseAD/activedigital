@@ -1,5 +1,10 @@
 from datetime import datetime, timezone, timedelta
 
+def get_expiry(timestamp):
+  return round(
+    int(timestamp - datetime.now(timezone.utc).timestamp() * 1000) / 86400000
+  )
+
 def filter_insts(insts={}):
   bases = ["BTC", "ETH"]
   quotes = ["USD", "USDT", "USDC"]
@@ -42,13 +47,13 @@ def make_pairs(insts={}):
               'exchange': _exchange,
               'symbol': _inst[_x]['symbol'],
               'type': "Spot" if _inst[_x]['spot'] else ("Swap" if _inst[_x]['swap'] else ("Linear" if _inst[_x]['linear'] else "Inverse")),
-              'expiry': (datetime.fromtimestamp(_inst[_x]['expiry'] / 1000) - datetime.now()).days + 1
+              'expiry': get_expiry(_inst[_x]['expiry'])
             },
             'leg2': {
               'exchange': _exchange,
               'symbol': _inst[_y]['symbol'],
               'type': "Spot" if _inst[_y]['spot'] else ("Swap" if _inst[_y]['swap'] else ("Linear" if _inst[_y]['linear'] else "Inverse")),
-              'expiry': (datetime.fromtimestamp(_inst[_y]['expiry'] / 1000) - datetime.now()).days + 1
+              'expiry': get_expiry(_inst[_y]['expiry'])
             }
           })
 
@@ -63,13 +68,13 @@ def make_pairs(insts={}):
                 'exchange': exch1,
                 'symbol': insts[exch1][_x]['symbol'],
                 'type': "Spot" if insts[exch1][_x]['spot'] else ("Swap" if insts[exch1][_x]['swap'] else ("Linear" if insts[exch1][_x]['linear'] else "Inverse")),
-                'expiry': (datetime.fromtimestamp(insts[exch1][_x]['expiry'] / 1000) - datetime.now()).days + 1
+                'expiry': get_expiry(insts[exch1][_x]['expiry'])
               },
               'leg2': {
                 'exchange': exch2,
                 'symbol': insts[exch2][_y]['symbol'],
                 'type': "Spot" if insts[exch2][_y]['spot'] else ("Swap" if insts[exch2][_y]['swap'] else ("Linear" if insts[exch2][_y]['linear'] else "Inverse")),
-                'expiry': (datetime.fromtimestamp(insts[exch2][_y]['expiry'] / 1000) - datetime.now()).days + 1
+                'expiry': get_expiry(insts[exch2][_y]['expiry'])
               }
             })
 

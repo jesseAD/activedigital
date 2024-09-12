@@ -250,7 +250,7 @@ else:
   for exchange in config['exchanges']:
     exchs[exchange] = Exchange(exchange).exch()
 
-  # public_pool(public_data_collectors, config['exchanges'], symbols)
+  public_pool(public_data_collectors, config['exchanges'], symbols)
 
   collect_aprs(logger=logger, db=db)
 
@@ -268,9 +268,9 @@ else:
         if account != "base_ccy":
           balance_finished[client + "_" + exchange + "_" + account] = False
 
-  # private_pool(private_data_collectors, accounts, balance_finished)
+  private_pool(private_data_collectors, accounts, balance_finished)
 
-  # leverage_pool(leverages_wrapper, accounts)
+  leverage_pool(leverages_wrapper, accounts)
 
   del accounts
 
