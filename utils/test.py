@@ -141,5 +141,5 @@ params = {
 
 #   writer.writerows(pairs)
 
-aprs = Aprs(db, "aprs")
-aprs.create()
+# aprs = Aprs(db, "aprs")
+# aprs.create()
