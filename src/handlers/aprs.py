@@ -67,6 +67,13 @@ class Aprs:
         {'currency': "ETH"},
         {'currency': "USDT"},
         {'currency': "USDC"},
+      ],
+      'okx': [
+        {'type': "spot"},
+        {'type': "future", 'subType': "linear"},
+        {'type': "future", 'subType': "inverse"},
+        {'type': "swap", 'subType': "linear"},
+        {'type': "swap", 'subType': "inverse"},
       ]
     }
     types = [
@@ -87,7 +94,7 @@ class Aprs:
     for thread in concurrent.futures.as_completed(threads):
       thread.cancel()
 
-    instruments = self.instruments_db.find({'venue': "deribit"})
+    instruments = self.instruments_db.find({'venue': {'$in': ["deribit", "okx"]}})
     instruments = {item['venue']: item['instrument_value'] for item in instruments}
 
     instruments = filter_insts(instruments)
@@ -110,8 +117,10 @@ class Aprs:
       pair['leg2']['bid'] = leg2_bid
       pair['leg2']['ask'] = leg2_ask
 
-      pair['leg1']['datetime'] = tickers[pair['leg1']['exchange']][pair['leg1']['symbol']]['datetime']
-      pair['leg2']['datetime'] = tickers[pair['leg2']['exchange']][pair['leg2']['symbol']]['datetime']
+      pair['midpoint_spread'] = (leg2_bid + leg2_ask) / 2 - (leg1_ask + leg1_bid) / 2
+
+      pair['leg1']['timestamp'] = tickers[pair['leg1']['exchange']][pair['leg1']['symbol']]['timestamp']
+      pair['leg2']['timestamp'] = tickers[pair['leg2']['exchange']][pair['leg2']['symbol']]['timestamp']
 
       if pair['leg1']['exchange'] == "deribit":
         pair['leg1']['volume'] = float(tickers[pair['leg1']['exchange']][pair['leg1']['symbol']]['info']['volume_usd'])

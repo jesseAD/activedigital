@@ -49,9 +49,9 @@ params = {
   # 'password': "dcj5*kTT7%"
 }
 
-# exchange = ccxt.deribit(params)
-# response = exchange.fetch_tickers(params={'currency': "USDC"})
-# print(response['BTC/USDC:USDC'])
+exchange = ccxt.deribit(params)
+response = exchange.fetch_tickers(params={'currency': "USDT"})
+print(response['BTC/USDT:USDT'])
 
 # print(response)
 # exchange.papi_get_balance()
@@ -143,6 +143,3 @@ params = {
 
 # aprs = Aprs(db, "aprs")
 # aprs.create()
-
-days = round((1726214400000 - 1726084800000) / 86400000)
-print(days)
