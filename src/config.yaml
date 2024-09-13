@@ -204,7 +204,7 @@ funding_contributions:
     deribit: 8
 
 future_opportunities: 
-  period: 4
+  period: 1
   anualize:
     binance: 365
     okx: 365
