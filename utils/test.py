@@ -143,3 +143,6 @@ params = {
 
 # aprs = Aprs(db, "aprs")
 # aprs.create()
+
+days = round((1726214400000 - 1726084800000) / 86400000)
+print(days)

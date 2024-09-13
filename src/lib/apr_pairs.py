@@ -54,7 +54,8 @@ def make_pairs(insts={}):
               'symbol': _inst[_y]['symbol'],
               'type': "Spot" if _inst[_y]['spot'] else ("Swap" if _inst[_y]['swap'] else ("Linear" if _inst[_y]['linear'] else "Inverse")),
               'expiry': get_expiry(_inst[_y]['expiry'])
-            }
+            },
+            'base': _inst[_x]['base']
           })
 
   for exch1 in insts.keys():
@@ -75,7 +76,10 @@ def make_pairs(insts={}):
                 'symbol': insts[exch2][_y]['symbol'],
                 'type': "Spot" if insts[exch2][_y]['spot'] else ("Swap" if insts[exch2][_y]['swap'] else ("Linear" if insts[exch2][_y]['linear'] else "Inverse")),
                 'expiry': get_expiry(insts[exch2][_y]['expiry'])
-              }
+              },
+              'base': insts[exch1][_x]['base']
             })
 
+  pairs = [item for item in pairs if item['leg1']['expiry'] < item['leg2']['expiry']]
+  
   return pairs
