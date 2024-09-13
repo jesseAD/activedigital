@@ -110,6 +110,9 @@ class Aprs:
       pair['leg2']['bid'] = leg2_bid
       pair['leg2']['ask'] = leg2_ask
 
+      pair['leg1']['datetime'] = tickers[pair['leg1']['exchange']][pair['leg1']['symbol']]['datetime']
+      pair['leg2']['datetime'] = tickers[pair['leg2']['exchange']][pair['leg2']['symbol']]['datetime']
+
       if pair['leg1']['exchange'] == "deribit":
         pair['leg1']['volume'] = float(tickers[pair['leg1']['exchange']][pair['leg1']['symbol']]['info']['volume_usd'])
         pair['leg1']['open_interest'] = float(tickers[pair['leg1']['exchange']][pair['leg1']['symbol']]['info']['open_interest']) if 'open_interest' in tickers[pair['leg1']['exchange']][pair['leg1']['symbol']]['info'] else 0

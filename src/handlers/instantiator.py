@@ -564,9 +564,9 @@ def collect_aprs(logger, db):
 
   except Exception as e:
     if logger == None:
-      print("Aprs " + str(e))
+      print("Future opportunities " + str(e))
     else:
-      logger.warning("Aprs " + str(e))
+      logger.warning("Future opportunities " + str(e))
 
   finally:
     attempt = 1
@@ -576,9 +576,9 @@ def collect_aprs(logger, db):
       time.sleep(timeout / 1000)
 
       if logger == None:
-        print("Retrying aprs " + str(attempt))
+        print("Retrying Future opportunities " + str(attempt))
       else:
-        logger.info("Retrying aprs " + str(attempt))
+        logger.info("Retrying Future opportunities " + str(attempt))
 
       timeout *= 2
 
@@ -597,9 +597,9 @@ def collect_aprs(logger, db):
 
     if not res:
       if logger == None:
-        print("Unable to collect aprs")
+        print("Unable to collect Future opportunities")
       else:
-        logger.error("Unable to collect aprs")
+        logger.error("Unable to collect Future opportunities")
 
     return res
 
