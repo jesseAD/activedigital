@@ -886,7 +886,16 @@ clients:
            hedged_exclusion_negative: {}
            ignore_symbols: []
            vip_level: vip0
-          
+        volarb2::
+           base_ccy: USDT
+           margin_mode: non_portfolio
+           funding_contributions: False
+           daily_returns: True
+           unhedged_alert: False
+           hedged_exclusion_positive: {}
+           hedged_exclusion_negative: {}
+           ignore_symbols: []
+           vip_level: vip0          
         flipflop:
           base_ccy: USDT
           margin_mode: non_portfolio
