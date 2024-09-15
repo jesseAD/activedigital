@@ -848,7 +848,7 @@ clients:
           hedged_exclusion_negative: {'USDT': 0}
           ignore_symbols: []
         subtrend1:
-          base_ccy: USDT
+          base_ccy: BTC
           margin_mode: non_portfolio
           funding_contributions: True
           daily_returns: True
