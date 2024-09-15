@@ -853,8 +853,8 @@ clients:
           funding_contributions: True
           daily_returns: True
           unhedged_alert: False
-          hedged_exclusion_positive: {'USDT': 0}
-          hedged_exclusion_negative: {'USDT': 0}
+          hedged_exclusion_positive: {'USDT': 0,'BTC': 2.8}
+          hedged_exclusion_negative: {'USDT': 0} 
           ignore_symbols: []
         subbasis2:
           base_ccy: USDT
