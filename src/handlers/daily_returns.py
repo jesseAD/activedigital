@@ -86,9 +86,9 @@ def get_ewmas(client_val,exchange_val,account_val,start_date, end_date, balances
   balances_df.set_index('timestamp',inplace=True)
   balances_df.sort_index(inplace=True)
   #display(balances_df.head())
-  transfers = transaction_union_db.find({
+  transfers = list(transaction_union_db.find({
     "$and": [
-      {"timestamp" : {"$gte":int(start_date.timestamp()) * 1000, "$lt":int(end_date.timestamp()) * 1000}},
+      {"transaction_value.timestamp" : {"$gte":int(start_date.timestamp()) * 1000, "$lt":int(end_date.timestamp()) * 1000}},
       {
         "$or": [
           {"incomeType": "COIN_SWAP_WITHDRAW"}, 
@@ -101,7 +101,13 @@ def get_ewmas(client_val,exchange_val,account_val,start_date, end_date, balances
       ,
       {"account":account_val}
     ]                                                                       
-  }, session=session)
+  }, session=session))
+  transfers = [
+    {
+      **item,
+      'timestamp': item['transaction_value']['timestamp']
+    } for item in transfers
+  ]
   transfers_df = pd.json_normalize(transfers)
   if transfers_df.empty:
       transfers_df=pd.DataFrame( columns=["_id","client","venue","account","convert_ccy","incomeType","symbol","trade_type","income","asset","timestamp","billId","ordId"])
@@ -360,7 +366,7 @@ class DailyReturns():
                   {"incomeType": "COIN_SWAP_WITHDRAW"},
                   {"incomeType": "COIN_SWAP_DEPOSIT"}
                 ]},
-                {'timestamp': {
+                {'transaction_value.timestamp': {
                   '$gte': int(prev_time.timestamp() * 1000),
                   '$lt': int(base_time.timestamp() * 1000)
                 }}
