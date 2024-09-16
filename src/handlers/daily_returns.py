@@ -105,7 +105,8 @@ def get_ewmas(client_val,exchange_val,account_val,start_date, end_date, balances
   transfers = [
     {
       **item,
-      'timestamp': item['transaction_value']['timestamp']
+      'timestamp': item['transaction_value']['timestamp'],
+      'income': item['transaction_value']['income'],
     } for item in transfers
   ]
   transfers_df = pd.json_normalize(transfers)
@@ -372,9 +373,9 @@ class DailyReturns():
                 }}
               ]
             }, session=session))
-            transfer = sum([item['income_base'] for item in transfers])
+            transfer = sum([item['transaction_value']['income_base'] for item in transfers])
             if transfer == 0.0:
-              transfer = sum([item['income'] for item in transfers])
+              transfer = sum([item['transaction_value']['income'] for item in transfers])
 
             leverages = list(self.leverages_db.find({
               '$and': [

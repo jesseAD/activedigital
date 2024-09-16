@@ -46,7 +46,7 @@ print(insts['BTC-13SEP24'])
 # query = {'$and': [{'venue': 'bybit'}, {'fills_value.timestamp': {'$gte': 1710028800000}}]}
 # query = {'$and': [{'client': 'lucid'}, {'venue': 'binance'}, {'account': 'subls1'}]}
 
-# db['daily_returns'].delete_many({'client': "nifty", 'venue': "bybit", 'account': "subbasis1"})
+db['daily_returns'].delete_many({'timestamp': {'$gte': datetime(2024, 9, 6, 0)}})
 # balances = db['balances'].find({
 #   'client': "nifty",
 #   'account': "subbasis2",

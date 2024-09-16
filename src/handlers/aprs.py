@@ -1,6 +1,7 @@
 import csv
 from datetime import datetime, timezone
 import concurrent.futures
+import time
 import ccxt 
 from dotenv import load_dotenv
 
@@ -18,9 +19,7 @@ class Aprs:
     self.instruments_db = db['instruments']
     self.aprs_db = db[collection]
 
-  def get_tickers(self, exchange, tickers, param):
-    exch = Exchange(exchange).exch()
-
+  def get_tickers(self, exch, exchange, tickers, param):
     _tickers = {}
 
     try:
@@ -60,6 +59,7 @@ class Aprs:
 
         return True
 
+    exchs = {exchange: Exchange(exchange).exch() for exchange in config['exchanges']}
     tickers = {exchange: {} for exchange in config['exchanges']}
     params = {
       'deribit': [
@@ -87,12 +87,16 @@ class Aprs:
     threads = []
     executor = concurrent.futures.ThreadPoolExecutor(max_workers=len(config['exchanges']) * 5)
 
+    # start_time = time.time()
     for exchange in params:
       for param in params[exchange]:
-        threads.append(executor.submit(self.get_tickers, exchange, tickers, param))
+        threads.append(executor.submit(self.get_tickers, exchs[exchange], exchange, tickers, param))
 
     for thread in concurrent.futures.as_completed(threads):
       thread.cancel()
+
+    # end_time = time.time()
+    # print(end_time - start_time)
 
     instruments = self.instruments_db.find({'venue': {'$in': ["deribit", "okx"]}})
     instruments = {item['venue']: item['instrument_value'] for item in instruments}
@@ -125,9 +129,17 @@ class Aprs:
       if pair['leg1']['exchange'] == "deribit":
         pair['leg1']['volume'] = float(tickers[pair['leg1']['exchange']][pair['leg1']['symbol']]['info']['volume_usd'])
         pair['leg1']['open_interest'] = float(tickers[pair['leg1']['exchange']][pair['leg1']['symbol']]['info']['open_interest']) if 'open_interest' in tickers[pair['leg1']['exchange']][pair['leg1']['symbol']]['info'] else 0
+      
+      elif pair['leg1']['exchange'] == "okx":
+        pair['leg1']['volume'] = float(tickers[pair['leg1']['exchange']][pair['leg1']['symbol']]['baseVolume'])
+        pair['leg1']['open_interest'] = float(tickers[pair['leg1']['exchange']][pair['leg1']['symbol']]['info']['open_interest']) if 'open_interest' in tickers[pair['leg1']['exchange']][pair['leg1']['symbol']]['info'] else 0
 
       if pair['leg2']['exchange'] == "deribit":
         pair['leg2']['volume'] = float(tickers[pair['leg2']['exchange']][pair['leg2']['symbol']]['info']['volume_usd'])
+        pair['leg2']['open_interest'] = float(tickers[pair['leg2']['exchange']][pair['leg2']['symbol']]['info']['open_interest']) if 'open_interest' in tickers[pair['leg2']['exchange']][pair['leg2']['symbol']]['info'] else 0
+      
+      elif pair['leg2']['exchange'] == "okx":
+        pair['leg2']['volume'] = float(tickers[pair['leg2']['exchange']][pair['leg2']['symbol']]['baseVolume'])
         pair['leg2']['open_interest'] = float(tickers[pair['leg2']['exchange']][pair['leg2']['symbol']]['info']['open_interest']) if 'open_interest' in tickers[pair['leg2']['exchange']][pair['leg2']['symbol']]['info'] else 0
 
     run_ids = self.runs_db.find({}).sort("_id", -1).limit(1)
