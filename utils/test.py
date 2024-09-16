@@ -49,9 +49,9 @@ params = {
   # 'password': "dcj5*kTT7%"
 }
 
-exchange = ccxt.deribit(params)
-response = exchange.fetch_tickers(params={'currency': "USDT"})
-print(response['BTC/USDT:USDT'])
+exchange = ccxt.okx(params)
+response = exchange.fetch_tickers(params={'type': "swap", 'subType': "linear"})
+print(response)
 
 # print(response)
 # exchange.papi_get_balance()
