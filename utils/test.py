@@ -51,9 +51,9 @@ params = {
   # 'password': "dcj5*kTT7%"
 }
 
-exchange = ccxt.deribit(params)
-response = exchange.fetch_tickers(params={'kind': "option_combo", 'currency': "BTC"})
-print(response.keys())
+exchange = ccxt.binance(params)
+response = exchange.fetch_bids_asks(params={'type': "spot"})
+print(response['BTC/USDT'])
 
 # print(response)
 # exchange.papi_get_balance()
