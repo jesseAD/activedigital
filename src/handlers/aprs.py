@@ -23,7 +23,14 @@ class Aprs:
     _tickers = {}
 
     try:
-      _tickers = exch.fetch_tickers(params={**param})
+      if exchange == "binance":
+        _tickers = exch.fetch_bids_asks(params={**param})
+        for item in _tickers.keys():
+          _tickers[item]['timestamp'] = int(_tickers[item]['info']['time']) if 'time' in _tickers[item]['info'] else int(datetime.now(timezone.utc).timestamp() * 1000)
+        
+      else:
+        _tickers = exch.fetch_tickers(params={**param})
+
     except Exception as e:
       print("future opportunities " + str(e))
 
@@ -62,17 +69,23 @@ class Aprs:
     tickers = {exchange: {} for exchange in config['exchanges']}
 
     params = {
+      'okx': [
+        {'type': "spot"},
+        {'type': "future"},
+        {'type': "swap"},
+      ],
+      'binance': [
+        {'type': "spot"},
+        {'type': "swap", 'subType': "linear"},
+        {'type': "swap", 'subType': "inverse"},
+      ],
       'deribit': [
         {'currency': "BTC"},
         {'currency': "ETH"},
         {'currency': "USDT"},
         {'currency': "USDC"},
       ],
-      'okx': [
-        {'type': "spot"},
-        {'type': "future"},
-        {'type': "swap"},
-      ]
+      
     }
 
     exchs = {exchange: [Exchange(exchange).exch() for item in params[exchange]] for exchange in params}
