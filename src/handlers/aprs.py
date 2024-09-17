@@ -24,8 +24,8 @@ class Aprs:
 
     try:
       _tickers = exch.fetch_tickers(params={**param})
-    except:
-      pass
+    except Exception as e:
+      print("future opportunities " + str(e))
 
     tickers[exchange].update(_tickers)
   
@@ -59,8 +59,8 @@ class Aprs:
 
         return True
 
-    exchs = {exchange: Exchange(exchange).exch() for exchange in config['exchanges']}
     tickers = {exchange: {} for exchange in config['exchanges']}
+
     params = {
       'deribit': [
         {'currency': "BTC"},
@@ -70,27 +70,23 @@ class Aprs:
       ],
       'okx': [
         {'type': "spot"},
-        {'type': "future", 'subType': "linear"},
-        {'type': "future", 'subType': "inverse"},
-        {'type': "swap", 'subType': "linear"},
-        {'type': "swap", 'subType': "inverse"},
+        {'type': "future"},
+        {'type': "swap"},
       ]
     }
-    types = [
-      {'type': "spot"},
-      {'type': "future", 'subType': "linear"},
-      {'type': "future", 'subType': "inverse"},
-      {'type': "swap", 'subType': "linear"},
-      {'type': "swap", 'subType': "inverse"},
-    ]
+
+    exchs = {exchange: [Exchange(exchange).exch() for item in params[exchange]] for exchange in params}
 
     threads = []
     executor = concurrent.futures.ThreadPoolExecutor(max_workers=len(config['exchanges']) * 5)
 
     # start_time = time.time()
     for exchange in params:
-      for param in params[exchange]:
-        threads.append(executor.submit(self.get_tickers, exchs[exchange], exchange, tickers, param))
+      for i in range(len(params[exchange])):
+        threads.append(executor.submit(self.get_tickers, exchs[exchange][i], exchange, tickers, params[exchange][i]))
+
+      # for param in params[exchange]:
+      #   threads.append(executor.submit(self.get_tickers, exchs[exchange], exchange, tickers, param))
 
     for thread in concurrent.futures.as_completed(threads):
       thread.cancel()
@@ -98,7 +94,7 @@ class Aprs:
     # end_time = time.time()
     # print(end_time - start_time)
 
-    instruments = self.instruments_db.find({'venue': {'$in': ["deribit", "okx"]}})
+    instruments = self.instruments_db.find({'venue': {'$in': list(params.keys())}})
     instruments = {item['venue']: item['instrument_value'] for item in instruments}
 
     instruments = filter_insts(instruments)

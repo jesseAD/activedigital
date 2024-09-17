@@ -586,8 +586,11 @@ def collect_aprs(logger, db):
         res = aprs.create(
           logger=logger
         )
-      except:
-        pass
+      except Exception as e:
+        if logger == None:
+          print("Future opportunities " + str(e))
+        else:
+          logger.warning("Future opportunities " + str(e))
 
       if attempt == config['ccxt']['binance']['retry']:
         break

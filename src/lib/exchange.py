@@ -7,7 +7,7 @@ load_dotenv()
 
 # Create an echange class instance
 class Exchange:
-  def __init__(self, exchange = None, account = None, key = None, secret = None, passphrase = None):
+  def __init__(self, exchange = "", account = "", key = "", secret = "", passphrase = ""):
     self.exchange = exchange
     self.sub_account = account
     self.key = key
@@ -26,6 +26,7 @@ class Exchange:
       'verbose': False,
       'options': {
         'adjustForTimeDifference':True,
+        'warnOnFetchOpenOrdersWithoutSymbol': False
       }
     }
 

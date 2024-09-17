@@ -36,9 +36,11 @@ db = pymongo.MongoClient(None)
 # )
 
 params = {
-  'apiKey': "",
-  'secret': "",
+  'apiKey': None,
+  'secret': None,
   'enableRateLimit': True,
+  'rateLimit': 30,
+  'timeout': 3000,
   'requests_trust_env':True,
   'verbose': False,
   'options': {
@@ -49,9 +51,9 @@ params = {
   # 'password': "dcj5*kTT7%"
 }
 
-exchange = ccxt.okx(params)
-response = exchange.fetch_tickers(params={'type': "swap", 'subType': "linear"})
-print(response)
+exchange = ccxt.deribit(params)
+response = exchange.fetch_tickers(params={'kind': "option_combo", 'currency': "BTC"})
+print(response.keys())
 
 # print(response)
 # exchange.papi_get_balance()

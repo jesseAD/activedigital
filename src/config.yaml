@@ -14,6 +14,7 @@ dask:
 logging:
   max_size: 300 # in KB
   max_date: 5 # in days
+  
 # ccxt lib
 ccxt:
   binance:

@@ -1,4 +1,4 @@
-ccxt==4.3.70
+ccxt==4.4.3
 fastapi==0.85.2
 numpy
 pandas==2.1.3

@@ -122,7 +122,7 @@ print("inserted a new run")
 #  ------------  Dask + Concurrent  ----------------
 
 # public_data_collectors = [
-#   funding_rates_wrapper
+#   instruments_wrapper
 # ]
 public_data_collectors = [
   instruments_wrapper, tickers_wrapper, roll_costs_wrapper,
