@@ -1,6 +1,7 @@
 import csv
 from datetime import datetime, timezone
 import concurrent.futures
+import threading
 import time
 import ccxt 
 from dotenv import load_dotenv
@@ -11,15 +12,14 @@ from src.handlers.helpers import Helper, OKXHelper, BybitHelper, HuobiHelper
 from src.lib.apr_pairs import filter_insts, make_pairs
 
 config = read_config_file()
+condition = threading.Condition()
+start_processing = False
 
-class Aprs:
-  def __init__(self, db, collection):
+def get_tickers(exch, exchange, tickers, param):
+  with condition:
+    while not start_processing:
+      condition.wait()
 
-    self.runs_db = db['runs']
-    self.instruments_db = db['instruments']
-    self.aprs_db = db[collection]
-
-  def get_tickers(self, exch, exchange, tickers, param):
     _tickers = {}
 
     try:
@@ -35,6 +35,22 @@ class Aprs:
       print("future opportunities " + str(e))
 
     tickers[exchange].update(_tickers)
+
+def start_tickers():
+  global start_processing
+
+  with condition:
+    start_processing = True
+    condition.notify_all()
+
+class Aprs:
+  def __init__(self, db, collection):
+
+    self.runs_db = db['runs']
+    self.instruments_db = db['instruments']
+    self.aprs_db = db[collection]
+
+  
   
   def create(
     self,
@@ -91,18 +107,26 @@ class Aprs:
     exchs = {exchange: [Exchange(exchange).exch() for item in params[exchange]] for exchange in params}
 
     threads = []
-    executor = concurrent.futures.ThreadPoolExecutor(max_workers=len(config['exchanges']) * 5)
+    # executor = concurrent.futures.ThreadPoolExecutor(max_workers=len(config['exchanges']) * 5)
 
     # start_time = time.time()
     for exchange in params:
       for i in range(len(params[exchange])):
-        threads.append(executor.submit(self.get_tickers, exchs[exchange][i], exchange, tickers, params[exchange][i]))
+        thread = threading.Thread(target=get_tickers, args=(exchs[exchange][i], exchange, tickers, params[exchange][i], ))
+        threads.append(thread)
+        thread.start()
+        # threads.append(executor.submit(get_tickers, exchs[exchange][i], exchange, tickers, params[exchange][i]))
 
-      # for param in params[exchange]:
-      #   threads.append(executor.submit(self.get_tickers, exchs[exchange], exchange, tickers, param))
+    signal_thread = threading.Thread(target=start_tickers)
+    signal_thread.start()
 
-    for thread in concurrent.futures.as_completed(threads):
-      thread.cancel()
+    for thread in threads:
+      thread.join()
+
+    signal_thread.join()
+
+    # for thread in concurrent.futures.as_completed(threads):
+    #   thread.cancel()
 
     # end_time = time.time()
     # print(end_time - start_time)
