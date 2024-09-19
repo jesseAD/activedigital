@@ -26,7 +26,7 @@ def get_tickers(exch, exchange, tickers, param):
     if exchange == "binance":
       _tickers = exch.fetch_bids_asks(params={**param})
       for item in _tickers.keys():
-        _tickers[item]['timestamp'] = int(_tickers[item]['info']['time']) if 'time' in _tickers[item]['info'] else int(datetime.now(timezone.utc).timestamp() * 1000)
+        _tickers[item]['timestamp'] = int(_tickers[item]['info']['time']) if 'time' in _tickers[item]['info'] else None
       
     else:
       _tickers = exch.fetch_tickers(params={**param})
@@ -184,6 +184,14 @@ class Aprs:
         pair['leg1']['volume'] = float(tickers[pair['leg1']['exchange']][pair['leg1']['symbol']]['baseVolume'])
         pair['leg1']['open_interest'] = float(tickers[pair['leg1']['exchange']][pair['leg1']['symbol']]['info']['open_interest']) if 'open_interest' in tickers[pair['leg1']['exchange']][pair['leg1']['symbol']]['info'] else 0
 
+      elif pair['leg1']['exchange'] == "houbi":
+        pair['leg1']['volume'] = float(tickers[pair['leg1']['exchange']][pair['leg1']['symbol']]['baseVolume'])
+        pair['leg1']['open_interest'] = float(tickers[pair['leg1']['exchange']][pair['leg1']['symbol']]['info']['open_interest']) if 'open_interest' in tickers[pair['leg1']['exchange']][pair['leg1']['symbol']]['info'] else 0
+
+      elif pair['leg1']['exchange'] == "bybit":
+        pair['leg1']['volume'] = float(tickers[pair['leg1']['exchange']][pair['leg1']['symbol']]['baseVolume'])
+        pair['leg1']['open_interest'] = float(tickers[pair['leg1']['exchange']][pair['leg1']['symbol']]['info']['openInterest']) if 'openInterest' in tickers[pair['leg1']['exchange']][pair['leg1']['symbol']]['info'] else 0
+
       if pair['leg2']['exchange'] == "deribit":
         pair['leg2']['volume'] = float(tickers[pair['leg2']['exchange']][pair['leg2']['symbol']]['info']['volume_usd'])
         pair['leg2']['open_interest'] = float(tickers[pair['leg2']['exchange']][pair['leg2']['symbol']]['info']['open_interest']) if 'open_interest' in tickers[pair['leg2']['exchange']][pair['leg2']['symbol']]['info'] else 0
@@ -191,6 +199,14 @@ class Aprs:
       elif pair['leg2']['exchange'] == "okx":
         pair['leg2']['volume'] = float(tickers[pair['leg2']['exchange']][pair['leg2']['symbol']]['baseVolume'])
         pair['leg2']['open_interest'] = float(tickers[pair['leg2']['exchange']][pair['leg2']['symbol']]['info']['open_interest']) if 'open_interest' in tickers[pair['leg2']['exchange']][pair['leg2']['symbol']]['info'] else 0
+
+      elif pair['leg2']['exchange'] == "huobi":
+        pair['leg2']['volume'] = float(tickers[pair['leg2']['exchange']][pair['leg2']['symbol']]['baseVolume'])
+        pair['leg2']['open_interest'] = float(tickers[pair['leg2']['exchange']][pair['leg2']['symbol']]['info']['open_interest']) if 'open_interest' in tickers[pair['leg2']['exchange']][pair['leg2']['symbol']]['info'] else 0
+
+      elif pair['leg2']['exchange'] == "bybit":
+        pair['leg2']['volume'] = float(tickers[pair['leg2']['exchange']][pair['leg2']['symbol']]['baseVolume'])
+        pair['leg2']['open_interest'] = float(tickers[pair['leg2']['exchange']][pair['leg2']['symbol']]['info']['openInterest']) if 'openInterest' in tickers[pair['leg2']['exchange']][pair['leg2']['symbol']]['info'] else 0
 
     run_ids = self.runs_db.find({}).sort("_id", -1).limit(1)
 

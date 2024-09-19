@@ -51,9 +51,9 @@ params = {
   # 'password': "dcj5*kTT7%"
 }
 
-exchange = ccxt.huobi(params)
-response = exchange.fetch_tickers(params={'type': "swap"})
-print(response['BTC/USDT:USDT'])
+exchange = ccxt.bybit(params)
+response = exchange.fetch_tickers(params={'type': "swap", 'subType': "inverse"})
+print(response['BTC/USD:BTC'])
 
 # print(response)
 # exchange.papi_get_balance()
