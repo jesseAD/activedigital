@@ -12,36 +12,36 @@ from src.handlers.helpers import Helper, OKXHelper, BybitHelper, HuobiHelper
 from src.lib.apr_pairs import filter_insts, make_pairs
 
 config = read_config_file()
-condition = threading.Condition()
-start_processing = False
+# condition = threading.Condition()
+# start_processing = False
 
 def get_tickers(exch, exchange, tickers, param):
-  with condition:
-    while not start_processing:
-      condition.wait()
+  # with condition:
+  #   while not start_processing:
+  #     condition.wait()
 
-    _tickers = {}
+  _tickers = {}
 
-    try:
-      if exchange == "binance":
-        _tickers = exch.fetch_bids_asks(params={**param})
-        for item in _tickers.keys():
-          _tickers[item]['timestamp'] = int(_tickers[item]['info']['time']) if 'time' in _tickers[item]['info'] else int(datetime.now(timezone.utc).timestamp() * 1000)
-        
-      else:
-        _tickers = exch.fetch_tickers(params={**param})
+  try:
+    if exchange == "binance":
+      _tickers = exch.fetch_bids_asks(params={**param})
+      for item in _tickers.keys():
+        _tickers[item]['timestamp'] = int(_tickers[item]['info']['time']) if 'time' in _tickers[item]['info'] else int(datetime.now(timezone.utc).timestamp() * 1000)
+      
+    else:
+      _tickers = exch.fetch_tickers(params={**param})
 
-    except Exception as e:
-      print("future opportunities " + str(e))
+  except Exception as e:
+    print("future opportunities " + str(e))
 
-    tickers[exchange].update(_tickers)
+  tickers[exchange].update(_tickers)
 
-def start_tickers():
-  global start_processing
+# def start_tickers():
+#   global start_processing
 
-  with condition:
-    start_processing = True
-    condition.notify_all()
+#   with condition:
+#     start_processing = True
+#     condition.notify_all()
 
 class Aprs:
   def __init__(self, db, collection):
@@ -101,34 +101,51 @@ class Aprs:
         {'currency': "USDT"},
         {'currency': "USDC"},
       ],
-      
+      'bybit': [
+        {'type': "spot"},
+        {'type': "swap", 'subType': "linear"},
+        {'type': "swap", 'subType': "inverse"},
+      ],
+      'huobi': [
+        {'type': "spot"},
+        {'type': "swap", 'subType': "linear"},
+        {'type': "swap", 'subType': "inverse"},
+        {'type': "future", 'subType': "linear"},
+        {'type': "future", 'subType': "inverse"},
+      ]
     }
 
     exchs = {exchange: [Exchange(exchange).exch() for item in params[exchange]] for exchange in params}
+    
+    for exchange in exchs.keys():
+      for exch in exchs[exchange]:
+        exch.fetch_ticker("BTC/USDT")
 
     threads = []
-    # executor = concurrent.futures.ThreadPoolExecutor(max_workers=len(config['exchanges']) * 5)
+    executor = concurrent.futures.ThreadPoolExecutor(max_workers=len(config['exchanges']) * 5)
 
-    # start_time = time.time()
+    start_time = time.time()
+
     for exchange in params:
       for i in range(len(params[exchange])):
-        thread = threading.Thread(target=get_tickers, args=(exchs[exchange][i], exchange, tickers, params[exchange][i], ))
-        threads.append(thread)
-        thread.start()
-        # threads.append(executor.submit(get_tickers, exchs[exchange][i], exchange, tickers, params[exchange][i]))
+        # thread = threading.Thread(target=get_tickers, args=(exchs[exchange][i], exchange, tickers, params[exchange][i], ))
+        # threads.append(thread)
+        # thread.start()
+        threads.append(executor.submit(get_tickers, exchs[exchange][i], exchange, tickers, params[exchange][i]))
 
-    signal_thread = threading.Thread(target=start_tickers)
-    signal_thread.start()
+    # signal_thread = threading.Thread(target=start_tickers)
+    # signal_thread.start()
 
-    for thread in threads:
-      thread.join()
+    # for thread in threads:
+    #   thread.join()
 
-    signal_thread.join()
+    # signal_thread.join()
 
-    # for thread in concurrent.futures.as_completed(threads):
-    #   thread.cancel()
+    for thread in concurrent.futures.as_completed(threads):
+      thread.cancel()
 
-    # end_time = time.time()
+    end_time = time.time()
+    logger.info("Future opportunities: ticker fetch time: " + str(end_time - start_time))
     # print(end_time - start_time)
 
     instruments = self.instruments_db.find({'venue': {'$in': list(params.keys())}})
