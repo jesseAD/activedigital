@@ -923,7 +923,7 @@ clients:
            ignore_symbols: []
            vip_level: vip0 
 
-        iornarb:
+        ironarb:
            base_ccy: USDT
            margin_mode: non_portfolio
            funding_contributions: False
