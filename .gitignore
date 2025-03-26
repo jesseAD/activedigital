@@ -106,3 +106,4 @@ ENV/
 tests/test.py
 tests/test_delete_db.py
 data/
+backup_mongodb.sh
