@@ -21,6 +21,10 @@ permissions:
    type:
      - file
 hooks:
+  BeforeInstall:
+    - location: scripts/fetch_env.sh
+      timeout: 300
+      runas: ec2-user
  AfterInstall:
    - location: install_dependencies.sh
      runas: root
