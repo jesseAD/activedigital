@@ -1,0 +1,63 @@
+# Backup directories
+mongodb_backup/
+temp_metadata/
+backup/
+**/backup/
+*_backup/
+
+# Git
+.git
+.github
+.gitignore
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Environment files
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+venv/
+ENV/
+
+# IDE files
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Logs and data
+logs/
+*.log
+*.csv
+*.dat
+*.out
+.DS_Store
+
+# Large data files
+*.bson
+
+# Docker
+.dockerignore
+Dockerfile
+docker-compose.yml 

@@ -1,0 +1,22 @@
+version: '3'
+
+services:
+  data_collector:
+    build: 
+      context: .
+      dockerfile: Dockerfile
+    container_name: active_digital_data_collector
+    volumes:
+      - .:/app
+      - ./.env:/.env
+      - ./data:/data
+    environment:
+      - KEEP_CONTAINER_RUNNING=false
+    restart: unless-stopped
+    command: bash /app/scripts/entrypoint.sh
+    networks:
+      - active_digital_network
+
+networks:
+  active_digital_network:
+    driver: bridge 
